@@ -59,6 +59,20 @@ public static class StringExtensions
         return IndexOf(str, values, 0);
     }
 
+    public static IEnumerable<int> IndexesOf(this string str, params string[] values)
+    {
+        var index = values.Min(v => str.IndexOf(v));
+
+        while (-1 != index)
+        {
+            yield return index;
+            if (str.Length < (index + 1)) break;
+
+            var indices = values.Select(v => str.IndexOf(v, index + 1)).Where(i => -1 != i);
+            index = indices.Any() ? indices.Min() : -1;
+        }
+    }
+
     public static int IndexOf(this string str, [DisallowNull] IEnumerable<char> values, int startIndex)
     {
         values.ThrowIfNull(nameof(values));
@@ -224,6 +238,30 @@ public static class StringExtensions
 
             i++;
         }
+    }
+
+    public static string SubstringBetween(this string str, string left, string right, bool inclusive = true)
+    {
+        var indexes = IndexesOf(str, new[] { left, right }).ToArray();
+        if (2 != indexes.Length) return "";
+
+        var leftIndex = indexes[0];
+        if (-1 == leftIndex) return "";
+
+        var rightIndex = indexes[1];
+        if (-1 == rightIndex) return "";
+
+        rightIndex += right.Length - 1;
+        if (!inclusive)
+        {
+            leftIndex += left.Length;
+            if (leftIndex == rightIndex) return "";
+
+            rightIndex -= right.Length;
+            if (leftIndex > rightIndex) return "";
+        }
+
+        return SubstringFromIndex(str, leftIndex, rightIndex);
     }
 
     public static string SubstringFromIndex(this string str, int start, int end)
