@@ -1,9 +1,4 @@
 ﻿using NUnit.Framework;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Foundation
 {
@@ -13,12 +8,10 @@ namespace Foundation
         [Test]
         public void GetPrimitiveType_Should_ReturnAValidType_When_UsingValidShortName()
         {
-            {
-                var expected = typeof(int);
-                var actual = TypeHelper.GetPrimitveType("int");
-                Assert.IsNotNull(actual);
-                Assert.AreEqual(expected, actual);
-            }
+            var expected = typeof(int);
+            var actual = TypeHelper.GetPrimitveType("int");
+            Assert.IsNotNull(actual);
+            Assert.AreEqual(expected, actual);
         }
 
         [Test]
