@@ -27,6 +27,41 @@ public static class StringExtensions
 
         return string.Compare(lhs, rhs, ignoreCase);
     }
+    
+    /// <summary>
+    /// starts searching from the end.
+    /// </summary>
+    /// <param name="str"></param>
+    /// <param name="values"></param>
+    /// <returns></returns>
+    public static int IndexFromEnd(this string str, params char[] values)
+    {
+        var index = str.Length - 1;
+
+        while (0 <= index)
+        {
+            var c = str[index];
+            if (values.Contains(c)) return index;
+            index--;
+        }
+        return -1;
+    }
+
+    public static int IndexFromEnd(this string str, string value)
+    {
+        var index = str.Length;
+        
+        while (0 <= index)
+        {
+            var startIndex = index - value.Length;
+            if (0 > startIndex) break;
+
+            var sub = str[startIndex..index];
+            if (value == sub) return startIndex;
+            index--;
+        }
+        return -1;
+    }
 
     public static IEnumerable<int> IndexesOf(this string str, char[] values)
     {
@@ -166,7 +201,7 @@ public static class StringExtensions
             nextPos = m.Index + m.Length;
         }
 
-        var end = str.Substring(nextPos);
+        var end = str[nextPos..];
         if (!string.IsNullOrWhiteSpace(end))
             sb.Append(end);
 
