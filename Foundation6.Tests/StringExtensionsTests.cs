@@ -59,10 +59,10 @@ namespace Foundation
         [Test]
         public void IndexesOf_ShouldReturn2Indices_When_Using2Strings()
         {
-            var str = "class Invoice <<aggregateroot>> {";
+            var str = "class Invoice <<ID>> {";
             var actual = str.IndexesOf("<<", ">>").ToArray();
             Assert.AreEqual(14, actual[0]);
-            Assert.AreEqual(29, actual[1]);
+            Assert.AreEqual(18, actual[1]);
         }
 
         [Test]
@@ -217,6 +217,47 @@ namespace Foundation
                 var str = "class Invoice <<aggregateroot>> {";
                 var actual = str.SubstringBetween("<<", ">>");
                 Assert.AreEqual("<<aggregateroot>>", actual);
+            }
+            {
+                var str = "<<>>";
+                var actual = str.SubstringBetween("<<", ">>");
+                Assert.AreEqual("<<>>", actual);
+            }
+            {
+                var str = "<<1>>";
+                var actual = str.SubstringBetween("<<", ">>");
+                Assert.AreEqual("<<1>>", actual);
+            }
+        }
+
+
+        [Test]
+        public void SubstringBetweenFromEnd_ShouldReturnSubstringWithLeftAndRightLimits_When_InclusiveIsFalse()
+        {
+            {
+                var str = "class Invoice <<ID>> {";
+                var actual = str.SubstringBetweenFromEnd("<<", ">>", false);
+                Assert.AreEqual("ID", actual);
+            }
+            {
+                var str = "<<>>";
+                var actual = str.SubstringBetween("<<", ">>", false);
+                Assert.AreEqual("", actual);
+            }
+            {
+                var str = "<<1>>";
+                var actual = str.SubstringBetween("<<", ">>", false);
+                Assert.AreEqual("1", actual);
+            }
+        }
+
+        [Test]
+        public void SubstringBetweenFromEnd_ShouldReturnSubstringWithoutLeftAndRightLimits_When_InclusiveIsTrue()
+        {
+            {
+                var str = "class Invoice <<ID>> {";
+                var actual = str.SubstringBetweenFromEnd("<<", ">>");
+                Assert.AreEqual("<<ID>>", actual);
             }
             {
                 var str = "<<>>";

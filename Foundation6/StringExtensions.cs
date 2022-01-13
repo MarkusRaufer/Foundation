@@ -275,6 +275,14 @@ public static class StringExtensions
         }
     }
 
+    /// <summary>
+    /// searches a substring between to strings.
+    /// </summary>
+    /// <param name="str"></param>
+    /// <param name="left"></param>
+    /// <param name="right"></param>
+    /// <param name="inclusive">if true left and right are included.</param>
+    /// <returns></returns>
     public static string SubstringBetween(this string str, string left, string right, bool inclusive = true)
     {
         var indexes = IndexesOf(str, new[] { left, right }).ToArray();
@@ -298,6 +306,27 @@ public static class StringExtensions
 
         return SubstringFromIndex(str, leftIndex, rightIndex);
     }
+
+    /// <summary>
+    /// returns a substring between two strings. The search starts from the end.
+    /// </summary>
+    /// <param name="str"></param>
+    /// <param name="left"></param>
+    /// <param name="right"></param>
+    /// <param name="inclusive"></param>
+    /// <returns></returns>
+    public static string SubstringBetweenFromEnd(this string str, string left, string right, bool inclusive = true)
+    {
+        var leftIndex = IndexFromEnd(str, left);
+        if (-1 == leftIndex) return "";
+
+        var rhs = str[leftIndex..];
+        var rightIndex = IndexFromEnd(rhs, right);
+        if (-1 == rightIndex) return "";
+
+        return inclusive ? rhs[..(rightIndex + left.Length)] : rhs[left.Length..rightIndex];
+    }
+
 
     public static string SubstringFromIndex(this string str, int start, int end)
     {
