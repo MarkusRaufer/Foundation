@@ -41,10 +41,52 @@ namespace Foundation
         }
 
         [Test]
-        public void IndexFromEnd_ShouldReturnAPositiveInt_When_UsingChar()
+        public void IndexesFromEnd_ShouldReturn2Indices_When_SearchingACharacter()
+        {
+            var str = "the \"important\" case";
+            var indexes = str.IndexesFromEnd('\"').ToArray();
+            Assert.AreEqual(2, indexes.Length);
+            Assert.AreEqual(14, indexes[0]);
+            Assert.AreEqual(4, indexes[1]);
+        }
+
+        [Test]
+        public void IndexesFromEnd_ShouldReturn2Indices_When_SearchingAString()
+        {
+            var str = "the \"important\" case";
+            var indexes = str.IndexesFromEnd("\"").ToArray();
+            Assert.AreEqual(2, indexes.Length);
+            Assert.AreEqual(14, indexes[0]);
+            Assert.AreEqual(4, indexes[1]);
+        }
+
+        [Test]
+        public void IndexesFromEnd_ShouldReturn4Indices_When_SearchingAString()
+        {
+            var str = "the \"very\" \"important\" case";
+            var indexes = str.IndexesFromEnd("\"").ToArray();
+            Assert.AreEqual(4, indexes.Length);
+            Assert.AreEqual(21, indexes[0]);
+            Assert.AreEqual(11, indexes[1]);
+            Assert.AreEqual(9, indexes[2]);
+            Assert.AreEqual(4, indexes[3]);
+        }
+
+        [Test]
+        public void IndexesFromEnd_ShouldReturn2Indices_When_SearchingAStringStopAfter2Hits()
+        {
+            var str = "the \"very\" \"important\" case";
+            var indexes = str.IndexesFromEnd("\"", 2).ToArray();
+            Assert.AreEqual(2, indexes.Length);
+            Assert.AreEqual(21, indexes[0]);
+            Assert.AreEqual(11, indexes[1]);
+        }
+
+        [Test]
+        public void IndexOfAnyFromEnd_ShouldReturnAPositiveInt_When_UsingChar()
         {
             var str = "Invoice<TId> {";
-            var index = str.IndexFromEnd('<');
+            var index = str.IndexOfAnyFromEnd(new[] { '<' } );
             Assert.AreEqual(7, index);
         }
 
@@ -57,10 +99,18 @@ namespace Foundation
         }
 
         [Test]
+        public void IndexFromEnd_ShouldReturnFirstOccurenceOfTheCharacter_When_SearchingACharacterWithAStartIndex()
+        {
+            var str = "the \"important\" case";
+            var index = str.IndexOfAnyFromEnd(13, new[] { '\"' });
+            Assert.AreEqual(4, index);
+        }
+
+        [Test]
         public void IndexesOf_ShouldReturn2Indices_When_Using2Strings()
         {
             var str = "class Invoice <<ID>> {";
-            var actual = str.IndexesOf("<<", ">>").ToArray();
+            var actual = str.IndexesOfAny("<<", ">>").ToArray();
             Assert.AreEqual(14, actual[0]);
             Assert.AreEqual(18, actual[1]);
         }
@@ -171,7 +221,7 @@ namespace Foundation
         }
 
         [Test]
-        public void SubstringBetween_ShouldReturnSubstringWithLeftAndRightLimits_When_Using2CharsAndInclusiveIsTrue()
+        public void SubstringBetween_ShouldReturnSubstringWithLeftAndRightLimits_When_UsingSameCharsForLeftAndRightAndInclusiveIsTrue()
         {
             {
                 var str = "class Invoice \"aggregateroot\" {";
@@ -230,6 +280,25 @@ namespace Foundation
             }
         }
 
+        [Test]
+        public void SubstringBetweenFromEnd_Should_ReturnSubstringWithoutLeftAndRightLimits_When_UsingSameCharsForLeftAndRightAndInclusiveIsFalse()
+        {
+            {
+                var str = "class Invoice \"aggregateroot\" {";
+                var actual = str.SubstringBetweenFromEnd("\"", "\"", false);
+                Assert.AreEqual("aggregateroot", actual);
+            }
+            {
+                var str = "\"\"";
+                var actual = str.SubstringBetween("\"", "\"", false);
+                Assert.AreEqual("", actual);
+            }
+            {
+                var str = "\"1\"";
+                var actual = str.SubstringBetween("\"", "\"", false);
+                Assert.AreEqual("1", actual);
+            }
+        }
 
         [Test]
         public void SubstringBetweenFromEnd_ShouldReturnSubstringWithLeftAndRightLimits_When_InclusiveIsFalse()

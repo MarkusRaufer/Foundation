@@ -54,22 +54,22 @@ public static class ReadOnlyMemoryExtensions
         return lhs.Span.SequenceEqual(rhs.Span);
     }
 
-    public static IEnumerable<ReadOnlyMemory<T>> Split<T>(this ReadOnlyMemory<T> memory, T separator)
-        where T : IEquatable<T>
-    {
-        foreach (var (index, length) in memory.Span.IndexLengthTuples(separator))
-        {
-            yield return memory.Slice(index, length);
-        }
-    }
+    //public static IEnumerable<ReadOnlyMemory<T>> Split<T>(this ReadOnlyMemory<T> memory, T separator)
+    //    where T : IEquatable<T>
+    //{
+    //    foreach (var (index, length) in memory.Span.IndexLengthTuples(separator))
+    //    {
+    //        yield return memory.Slice(index, length);
+    //    }
+    //}
 
-    public static IEnumerable<ReadOnlyMemory<T>> Split<T>(this ReadOnlyMemory<T> memory, params T[] separators)
-        where T : IEquatable<T>
-    {
-        foreach (var (index, length) in memory.Span.IndexLengthTuples(separators))
-        {
-            yield return memory.Slice(index, length);
-        }
-    }
+    //public static IEnumerable<ReadOnlyMemory<T>> Split<T>(this ReadOnlyMemory<T> memory, params T[] separators)
+    //    where T : IEquatable<T>
+    //{
+    //    foreach (var (index, length) in memory.Span.IndexLengthTuples(separators))
+    //    {
+    //        yield return memory.Slice(index, length);
+    //    }
+    //}
 }
 
