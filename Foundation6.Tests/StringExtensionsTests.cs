@@ -91,6 +91,14 @@ namespace Foundation
         }
 
         [Test]
+        public void IndexFromEnd_ShouldReturnAPositiveInt_When_UsingChar()
+        {
+            var str = "Value : string [0..1]";
+            var index = str.IndexFromEnd('[');
+            Assert.AreEqual(15, index);
+        }
+
+        [Test]
         public void IndexFromEnd_ShouldReturnAPositiveInt_When_UsingString()
         {
             var str = "Invoice <<ID>> {";
@@ -110,9 +118,18 @@ namespace Foundation
         public void IndexesOf_ShouldReturn2Indices_When_Using2Strings()
         {
             var str = "class Invoice <<ID>> {";
-            var actual = str.IndexesOfAny("<<", ">>").ToArray();
+            var actual = str.IndexesOfAny(new[] { "<<", ">>" }).ToArray();
             Assert.AreEqual(14, actual[0]);
             Assert.AreEqual(18, actual[1]);
+        }
+
+        [Test]
+        public void IndexesOf_ShouldReturn2Indices_When_UsingStopAfterNumberOfHits2()
+        {
+            var str = "1.2.3.4.5";
+            var actual = str.IndexesOf(".", 2).ToArray();
+            Assert.AreEqual(1, actual[0]);
+            Assert.AreEqual(3, actual[1]);
         }
 
         [Test]

@@ -37,8 +37,7 @@ public static class StringExtensions
         {
             if (-1 < stopAfterNumberOfHits && numberOfHits >= stopAfterNumberOfHits) break;
 
-            var character = str[index];
-            if (value == character)
+            if (str[index] == value)
             {
                 numberOfHits++;
                 yield return index;
@@ -69,47 +68,68 @@ public static class StringExtensions
         }
     }
 
-    /// <summary>
-    /// starts searching from the end.
-    /// </summary>
-    /// <param name="str"></param>
-    /// <param name="values"></param>
-    /// <returns></returns>
-    public static int IndexOfAnyFromEnd(this string str, char[] values)
+    public static IEnumerable<int> IndexesOf(this string str, [DisallowNull] string value, int stopAfterNumberOfHits = -1)
     {
-        var index = str.Length - 1;
-        
-        while (0 <= index)
+        var numberOfHits = 0;
+        var index = str.IndexOf(value);
+
+        while (-1 != index)
         {
-            var c = str[index];
-            if (values.Contains(c)) return index;
-            index--;
+            numberOfHits++;
+            if (-1 < stopAfterNumberOfHits && numberOfHits > stopAfterNumberOfHits) break;
+
+            yield return index;
+            if (str.Length < (index + 1)) break;
+            index = str.IndexOf(value, index + 1);
         }
-        return -1;
     }
 
-    public static int IndexFromEnd(this string str, string value)
+    public static IEnumerable<int> IndexesOfAny(this string str, char[] values, int stopAfterNumberOfHits = -1)
     {
-        var index = str.Length;
-        
-        while (0 <= index)
+        var numberOfHits = 0;
+        var i = 0;
+        foreach (var c in str)
         {
-            var startIndex = index - value.Length;
-            if (0 > startIndex) break;
+            if (-1 < stopAfterNumberOfHits && numberOfHits > stopAfterNumberOfHits) break;
 
-            var sub = str[startIndex..index];
-            if (value == sub) return startIndex;
-            index--;
+            if (values.Contains(c))
+            {
+                numberOfHits++;
+                yield return i;
+            }
+
+            i++;
         }
-        return -1;
     }
 
-    public static int IndexOfAnyFromEnd(this string str, int index, char[] values)
+    public static IEnumerable<int> IndexesOfAny(this string str, string[] values, int stopAfterNumberOfHits = -1)
+    {
+        var numberOfHits = 0;
+        var index = values.Min(v => str.IndexOf(v));
+
+        while (-1 != index)
+        {
+            numberOfHits++;
+            if (-1 < stopAfterNumberOfHits && numberOfHits > stopAfterNumberOfHits) break;
+
+            yield return index;
+            if (str.Length < (index + 1)) break;
+
+            var indices = values.Select(v => str.IndexOf(v, index + 1)).Where(i => -1 != i);
+            index = indices.Any() ? indices.Min() : -1;
+        }
+    }
+
+    public static int IndexFromEnd(this string str, char value) => IndexFromEnd(str, str.Length - 1, value);
+
+    public static int IndexFromEnd(this string str, string value) => IndexFromEnd(str, str.Length, value);
+
+    public static int IndexFromEnd(this string str, int index, char value)
     {
         while (0 <= index)
         {
-            var c = str[index];
-            if (values.Contains(c)) return index;
+            if (str[index] == value) return index;
+
             index--;
         }
         return -1;
@@ -129,68 +149,24 @@ public static class StringExtensions
         return -1;
     }
 
-    public static IEnumerable<int> IndexesOfAny(this string str, char[] values, int stopAfterNumberOfHits = -1)
+    /// <summary>
+    /// starts searching from the end.
+    /// </summary>
+    /// <param name="str"></param>
+    /// <param name="values"></param>
+    /// <returns></returns>
+    public static int IndexOfAnyFromEnd(this string str, char[] values) => IndexOfAnyFromEnd(str, str.Length - 1, values);
+    
+    public static int IndexOfAnyFromEnd(this string str, int index, char[] values)
     {
-        var numberOfHits = 0;
-        var i = 0;
-        foreach (var c in str)
+        while (0 <= index)
         {
-            if (-1 < stopAfterNumberOfHits && numberOfHits >= stopAfterNumberOfHits) break;
-
-            if (values.Contains(c))
-            {
-                numberOfHits++;
-                yield return i;
-            }
-
-            i++;
+            var c = str[index];
+            if (values.Contains(c)) return index;
+            index--;
         }
+        return -1;
     }
-
-    public static IEnumerable<int> IndexesOf(this string str, [DisallowNull] string value)
-    {
-        var index = str.IndexOf(value);
-
-        while (-1 != index)
-        {
-            yield return index;
-            if (str.Length < (index + 1)) break;
-            index = str.IndexOf(value, index + 1);
-        }
-    }
-
-    //public static int IndexOf(this string str, [DisallowNull] IEnumerable<char> values)
-    //{
-    //    values.ThrowIfNull(nameof(values));
-
-    //    return IndexOf(str, values, 0);
-    //}
-
-    public static IEnumerable<int> IndexesOfAny(this string str, params string[] values)
-    {
-        var index = values.Min(v => str.IndexOf(v));
-
-        while (-1 != index)
-        {
-            yield return index;
-            if (str.Length < (index + 1)) break;
-
-            var indices = values.Select(v => str.IndexOf(v, index + 1)).Where(i => -1 != i);
-            index = indices.Any() ? indices.Min() : -1;
-        }
-    }
-
-    //public static int IndexOf(this string str, [DisallowNull] IEnumerable<char> values, int startIndex)
-    //{
-    //    values.ThrowIfNull(nameof(values));
-
-    //    for (var i = startIndex; i < str.Length; i++)
-    //    {
-    //        if (values.Any(value => value.Equals(str[i]))) return i;
-    //    }
-
-    //    return -1;
-    //}
 
     public static bool IsNumeric(this string str)
     {
