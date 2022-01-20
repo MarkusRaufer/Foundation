@@ -331,25 +331,25 @@ public static class StringExtensions
     /// <param name="right"></param>
     /// <param name="inclusive">if true left and right are included.</param>
     /// <returns></returns>
-    public static string SubstringBetween(this string str, string left, string right, bool inclusive = true)
+    public static string? SubstringBetween(this string str, string left, string right, bool inclusive = true)
     {
         var indexes = IndexesOfAny(str, new[] { left, right }).ToArray();
-        if (2 != indexes.Length) return "";
+        if (2 != indexes.Length) return null;
 
         var leftIndex = indexes[0];
-        if (-1 == leftIndex) return "";
+        if (-1 == leftIndex) return null;
 
         var rightIndex = indexes[1];
-        if (-1 == rightIndex) return "";
+        if (-1 == rightIndex) return null;
 
         rightIndex += right.Length - 1;
         if (!inclusive)
         {
             leftIndex += left.Length;
-            if (leftIndex == rightIndex) return "";
+            if (leftIndex == rightIndex) return null;
 
             rightIndex -= right.Length;
-            if (leftIndex > rightIndex) return "";
+            if (leftIndex > rightIndex) return null;
         }
 
         return SubstringFromIndex(str, leftIndex, rightIndex);
@@ -363,13 +363,13 @@ public static class StringExtensions
     /// <param name="right"></param>
     /// <param name="inclusive"></param>
     /// <returns></returns>
-    public static string SubstringBetweenFromEnd(this string str, string left, string right, bool inclusive = true)
+    public static string? SubstringBetweenFromEnd(this string str, string left, string right, bool inclusive = true)
     {
         var rightIndex = IndexFromEnd(str, right);
-        if (-1 == rightIndex) return "";
+        if (-1 == rightIndex) return null;
 
         var leftIndex = IndexFromEnd(str, rightIndex - 1, left);
-        if (-1 == leftIndex) return "";
+        if (-1 == leftIndex) return null;
 
         return inclusive 
             ? str[leftIndex..(rightIndex + right.Length)] 
@@ -380,9 +380,9 @@ public static class StringExtensions
     public static string SubstringFromIndex(this string str, int start, int end)
     {
         if (null == str) throw new ArgumentNullException(nameof(str));
-        if (start > end) throw new ArgumentOutOfRangeException($"{nameof(start)} must not be greater than {nameof(end)}");
-        if (str.Length < (start - 1)) throw new IndexOutOfRangeException("start");
-        if (str.Length < (end - 1)) throw new IndexOutOfRangeException("end");
+        if (start > end) throw new ArgumentOutOfRangeException(nameof(start), $"must not be greater than {nameof(end)}");
+        if (str.Length < (start - 1)) throw new IndexOutOfRangeException(nameof(start));
+        if (str.Length < (end - 1)) throw new IndexOutOfRangeException(nameof(end));
 
         return str.Substring(start, end - start + 1);
     }
