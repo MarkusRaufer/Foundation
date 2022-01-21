@@ -74,6 +74,26 @@ public class ReadOnlySpanExtensionsTests
     }
 
     [Test]
+    public void IndexOf_Should_ReturnIndexOfString_When_UsingString()
+    {
+        {
+            var search = ">>".AsSpan();
+            var sut = $"01234{search}789".AsSpan();
+
+            var index = sut.IndexOf(3, search);
+            Assert.AreEqual(5, index);
+        }
+        {
+            var search = ">>".AsSpan();
+            var sut = $"01234{search}".AsSpan();
+
+            var index = sut.IndexOf(3, search);
+            Assert.AreEqual(5, index);
+        }
+
+    }
+
+    [Test]
     public void Split_Should_Return_CharSplitEnumerator_When_Using_Value_As_Separator()
     {
         var sut = "123.4567.89".AsSpan();
@@ -117,5 +137,15 @@ public class ReadOnlySpanExtensionsTests
 
         Assert.IsFalse(chunks.MoveNext());
         Assert.IsFalse(chunks.MoveNext());
+    }
+
+    [Test]
+    public void TrimAll_Should_ReturnStringWithoutQuotes_When_UsingStringWithQuotes()
+    {
+        var expected = "test";
+        var sut = $"  \"{expected}\"  ".AsSpan();
+        var actual = sut.TrimAll('\"').ToString();
+
+        Assert.AreEqual(expected, actual);
     }
 }

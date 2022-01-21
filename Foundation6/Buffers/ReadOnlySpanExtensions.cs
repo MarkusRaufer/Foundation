@@ -2,6 +2,22 @@
 
 public static class ReadOnlySpanExtensions
 {
+    public static int IndexFromEnd(this ReadOnlySpan<char> span, char value)
+    {
+        return IndexFromEnd(span, span.Length - 1, value);
+    }
+
+    public static int IndexFromEnd(this ReadOnlySpan<char> span, int index, char value)
+    {
+        while (0 <= index)
+        {
+            if (span[index] == value) return index;
+
+            index--;
+        }
+        return -1;
+    }
+
     public static IReadOnlyCollection<int> IndexesOf(
         this ReadOnlySpan<char> span,
         ReadOnlySpan<char> search, 
@@ -112,7 +128,64 @@ public static class ReadOnlySpanExtensions
         }
 
         return tuples;
-    } 
+    }
+
+    public static int IndexOf(this ReadOnlySpan<char> span, int index, char value)
+    {
+        if (0 > index) return -1;
+
+        while (span.Length > index)
+        {
+            if (span[index] == value) return index;
+
+            index++;
+        }
+        return -1;
+    }
+
+    public static int IndexOf(this ReadOnlySpan<char> span, int index, ReadOnlySpan<char> value)
+    {
+        if (0 > index) return -1;
+        if (span.Length < value.Length) return -1;
+
+        while (span.Length > index)
+        {
+            var endIndex = index + value.Length;
+            if(endIndex > span.Length) return -1;
+
+            if (span[index..endIndex].IsSameAs(value)) return index;
+
+            index++;
+        }
+        return -1;
+    }
+
+    /// <summary>
+    /// checks if size, values and position are same.
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <param name="lhs"></param>
+    /// <param name="rhs"></param>
+    /// <returns></returns>
+    public static bool IsSameAs<T>(this ReadOnlySpan<T> lhs, ReadOnlySpan<T> rhs)
+    {
+        if (lhs.Length != rhs.Length) return false;
+
+        for (var i = 0; i < lhs.Length; i++)
+        {
+            var left = lhs[i];
+            var right = rhs[i];
+            if(null == left)
+            {
+                if(null != rhs) return false;
+                continue;
+            }
+
+            if (!left.Equals(right)) return false;
+        }
+
+        return true;
+    }
 
     /// <summary>
     /// returns a SplitEnumerator which can be iterated.
@@ -129,6 +202,19 @@ public static class ReadOnlySpanExtensions
        where T : IEquatable<T>
     {
         return new SplitEnumerator<T>(span, separators, notFoundReturnsNothing);
+    }
+
+    public static ReadOnlySpan<char> TrimAll(this ReadOnlySpan<char> span, char value)
+    {
+        var startIndex = span.IndexOf(value);
+        if (-1 == startIndex) return span;
+
+        var endIndex = span.IndexFromEnd(value);
+        if (-1 == startIndex) return span;
+
+        if (startIndex == endIndex) return span;
+
+        return span[(startIndex + 1)..endIndex];
     }
 }
 
