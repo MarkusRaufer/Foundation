@@ -9,6 +9,30 @@ using System.Linq;
 public class ReadOnlySpanExtensionsTests
 {
     [Test]
+    public void IndexFromEnd_Should_ReturnAnIndex_When_CharFound()
+    {
+        var sut = "01234>6789".AsSpan();
+        var index = sut.IndexFromEnd('>');
+        Assert.AreEqual(5, index);
+    }
+
+    [Test]
+    public void IndexFromEnd_Should_ReturnNotFound_When_CharNotFound()
+    {
+        var sut = "Invoice".AsSpan();
+        var index = sut.IndexFromEnd('>');
+        Assert.AreEqual(-1, index);
+    }
+
+    [Test]
+    public void IndexFromEnd_Should_ReturnAnIndex_When_StringFound()
+    {
+        var sut = "01234>>7>9".AsSpan();
+        var index = sut.IndexFromEnd(">>".AsSpan());
+        Assert.AreEqual(5, index);
+    }
+
+    [Test]
     public void IndexLengthTuples_Should_Return_Index_Length_Tuples_When_Using_Predicate_As_Separator()
     {
         var sut = "123.4567.89".AsSpan();

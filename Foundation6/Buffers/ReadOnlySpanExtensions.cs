@@ -9,9 +9,40 @@ public static class ReadOnlySpanExtensions
 
     public static int IndexFromEnd(this ReadOnlySpan<char> span, int index, char value)
     {
+        var lastIndex = span.Length - 1;
+        if (lastIndex < index) return -1;
+
         while (0 <= index)
         {
             if (span[index] == value) return index;
+
+            index--;
+        }
+        return -1;
+    }
+
+    public static int IndexFromEnd(this ReadOnlySpan<char> span, ReadOnlySpan<char> value)
+    {
+        return IndexFromEnd(span, span.Length, value);
+    }
+
+    /// <summary>
+    /// Searches value in a span from back to front.
+    /// </summary>
+    /// <param name="span"></param>
+    /// <param name="index">Index is exclusive.</param>
+    /// <param name="value"></param>
+    /// <returns></returns>
+    public static int IndexFromEnd(this ReadOnlySpan<char> span, int index, ReadOnlySpan<char> value)
+    {
+        if (span.Length < index) return -1;
+
+        while (0 <= index)
+        {
+            var startIndex = index - value.Length;
+            if (0 > startIndex) return -1;
+
+            if (span[startIndex..index].IsSameAs(value)) return startIndex;
 
             index--;
         }
