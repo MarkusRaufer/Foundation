@@ -228,7 +228,7 @@ namespace Foundation
             {
                 var str = "\"\"";
                 var actual = str.SubstringBetween("\"", "\"", false);
-                Assert.AreEqual("", actual);
+                Assert.IsNull(actual);
             }
             {
                 var str = "\"1\"";
@@ -268,7 +268,7 @@ namespace Foundation
             {
                 var str = "<<>>";
                 var actual = str.SubstringBetween("<<", ">>", false);
-                Assert.AreEqual("", actual);
+                Assert.IsNull(actual);
             }
             {
                 var str = "<<1>>";
@@ -308,7 +308,7 @@ namespace Foundation
             {
                 var str = "\"\"";
                 var actual = str.SubstringBetween("\"", "\"", false);
-                Assert.AreEqual("", actual);
+                Assert.IsNull(actual);
             }
             {
                 var str = "\"1\"";
@@ -328,7 +328,7 @@ namespace Foundation
             {
                 var str = "<<>>";
                 var actual = str.SubstringBetween("<<", ">>", false);
-                Assert.AreEqual("", actual);
+                Assert.IsNull(actual);
             }
             {
                 var str = "<<1>>";
