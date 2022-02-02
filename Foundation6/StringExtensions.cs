@@ -1,5 +1,6 @@
 ﻿namespace Foundation;
 
+using Foundation.Buffers;
 using Foundation.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
@@ -28,46 +29,51 @@ public static class StringExtensions
         return string.Compare(lhs, rhs, ignoreCase);
     }
 
-    public static IEnumerable<int> IndexesFromEnd(this string str, char value, int stopAfterNumberOfHits = -1)
+    /// <summary>
+    /// returns the indices of value starting from the end.
+    /// </summary>
+    /// <param name="str"></param>
+    /// <param name="value"></param>
+    /// <returns></returns>
+    public static IEnumerable<int> IndexesFromEnd(this string str, char value)
     {
+        if (string.IsNullOrEmpty(str) || 0 == str.Length) yield break;
+
         var index = str.Length - 1;
-        var numberOfHits = 0;
 
         while (0 <= index)
         {
-            if (-1 < stopAfterNumberOfHits && numberOfHits >= stopAfterNumberOfHits) break;
-
-            if (str[index] == value)
-            {
-                numberOfHits++;
-                yield return index;
-            }
+            if (str[index] == value) yield return index;
+            
             index--;
         }
     }
 
-    public static IEnumerable<int> IndexesFromEnd(this string str, string value, int stopAfterNumberOfHits = -1)
+    /// <summary>
+    /// returns the indices of value starting from the end.
+    /// </summary>
+    /// <param name="str"></param>
+    /// <param name="value"></param>
+    /// <returns></returns>
+
+    public static IEnumerable<int> IndexesFromEnd(this string str, string value)
     {
-        var index = str.Length - 1;
-        var numberOfHits = 0;
+        if (string.IsNullOrEmpty(str)) return Enumerable.Empty<int>();
+        if (string.IsNullOrEmpty(value)) return Enumerable.Empty<int>();
 
-        while (0 <= index)
-        {
-            if (-1 < stopAfterNumberOfHits && numberOfHits >= stopAfterNumberOfHits) break;
+        var strSpan = str.AsSpan();
+        var valueSpan = value.AsSpan();
 
-            var startIndex = index - value.Length;
-            if (0 > startIndex) break;
-
-            var sub = str[startIndex..index];
-            if (value == sub)
-            {
-                numberOfHits++;
-                yield return startIndex;
-            }
-            index--;
-        }
+        return strSpan.IndexesFromEnd(valueSpan);
     }
 
+    /// <summary>
+    /// returns the indices of value.
+    /// </summary>
+    /// <param name="str"></param>
+    /// <param name="value"></param>
+    /// <param name="stopAfterNumberOfHits"></param>
+    /// <returns></returns>
     public static IEnumerable<int> IndexesOf(this string str, [DisallowNull] string value, int stopAfterNumberOfHits = -1)
     {
         var numberOfHits = 0;

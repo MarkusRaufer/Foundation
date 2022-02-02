@@ -7,7 +7,7 @@ namespace Foundation.Benchmarks
     {
         public static void Main(string[] args)
         {
-            BenchmarkRunner.Run<MapBenchmarks>();
+            BenchmarkRunner.Run<ReadOnlySpanAndMemoryExtensionsBenchmarks>();
         }
     }
 }

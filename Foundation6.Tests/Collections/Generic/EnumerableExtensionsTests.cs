@@ -436,22 +436,21 @@ namespace Foundation.Collections.Generic
         public void ForEach_Returning_number_of_processed_acctions()
         {
             var items = Enumerable.Range(0, 9);
-            var iterationCounter = 0L;
+            var iterationCounter = 0;
             void action(int n) => iterationCounter++;
-            var result = items.ForEach(action);
-            Assert.AreEqual(9, result);
-            Assert.AreEqual(iterationCounter, result);
+            items.ForEach(action);
+
+            Assert.AreEqual(9, iterationCounter);
         }
 
         [Test]
         public void ForEach_WithEmptyList()
         {
             var items = Enumerable.Empty<int>();
-            var iterationCounter = 0L;
+            var iterationCounter = 0;
             Action<int> action = (n) => iterationCounter++;
-            var result = items.ForEach(action);
-            Assert.AreEqual(0, result);
-            Assert.AreEqual(iterationCounter, result);
+            items.ForEach(action);
+            Assert.AreEqual(0, iterationCounter);
         }
 
         [Test]
@@ -791,28 +790,6 @@ namespace Foundation.Collections.Generic
                 Assert.AreEqual(2, selected[1]);
                 Assert.AreEqual(5, selected[2]);
                 Assert.AreEqual(7, selected[3]);
-            }
-
-            //with invalid indexes
-            {
-                var items = Enumerable.Range(0, 10);
-                var selected = items.Nths(-1, 2, 5, 17).ToList();
-                Assert.AreEqual(2, selected.Count);
-                Assert.AreEqual(2, selected[0]);
-                Assert.AreEqual(5, selected[1]);
-            }
-        }
-
-        [Test]
-        public void Nths_Using_Range()
-        {
-            {
-                var items = Enumerable.Range(0, 10);
-                var selected = items.Nths(2..4).ToList();
-                Assert.AreEqual(3, selected.Count);
-                Assert.AreEqual(2, selected[0]);
-                Assert.AreEqual(3, selected[1]);
-                Assert.AreEqual(4, selected[2]);
             }
 
             //with invalid indexes

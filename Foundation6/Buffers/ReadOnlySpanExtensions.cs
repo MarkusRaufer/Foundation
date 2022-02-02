@@ -7,6 +7,13 @@ public static class ReadOnlySpanExtensions
         return IndexFromEnd(span, span.Length - 1, value);
     }
 
+    /// <summary>
+    /// returns the index of value from the end.
+    /// </summary>
+    /// <param name="span"></param>
+    /// <param name="index">This is the start index.</param>
+    /// <param name="value"></param>
+    /// <returns></returns>
     public static int IndexFromEnd(this ReadOnlySpan<char> span, int index, char value)
     {
         var lastIndex = span.Length - 1;
@@ -47,6 +54,56 @@ public static class ReadOnlySpanExtensions
             index--;
         }
         return -1;
+    }
+
+    public static int IndexFromEnd<T>(this ReadOnlySpan<T> span, int index, ReadOnlySpan<T> value)
+    {
+        if (span.Length < index) return -1;
+
+        while (0 <= index)
+        {
+            var startIndex = index - value.Length;
+            if (0 > startIndex) return -1;
+
+            if (span[startIndex..index].IsSameAs(value)) return startIndex;
+
+            index--;
+        }
+        return -1;
+    }
+
+    public static IReadOnlyCollection<int> IndexesFromEnd<T>(
+        this ReadOnlySpan<T> span, 
+        ReadOnlySpan<T> value, 
+        int stopAfterNumberOfHits = -1)
+    {
+        var indices = new List<int>();
+        if (0 == span.Length) return indices;
+        if(0 == value.Length) return indices;
+        if (span.Length < value.Length) return indices;
+
+        var index = span.Length;
+        var numberOfHits = 0;
+
+        while (0 <= index)
+        {
+            if (-1 < stopAfterNumberOfHits && numberOfHits >= stopAfterNumberOfHits) break;
+
+            var startIndex = index - value.Length;
+            if (0 > startIndex) break;
+
+            var sub = span[startIndex..index];
+
+            if (value.IsSameAs(sub))
+            {
+                indices.Add(startIndex);
+                numberOfHits++;
+            }
+
+            index--;
+        }
+
+        return indices;
     }
 
     public static IReadOnlyCollection<int> IndexesOf(
@@ -91,7 +148,7 @@ public static class ReadOnlySpanExtensions
 
             indices.Add(pos);
             numberOfHits++;
-            span = span.Slice(index + 1);
+            span = span[(index + 1)..];
         }
 
         return indices;
@@ -117,7 +174,7 @@ public static class ReadOnlySpanExtensions
 
             indices.Add(pos);
             numberOfHits++;
-            span = span.Slice(index + 1);
+            span = span[(index + 1)..];
         }
 
         return indices;

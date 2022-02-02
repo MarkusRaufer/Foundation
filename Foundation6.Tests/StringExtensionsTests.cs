@@ -1,4 +1,5 @@
 ﻿using NUnit.Framework;
+using System;
 using System.Linq;
 
 namespace Foundation
@@ -73,10 +74,11 @@ namespace Foundation
         }
 
         [Test]
-        public void IndexesFromEnd_ShouldReturn2Indices_When_SearchingAStringStopAfter2Hits()
+        public void IndexesFromEnd_ShouldReturn2Indices_When_SearchingAStringTake2()
         {
             var str = "the \"very\" \"important\" case";
-            var indexes = str.IndexesFromEnd("\"", 2).ToArray();
+
+            var indexes = str.IndexesFromEnd("\"").Take(2).ToArray();
             Assert.AreEqual(2, indexes.Length);
             Assert.AreEqual(21, indexes[0]);
             Assert.AreEqual(11, indexes[1]);

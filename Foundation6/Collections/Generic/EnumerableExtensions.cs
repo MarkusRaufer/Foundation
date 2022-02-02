@@ -272,7 +272,7 @@ public static class EnumerableExtensions
     }
 
     /// <summary>
-    /// Cycles an enumerable. 
+    /// Cycles an enumerable. Means it creates an endless list of items.
     /// </summary>
     /// <typeparam name="T"></typeparam>
     /// <param name="items"></param>
@@ -673,18 +673,14 @@ public static class EnumerableExtensions
     /// <param name="source"></param>
     /// <param name="action"></param>
     /// <returns>The number of executed actions.</returns>
-    public static long ForEach<T>(this IEnumerable<T> source, [DisallowNull] Action<T> action)
+    public static void ForEach<T>(this IEnumerable<T> source, [DisallowNull] Action<T> action)
     {
         action.ThrowIfNull(nameof(action));
 
-        long iterationCounter = 0;
         foreach (var item in source)
         {
             action(item);
-            iterationCounter++;
         }
-
-        return iterationCounter;
     }
 
     /// <summary>
@@ -695,16 +691,18 @@ public static class EnumerableExtensions
     /// <param name="action">Will be executed for every item.</param>
     /// <param name="emptyAction">Will be executed if source is empty.</param>
     /// <returns>The number of executed actions.</returns>
-    public static long ForEach<T>(this IEnumerable<T> source, [DisallowNull] Action<T> action, [DisallowNull] Action emptyAction)
+    public static void ForEach<T>(this IEnumerable<T> source, [DisallowNull] Action<T> action, [DisallowNull] Action emptyAction)
     {
         action.ThrowIfNull(nameof(action));
         emptyAction.ThrowIfNull(nameof(emptyAction));
 
-        long iterationCounter = ForEach<T>(source, action);
-        if (0 == iterationCounter)
-            emptyAction();
-
-        return iterationCounter;
+        var any = source.Any();
+        if (any)
+        {
+            ForEach<T>(source, action);
+        }
+        
+        emptyAction();
     }
 
     /// <summary>
@@ -720,6 +718,87 @@ public static class EnumerableExtensions
 
         long i = 0;
         return items.Where(item => predicate(i++));
+    }
+
+    public static IElseIf<T> If<T>(this IEnumerable<T> items, [DisallowNull] Func<T, bool> predicate, [DisallowNull] Action<T> action)
+    {
+        predicate.ThrowIfNull(nameof(predicate));
+        action.ThrowIfNull(nameof(action));
+
+        var @else = Enumerable.Empty<T>();
+
+        foreach (var item in items)
+        {
+            if (predicate(item))
+            {
+                action(item);
+                continue;
+            }
+            @else = @else.Append(item);
+        }
+        return new ElseIf<T>(@else);
+    }
+
+    public static IElse<T, TResult> If<T, TResult>(this IEnumerable<T> items, [DisallowNull] Func<T, bool> predicate, [DisallowNull] Func<T, TResult> map)
+    {
+        predicate.ThrowIfNull(nameof(predicate));
+        map.ThrowIfNull(nameof(map));
+
+        return new ElseResult<T, TResult>(items, predicate, map);
+    }
+
+    /// <summary>
+    /// Returns lhs. If lhs is empty rhs is returned;
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <param name="lhs"></param>
+    /// <param name="rhs"></param>
+    /// <returns></returns>
+    public static IEnumerable<T> IfEmpty<T>(this IEnumerable<T> lhs, [DisallowNull] IEnumerable<T> rhs)
+    {
+        rhs.ThrowIfNull(nameof(rhs));
+
+        var lIt = lhs.GetEnumerator();
+        if (!lIt.MoveNext())
+        {
+            foreach (var r in rhs)
+            {
+                yield return r;
+            }
+            yield break;
+        }
+        yield return lIt.Current;
+        while (lIt.MoveNext())
+        {
+            yield return lIt.Current;
+        }
+    }
+
+    /// <summary>
+    /// If lhs is empty it returns the items from factory otherwise lhs.
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <param name="lhs"></param>
+    /// <param name="factory"></param>
+    /// <returns></returns>
+    public static IEnumerable<T> IfEmpty<T>(this IEnumerable<T> lhs, [DisallowNull] Func<IEnumerable<T>> factory)
+    {
+        factory.ThrowIfNull(nameof(factory));
+
+        var lit = lhs.GetEnumerator();
+        if (!lit.MoveNext())
+        {
+            foreach (var r in factory())
+            {
+                yield return r;
+            }
+            yield break;
+        }
+        yield return lit.Current;
+        while (lit.MoveNext())
+        {
+            yield return lit.Current;
+        }
     }
 
     /// <summary>
@@ -806,87 +885,6 @@ public static class EnumerableExtensions
             if (predicate(elem)) yield return (item: elem, index: i);
 
             i++;
-        }
-    }
-
-    public static IElseIf<T> If<T>(this IEnumerable<T> items, [DisallowNull] Func<T, bool> predicate, [DisallowNull] Action<T> action)
-    {
-        predicate.ThrowIfNull(nameof(predicate));
-        action.ThrowIfNull(nameof(action));
-
-        var @else = Enumerable.Empty<T>();
-
-        foreach (var item in items)
-        {
-            if (predicate(item))
-            {
-                action(item);
-                continue;
-            }
-            @else = @else.Append(item);
-        }
-        return new ElseIf<T>(@else);
-    }
-
-    public static IElse<T, TResult> If<T, TResult>(this IEnumerable<T> items, [DisallowNull] Func<T, bool> predicate, [DisallowNull] Func<T, TResult> map)
-    {
-        predicate.ThrowIfNull(nameof(predicate));
-        map.ThrowIfNull(nameof(map));
-
-        return new ElseResult<T, TResult>(items, predicate, map);
-    }
-
-    /// <summary>
-    /// Returns lhs. If lhs is empty rhs is returned;
-    /// </summary>
-    /// <typeparam name="T"></typeparam>
-    /// <param name="lhs"></param>
-    /// <param name="rhs"></param>
-    /// <returns></returns>
-    public static IEnumerable<T> IfEmpty<T>(this IEnumerable<T> lhs, [DisallowNull] IEnumerable<T> rhs)
-    {
-        rhs.ThrowIfNull(nameof(rhs));
-
-        var lIt = lhs.GetEnumerator();
-        if (!lIt.MoveNext())
-        {
-            foreach (var r in rhs)
-            {
-                yield return r;
-            }
-            yield break;
-        }
-        yield return lIt.Current;
-        while (lIt.MoveNext())
-        {
-            yield return lIt.Current;
-        }
-    }
-
-    /// <summary>
-    /// If lhs is empty it returns the items from factory otherwise lhs.
-    /// </summary>
-    /// <typeparam name="T"></typeparam>
-    /// <param name="lhs"></param>
-    /// <param name="factory"></param>
-    /// <returns></returns>
-    public static IEnumerable<T> IfEmpty<T>(this IEnumerable<T> lhs, [DisallowNull] Func<IEnumerable<T>> factory)
-    {
-        factory.ThrowIfNull(nameof(factory));
-
-        var lit = lhs.GetEnumerator();
-        if (!lit.MoveNext())
-        {
-            foreach (var r in factory())
-            {
-                yield return r;
-            }
-            yield break;
-        }
-        yield return lit.Current;
-        while (lit.MoveNext())
-        {
-            yield return lit.Current;
         }
     }
 
@@ -1401,6 +1399,8 @@ public static class EnumerableExtensions
         var pos = 0;
         foreach (var item in items)
         {
+            if (pos > index) break;
+
             if (index == pos)
                 return Opt.Some(item);
 
@@ -1425,44 +1425,6 @@ public static class EnumerableExtensions
                 yield return item;
 
             pos++;
-        }
-    }
-
-    /// <summary>
-    /// Returns all items within the range of indices.
-    /// </summary>
-    /// <typeparam name="T"></typeparam>
-    /// <param name="items"></param>
-    /// <param name="indexRange"></param>
-    /// <returns></returns>
-    public static IEnumerable<T> Nths<T>(this IEnumerable<T> items, System.Range indexRange)
-    {
-        long i = 0;
-        foreach (var item in items)
-        {
-            if (indexRange.Start.Value <= i && indexRange.End.Value >= i)
-                yield return item;
-
-            i++;
-        }
-
-    }
-    /// <summary>
-    /// Returns all items within the range of indices.
-    /// </summary>
-    /// <typeparam name="T"></typeparam>
-    /// <param name="items"></param>
-    /// <param name="indexRange"></param>
-    /// <returns></returns>
-    public static IEnumerable<T> Nths<T>(this IEnumerable<T> items, Range<long, long> indexRange)
-    {
-        long i = 0;
-        foreach (var item in items)
-        {
-            if (indexRange.IsInRange(i))
-                yield return item;
-
-            i++;
         }
     }
 

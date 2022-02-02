@@ -1,8 +1,90 @@
 ﻿namespace Foundation.Buffers;
+
+using Foundation.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 
 public static class ReadOnlyMemoryExtensions
 {
+    public static IEnumerable<int> IndexesFromEnd<T>(this ReadOnlyMemory<T> memory, ReadOnlyMemory<T> value)
+    {
+        if (0 == memory.Length) yield break;
+        if (0 == value.Length) yield break;
+        if (memory.Length < value.Length) yield break;
+
+        var index = memory.Length;
+
+        while (0 <= index)
+        {
+            var startIndex = index - value.Length;
+            if (0 > startIndex) break;
+
+            var sub = memory[startIndex..index];
+
+            if (value.IsSameAs(sub)) yield return startIndex;
+
+            index--;
+        }
+    }
+
+    /// <summary>
+    /// returns the indices of 
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <param name="memories"></param>
+    /// <param name="selectors"></param>
+    /// <returns></returns>
+    public static IEnumerable<int> IndexesOf<T>(this ReadOnlyMemory<T> memory, ReadOnlyMemory<T> search)
+        where T : IEquatable<T>
+    {
+        int index;
+        var pos = -1;
+
+        var span = memory.Span;
+
+        while (-1 != (index = span.IndexOf(search.Span)))
+        {
+            if (-1 == pos) pos = index;
+            else pos += index + search.Length;
+
+            yield return pos;
+            span = memory.Span[(index + search.Length)..];
+        }
+    }
+
+    /// <summary>
+    /// returns tuples of selectors with the found indices.
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <param name="memory"></param>
+    /// <param name="selectors"></param>
+    /// <returns>selector: is the ordinal index of selectors. index: the index of the found selector.
+    /// </returns>
+    public static IEnumerable<(int selector, int index)> IndexesOfAny<T>(this ReadOnlyMemory<T> memory, ReadOnlyMemory<T>[] selectors)
+        where T : IEquatable<T>
+    {
+        if (0 == selectors.Length) yield break;
+
+        var selectorIndices = Enumerable.Range(0, selectors.Length).ToList();
+        
+        foreach (var index in Enumerable.Range(0, memory.Length))
+        {
+            var illegalSelectors = selectorIndices.Where(i => memory.Length < (selectors[i].Length + index)).ToArray();
+            illegalSelectors.ForEach(i => selectorIndices.Remove(i));
+
+            if (0 == selectorIndices.Count) yield break;
+
+            foreach (var selectorIndex in selectorIndices)
+            {
+                var selector = selectors[selectorIndex].Span;
+
+                var sub = memory.Span[index..(selector.Length + index)];
+
+                if (sub.IsSameAs(selector))
+                    yield return (selector: selectorIndex, index);
+            }
+        }
+    }
+
     /// <summary>
     /// returns the indexes of the found selectors in array.
     /// </summary>
@@ -12,31 +94,14 @@ public static class ReadOnlyMemoryExtensions
     /// <returns></returns>
     public static IEnumerable<int> IndexesOfAny<T>(
         this ReadOnlyMemory<T> memory, 
-        [DisallowNull] IEnumerable<T> selectors,
-        int stopAfterNumberOfHits = -1)
+        [DisallowNull] IEnumerable<T> selectors)
     {
-        var numberOfHits = 0;
         for (var i = 0; i < memory.Length; i++)
         {
-            if (-1 < stopAfterNumberOfHits && numberOfHits >= stopAfterNumberOfHits) break;
-
             if (selectors.Any(selector => selector.EqualsNullable(memory.Span[i])))
             {
-                numberOfHits++;
                 yield return i;
             }
-        }
-    }
-
-    public static IEnumerable<int> IndexesOf<T>(this ReadOnlyMemory<T>[] memories, ReadOnlyMemory<T>[] selectors)
-        where T : IEquatable<T>
-    {
-        var i = 0;
-        foreach (var memory in memories)
-        {
-            if (selectors.Any(s => s.SequenceEqual(memory))) yield return i;
-
-            i++;
         }
     }
 
@@ -69,59 +134,5 @@ public static class ReadOnlyMemoryExtensions
 
         return true;
     }
-
-    public static IEnumerable<ReadOnlyMemory<T>> SelectByIndex<T>(
-        this ReadOnlyMemory<T>[] memories,
-        params int[] indices)
-    {
-        foreach (var index in indices)
-        {
-            if (0 <= index && index < memories.Length) yield return memories[index];
-        }
-    }
-
-    public static bool SequenceEqual<T>(this IEnumerable<ReadOnlyMemory<T>> lhs, [DisallowNull] IEnumerable<ReadOnlyMemory<T>> rhs)
-        where T : IEquatable<T>
-    {
-        var itLhs = lhs.GetEnumerator();
-        var itRhs = rhs.GetEnumerator();
-        var nextLhs = itLhs.MoveNext();
-        if (!nextLhs) return !itRhs.MoveNext();
-
-        while (nextLhs)
-        {
-            if(!itRhs.MoveNext()) return false;
-            if(!itLhs.Current.Equals(itRhs.Current)) return false;
-
-            nextLhs = itLhs.MoveNext();
-        }
-        if (itRhs.MoveNext()) return false;
-
-        return true;
-    }
-
-    public static bool SequenceEqual<T>(this ReadOnlyMemory<T> lhs, ReadOnlyMemory<T> rhs)
-        where T : IEquatable<T>
-    {
-        return lhs.Span.SequenceEqual(rhs.Span);
-    }
-
-    //public static IEnumerable<ReadOnlyMemory<T>> Split<T>(this ReadOnlyMemory<T> memory, T separator)
-    //    where T : IEquatable<T>
-    //{
-    //    foreach (var (index, length) in memory.Span.IndexLengthTuples(separator))
-    //    {
-    //        yield return memory.Slice(index, length);
-    //    }
-    //}
-
-    //public static IEnumerable<ReadOnlyMemory<T>> Split<T>(this ReadOnlyMemory<T> memory, params T[] separators)
-    //    where T : IEquatable<T>
-    //{
-    //    foreach (var (index, length) in memory.Span.IndexLengthTuples(separators))
-    //    {
-    //        yield return memory.Slice(index, length);
-    //    }
-    //}
 }
 
