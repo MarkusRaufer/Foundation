@@ -35,7 +35,7 @@ public static class StringExtensions
     /// <param name="str"></param>
     /// <param name="value"></param>
     /// <returns></returns>
-    public static IEnumerable<int> IndexesFromEnd(this string str, char value)
+    public static IEnumerable<int> IndicesFromEnd(this string str, char value)
     {
         if (string.IsNullOrEmpty(str) || 0 == str.Length) yield break;
 
@@ -56,7 +56,7 @@ public static class StringExtensions
     /// <param name="value"></param>
     /// <returns></returns>
 
-    public static IEnumerable<int> IndexesFromEnd(this string str, string value)
+    public static IEnumerable<int> IndicesFromEnd(this string str, string value)
     {
         if (string.IsNullOrEmpty(str)) return Enumerable.Empty<int>();
         if (string.IsNullOrEmpty(value)) return Enumerable.Empty<int>();
@@ -64,7 +64,7 @@ public static class StringExtensions
         var strSpan = str.AsSpan();
         var valueSpan = value.AsSpan();
 
-        return strSpan.IndexesFromEnd(valueSpan);
+        return strSpan.IndicesFromEnd(valueSpan);
     }
 
     /// <summary>
@@ -74,7 +74,7 @@ public static class StringExtensions
     /// <param name="value"></param>
     /// <param name="stopAfterNumberOfHits"></param>
     /// <returns></returns>
-    public static IEnumerable<int> IndexesOf(this string str, [DisallowNull] string value, int stopAfterNumberOfHits = -1)
+    public static IEnumerable<int> IndicesOf(this string str, [DisallowNull] string value, int stopAfterNumberOfHits = -1)
     {
         var numberOfHits = 0;
         var index = str.IndexOf(value);
@@ -90,7 +90,7 @@ public static class StringExtensions
         }
     }
 
-    public static IEnumerable<int> IndexesOfAny(this string str, char[] values, int stopAfterNumberOfHits = -1)
+    public static IEnumerable<int> IndicesOfAny(this string str, char[] values, int stopAfterNumberOfHits = -1)
     {
         var numberOfHits = 0;
         var i = 0;
@@ -108,7 +108,7 @@ public static class StringExtensions
         }
     }
 
-    public static IEnumerable<int> IndexesOfAny(this string str, string[] values, int stopAfterNumberOfHits = -1)
+    public static IEnumerable<int> IndicesOfAny(this string str, string[] values, int stopAfterNumberOfHits = -1)
     {
         var numberOfHits = 0;
         var index = values.Min(v => str.IndexOf(v));
@@ -339,7 +339,7 @@ public static class StringExtensions
     /// <returns></returns>
     public static string? SubstringBetween(this string str, string left, string right, bool inclusive = true)
     {
-        var indexes = IndexesOfAny(str, new[] { left, right }).ToArray();
+        var indexes = IndicesOfAny(str, new[] { left, right }).ToArray();
         if (2 != indexes.Length) return null;
 
         var leftIndex = indexes[0];

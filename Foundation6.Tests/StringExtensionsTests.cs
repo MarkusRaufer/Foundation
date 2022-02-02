@@ -42,49 +42,6 @@ namespace Foundation
         }
 
         [Test]
-        public void IndexesFromEnd_ShouldReturn2Indices_When_SearchingACharacter()
-        {
-            var str = "the \"important\" case";
-            var indexes = str.IndexesFromEnd('\"').ToArray();
-            Assert.AreEqual(2, indexes.Length);
-            Assert.AreEqual(14, indexes[0]);
-            Assert.AreEqual(4, indexes[1]);
-        }
-
-        [Test]
-        public void IndexesFromEnd_ShouldReturn2Indices_When_SearchingAString()
-        {
-            var str = "the \"important\" case";
-            var indexes = str.IndexesFromEnd("\"").ToArray();
-            Assert.AreEqual(2, indexes.Length);
-            Assert.AreEqual(14, indexes[0]);
-            Assert.AreEqual(4, indexes[1]);
-        }
-
-        [Test]
-        public void IndexesFromEnd_ShouldReturn4Indices_When_SearchingAString()
-        {
-            var str = "the \"very\" \"important\" case";
-            var indexes = str.IndexesFromEnd("\"").ToArray();
-            Assert.AreEqual(4, indexes.Length);
-            Assert.AreEqual(21, indexes[0]);
-            Assert.AreEqual(11, indexes[1]);
-            Assert.AreEqual(9, indexes[2]);
-            Assert.AreEqual(4, indexes[3]);
-        }
-
-        [Test]
-        public void IndexesFromEnd_ShouldReturn2Indices_When_SearchingAStringTake2()
-        {
-            var str = "the \"very\" \"important\" case";
-
-            var indexes = str.IndexesFromEnd("\"").Take(2).ToArray();
-            Assert.AreEqual(2, indexes.Length);
-            Assert.AreEqual(21, indexes[0]);
-            Assert.AreEqual(11, indexes[1]);
-        }
-
-        [Test]
         public void IndexOfAnyFromEnd_ShouldReturnAPositiveInt_When_UsingChar()
         {
             var str = "Invoice<TId> {";
@@ -117,23 +74,66 @@ namespace Foundation
         }
 
         [Test]
-        public void IndexesOf_ShouldReturn2Indices_When_Using2Strings()
+        public void IndicesFromEnd_ShouldReturn2Indices_When_SearchingACharacter()
         {
-            var str = "class Invoice <<ID>> {";
-            var actual = str.IndexesOfAny(new[] { "<<", ">>" }).ToArray();
-            Assert.AreEqual(14, actual[0]);
-            Assert.AreEqual(18, actual[1]);
+            var str = "the \"important\" case";
+            var indexes = str.IndicesFromEnd('\"').ToArray();
+            Assert.AreEqual(2, indexes.Length);
+            Assert.AreEqual(14, indexes[0]);
+            Assert.AreEqual(4, indexes[1]);
         }
 
         [Test]
-        public void IndexesOf_ShouldReturn2Indices_When_UsingStopAfterNumberOfHits2()
+        public void IndicesFromEnd_ShouldReturn2Indices_When_SearchingAString()
+        {
+            var str = "the \"important\" case";
+            var indexes = str.IndicesFromEnd("\"").ToArray();
+            Assert.AreEqual(2, indexes.Length);
+            Assert.AreEqual(14, indexes[0]);
+            Assert.AreEqual(4, indexes[1]);
+        }
+
+        [Test]
+        public void IndicesFromEnd_ShouldReturn4Indices_When_SearchingAString()
+        {
+            var str = "the \"very\" \"important\" case";
+            var indexes = str.IndicesFromEnd("\"").ToArray();
+            Assert.AreEqual(4, indexes.Length);
+            Assert.AreEqual(21, indexes[0]);
+            Assert.AreEqual(11, indexes[1]);
+            Assert.AreEqual(9, indexes[2]);
+            Assert.AreEqual(4, indexes[3]);
+        }
+
+        [Test]
+        public void IndicesFromEnd_ShouldReturn2Indices_When_SearchingAStringTake2()
+        {
+            var str = "the \"very\" \"important\" case";
+
+            var indexes = str.IndicesFromEnd("\"").Take(2).ToArray();
+            Assert.AreEqual(2, indexes.Length);
+            Assert.AreEqual(21, indexes[0]);
+            Assert.AreEqual(11, indexes[1]);
+        }
+
+        [Test]
+        public void IndicesOf_ShouldReturn2Indices_When_UsingStopAfterNumberOfHits2()
         {
             var str = "1.2.3.4.5";
-            var actual = str.IndexesOf(".", 2).ToArray();
+            var actual = str.IndicesOf(".", 2).ToArray();
             Assert.AreEqual(1, actual[0]);
             Assert.AreEqual(3, actual[1]);
         }
 
+        [Test]
+        public void IndicesOfAny_ShouldReturn2Indices_When_Using2Strings()
+        {
+            var str = "class Invoice <<ID>> {";
+            var actual = str.IndicesOfAny(new[] { "<<", ">>" }).ToArray();
+            Assert.AreEqual(14, actual[0]);
+            Assert.AreEqual(18, actual[1]);
+        }
+        
         [Test]
         public void ReduceSpaces()
         {

@@ -45,10 +45,10 @@ public class ReadOnlySpanExtensionsTests
     }
 
     [Test]
-    public void IndexesOf_Should_Return_Indices_When_Using_AStringWithSingleSeparatorAndMultipleOccurrencies()
+    public void IndicesOf_Should_Return_Indices_When_Using_AStringWithSingleSeparatorAndMultipleOccurrencies()
     {
         var sut = "123.4567.89".AsSpan();
-        var indices = sut.IndexesOf('.').ToArray();
+        var indices = sut.IndicesOf('.').ToArray();
         Assert.AreEqual(2, indices.Length);
 
         Assert.AreEqual(3, indices[0]);
@@ -56,20 +56,20 @@ public class ReadOnlySpanExtensionsTests
     }
 
     [Test]
-    public void IndexesOf_Should_Return_1Index_When_Using_AStringWithSingleSeparatorAndMultipleOccurrenciesAndStopAfter1Hit()
+    public void IndicesOf_Should_Return_1Index_When_Using_AStringWithSingleSeparatorAndMultipleOccurrenciesAndStopAfter1Hit()
     {
         var sut = "123.4567.89".AsSpan();
-        var indices = sut.IndexesOfAny(new[] { '.' }.AsSpan(), 1).ToArray();
+        var indices = sut.IndicesOfAny(new[] { '.' }.AsSpan(), 1).ToArray();
 
         Assert.AreEqual(1, indices.Length);
         Assert.AreEqual(3, indices[0]);
     }
 
     [Test]
-    public void IndexesOf_Should_Return_Indices_When_Using_MultipleSeparators()
+    public void IndicesOf_Should_Return_Indices_When_Using_MultipleSeparators()
     {
         var sut = "123_4567.89".AsSpan();
-        var indices = sut.IndexesOfAny(new[] { '.', '_' }.AsSpan()).ToArray();
+        var indices = sut.IndicesOfAny(new[] { '.', '_' }.AsSpan()).ToArray();
         Assert.AreEqual(2, indices.Length);
 
         Assert.AreEqual(3, indices[0]);
@@ -77,10 +77,10 @@ public class ReadOnlySpanExtensionsTests
     }
 
     [Test]
-    public void IndexesOf_Should_Return2Indices_When_Using_String()
+    public void IndicesOf_Should_Return2Indices_When_Using_String()
     {
         var sut = "123_45.67.45.89".AsSpan();
-        var indices = sut.IndexesOf("45").ToArray();
+        var indices = sut.IndicesOf("45").ToArray();
         Assert.AreEqual(2, indices.Length);
 
         Assert.AreEqual(4, indices[0]);
@@ -88,10 +88,10 @@ public class ReadOnlySpanExtensionsTests
     }
 
     [Test]
-    public void IndexesOf_Should_Return2Indices_When_UsingStringStopAfter1Hit()
+    public void IndicesOf_Should_Return2Indices_When_UsingStringStopAfter1Hit()
     {
         var sut = "123_45.67.45.89".AsSpan();
-        var indices = sut.IndexesOf("45", StringComparison.InvariantCulture, 1);
+        var indices = sut.IndicesOf("45", StringComparison.InvariantCulture, 1);
 
         Assert.AreEqual(1, indices.Count);
         Assert.AreEqual(4, indices.First());

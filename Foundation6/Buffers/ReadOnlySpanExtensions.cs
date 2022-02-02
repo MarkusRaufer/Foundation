@@ -72,7 +72,7 @@ public static class ReadOnlySpanExtensions
         return -1;
     }
 
-    public static IReadOnlyCollection<int> IndexesFromEnd<T>(
+    public static IReadOnlyCollection<int> IndicesFromEnd<T>(
         this ReadOnlySpan<T> span, 
         ReadOnlySpan<T> value, 
         int stopAfterNumberOfHits = -1)
@@ -106,7 +106,7 @@ public static class ReadOnlySpanExtensions
         return indices;
     }
 
-    public static IReadOnlyCollection<int> IndexesOf(
+    public static IReadOnlyCollection<int> IndicesOf(
         this ReadOnlySpan<char> span,
         ReadOnlySpan<char> search, 
         StringComparison comparisonType = StringComparison.InvariantCulture,
@@ -132,7 +132,7 @@ public static class ReadOnlySpanExtensions
         return indices;
     }
 
-    public static IReadOnlyCollection<int> IndexesOf<T>(this ReadOnlySpan<T> span, T selector, int stopAfterNumberOfHits = -1)
+    public static IReadOnlyCollection<int> IndicesOf<T>(this ReadOnlySpan<T> span, T selector, int stopAfterNumberOfHits = -1)
         where T : IEquatable<T>
     {
         var indices = new List<int>();
@@ -154,7 +154,7 @@ public static class ReadOnlySpanExtensions
         return indices;
     }
 
-    public static IReadOnlyCollection<int> IndexesOfAny<T>(
+    public static IReadOnlyCollection<int> IndicesOfAny<T>(
         this ReadOnlySpan<T> span, 
         ReadOnlySpan<T> selectors, 
         int stopAfterNumberOfHits = -1)

@@ -15,21 +15,21 @@ public class ReadOnlySpanAndMemoryExtensionsBenchmarks
     public IReadOnlyCollection<int> ReadOnlySpan_IndexesFromEnd()
     {
         var span = "the \"very\" \"important\" case".AsSpan();
-        return span.IndexesFromEnd("\"".AsSpan());
+        return span.IndicesFromEnd("\"".AsSpan());
     }
 
     [Benchmark]
     public int[] ReadOnlyMemory_IndexesFromEnd()
     {
         var memory = "the \"very\" \"important\" case".AsMemory();
-        return memory.IndexesFromEnd("\"".AsMemory()).ToArray();
+        return memory.IndicesFromEnd("\"".AsMemory()).ToArray();
     }
 
     [Benchmark]
     public int[] ReadOnlyMemory_IndexesFromEnd_2Elements()
     {
         var memory = "the \"very\" \"important\" case".AsMemory();
-        return memory.IndexesFromEnd("\"".AsMemory()).Take(2).ToArray();
+        return memory.IndicesFromEnd("\"".AsMemory()).Take(2).ToArray();
     }
 }
 

@@ -5,7 +5,7 @@ using System.Diagnostics.CodeAnalysis;
 
 public static class ReadOnlyMemoryExtensions
 {
-    public static IEnumerable<int> IndexesFromEnd<T>(this ReadOnlyMemory<T> memory, ReadOnlyMemory<T> value)
+    public static IEnumerable<int> IndicesFromEnd<T>(this ReadOnlyMemory<T> memory, ReadOnlyMemory<T> value)
     {
         if (0 == memory.Length) yield break;
         if (0 == value.Length) yield break;
@@ -33,7 +33,7 @@ public static class ReadOnlyMemoryExtensions
     /// <param name="memories"></param>
     /// <param name="selectors"></param>
     /// <returns></returns>
-    public static IEnumerable<int> IndexesOf<T>(this ReadOnlyMemory<T> memory, ReadOnlyMemory<T> search)
+    public static IEnumerable<int> IndicesOf<T>(this ReadOnlyMemory<T> memory, ReadOnlyMemory<T> search)
         where T : IEquatable<T>
     {
         int index;
@@ -59,7 +59,7 @@ public static class ReadOnlyMemoryExtensions
     /// <param name="selectors"></param>
     /// <returns>selector: is the ordinal index of selectors. index: the index of the found selector.
     /// </returns>
-    public static IEnumerable<(int selector, int index)> IndexesOfAny<T>(this ReadOnlyMemory<T> memory, ReadOnlyMemory<T>[] selectors)
+    public static IEnumerable<(int selector, int index)> IndicesOfAny<T>(this ReadOnlyMemory<T> memory, ReadOnlyMemory<T>[] selectors)
         where T : IEquatable<T>
     {
         if (0 == selectors.Length) yield break;
@@ -92,7 +92,7 @@ public static class ReadOnlyMemoryExtensions
     /// <param name="memory"></param>
     /// <param name="selector"></param>
     /// <returns></returns>
-    public static IEnumerable<int> IndexesOfAny<T>(
+    public static IEnumerable<int> IndicesOfAny<T>(
         this ReadOnlyMemory<T> memory, 
         [DisallowNull] IEnumerable<T> selectors)
     {
