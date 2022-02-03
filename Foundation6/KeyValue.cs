@@ -8,6 +8,7 @@ public static class KeyValue
 
 /// <summary>
 /// This key value exists because KeyValuePair is not serializable.
+/// Furthermore the hashcode of KeyValuePair is created only from Key.
 /// </summary>
 /// <typeparam name="TKey">The type of the key.</typeparam>
 /// <typeparam name="TValue">The type of the value.</typeparam>

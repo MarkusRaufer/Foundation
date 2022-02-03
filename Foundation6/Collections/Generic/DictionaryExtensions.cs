@@ -30,5 +30,11 @@
             }
             return true;
         }
+
+        public static IEnumerable<KeyValue<TKey, TValue>> ToKeyValues<TKey, TValue>(this IDictionary<TKey, TValue> dictionary)
+            where TKey : notnull
+        {
+            return dictionary.Select(kvp => new KeyValue<TKey, TValue>(kvp.Key, kvp.Value));
+        }
     }
 }
