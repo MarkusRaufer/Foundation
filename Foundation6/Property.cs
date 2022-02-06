@@ -2,16 +2,23 @@
 
 using System.ComponentModel;
 
-public class Property
-    : IEquatable<Property>
+public class Property : Property<object>
+{
+    public Property(string name, object? value = null) : base(name, value)
+    {
+    }
+}
+
+public class Property<TValue>
+    : IEquatable<Property<TValue>>
     , INotifyPropertyChanged
 {
     public event PropertyChangedEventHandler? PropertyChanged;
 
     private int _hashCode;
-    private object? _value;
+    private TValue? _value;
 
-    public Property(string name, object? value = default)
+    public Property(string name, TValue? value = default)
     {
         Name = name.ThrowIfNullOrEmpty(nameof(name));
         _value = value;
@@ -21,10 +28,15 @@ public class Property
         _hashCode = System.HashCode.Combine(Name, _value);
     }
 
-    public static bool operator ==(Property? lhs, Property? rhs)
+    public static bool operator ==(Property<TValue>? lhs, Property<TValue>? rhs)
     {
         if (lhs is null) return rhs is null;
         return lhs.Equals(rhs);
+    }
+
+    public static bool operator !=(Property<TValue>? lhs, Property<TValue>? rhs)
+    {
+        return !(lhs == rhs);
     }
 
     public void Deconstruct(out string name, out object? value)
@@ -33,14 +45,10 @@ public class Property
         value = Value;
     }
 
-    public static bool operator !=(Property? lhs, Property? rhs)
-    {
-        return !(lhs == rhs);
-    }
-
+    
     public override bool Equals(object? obj) => Equals(obj as Property);
 
-    public bool Equals(Property? other)
+    public bool Equals(Property<TValue>? other)
     {
         return null != other
             && EqualityComparer<string>.Default.Equals(Name, other.Name)
@@ -57,7 +65,7 @@ public class Property
 
     public override string ToString() => $"({Name}, {Value})";
 
-    public object? Value
+    public TValue? Value
     {
         get => _value;
         set

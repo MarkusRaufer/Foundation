@@ -18,6 +18,7 @@ namespace Foundation.Collections.ObjectModel
         private bool _disposing;
         private int _hashCode;
         private bool _isHashCodeUpToDate;
+        private bool _isPropertyChangedActive;
         private readonly SortedDictionary<string, Property> _properties;
 
         public PropertyCollection()
@@ -120,6 +121,18 @@ namespace Foundation.Collections.ObjectModel
                 _hashCode = HashCode.FromObjects(_properties.Values);
 
             return _hashCode;
+        }
+        public bool IsPropertyChangedActive
+        {
+            get => _isPropertyChangedActive;
+            set
+            {
+                if (_isPropertyChangedActive == value) return;
+                _isPropertyChangedActive = value;
+
+                foreach (var property in _properties.Values)
+                    property.IsPropertyChangedActive = _isPropertyChangedActive;
+            }
         }
 
         public bool IsReadOnly { get; set; } = false;
