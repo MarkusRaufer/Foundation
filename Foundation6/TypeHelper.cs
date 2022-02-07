@@ -20,25 +20,22 @@ public static class TypeHelper
     /// </summary>
     /// <param name="shortTypeName">e.g. bool, byte int, long, ...</param>
     /// <returns></returns>
-    public static string? GetPrimitiveTypeFullName(string shortTypeName)
+    public static string? GetPrimitiveTypeFullName(string shortTypeName) => shortTypeName switch
     {
-        return shortTypeName switch
-        {
-            "bool" => typeof(Boolean).FullName,
-            "byte" => typeof(Byte).FullName,
-            "char" => typeof(Char).FullName,
-            "double" => typeof(Double).FullName,
-            "float" => typeof(Single).FullName,
-            "int" => typeof(Int32).FullName,
-            "long" => typeof(Int64).FullName,
-            "sbyte" => typeof(SByte).FullName,
-            "short" => typeof(Int16).FullName,
-            "uint" => typeof(UInt32).FullName,
-            "ulong" => typeof (UInt64).FullName,
-            "ushort" => typeof(UInt16).FullName,
-            _ => null,
-        };
-    }
+        "bool" => typeof(Boolean).FullName,
+        "byte" => typeof(Byte).FullName,
+        "char" => typeof(Char).FullName,
+        "double" => typeof(Double).FullName,
+        "float" => typeof(Single).FullName,
+        "int" => typeof(Int32).FullName,
+        "long" => typeof(Int64).FullName,
+        "sbyte" => typeof(SByte).FullName,
+        "short" => typeof(Int16).FullName,
+        "uint" => typeof(UInt32).FullName,
+        "ulong" => typeof (UInt64).FullName,
+        "ushort" => typeof(UInt16).FullName,
+        _ => null,
+    };
 
     public static IEnumerable<string> GetPrimitiveTypeShortNames()
     {
