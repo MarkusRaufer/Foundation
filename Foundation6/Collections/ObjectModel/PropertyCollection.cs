@@ -41,6 +41,12 @@ namespace Foundation.Collections.ObjectModel
             RegisterPropertyChanged();
         }
 
+        public object? this[string propertyName]
+        {
+            get => _properties[propertyName].Value;
+            set => _properties[propertyName].Value = value;
+        }
+
         public void Add(Property property)
         {
             if (IsReadOnly) throw new InvalidOperationException("collection is readonly");

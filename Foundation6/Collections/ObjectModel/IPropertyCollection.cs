@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Collections.Specialized;
+﻿using System.Collections.Specialized;
 using System.ComponentModel;
 
 namespace Foundation.Collections.ObjectModel
@@ -12,6 +10,7 @@ namespace Foundation.Collections.ObjectModel
         , INotifyPropertyChanged
         , IDisposable
     {
+        object? this[string propertyName] { get; set; }
         bool Remove(string name);
     }
 }
