@@ -9,22 +9,24 @@ using System.Diagnostics.CodeAnalysis;
 /// <typeparam name="T2"></typeparam>
 public class OneOf<T1, T2>
 {
-    public OneOf(T1 t1) : this(Opt.Some(t1), Opt.None<T2>())
+    protected OneOf()
+    {
+    }
+
+    public OneOf(T1 t1)
     {
         t1.ThrowIfNull(nameof(t1));
+        Item1 = Opt.Some(t1);
+
         OrdinalIndex = 1;
     }
 
-    public OneOf(T2 t2) : this(Opt.None<T1>(), Opt.Some(t2))
+    public OneOf(T2 t2)
     {
         t2.ThrowIfNull(nameof(t2));
-        OrdinalIndex = 2;
-    }
+        Item2 = Opt.Some(t2);
 
-    public OneOf(Opt<T1> t1, Opt<T2> t2)
-    {
-        Item1 = t1;
-        Item2 = t2;
+        OrdinalIndex = 2;
     }
 
     public Opt<T1> Item1 { get; }
@@ -32,7 +34,7 @@ public class OneOf<T1, T2>
 
     public int OrdinalIndex { get; protected set; }
 
-    public virtual bool Try<T>([MaybeNullWhen(false)] out T value)
+    public virtual bool Try<T>([MaybeNullWhen(false)] out T? value)
     {
         if (0 == OrdinalIndex)
         {
@@ -40,19 +42,20 @@ public class OneOf<T1, T2>
             return false;
         }
 
-        T? setValue<TItem>(TItem item)
+        Opt<T> setValue<TItem>(TItem item)
         {
-            return item is T t ? t : default;
+            return item is T t ? Opt.Some(t) : Opt.None<T>();
         }
 
-        value = OrdinalIndex switch
+        var foundValue = OrdinalIndex switch
         {
             1 => setValue(Item1.ValueOrThrow()),
             2 => setValue(Item2.ValueOrThrow()),
-            _ => default
+            _ => Opt.None<T>()
         };
 
-        return null != value;
+        value = foundValue.IsSome ? foundValue.ValueOrThrow() : default;
+        return foundValue.IsSome;
     }
 }
 
@@ -64,14 +67,23 @@ public class OneOf<T1, T2>
 /// <typeparam name="T3"></typeparam>
 public class OneOf<T1, T2, T3> : OneOf<T1, T2>
 {
-    public OneOf(T3 t3) : this(Opt.None<T1>(), Opt.None<T2>(), Opt.Some(t3))
+    protected OneOf()
     {
-        t3.ThrowIfNull(nameof(t3));
     }
 
-    public OneOf(Opt<T1> t1, Opt<T2> t2, Opt<T3> t3) : base(t1, t2)
+    public OneOf(T1 t1) : base(t1)
     {
-        Item3 = t3;
+    }
+
+    public OneOf(T2 t2) : base(t2)
+    {
+    }
+
+    public OneOf(T3 t3)
+    {
+        t3.ThrowIfNull(nameof(t3));
+        Item3 = Opt.Some(t3);
+
         OrdinalIndex = 3;
     }
 
@@ -87,8 +99,13 @@ public class OneOf<T1, T2, T3> : OneOf<T1, T2>
 
         if (3 == OrdinalIndex)
         {
-            value = Item3.ValueOrThrow() is T t ? t : default;
-            return null != value;
+            if (Item3.ValueOrThrow() is T t)
+            {
+                value = t;
+                return true;
+            }
+            value = default;
+            return false;
         }
         return base.Try(out value);
     }
@@ -103,14 +120,27 @@ public class OneOf<T1, T2, T3> : OneOf<T1, T2>
 /// <typeparam name="T4"></typeparam>
 public class OneOf<T1, T2, T3, T4> : OneOf<T1, T2, T3>
 {
-    public OneOf(T4 t4) : this(Opt.None<T1>(), Opt.None<T2>(), Opt.None<T3>(), Opt.Some(t4))
+    protected OneOf()
     {
-        t4.ThrowIfNull(nameof(t4));
     }
 
-    public OneOf(Opt<T1> t1, Opt<T2> t2, Opt<T3> t3, Opt<T4> t4) : base(t1, t2, t3)
+    public OneOf(T1 t1) : base(t1)
     {
-        Item4 = t4;
+    }
+
+    public OneOf(T2 t2) : base(t2)
+    {
+    }
+
+    public OneOf(T3 t3) : base(t3)
+    {
+    }
+
+    public OneOf(T4 t4)
+    {
+        t4.ThrowIfNull(nameof(t4));
+        Item4 = Opt.Some(t4);
+
         OrdinalIndex = 4;
     }
 
@@ -126,8 +156,13 @@ public class OneOf<T1, T2, T3, T4> : OneOf<T1, T2, T3>
 
         if (4 == OrdinalIndex)
         {
-            value = Item4.ValueOrThrow() is T t ? t : default;
-            return null != value;
+            if (Item4.ValueOrThrow() is T t)
+            {
+                value = t;
+                return true;
+            }
+            value = default;
+            return false;
         }
         return base.Try(out value);
     }
@@ -143,14 +178,11 @@ public class OneOf<T1, T2, T3, T4> : OneOf<T1, T2, T3>
 /// <typeparam name="T5"></typeparam>
 public class OneOf<T1, T2, T3, T4, T5> : OneOf<T1, T2, T3, T4>
 {
-    public OneOf(T5 t5) : this(Opt.None<T1>(), Opt.None<T2>(), Opt.None<T3>(), Opt.None<T4>(), Opt.Some(t5))
+    public OneOf(T5 t5)
     {
         t5.ThrowIfNull(nameof(t5));
-    }
+        Item5 = Opt.Some(t5);
 
-    public OneOf(Opt<T1> t1, Opt<T2> t2, Opt<T3> t3, Opt<T4> t4, Opt<T5> t5) : base(t1, t2, t3, t4)
-    {
-        Item5 = t5;
         OrdinalIndex = 5;
     }
 
@@ -166,8 +198,13 @@ public class OneOf<T1, T2, T3, T4, T5> : OneOf<T1, T2, T3, T4>
 
         if (5 == OrdinalIndex)
         {
-            value = Item5.ValueOrThrow() is T t ? t : default;
-            return null != value;
+            if (Item5.ValueOrThrow() is T t)
+            {
+                value = t;
+                return true;
+            }
+            value = default;
+            return false;
         }
         return base.Try(out value);
     }
