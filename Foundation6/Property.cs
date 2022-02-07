@@ -1,6 +1,7 @@
 ﻿namespace Foundation;
 
 using System.ComponentModel;
+using System.Diagnostics.CodeAnalysis;
 
 public class Property : Property<object>
 {
@@ -18,7 +19,7 @@ public class Property<TValue>
     private int _hashCode;
     private TValue? _value;
 
-    public Property(string name, TValue? value = default)
+    public Property([DisallowNull] string name, TValue? value = default)
     {
         Name = name.ThrowIfNullOrEmpty(nameof(name));
         _value = value;

@@ -61,4 +61,3 @@ public class Either<T1, T2, T3, T4, T5> : Either
     public Either(params T4[] alternatives) : base(alternatives) { }
     public Either(params T5[] alternatives) : base(alternatives) { }
 }
-
