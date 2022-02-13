@@ -10,8 +10,8 @@ public struct ExceptionError<TError, TException>
 
     public ExceptionError([DisallowNull] TError error, [DisallowNull] TException exception)
     {
-        Error = error.ThrowIfNull(nameof(error));
-        Exception = exception.ThrowIfNull(nameof(exception));
+        Error = error.ThrowIfNull();
+        Exception = exception.ThrowIfNull();
         _hashCode = 0;
     }
     public static bool operator ==(ExceptionError<TError, TException> left, ExceptionError<TError, TException> right)

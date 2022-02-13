@@ -21,24 +21,24 @@ public class ObjectChangedEventArgs : EventArgs
 {
     public ObjectChangedEventArgs(object? changedCollection, NotifyCollectionChangedEventArgs? args)
     {
-        ChangedCollection = changedCollection.ThrowIfNull(nameof(changedCollection));
-        NotifyCollectionChangedEventArgs = args.ThrowIfNull(nameof(args));
+        ChangedCollection = changedCollection.ThrowIfNull();
+        NotifyCollectionChangedEventArgs = args.ThrowIfNull();
 
         Action = ObjectChangedAction.CollectionChanged;
     }
 
     public ObjectChangedEventArgs(object? changedObject, object? changedCollection, NotifyCollectionChangedEventArgs? args)
     {
-        ChangedObject = changedObject.ThrowIfNull(nameof(changedObject));
-        ChangedCollection = changedCollection.ThrowIfNull(nameof(changedCollection));
-        NotifyCollectionChangedEventArgs = args.ThrowIfNull(nameof(args));
+        ChangedObject = changedObject.ThrowIfNull();
+        ChangedCollection = changedCollection.ThrowIfNull();
+        NotifyCollectionChangedEventArgs = args.ThrowIfNull();
 
         Action = ObjectChangedAction.CollectionChanged;
     }
 
     public ObjectChangedEventArgs(PropertyChangedEventArgs? args)
     {
-        PropertyChangedEventArgs = args.ThrowIfNull(nameof(args));
+        PropertyChangedEventArgs = args.ThrowIfNull();
 
         Action = ObjectChangedAction.PropertyChanged;
     }

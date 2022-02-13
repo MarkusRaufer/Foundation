@@ -9,7 +9,7 @@ public class CyclicEnumerable<T> : IEnumerable<T>
 
     public CyclicEnumerable([DisallowNull] IEnumerable<T> items)
     {
-        _items = items.ThrowIfNull(nameof(items));
+        _items = items.ThrowIfNull();
     }
 
     public IEnumerator<T> GetEnumerator()

@@ -2,6 +2,7 @@
 
 using Foundation.Collections;
 using System.Diagnostics.CodeAnalysis;
+using System.Runtime.CompilerServices;
 
 public static class ArrayExtensions
 {
@@ -23,9 +24,8 @@ public static class ArrayExtensions
         return new ArrayEnumerator<T>(array);
     }
 
-    public static T[] ThrowIfNullOrEmpty<T>(this T[] array, [DisallowNull] string name)
+    public static T[] ThrowIfNullOrEmpty<T>(this T[] array, [CallerArgumentExpression("array")] string name = "")
     {
-        name.ThrowIfNullOrEmpty(nameof(name));
         if (null == array) throw new ArgumentNullException(name);
         if (0 == array.Length) throw new ArgumentOutOfRangeException(name, "must contain at least one element");
         return array;

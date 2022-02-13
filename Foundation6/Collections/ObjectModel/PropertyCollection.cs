@@ -33,7 +33,7 @@ namespace Foundation.Collections.ObjectModel
         }
         public PropertyCollection([DisallowNull] IEnumerable<Property>? properties)
         {
-            properties.ThrowIfNull(nameof(properties));
+            properties.ThrowIfNull();
 
             _properties = new SortedDictionary<string, Property>(properties.ToDictionary(p => p.Name, p => p));
             _disposeActions = new Dictionary<string, Action>();
@@ -51,7 +51,7 @@ namespace Foundation.Collections.ObjectModel
         {
             if (IsReadOnly) throw new InvalidOperationException("collection is readonly");
 
-            property.ThrowIfNull(nameof(property));
+            property.ThrowIfNull();
 
             if (_properties.ContainsKey(property.Name))
                 throw new ArgumentException($"property {property.Name} exists");
@@ -160,7 +160,7 @@ namespace Foundation.Collections.ObjectModel
 
         protected void RegisterPropertyChanged([DisallowNull] Property? property)
         {
-            property.ThrowIfNull(nameof(property));
+            property.ThrowIfNull();
 
             if (_disposeActions.ContainsKey(property.Name)) return;
 
@@ -182,7 +182,7 @@ namespace Foundation.Collections.ObjectModel
         {
             if (IsReadOnly) throw new InvalidOperationException("collection is readonly");
 
-            property.ThrowIfNull(nameof(property));
+            property.ThrowIfNull();
 
             var removed = _properties.Remove(property.Name);
             if(removed)

@@ -4,6 +4,7 @@ using Foundation.Buffers;
 using Foundation.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Text.RegularExpressions;
 
@@ -184,7 +185,7 @@ public static class StringExtensions
 
     public static Opt<object> ParseScalarType(this string str, [DisallowNull] Type type)
     {
-        type.ThrowIfNull(nameof(type));
+        type.ThrowIfNull();
 
         return Type.GetTypeCode(type) switch
         {
@@ -394,14 +395,14 @@ public static class StringExtensions
     }
     
     [return: NotNull]
-    public static string ThrowIfNullOrEmpty(this string str, [DisallowNull] string argumentName)
+    public static string ThrowIfNullOrEmpty(this string str, [CallerArgumentExpression("str")] string argumentName = "")
     {
         if (string.IsNullOrEmpty(str)) throw new ArgumentNullException(argumentName);
         return str;
     }
 
     [return: NotNull]
-    public static string ThrowIfNullOrWhiteSpace(this string str, [DisallowNull] string argumentName)
+    public static string ThrowIfNullOrWhiteSpace(this string str, [CallerArgumentExpression("str")] string argumentName ="")
     {
         if (string.IsNullOrWhiteSpace(str)) throw new ArgumentNullException(argumentName);
         return str;
@@ -426,7 +427,7 @@ public static class StringExtensions
     public static T? ToNullableIfNullOrEmpty<T>(this string str, [DisallowNull] Func<string, T> projection)
        where T : struct
     {
-        projection.ThrowIfNull(nameof(projection));
+        projection.ThrowIfNull();
 
         if (string.IsNullOrEmpty(str)) return null;
 
@@ -436,7 +437,7 @@ public static class StringExtensions
     public static T? ToNullableIfNullOrWhiteSpace<T>(this string str, [DisallowNull] Func<string, T> projection)
         where T : struct
     {
-        projection.ThrowIfNull(nameof(projection));
+        projection.ThrowIfNull();
 
         if (string.IsNullOrWhiteSpace(str)) return null;
 
@@ -453,7 +454,7 @@ public static class StringExtensions
 
     public static object? ToNumber(this string str, NumberStyles style, IFormatProvider provider)
     {
-        provider.ThrowIfNull(nameof(provider));
+        provider.ThrowIfNull();
 
         if (double.TryParse(str, style, provider, out double doubleValue))
             return doubleValue;
@@ -471,7 +472,7 @@ public static class StringExtensions
 
     public static Opt<T> ToOptIfNullOrEmpty<T>(this string str, [DisallowNull] Func<string, T> projection)
     {
-        projection.ThrowIfNull(nameof(projection));
+        projection.ThrowIfNull();
 
         return string.IsNullOrEmpty(str) ? Opt.None<T>() : Opt.Some(projection(str));
     }
@@ -483,7 +484,7 @@ public static class StringExtensions
 
     public static Opt<T> ToOptIfNullOrWhiteSpace<T>(this string str, [DisallowNull] Func<string, T> projection)
     {
-        projection.ThrowIfNull(nameof(projection));
+        projection.ThrowIfNull();
 
         return string.IsNullOrWhiteSpace(str) ? Opt.None<T>() : Opt.Some(projection(str));
     }

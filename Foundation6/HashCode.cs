@@ -144,7 +144,7 @@ public static class HashCode
     public static int From(int hashCode, params object[] objects)
     {
         if (0 == hashCode && 0 == objects.Length) return 0;
-        objects.ThrowIfNull(nameof(objects));
+        objects.ThrowIfNull();
 
         var hcb = HashCodeBuilder.Create();
         hcb.AddHashCode(hashCode);

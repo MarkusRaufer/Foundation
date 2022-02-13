@@ -13,7 +13,7 @@ public static class EnumerableExtensions
 
         public ElseIf([DisallowNull] IEnumerable<T> items)
         {
-            _items = items.ThrowIfNull(nameof(items));
+            _items = items.ThrowIfNull();
         }
 
         public IEnumerable<T> Else() => _items;
@@ -48,9 +48,9 @@ public static class EnumerableExtensions
 
         public ElseResult(IEnumerable<T> items, Func<T, bool> predicate, Func<T, TResult> mapIf)
         {
-            _items = items.ThrowIfNull(nameof(items));
-            _predicate = predicate.ThrowIfNull(nameof(predicate));
-            _mapIf = mapIf.ThrowIfNull(nameof(mapIf));
+            _items = items.ThrowIfNull();
+            _predicate = predicate.ThrowIfNull();
+            _mapIf = mapIf.ThrowIfNull();
         }
 
         public IEnumerable<TResult> Else(Func<T, TResult> map)
@@ -71,7 +71,7 @@ public static class EnumerableExtensions
     /// <returns></returns>
     public static IEnumerable<T> AddIfEmpty<T>(this IEnumerable<T> items, [DisallowNull] Func<T> factory)
     {
-        factory.ThrowIfNull(nameof(factory));
+        factory.ThrowIfNull();
 
         var it = items.GetEnumerator();
         if (!it.MoveNext())
@@ -96,7 +96,7 @@ public static class EnumerableExtensions
     /// <exception cref="ArgumentNullException"></exception>
     public static IEnumerable<T> AfterEveryElement<T>(this IEnumerable<T> items, [DisallowNull] Action action)
     {
-        action.ThrowIfNull(nameof(action));
+        action.ThrowIfNull();
 
         var it = items.GetEnumerator();
         var next = it.MoveNext();
@@ -124,8 +124,8 @@ public static class EnumerableExtensions
         [DisallowNull] Func<T, TAccumulate> seed,
         [DisallowNull] Func<TAccumulate, T, TAccumulate> func)
     {
-        seed.ThrowIfNull(nameof(seed));
-        func.ThrowIfNull(nameof(func));
+        seed.ThrowIfNull();
+        func.ThrowIfNull();
 
         if (!items.FirstAsOpt().Is(out T? item)) return Opt.None<TAccumulate>();
 
@@ -176,7 +176,7 @@ public static class EnumerableExtensions
     public static IEnumerable<T> AtLeast<T>(this IEnumerable<T> items, int numberOfElements, [DisallowNull] Func<T, bool> predicate)
     {
         if (0 > numberOfElements) throw new ArgumentOutOfRangeException(nameof(numberOfElements), "cannot be negative");
-        predicate.ThrowIfNull(nameof(predicate));
+        predicate.ThrowIfNull();
 
         var it = items.GetEnumerator();
 
@@ -340,7 +340,7 @@ public static class EnumerableExtensions
     /// <exception cref="ArgumentNullException"></exception>
     public static IEnumerable<T> DistinctBy<T>(this IEnumerable<T> items, [DisallowNull] Func<T?, T?, bool> comparer)
     {
-        comparer.ThrowIfNull(nameof(comparer));
+        comparer.ThrowIfNull();
 
         return DistinctBy(items, comparer, null);
     }
@@ -359,7 +359,7 @@ public static class EnumerableExtensions
         [DisallowNull] Func<T?, T?, bool> comparer,
         Func<T?, int>? hashFunc)
     {
-        comparer.ThrowIfNull(nameof(comparer));
+        comparer.ThrowIfNull();
 
         return items.Distinct(new LambdaEqualityComparer<T>(comparer, hashFunc));
     }
@@ -429,7 +429,7 @@ public static class EnumerableExtensions
     /// <returns>Returns a tuple (item, counter).</returns>
     public static IEnumerable<(T item, TValue counter)> Enumerate<T, TValue>(this IEnumerable<T> items, [DisallowNull] Func<T, TValue> createValue)
     {
-        createValue.ThrowIfNull(nameof(createValue));
+        createValue.ThrowIfNull();
 
         foreach (var item in items)
             yield return (item, createValue(item));
@@ -511,9 +511,9 @@ public static class EnumerableExtensions
         [DisallowNull] Func<T, TKey> keySelector,
         [DisallowNull] Func<T?, TResult> resultSelector)
     {
-        rhs.ThrowIfNull(nameof(rhs));
-        keySelector.ThrowIfNull(nameof(keySelector));
-        resultSelector.ThrowIfNull(nameof(resultSelector));
+        rhs.ThrowIfNull();
+        keySelector.ThrowIfNull();
+        resultSelector.ThrowIfNull();
 
         return lhs.Except(rhs, new LambdaEqualityComparer<T>((T? a, T? b) =>
         {
@@ -549,10 +549,10 @@ public static class EnumerableExtensions
         [DisallowNull] Func<T2, TKey> rhsKeySelector,
         [DisallowNull] Func<T1, TResult> resultSelector)
     {
-        rhs.ThrowIfNull(nameof(rhs));
-        lhsKeySelector.ThrowIfNull(nameof(lhsKeySelector));
-        rhsKeySelector.ThrowIfNull(nameof(rhsKeySelector));
-        resultSelector.ThrowIfNull(nameof(resultSelector));
+        rhs.ThrowIfNull();
+        lhsKeySelector.ThrowIfNull();
+        rhsKeySelector.ThrowIfNull();
+        resultSelector.ThrowIfNull();
 
         var hashedRhs = new HashSet<TKey>(rhs.Select(rhsKeySelector));
         return lhs.Where(l => !hashedRhs.Contains(lhsKeySelector(l))).Select(resultSelector);
@@ -568,7 +568,7 @@ public static class EnumerableExtensions
     /// <returns></returns>
     public static IEnumerable<TResult> FilterMap<T, TResult>(this IEnumerable<T> items, [DisallowNull] Func<T, Opt<TResult>> selector)
     {
-        selector.ThrowIfNull(nameof(selector));
+        selector.ThrowIfNull();
 
         foreach (var item in items)
         {
@@ -591,7 +591,7 @@ public static class EnumerableExtensions
         this IEnumerable<T> items,
         [DisallowNull] Func<T, Opt<TResult>> selector)
     {
-        selector.ThrowIfNull(nameof(selector));
+        selector.ThrowIfNull();
 
         var i = 0;
         foreach (var item in items)
@@ -651,7 +651,7 @@ public static class EnumerableExtensions
     public static Opt<T> FirstAsOpt<T>(this IEnumerable<T> items, [DisallowNull] Func<T, bool> predicate)
     {
         if (null == items) return Opt.None<T>();
-        predicate.ThrowIfNull(nameof(predicate));
+        predicate.ThrowIfNull();
 
         foreach (var item in items.Where(predicate))
             return Opt.Some(item);
@@ -661,7 +661,7 @@ public static class EnumerableExtensions
 
     public static Opt<TOk> FirstOk<TOk, TError>(this IEnumerable<Result<TOk, TError>> items, [DisallowNull] Func<TOk, bool> predicate)
     {
-        predicate.ThrowIfNull(nameof(predicate));
+        predicate.ThrowIfNull();
 
         return items.SelectOk().FirstAsOpt(predicate);
     }
@@ -675,7 +675,7 @@ public static class EnumerableExtensions
     /// <returns>The number of executed actions.</returns>
     public static void ForEach<T>(this IEnumerable<T> source, [DisallowNull] Action<T> action)
     {
-        action.ThrowIfNull(nameof(action));
+        action.ThrowIfNull();
 
         foreach (var item in source)
         {
@@ -693,8 +693,8 @@ public static class EnumerableExtensions
     /// <returns>The number of executed actions.</returns>
     public static void ForEach<T>(this IEnumerable<T> source, [DisallowNull] Action<T> action, [DisallowNull] Action emptyAction)
     {
-        action.ThrowIfNull(nameof(action));
-        emptyAction.ThrowIfNull(nameof(emptyAction));
+        action.ThrowIfNull();
+        emptyAction.ThrowIfNull();
 
         var any = source.Any();
         if (any)
@@ -714,7 +714,7 @@ public static class EnumerableExtensions
     /// <returns></returns>
     public static IEnumerable<T> FromIndex<T>(this IEnumerable<T> items, [DisallowNull] Func<long, bool> predicate)
     {
-        predicate.ThrowIfNull(nameof(predicate));
+        predicate.ThrowIfNull();
 
         long i = 0;
         return items.Where(item => predicate(i++));
@@ -722,8 +722,8 @@ public static class EnumerableExtensions
 
     public static IElseIf<T> If<T>(this IEnumerable<T> items, [DisallowNull] Func<T, bool> predicate, [DisallowNull] Action<T> action)
     {
-        predicate.ThrowIfNull(nameof(predicate));
-        action.ThrowIfNull(nameof(action));
+        predicate.ThrowIfNull();
+        action.ThrowIfNull();
 
         var @else = Enumerable.Empty<T>();
 
@@ -741,8 +741,8 @@ public static class EnumerableExtensions
 
     public static IElse<T, TResult> If<T, TResult>(this IEnumerable<T> items, [DisallowNull] Func<T, bool> predicate, [DisallowNull] Func<T, TResult> map)
     {
-        predicate.ThrowIfNull(nameof(predicate));
-        map.ThrowIfNull(nameof(map));
+        predicate.ThrowIfNull();
+        map.ThrowIfNull();
 
         return new ElseResult<T, TResult>(items, predicate, map);
     }
@@ -756,7 +756,7 @@ public static class EnumerableExtensions
     /// <returns></returns>
     public static IEnumerable<T> IfEmpty<T>(this IEnumerable<T> lhs, [DisallowNull] IEnumerable<T> rhs)
     {
-        rhs.ThrowIfNull(nameof(rhs));
+        rhs.ThrowIfNull();
 
         var lIt = lhs.GetEnumerator();
         if (!lIt.MoveNext())
@@ -783,7 +783,7 @@ public static class EnumerableExtensions
     /// <returns></returns>
     public static IEnumerable<T> IfEmpty<T>(this IEnumerable<T> lhs, [DisallowNull] Func<IEnumerable<T>> factory)
     {
-        factory.ThrowIfNull(nameof(factory));
+        factory.ThrowIfNull();
 
         var lit = lhs.GetEnumerator();
         if (!lit.MoveNext())
@@ -825,7 +825,7 @@ public static class EnumerableExtensions
 
     public static IEnumerable<int> IndicesOf<T>(this IEnumerable<T> items, [DisallowNull] Func<T, bool> predicate)
     {
-        predicate.ThrowIfNull(nameof(predicate));
+        predicate.ThrowIfNull();
 
         var i = 0;
         foreach (var item in items)
@@ -856,7 +856,7 @@ public static class EnumerableExtensions
 
     public static int IndexOf<T>(this IEnumerable<T> items, [DisallowNull] Func<T, bool> predicate)
     {
-        predicate.ThrowIfNull(nameof(predicate));
+        predicate.ThrowIfNull();
 
         var i = 0;
         foreach (var item in items)
@@ -877,7 +877,7 @@ public static class EnumerableExtensions
     /// <returns></returns>
     public static IEnumerable<(T item, int index)> IndexTuplesOf<T>(this IEnumerable<T> items, [DisallowNull] Func<T, bool> predicate)
     {
-        predicate.ThrowIfNull(nameof(predicate));
+        predicate.ThrowIfNull();
 
         var i = 0;
         foreach (var elem in items)
@@ -908,7 +908,7 @@ public static class EnumerableExtensions
     /// <returns></returns>
     public static IEnumerable<T> Ignore<T>(this IEnumerable<T> items, [DisallowNull] Func<T, bool> predicate)
     {
-        predicate.ThrowIfNull(nameof(predicate));
+        predicate.ThrowIfNull();
 
         foreach (var item in items)
         {
@@ -948,7 +948,7 @@ public static class EnumerableExtensions
     /// <returns></returns>
     public static IEnumerable<T> Ignore<T>(this IEnumerable<T> items, [DisallowNull] Func<int, T, bool> predicate)
     {
-        predicate.ThrowIfNull(nameof(predicate));
+        predicate.ThrowIfNull();
 
         var i = 0;
         foreach (var item in items)
@@ -970,7 +970,7 @@ public static class EnumerableExtensions
     /// <returns></returns>
     public static IEnumerable<T> Insert<T>(this IEnumerable<T> items, T item, [DisallowNull] IComparer<T> comparer)
     {
-        comparer.ThrowIfNull(nameof(comparer));
+        comparer.ThrowIfNull();
 
         var inserted = false;
         foreach (var i in items)
@@ -996,7 +996,7 @@ public static class EnumerableExtensions
     /// <returns></returns>
     public static IEnumerable<T> Insert<T>(this IEnumerable<T> items, T item, [DisallowNull] Func<T, bool> predicate)
     {
-        predicate.ThrowIfNull(nameof(predicate));
+        predicate.ThrowIfNull();
 
         var inserted = false;
         foreach (var i in items)
@@ -1049,7 +1049,7 @@ public static class EnumerableExtensions
     /// <exception cref="ArgumentNullException"></exception>
     public static IEnumerable<T> IntersectBy<T>(this IEnumerable<T> lhs, IEnumerable<T> rhs, [DisallowNull] Func<T?, T?, bool> comparer, Func<T?, int>? hashFunc)
     {
-        comparer.ThrowIfNull(nameof(comparer));
+        comparer.ThrowIfNull();
 
         return lhs.Intersect(rhs, new LambdaEqualityComparer<T>(comparer, hashFunc));
     }
@@ -1074,10 +1074,10 @@ public static class EnumerableExtensions
         [DisallowNull] Func<T2, TKey> secondKeySelector,
         [DisallowNull] Func<T1, T2, TResult> resultSelector)
     {
-        rhs.ThrowIfNull(nameof(rhs));
-        firstKeySelector.ThrowIfNull(nameof(firstKeySelector));
-        secondKeySelector.ThrowIfNull(nameof(secondKeySelector));
-        resultSelector.ThrowIfNull(nameof(resultSelector));
+        rhs.ThrowIfNull();
+        firstKeySelector.ThrowIfNull();
+        secondKeySelector.ThrowIfNull();
+        resultSelector.ThrowIfNull();
 
         return from left in lhs
                join right in rhs on firstKeySelector(left) equals secondKeySelector(right)
@@ -1093,7 +1093,7 @@ public static class EnumerableExtensions
     /// <returns></returns>
     public static bool IsInAscendingOrder<T>(this IEnumerable<T> items, [DisallowNull] Func<T, T, CompareResult> compare)
     {
-        compare.ThrowIfNull(nameof(compare));
+        compare.ThrowIfNull();
 
         var it = items.GetEnumerator();
 
@@ -1145,7 +1145,7 @@ public static class EnumerableExtensions
     /// <returns></returns>
     public static bool IsSameAs<T>(this IEnumerable<T> lhs, [DisallowNull] IEnumerable<T> rhs)
     {
-        rhs.ThrowIfNull(nameof(rhs));
+        rhs.ThrowIfNull();
 
         var itLhs = lhs.GetEnumerator();
         var itRhs = rhs.GetEnumerator();
@@ -1168,7 +1168,7 @@ public static class EnumerableExtensions
     /// <returns></returns>
     public static bool IsSubsetOf<T>(this IEnumerable<T> first, [DisallowNull] IEnumerable<T> second)
     {
-        second.ThrowIfNull(nameof(second));
+        second.ThrowIfNull();
 
         var search = new HashSet<T>(first);
         return search.IsSubsetOf(second);
@@ -1247,7 +1247,7 @@ public static class EnumerableExtensions
     /// <returns></returns>
     public static T MaxBy<T>(this IEnumerable<T> items, [DisallowNull] Func<T, T, int> comparer)
     {
-        comparer.ThrowIfNull(nameof(comparer));
+        comparer.ThrowIfNull();
 
         return items.Aggregate((a, b) => comparer(a, b) == 1 ? a : b);
     }
@@ -1262,7 +1262,7 @@ public static class EnumerableExtensions
     /// <returns></returns>
     public static T? MinBy<T>(this IEnumerable<T> items, [DisallowNull] Func<T, T, int> comparer)
     {
-        comparer.ThrowIfNull(nameof(comparer));
+        comparer.ThrowIfNull();
 
         T? min = default;
 
@@ -1453,7 +1453,7 @@ public static class EnumerableExtensions
     /// <returns></returns>
     public static IEnumerable<T> OnAdjacentElements<T>(this IEnumerable<T> items, [DisallowNull] Action<T, T> action)
     {
-        action.ThrowIfNull(nameof(action));
+        action.ThrowIfNull();
 
         var it = items.GetEnumerator();
         if (!it.MoveNext()) yield break;
@@ -1479,7 +1479,7 @@ public static class EnumerableExtensions
     /// <returns></returns>
     public static IEnumerable<T> OnEach<T>(this IEnumerable<T> items, [DisallowNull] Action<T> action)
     {
-        action.ThrowIfNull(nameof(action));
+        action.ThrowIfNull();
 
         foreach (var item in items)
         {
@@ -1497,7 +1497,7 @@ public static class EnumerableExtensions
     /// <returns></returns>
     public static IEnumerable<T> OnEmpty<T>(this IEnumerable<T> items, [DisallowNull] Action action)
     {
-        action.ThrowIfNull(nameof(action));
+        action.ThrowIfNull();
 
         var it = items.GetEnumerator();
         if (!it.MoveNext())
@@ -1522,7 +1522,7 @@ public static class EnumerableExtensions
     /// <returns></returns>
     public static IEnumerable<T> OnFirst<T>(this IEnumerable<T> items, [DisallowNull] Action action)
     {
-        action.ThrowIfNull(nameof(action));
+        action.ThrowIfNull();
 
         var it = items.GetEnumerator();
         if (!it.MoveNext()) yield break;
@@ -1544,7 +1544,7 @@ public static class EnumerableExtensions
     /// <returns></returns>
     public static IEnumerable<T> OnFirst<T>(this IEnumerable<T> items, [DisallowNull] Action<T> action)
     {
-        action.ThrowIfNull(nameof(action));
+        action.ThrowIfNull();
 
         var it = items.GetEnumerator();
         if (!it.MoveNext()) yield break;
@@ -1567,7 +1567,7 @@ public static class EnumerableExtensions
     /// <returns></returns>
     public static IEnumerable<T> OnFirstTakeOne<T>(this IEnumerable<T> items, [DisallowNull] Action<T> action)
     {
-        action.ThrowIfNull(nameof(action));
+        action.ThrowIfNull();
 
         var it = items.GetEnumerator();
         if (!it.MoveNext()) yield break;
@@ -1589,7 +1589,7 @@ public static class EnumerableExtensions
     /// <returns></returns>
     public static IEnumerable<T> OnLast<T>(this IEnumerable<T> items, [DisallowNull] Action action)
     {
-        action.ThrowIfNull(nameof(action));
+        action.ThrowIfNull();
 
         var it = items.GetEnumerator();
         if (it.MoveNext())
@@ -1615,7 +1615,7 @@ public static class EnumerableExtensions
     /// <returns></returns>
     public static IEnumerable<T> OnLast<T>(this IEnumerable<T> items, [DisallowNull] Action<T> action)
     {
-        action.ThrowIfNull(nameof(action));
+        action.ThrowIfNull();
 
         var it = items.GetEnumerator();
         if (it.MoveNext())
@@ -1643,7 +1643,7 @@ public static class EnumerableExtensions
     /// <returns></returns>
     public static IEnumerable<T> OnNth<T>(this IEnumerable<T> items, int index, [DisallowNull] Action<T> action)
     {
-        action.ThrowIfNull(nameof(action));
+        action.ThrowIfNull();
 
         var counter = 0;
         foreach (var item in items)
@@ -1665,7 +1665,7 @@ public static class EnumerableExtensions
     /// <returns></returns>
     public static (IEnumerable<T> matching, IEnumerable<T> notMatching) Partition<T>(this IEnumerable<T> items, [DisallowNull] Func<T, bool> predicate)
     {
-        predicate.ThrowIfNull(nameof(predicate));
+        predicate.ThrowIfNull();
 
         (IEnumerable<T> matching, IEnumerable<T> notMatching) = (Enumerable.Empty<T>(), Enumerable.Empty<T>());
         foreach (var item in items)
@@ -1687,9 +1687,9 @@ public static class EnumerableExtensions
         [DisallowNull] Func<T, TResult> match,
         [DisallowNull] Func<T, TResult> noMatch)
     {
-        predicate.ThrowIfNull(nameof(predicate));
-        match.ThrowIfNull(nameof(match));
-        noMatch.ThrowIfNull(nameof(noMatch));
+        predicate.ThrowIfNull();
+        match.ThrowIfNull();
+        noMatch.ThrowIfNull();
 
         (IEnumerable<TResult> matching, IEnumerable<TResult> notMatching) = (Enumerable.Empty<TResult>(), Enumerable.Empty<TResult>());
         foreach (var item in items)
@@ -1754,7 +1754,7 @@ public static class EnumerableExtensions
     /// <returns></returns>
     public static IEnumerable<T> PrependIfNotEmpty<T>(this IEnumerable<T> items, [DisallowNull] Func<T> factory)
     {
-        factory.ThrowIfNull(nameof(factory));
+        factory.ThrowIfNull();
 
         var it = items.GetEnumerator();
         if (!it.MoveNext()) yield break;
@@ -1774,7 +1774,7 @@ public static class EnumerableExtensions
     /// <returns></returns>
     public static IEnumerable<T> QuantitativeDifference<T>(this IEnumerable<T> lhs, [DisallowNull] IEnumerable<T> rhs)
     {
-        rhs.ThrowIfNull(nameof(rhs));
+        rhs.ThrowIfNull();
 
         var lhsGrouped = lhs.GroupBy(l => l);
         var rhsGrouped = rhs.GroupBy(r => r);
@@ -1885,7 +1885,7 @@ public static class EnumerableExtensions
     /// <returns></returns>
     public static IEnumerable<T> Replace<T>(this IEnumerable<T> items, [DisallowNull] IEnumerable<(T item, int index)> replaceTuples)
     {
-        replaceTuples.ThrowIfNull(nameof(replaceTuples));
+        replaceTuples.ThrowIfNull();
 
         return Replace(items, replaceTuples, item => item);
     }
@@ -1900,7 +1900,7 @@ public static class EnumerableExtensions
     /// <returns></returns>
     public static IEnumerable<TResult> Replace<T, TResult>(this IEnumerable<T> items, [DisallowNull] Func<T, int, TResult> project)
     {
-        project.ThrowIfNull(nameof(project));
+        project.ThrowIfNull();
 
         foreach (var (item, counter) in items.Enumerate())
         {
@@ -1922,8 +1922,8 @@ public static class EnumerableExtensions
         [DisallowNull] IEnumerable<(T item, int index)> replaceTuples,
         [DisallowNull] Func<T, TResult> project)
     {
-        replaceTuples.ThrowIfNull(nameof(replaceTuples));
-        project.ThrowIfNull(nameof(project));
+        replaceTuples.ThrowIfNull();
+        project.ThrowIfNull();
 
         var orderedTuples = replaceTuples.Where(tuple => 0 <= tuple.index)
                                          .OrderBy(tuple => tuple.index)
@@ -1962,7 +1962,7 @@ public static class EnumerableExtensions
     /// <returns>Returns an empty list if not all projections are Opt.Some.</returns>
     public static IEnumerable<TResult> SelectAll<T, TResult>(this IEnumerable<T> items, [DisallowNull] Func<T, Opt<TResult>> project)
     {
-        project.ThrowIfNull(nameof(project));
+        project.ThrowIfNull();
 
         var results = Enumerable.Empty<TResult>();
         var notAllItems = false;
@@ -2060,7 +2060,7 @@ public static class EnumerableExtensions
     /// <returns></returns>
     public static Opt<T> SingleAsOpt<T>(this IEnumerable<T> items, [DisallowNull] Func<T, bool> predicate)
     {
-        predicate.ThrowIfNull(nameof(predicate));
+        predicate.ThrowIfNull();
 
         var found = Opt.None<T>();
         foreach (var item in items)
@@ -2139,7 +2139,7 @@ public static class EnumerableExtensions
     /// <returns></returns>
     public static T Smallest<T>(this IEnumerable<T> items, Func<T, IComparable> selector)
     {
-        selector.ThrowIfNull(nameof(selector));
+        selector.ThrowIfNull();
 
         return items.Aggregate((a, b) => selector(a).CompareTo(selector(b)) == -1 ? a : b);
     }
@@ -2155,7 +2155,7 @@ public static class EnumerableExtensions
     public static T Smallest<T, TSelector>(this IEnumerable<T> items, [DisallowNull] Func<T, TSelector> selector)
         where TSelector : IComparable<TSelector>
     {
-        selector.ThrowIfNull(nameof(selector));
+        selector.ThrowIfNull();
 
         return items.Aggregate((a, b) => selector(a).CompareTo(selector(b)) == -1 ? a : b);
     }
@@ -2223,7 +2223,7 @@ public static class EnumerableExtensions
     /// <returns></returns>
     public static IEnumerable<T> ThrowIfEmpty<T>(this IEnumerable<T> items, [DisallowNull] Func<Exception> exceptionFactory)
     {
-        exceptionFactory.ThrowIfNull(nameof(exceptionFactory));
+        exceptionFactory.ThrowIfNull();
 
         if (!items.Any())
         {
@@ -2262,8 +2262,8 @@ public static class EnumerableExtensions
         [DisallowNull] Func<TLeft, TRight> project,
         bool isExhaustive)
     {
-        predicate.ThrowIfNull(nameof(predicate));
-        project.ThrowIfNull(nameof(project));
+        predicate.ThrowIfNull();
+        project.ThrowIfNull();
 
         var tuple = new DualOrdinalStreams<TLeft, TRight>();
 
@@ -2293,7 +2293,7 @@ public static class EnumerableExtensions
     public static IMultiMap<TKey, T> ToMap<T, TKey>(this IEnumerable<T> items, [DisallowNull] Func<T, TKey> keySelector)
         where TKey : notnull
     {
-        keySelector.ThrowIfNull(nameof(keySelector));
+        keySelector.ThrowIfNull();
 
         return ToMultiMap<T, TKey, T>(items, keySelector, x => x);
     }
@@ -2304,7 +2304,7 @@ public static class EnumerableExtensions
         [DisallowNull] Func<T, TValue> valueSelector)
         where TKey : notnull
     {
-        keySelector.ThrowIfNull(nameof(keySelector));
+        keySelector.ThrowIfNull();
 
         var dictionary = new MultiMap<TKey, TValue>();
         foreach (var item in items)
@@ -2319,8 +2319,8 @@ public static class EnumerableExtensions
         [DisallowNull] Func<TSource, TRhs> rhsSelector)
         where TLhs : notnull
     {
-        lhsSelector.ThrowIfNull(nameof(lhsSelector));
-        rhsSelector.ThrowIfNull(nameof(rhsSelector));
+        lhsSelector.ThrowIfNull();
+        rhsSelector.ThrowIfNull();
 
         var one2Many = new MultiMap<TLhs, TRhs>();
         foreach (var sourceElem in source)
@@ -2357,8 +2357,8 @@ public static class EnumerableExtensions
         [DisallowNull] Func<TSource, TLhs> lhsSelector,
         [DisallowNull] Func<TSource, IEnumerable<TRhs>> rhsSelector)
     {
-        lhsSelector.ThrowIfNull(nameof(lhsSelector));
-        rhsSelector.ThrowIfNull(nameof(rhsSelector));
+        lhsSelector.ThrowIfNull();
+        rhsSelector.ThrowIfNull();
 
         foreach (var sourceElem in source)
         {
@@ -2379,14 +2379,14 @@ public static class EnumerableExtensions
     /// <returns></returns>
     public static IEnumerable<Opt<TResult>> ToOptionals<T, TResult>(this IEnumerable<T> items, [DisallowNull] Func<T, Opt<TResult>> project)
     {
-        project.ThrowIfNull(nameof(project));
+        project.ThrowIfNull();
 
         return items.Select(project);
     }
 
     public static IEnumerable<Ordinal<T>> ToOrdinals<T>(this IEnumerable<T> items, [DisallowNull] Func<T, bool> predicate)
     {
-        predicate.ThrowIfNull(nameof(predicate));
+        predicate.ThrowIfNull();
 
         return items.Enumerate()
                     .Where(tuple => predicate(tuple.item))
@@ -2471,7 +2471,7 @@ public static class EnumerableExtensions
     /// <returns></returns>
     public static bool TryWhereAll<T>(this IEnumerable<T> items, [DisallowNull] Func<T, bool> predicate, out IEnumerable<T> elems)
     {
-        predicate.ThrowIfNull(nameof(predicate));
+        predicate.ThrowIfNull();
 
         elems = Enumerable.Empty<T>();
 
@@ -2497,7 +2497,7 @@ public static class EnumerableExtensions
     /// <returns></returns>
     public static IEnumerable<T> WhereAll<T>(this IEnumerable<T> items, [DisallowNull] Func<T, bool> predicate)
     {
-        predicate.ThrowIfNull(nameof(predicate));
+        predicate.ThrowIfNull();
 
         foreach (var item in items)
         {
@@ -2563,9 +2563,9 @@ public static class EnumerableExtensions
         [DisallowNull] Func<T1, T2, bool> comparer,
         [DisallowNull] Func<T1, T2, TResult> resultSelector)
     {
-        second.ThrowIfNull(nameof(second));
-        comparer.ThrowIfNull(nameof(comparer));
-        resultSelector.ThrowIfNull(nameof(resultSelector));
+        second.ThrowIfNull();
+        comparer.ThrowIfNull();
+        resultSelector.ThrowIfNull();
 
         return from firstItem in first
                from secondItem in second

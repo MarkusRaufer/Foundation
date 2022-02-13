@@ -9,7 +9,7 @@ public struct ValueEnumerator<T> : IEnumerator<T?>
 
     public ValueEnumerator([DisallowNull] IEnumerator<T> enumerator)
     {
-        _enumerator = enumerator.ThrowIfNull(nameof(enumerator));
+        _enumerator = enumerator.ThrowIfNull();
     }
     public T Current => _enumerator.Current;
 

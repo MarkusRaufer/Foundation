@@ -11,7 +11,7 @@ public static class ObjectExtensions
     {
         if (obj is T t) return t;
 
-        creator.ThrowIfNull(nameof(creator));
+        creator.ThrowIfNull();
 
         return creator();
     }
@@ -50,7 +50,7 @@ public static class ObjectExtensions
 
     public static object? ConvertTo(this object? obj, [DisallowNull] Type targetType)
     {
-        targetType.ThrowIfNull(nameof(targetType));
+        targetType.ThrowIfNull();
 
         if (null == obj) return null;
 
@@ -128,7 +128,7 @@ public static class ObjectExtensions
     /// <returns></returns>
     public static bool IsOfGenericType(this object obj, [DisallowNull] Type type)
     {
-        ArgumentNullException.ThrowIfNull(obj);
+        type.ThrowIfNull();
 
         var objType = obj.GetType();
         if (!objType.IsGenericType) return false;
@@ -137,7 +137,7 @@ public static class ObjectExtensions
         return generic == type;
     }
 
-    public static T ThrowIf<T>(this T? obj, [DisallowNull] Func<T, bool> predicate, [DisallowNull] string name)
+    public static T ThrowIf<T>(this T? obj, [DisallowNull] Func<T, bool> predicate, [CallerArgumentExpression("obj")] string name = "")
     {
         if (null == obj) throw new ArgumentNullException(name);
 
@@ -145,7 +145,7 @@ public static class ObjectExtensions
     }
 
     [return: NotNull]
-    public static T ThrowIfNull<T>(this T? obj, [DisallowNull] string name) => obj ?? throw new ArgumentNullException(name);
+    public static T ThrowIfNull<T>(this T? obj, [CallerArgumentExpression("obj")] string name = "") => obj ?? throw new ArgumentNullException(name);
 
     /// <summary>
     /// transforms an object to a boolean if it is convertible.

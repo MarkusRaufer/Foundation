@@ -16,7 +16,7 @@ public struct ObservableValue<T> : IEquatable<ObservableValue<T>>
 
     public ObservableValue(T? value)
     {
-        _value = value.ThrowIfNull(nameof(value));
+        _value = value.ThrowIfNull();
         ValueChanged = default;
     }
 

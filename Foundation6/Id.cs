@@ -13,7 +13,7 @@ public struct Id
     private readonly int _hashCode;
     internal Id(Type? entityType, [DisallowNull] IComparable value)
     {
-        Value = value.ThrowIfNull(nameof(value));
+        Value = value.ThrowIfNull();
         EntityType = entityType ?? typeof(object);
 
         CompareValueIfEmpty = -1;
@@ -137,7 +137,7 @@ public struct Id<TEntity>
 
     internal Id(IComparable value)
     {
-        Value = value.ThrowIfNull(nameof(value));
+        Value = value.ThrowIfNull();
         CompareValueIfEmpty = -1;
         CompareValueIfIncompatible = 1;
 

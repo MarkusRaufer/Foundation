@@ -8,7 +8,7 @@ public static class EnumerableExtensions
 {
     public static IEnumerable AfterEveryObject(this IEnumerable items, [DisallowNull] Action action)
     {
-        action.ThrowIfNull(nameof(action));
+        action.ThrowIfNull();
 
         var it = items.GetEnumerator();
         var next = it.MoveNext();
@@ -31,7 +31,7 @@ public static class EnumerableExtensions
 
     public static bool AnyObject(this IEnumerable items, [DisallowNull] Func<object, bool> predicate)
     {
-        predicate.ThrowIfNull(nameof(predicate));
+        predicate.ThrowIfNull();
 
         foreach (var item in items)
         {
@@ -81,7 +81,7 @@ public static class EnumerableExtensions
 
     public static void ForEachObject(this IEnumerable items, [DisallowNull] Action<object> action)
     {
-        action.ThrowIfNull(nameof(action));
+        action.ThrowIfNull();
 
         foreach (var item in items)
             action(item);
@@ -96,7 +96,7 @@ public static class EnumerableExtensions
     /// <returns></returns>
     public static IEnumerable<T> Ignore<T>(this IEnumerable<T> items, [DisallowNull] Func<T, bool> predicate)
     {
-        predicate.ThrowIfNull(nameof(predicate));
+        predicate.ThrowIfNull();
 
         foreach (var item in items)
         {
@@ -170,7 +170,7 @@ public static class EnumerableExtensions
     /// <returns></returns>
     public static IEnumerable OnFirstObject(this IEnumerable items, [DisallowNull] Action action)
     {
-        action.ThrowIfNull(nameof(action));
+        action.ThrowIfNull();
 
         var it = items.GetEnumerator();
         if (!it.MoveNext()) yield break;
@@ -193,7 +193,7 @@ public static class EnumerableExtensions
     /// <returns></returns>
     public static IEnumerable OnFirstObject(this IEnumerable items, [DisallowNull] Action<object> action)
     {
-        action.ThrowIfNull(nameof(action));
+        action.ThrowIfNull();
 
         var it = items.GetEnumerator();
         if (!it.MoveNext()) yield break;
@@ -217,7 +217,7 @@ public static class EnumerableExtensions
 
     public static IEnumerable SelectObject(this IEnumerable items, [DisallowNull] Func<object, object> selector)
     {
-        selector.ThrowIfNull(nameof(selector));
+        selector.ThrowIfNull();
 
         foreach (var item in items)
             yield return selector(item);
@@ -225,7 +225,7 @@ public static class EnumerableExtensions
 
     public static IEnumerable<T> SelectObject<T>(this IEnumerable items, [DisallowNull] Func<object, T> selector)
     {
-        selector.ThrowIfNull(nameof(selector));
+        selector.ThrowIfNull();
 
         foreach (var item in items)
             yield return selector(item);
@@ -233,7 +233,7 @@ public static class EnumerableExtensions
 
     public static IEnumerable SelectObjectByIndex(this IEnumerable items, [DisallowNull] Func<long, bool> selector)
     {
-        selector.ThrowIfNull(nameof(selector));
+        selector.ThrowIfNull();
 
         long i = 0;
         return items.WhereObject(item => selector(i++));
@@ -287,7 +287,7 @@ public static class EnumerableExtensions
 
     public static IEnumerable WhereObject(this IEnumerable items, [DisallowNull] Func<object, bool> selector)
     {
-        selector.ThrowIfNull(nameof(selector));
+        selector.ThrowIfNull();
 
         foreach (var item in items)
         {

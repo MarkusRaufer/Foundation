@@ -12,7 +12,7 @@ public class EntityChangedEvent<TId>
     public EntityChangedEvent(KeyValue<string, TId> identifier, PropertyChangedEvent propertyChanged) 
         : base(identifier)
     {
-        PropertyChanged = propertyChanged.ThrowIfNull(nameof(propertyChanged));
+        PropertyChanged = propertyChanged.ThrowIfNull();
     }
 
     public TId Id => Identifier.Value;
@@ -45,7 +45,7 @@ public class EntityChangedEvent<TObjectType, TId>
         PropertyChangedEvent propertyChanged)
         : base(identifier, propertyChanged)
     {
-        ObjectType = objectType.ThrowIfNull(nameof(objectType));
+        ObjectType = objectType.ThrowIfNull();
     }
 
     public override bool Equals(object? obj) => Equals(obj as EntityChangedEvent<TObjectType, TId>);

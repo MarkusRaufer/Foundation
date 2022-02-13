@@ -11,7 +11,7 @@ public class TestEnumerable<T>
 
     public TestEnumerable(IEnumerable<T> items)
     {
-        _items = items.ThrowIfNull(nameof(items));
+        _items = items.ThrowIfNull();
     }
 
     ~TestEnumerable()

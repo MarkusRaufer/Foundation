@@ -31,7 +31,7 @@ public struct Rc<T>
 
     public Rc(T obj, int counter)
     {
-        Object = obj.ThrowIfNull(nameof(obj));
+        Object = obj.ThrowIfNull();
         Counter = counter;
     }
 

@@ -13,7 +13,7 @@ public static class EnumerableEx
     /// <returns></returns>
     public static IEnumerable<T> Generator<T>([DisallowNull] Func<T, T> factory, T seed)
     {
-        factory.ThrowIfNull(nameof(factory));
+        factory.ThrowIfNull();
 
         var value = seed;
         yield return value;

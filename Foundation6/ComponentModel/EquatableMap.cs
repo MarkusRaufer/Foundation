@@ -25,7 +25,7 @@ public class EquatableMap<TKey, TValue>
 
     public EquatableMap([DisallowNull] IDictionary<TKey, TValue> keyValues)
     {
-        _keyValues = keyValues.ThrowIfNull(nameof(keyValues));
+        _keyValues = keyValues.ThrowIfNull();
     }
 
     public TValue this[TKey key]
@@ -36,7 +36,7 @@ public class EquatableMap<TKey, TValue>
 
     public void Add(TKey key, TValue value)
     {
-        key.ThrowIfNull(nameof(key));
+        key.ThrowIfNull();
 
         Add(Pair.New(key, value));
     }
@@ -56,7 +56,7 @@ public class EquatableMap<TKey, TValue>
 
     public void Add(IEnumerable<KeyValuePair<TKey, TValue>> keyValues)
     {
-        keyValues.ThrowIfNull(nameof(keyValues));
+        keyValues.ThrowIfNull();
 
         var hcb = Foundation.HashCode.CreateBuilder();
         

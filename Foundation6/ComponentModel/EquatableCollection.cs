@@ -17,7 +17,7 @@ public class EquatableCollection<T>
 
     public EquatableCollection([DisallowNull] ICollection<T> collection, bool allowDuplicates = true)
     {
-        _collection = collection.ThrowIfNull(nameof(collection));
+        _collection = collection.ThrowIfNull();
         AllowDuplicates = allowDuplicates;
 
         _hashCode = HashCode.FromObjects(_collection);
@@ -27,7 +27,7 @@ public class EquatableCollection<T>
 
     public void Add(T item)
     {
-        item.ThrowIfNull(nameof(item));
+        item.ThrowIfNull();
         if(!AllowDuplicates && _collection.Contains(item)) throw new ArgumentException($"{item} exists");
 
         var hcb = HashCode.CreateBuilder();
@@ -73,7 +73,7 @@ public class EquatableCollection<T>
 
     public bool Remove(T item)
     {
-        item.ThrowIfNull(nameof(item));
+        item.ThrowIfNull();
 
         var removed = _collection.Remove(item);
 

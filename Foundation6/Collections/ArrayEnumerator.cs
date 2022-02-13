@@ -10,7 +10,7 @@ public class ArrayEnumerator<T> : IEnumerator<T>
 
     public ArrayEnumerator([DisallowNull] T[] array)
     {
-        _array = array.ThrowIfNull(nameof(array));
+        _array = array.ThrowIfNull();
         _enumerator = _array.GetEnumerator();
     }
 

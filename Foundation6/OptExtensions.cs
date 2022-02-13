@@ -69,7 +69,7 @@ public static class OptExtensions
     [return: NotNull]
     public static T ValueOrElse<T>(this Opt<T> option, [DisallowNull] T value)
     {
-        return (option.IsSome) ? option.Value! : value.ThrowIfNull(nameof(value));
+        return (option.IsSome) ? option.Value! : value.ThrowIfNull();
     }
 
     [return: NotNull]

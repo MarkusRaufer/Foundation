@@ -14,7 +14,7 @@ public abstract class HashCodeSelector<T>
 {
     public HashCodeSelector([DisallowNull] T? obj)
     {
-        Object = obj.ThrowIfNull(nameof(obj));
+        Object = obj.ThrowIfNull();
     }
 
     public abstract IEnumerable<int> GetHashCodesFromSelectors();

@@ -44,7 +44,7 @@ namespace Foundation.Collections.Generic
             char pathSeparator = '/')
             : base(identifier, pathSeparator)
         {
-            ObjectType = objectType.ThrowIfNull(nameof(objectType));
+            ObjectType = objectType.ThrowIfNull();
         }
 
         public IdPropertyMap(
@@ -54,7 +54,7 @@ namespace Foundation.Collections.Generic
             char pathSeparator = '/')
             : base(identifier, dictionary, pathSeparator)
         {
-            ObjectType = objectType.ThrowIfNull(nameof(objectType));
+            ObjectType = objectType.ThrowIfNull();
         }
 
         public override bool Equals(object? obj) => Equals(obj as IIdPropertyMap<TObjectType, TId>);
@@ -70,7 +70,7 @@ namespace Foundation.Collections.Generic
 
         public override void HandleEvent(TEvent @event)
         {
-            @event.ThrowIfNull(nameof(@event));
+            @event.ThrowIfNull();
 
             if (!ObjectType!.Equals(@event.ObjectType)) return;
 
@@ -129,7 +129,7 @@ namespace Foundation.Collections.Generic
 
         public override void HandleEvent([DisallowNull] TEvent @event)
         {
-            @event.ThrowIfNull(nameof(@event));
+            @event.ThrowIfNull();
 
             if (!Identifier.Equals(@event.Identifier)) return;
 

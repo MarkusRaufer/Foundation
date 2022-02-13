@@ -18,7 +18,7 @@ public class EquatableReadOnlyDictionary<TKey, TValue>
 
     public EquatableReadOnlyDictionary(IDictionary<TKey, TValue> dictionary)
     {
-        _dictionary = dictionary.ThrowIfNull(nameof(dictionary));
+        _dictionary = dictionary.ThrowIfNull();
         _hashCode = HashCode.FromObjects(_dictionary.ToKeyValues());
     }
 

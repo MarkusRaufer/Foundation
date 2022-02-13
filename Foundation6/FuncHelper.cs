@@ -6,7 +6,7 @@ public static class FuncHelper
 {
     public static Func<object, object?> CreateObjectFunc<T, TResult>([DisallowNull] Func<T, TResult>? func)
     {
-        ArgumentNullException.ThrowIfNull(func);
+        func.ThrowIfNull();
 
         return x => x is T t ? func(t) : null;
     }
@@ -18,7 +18,7 @@ public static class FuncHelper
 
     public static Func<string, object>? StringToScalarValueConverter([DisallowNull] Type type)
     {
-        type.ThrowIfNull(nameof(type));
+        type.ThrowIfNull();
 
         if (!type.IsScalar()) return null;
 

@@ -18,7 +18,7 @@ public record class IdentifiableChangedEvent<TObjectType, TId>(TObjectType Objec
 //{
 //    public IdentifiableChangedEvent(TId id, PropertyChangedEvent propertyChanged) : base(id)
 //    {
-//        PropertyChanged = propertyChanged.ThrowIfNull(nameof(propertyChanged));
+//        PropertyChanged = propertyChanged.ThrowIfNull();
 //    }
 
 //    [NotNull]
@@ -49,7 +49,7 @@ public record class IdentifiableChangedEvent<TObjectType, TId>(TObjectType Objec
 //        PropertyChangedEvent propertyChanged)
 //        : base(id, propertyChanged)
 //    {
-//        ObjectType = objectType.ThrowIfNull(nameof(objectType));
+//        ObjectType = objectType.ThrowIfNull();
 //    }
 
 //    public override bool Equals(object? obj) => Equals(obj as IdentifiableChangedEvent<TObjectType, TId>);

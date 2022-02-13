@@ -14,7 +14,7 @@ public struct FusedValue<T>
 {
     internal FusedValue([DisallowNull] T value)
     {
-        Value = value.ThrowIfNull(nameof(value));
+        Value = value.ThrowIfNull();
         IsInitialized = true;
     }
 
@@ -73,8 +73,8 @@ public struct Fused<T>
 
     public Fused(T? value, [DisallowNull] Func<T, bool> predicate)
     {
-        _value = value.ThrowIfNull(nameof(value));
-        _predicate = predicate.ThrowIfNull(nameof(predicate));
+        _value = value.ThrowIfNull();
+        _predicate = predicate.ThrowIfNull();
         IsBlown = false;
     }
 

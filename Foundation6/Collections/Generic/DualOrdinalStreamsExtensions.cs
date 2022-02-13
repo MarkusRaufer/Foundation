@@ -23,8 +23,8 @@ namespace Foundation.Collections.Generic
             [DisallowNull] Func<TLeft, TRight> project,
             bool isExhaustive)
         {
-            predicate.ThrowIfNull(nameof(predicate));
-            project.ThrowIfNull(nameof(project));
+            predicate.ThrowIfNull();
+            project.ThrowIfNull();
 
             var filteredTuple = new DualOrdinalStreams<TLeft, TRight>
             {
@@ -60,7 +60,7 @@ namespace Foundation.Collections.Generic
             this DualOrdinalStreams<TLeft, TRight> dualStreams, 
             [DisallowNull] Func<TLeft, TRight> project)
         {
-            project.ThrowIfNull(nameof(project));
+            project.ThrowIfNull();
 
             Opt<TRight> toRightValue(Opt<TLeft> opt)
             {

@@ -8,7 +8,7 @@ public struct Params
 
     public Params(params object[] values)
     {
-        _values = values.ThrowIfNull(nameof(values));
+        _values = values.ThrowIfNull();
         _isInitialized = true;
     }
 
@@ -37,7 +37,7 @@ public struct Params<T>
 
     public Params(params T[] values)
     {
-        _values = values.ThrowIfNull(nameof(values));
+        _values = values.ThrowIfNull();
         _isInitialized = true;
     }
 

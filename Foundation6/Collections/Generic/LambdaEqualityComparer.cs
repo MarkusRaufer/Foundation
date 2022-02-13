@@ -21,7 +21,7 @@ public class LambdaEqualityComparer<T> : IEqualityComparer<T>
     /// <param name="hashCodeFunc"></param>
     public LambdaEqualityComparer(Func<T?, int>? hashCodeFunc)
     {
-        _hashCodeFunc = hashCodeFunc.ThrowIfNull(nameof(hashCodeFunc));
+        _hashCodeFunc = hashCodeFunc.ThrowIfNull();
 
         _predicate = (a, b) =>
         {
@@ -33,7 +33,7 @@ public class LambdaEqualityComparer<T> : IEqualityComparer<T>
 
     public LambdaEqualityComparer([DisallowNull] Func<T?, T?, bool> predicate, Func<T?, int>? hashCodeFunc)
     {
-        _predicate = predicate.ThrowIfNull(nameof(predicate));
+        _predicate = predicate.ThrowIfNull();
         _hashCodeFunc = hashCodeFunc ?? DefaultHashCodeFunc;
     }
 

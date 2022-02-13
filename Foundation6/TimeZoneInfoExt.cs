@@ -4,7 +4,7 @@ public static class TimeZoneInfoExt
 {
     public static TimeSpan GetUtcOffset(this TimeZoneInfo timeZoneInfo)
     {
-        timeZoneInfo.ThrowIfNull(nameof(timeZoneInfo));
+        timeZoneInfo.ThrowIfNull();
         var adjustmentRule = timeZoneInfo.GetAdjustmentRules().FirstOrDefault();
         return null != adjustmentRule
             ? adjustmentRule.DaylightDelta + timeZoneInfo.BaseUtcOffset

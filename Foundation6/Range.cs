@@ -26,7 +26,7 @@ public struct Range<TIn, TOut>
 
     public Range(params IRangeExpression<TIn>[] rangeExpressions)
     {
-        _rangeExpressions = rangeExpressions.ThrowIfNull(nameof(rangeExpressions));
+        _rangeExpressions = rangeExpressions.ThrowIfNull();
         _containsOnlyValueExpressions = rangeExpressions.All(re => re is IValueRangeExpression);
     }
 

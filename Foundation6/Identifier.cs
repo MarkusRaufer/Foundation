@@ -18,7 +18,7 @@ public readonly struct Identifier
 
     internal Identifier([DisallowNull] IComparable value)
     {
-        Value = value.ThrowIfNull(nameof(value));
+        Value = value.ThrowIfNull();
 
         CompareValueIfEmpty = -1;
         _isInitialized = true;
@@ -133,7 +133,7 @@ public struct Identifier<T>
 
     internal Identifier(T value)
     {
-        Value = value.ThrowIfNull(nameof(value));
+        Value = value.ThrowIfNull();
         CompareValueIfEmpty = -1;
         _isInitialized = true;
     }
@@ -239,8 +239,8 @@ public struct Identifier<TEntityType, T>
 
     internal Identifier(TEntityType entityType, T value)
     {
-        EntityType = entityType.ThrowIfNull(nameof(entityType));
-        Value = value.ThrowIfNull(nameof(value));
+        EntityType = entityType.ThrowIfNull();
+        Value = value.ThrowIfNull();
 
         CompareValueIfEmpty = -1;
         CompareValueIfIncompatible = 1;

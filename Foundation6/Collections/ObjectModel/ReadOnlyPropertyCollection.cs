@@ -16,7 +16,7 @@ namespace Foundation.Collections.ObjectModel
 
         public ReadOnlyPropertyCollection(PropertyCollection properties)
         {
-            _properties = properties.ThrowIfNull(nameof(properties));
+            _properties = properties.ThrowIfNull();
         }
         
         public bool ContainsProperty(string name) => _properties.ContainsProperty(name);

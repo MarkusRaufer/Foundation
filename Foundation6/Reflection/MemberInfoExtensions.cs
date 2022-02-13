@@ -18,7 +18,7 @@ public static class MemberInfoExtensions
 #nullable enable
     public static object? GetValue(this MemberInfo memberInfo, object? obj)
     {
-        memberInfo.ThrowIfNull(nameof(memberInfo));
+        memberInfo.ThrowIfNull();
         if (null == obj) return null;
 
         return memberInfo switch

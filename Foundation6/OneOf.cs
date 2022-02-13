@@ -15,7 +15,7 @@ public class OneOf<T1, T2>
 
     public OneOf(T1 t1)
     {
-        t1.ThrowIfNull(nameof(t1));
+        t1.ThrowIfNull();
         Item1 = Opt.Some(t1);
 
         OrdinalIndex = 1;
@@ -23,7 +23,7 @@ public class OneOf<T1, T2>
 
     public OneOf(T2 t2)
     {
-        t2.ThrowIfNull(nameof(t2));
+        t2.ThrowIfNull();
         Item2 = Opt.Some(t2);
 
         OrdinalIndex = 2;
@@ -81,7 +81,7 @@ public class OneOf<T1, T2, T3> : OneOf<T1, T2>
 
     public OneOf(T3 t3)
     {
-        t3.ThrowIfNull(nameof(t3));
+        t3.ThrowIfNull();
         Item3 = Opt.Some(t3);
 
         OrdinalIndex = 3;
@@ -138,7 +138,7 @@ public class OneOf<T1, T2, T3, T4> : OneOf<T1, T2, T3>
 
     public OneOf(T4 t4)
     {
-        t4.ThrowIfNull(nameof(t4));
+        t4.ThrowIfNull();
         Item4 = Opt.Some(t4);
 
         OrdinalIndex = 4;
@@ -180,7 +180,7 @@ public class OneOf<T1, T2, T3, T4, T5> : OneOf<T1, T2, T3, T4>
 {
     public OneOf(T5 t5)
     {
-        t5.ThrowIfNull(nameof(t5));
+        t5.ThrowIfNull();
         Item5 = Opt.Some(t5);
 
         OrdinalIndex = 5;

@@ -9,7 +9,7 @@ public class TypedEnumerator<T> : IEnumerator<T>
 
     public TypedEnumerator([DisallowNull] IEnumerator enumerator)
     {
-        _enumerator = enumerator.ThrowIfNull(nameof(enumerator));
+        _enumerator = enumerator.ThrowIfNull();
     }
 
     public T Current => (T)_enumerator.Current;

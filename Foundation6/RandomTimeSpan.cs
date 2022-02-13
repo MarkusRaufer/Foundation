@@ -17,7 +17,7 @@ public struct RandomTimeSpan
 
     private RandomTimeSpan(Random random, TimeSpan min, TimeSpan max)
     {
-        _random = random.ThrowIfNull(nameof(random));
+        _random = random.ThrowIfNull();
         if (min > max) throw new ArgumentOutOfRangeException("max must be greater than min");
 
         Min = min;

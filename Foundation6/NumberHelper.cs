@@ -11,7 +11,7 @@ public static class NumberHelper
 
     public static IEnumerable<TResult> GetDigits<TResult>(int value, [DisallowNull] Func<int, TResult> projection)
     {
-        projection.ThrowIfNull(nameof(projection));
+        projection.ThrowIfNull();
 
         var digits = new Stack<TResult>();
 
@@ -30,7 +30,7 @@ public static class NumberHelper
 
     public static IEnumerable<TResult> GetDigits<TResult>(long value, [DisallowNull] Func<long, TResult> projection)
     {
-        projection.ThrowIfNull(nameof(projection));
+        projection.ThrowIfNull();
 
         var digits = new Stack<TResult>();
 

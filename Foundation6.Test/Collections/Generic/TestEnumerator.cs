@@ -13,7 +13,7 @@ public class TestEnumerator<T> : IEnumerator<T>
 
     public TestEnumerator(IEnumerator<T> enumerator)
     {
-        _enumerator = enumerator.ThrowIfNull(nameof(enumerator));
+        _enumerator = enumerator.ThrowIfNull();
     }
 
     ~TestEnumerator()

@@ -5,7 +5,7 @@ using System.Diagnostics.CodeAnalysis;
 public abstract class Identifiable<TId> : IEquatable<IIdentifiable<TId>>
     where TId : notnull
 {
-    protected Identifiable(TId id) => Id = id.ThrowIfNull(nameof(id))!;
+    protected Identifiable(TId id) => Id = id.ThrowIfNull()!;
 
     public override bool Equals(object? obj) => obj is IIdentifiable<TId> other && Equals(other);
 

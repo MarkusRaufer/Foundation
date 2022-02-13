@@ -60,7 +60,7 @@ namespace Foundation.Collections.Generic
             char pathSeparator = '/')
             : base(dictionary, pathSeparator)
         {
-            ObjectType = objectType.ThrowIfNull(nameof(objectType));
+            ObjectType = objectType.ThrowIfNull();
         }
 
         public override bool Equals(object? obj) => base.Equals(obj);
@@ -97,7 +97,7 @@ namespace Foundation.Collections.Generic
 
         protected PropertyMap([DisallowNull] SortedDictionary<string, object> dictionary, char pathSeparator = '/')
         {
-            _dictionary = dictionary.ThrowIfNull(nameof(dictionary));
+            _dictionary = dictionary.ThrowIfNull();
             PathSeparator = pathSeparator;
 
             _keys = new MultiMap<string, string>();
