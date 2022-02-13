@@ -128,7 +128,7 @@ public static class ObjectExtensions
     /// <returns></returns>
     public static bool IsOfGenericType(this object obj, [DisallowNull] Type type)
     {
-        ArgumentNullException.ThrowIfNull(obj, nameof(obj));
+        ArgumentNullException.ThrowIfNull(obj);
 
         var objType = obj.GetType();
         if (!objType.IsGenericType) return false;

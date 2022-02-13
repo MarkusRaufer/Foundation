@@ -8,7 +8,7 @@ public class TimeDefRange : TimeDefVisitor
 
     protected void SetGreatest([DisallowNull] TimeDef? td)
     {
-        ArgumentNullException.ThrowIfNull(td, nameof(td));
+        ArgumentNullException.ThrowIfNull(td);
 
         if (Greatest.IsNone || Greatest.ValueOrThrow().Compare(td) == -1)
             Greatest = Opt.Some(td);

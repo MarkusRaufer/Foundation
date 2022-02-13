@@ -176,14 +176,14 @@ public static class TypeExtensions
 
     public static bool IsScalar(this Type? type)
     {
-        ArgumentNullException.ThrowIfNull(type, nameof(type));
+        ArgumentNullException.ThrowIfNull(type);
 
         return type.IsPrimitive || type == typeof(string) || type == typeof(DateTime);
     }
 
     public static bool IsScalarArrayType(this Type? type)
     {
-        ArgumentNullException.ThrowIfNull(type, nameof(type));
+        ArgumentNullException.ThrowIfNull(type);
 
         if (!type.IsArray) return false;
 
@@ -192,7 +192,7 @@ public static class TypeExtensions
 
     public static bool IsScalarEnumerableType(this Type? type)
     {
-        ArgumentNullException.ThrowIfNull(type, nameof(type));
+        ArgumentNullException.ThrowIfNull(type);
 
         if (!type.IsEnumerable()) return false;
         if (!type.IsGenericType) return false;
@@ -202,7 +202,7 @@ public static class TypeExtensions
 
     public static string ToGenericString(this Type? type)
     {
-        ArgumentNullException.ThrowIfNull(type, nameof(type));
+        ArgumentNullException.ThrowIfNull(type);
 
         if (!type.IsGenericTypeDefinition && !type.IsGenericType)
             return type.ToString();

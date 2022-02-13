@@ -3,6 +3,9 @@
 using System.ComponentModel;
 using System.Diagnostics.CodeAnalysis;
 
+/// <summary>
+/// Value-object with a name and a value It implements INotifyPropertyChanged.
+/// </summary>
 public class Property : Property<object>
 {
     public Property(string name, object? value = null) : base(name, value)
@@ -10,6 +13,10 @@ public class Property : Property<object>
     }
 }
 
+/// <summary>
+/// Value-object with a name and a value It implements INotifyPropertyChanged.
+/// </summary>
+/// <typeparam name="TValue"></typeparam>
 public class Property<TValue>
     : IEquatable<Property<TValue>>
     , INotifyPropertyChanged

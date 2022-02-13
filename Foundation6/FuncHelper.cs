@@ -6,7 +6,7 @@ public static class FuncHelper
 {
     public static Func<object, object?> CreateObjectFunc<T, TResult>([DisallowNull] Func<T, TResult>? func)
     {
-        ArgumentNullException.ThrowIfNull(func, nameof(func));
+        ArgumentNullException.ThrowIfNull(func);
 
         return x => x is T t ? func(t) : null;
     }

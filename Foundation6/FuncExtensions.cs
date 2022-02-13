@@ -20,7 +20,7 @@ public static class FuncExtensions
     /// <returns></returns>
     public static Func<object?> ToObjectFunc<T>(this Func<T> func)
     {
-        ArgumentNullException.ThrowIfNull(func, nameof(func));
+        ArgumentNullException.ThrowIfNull(func);
 
         return () => func();
     }
