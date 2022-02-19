@@ -3,6 +3,7 @@
 using Foundation;
 using Foundation.ComponentModel;
 using System.Diagnostics.CodeAnalysis;
+using System.Runtime.CompilerServices;
 using System.Text;
 
 public static class EnumerableExtensions
@@ -2209,7 +2210,7 @@ public static class EnumerableExtensions
     /// <typeparam name="T"></typeparam>
     /// <param name="items"></param>
     /// <returns></returns>
-    public static IEnumerable<T> ThrowIfEmpty<T>(this IEnumerable<T> items, string name)
+    public static IEnumerable<T> ThrowIfEmpty<T>(this IEnumerable<T> items, [CallerArgumentExpression("items")] string name = "")
     {
         return ThrowIfEmpty(items, () => new ArgumentNullException(name));
     }
