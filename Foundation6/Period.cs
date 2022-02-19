@@ -2,9 +2,7 @@
 
 using System.Diagnostics;
 
-// TODO: implement IComparable
-[DebuggerDisplay("Start={Start}, End={End}, Duration={Duration}")]
-public struct Period
+public struct Period : IComparable<Period>
 {
     public enum Direction
     {
@@ -40,8 +38,8 @@ public struct Period
 
     public static bool operator <(Period lhs, Period rhs)
     {
-        if (lhs.IsEmpty) return false;
-        if (rhs.IsEmpty) return true;
+        if (lhs.IsEmpty) return true;
+        if (rhs.IsEmpty) return false;
 
         if (lhs.Start < rhs.Start) return true;
         if (lhs.Start > rhs.Start) return false;
@@ -63,6 +61,12 @@ public struct Period
         return !(lhs < rhs);
     }
 
+    public int CompareTo(Period other)
+    {
+        if(this == other) return 0;
+        return this < other ? -1 : 1;
+    }
+
     public TimeSpan Duration => End - Start;
 
     public DateTime End { get; private set; }
@@ -72,8 +76,7 @@ public struct Period
     public bool Equals(Period other)
     {
         if (IsEmpty) return other.IsEmpty;
-
-        return !other.IsEmpty && Start.Equals(other.Start) && End.Equals(other.End);
+        return !other.IsEmpty && Start == other.Start && End == other.End;
     }
 
     public override int GetHashCode() => _hashCode;
@@ -113,6 +116,6 @@ public struct Period
 
     public DateTime Start { get; private set; }
 
-    public override string ToString() => $"{nameof(Start)}={Start}, {nameof(End)}={End}, {nameof(Duration)}={Duration}";
+    public override string ToString() => $"{nameof(Start)}={Start:o}, {nameof(End)}={End:o}, {nameof(Duration)}={Duration}";
 }
 

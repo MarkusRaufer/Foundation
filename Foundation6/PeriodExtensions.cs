@@ -272,7 +272,7 @@ public static class PeriodExtensions
     }
 
     /// <summary>
-    /// returns a period for each hour.
+    /// returns a period for each minute.
     /// </summary>
     /// <param name="period"></param>
     /// <returns></returns>

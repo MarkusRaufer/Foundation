@@ -2,7 +2,7 @@
 
 public class PeriodGenerator : IPeriodGenerator
 {
-    private Func<Period, IEnumerable<Period>> _generator;
+    private readonly Func<Period, IEnumerable<Period>> _generator;
 
     public PeriodGenerator(Func<Period, IEnumerable<Period>> generator)
     {
