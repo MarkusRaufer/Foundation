@@ -1,9 +1,5 @@
 ﻿using NUnit.Framework;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Foundation
 {
@@ -18,7 +14,7 @@ namespace Foundation
             var ts = start - end;
 
             var iso = ts.ToIso8601Period();
-            Assert.AreEqual("-P398DT4H5M6S789", iso);
+            Assert.AreEqual("-P398DT4H5M6S789F", iso);
         }
 
         [Test]
