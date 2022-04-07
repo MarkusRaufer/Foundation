@@ -200,7 +200,7 @@ public static class TypeExtensions
         return type.GenericTypeArguments.All(t => t.IsScalar());
     }
 
-    public static string ToGenericString(this Type? type)
+    public static string ToGenericsString(this Type? type)
     {
         ArgumentNullException.ThrowIfNull(type);
 

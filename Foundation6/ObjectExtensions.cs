@@ -137,6 +137,7 @@ public static class ObjectExtensions
         return generic == type;
     }
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static T ThrowIf<T>(this T? obj, [DisallowNull] Func<T, bool> predicate, [CallerArgumentExpression("obj")] string name = "")
     {
         if (null == obj) throw new ArgumentNullException(name);
@@ -145,7 +146,22 @@ public static class ObjectExtensions
     }
 
     [return: NotNull]
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static T ThrowIfNull<T>(this T? obj, [CallerArgumentExpression("obj")] string name = "") => obj ?? throw new ArgumentNullException(name);
+
+    [return: NotNull]
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static T ThrowIfOutOfRange<T>([DisallowNull] this T obj, [DisallowNull] Func<bool> isInRange, [CallerArgumentExpression("obj")] string name = "")
+    {
+        return isInRange() ? obj : throw new ArgumentOutOfRangeException(name);
+    }
+
+    [return: NotNull]
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static T ThrowIfOutOfRange<T>([DisallowNull] this T obj, [DisallowNull] Func<bool> isInRange, T min, T max, [CallerArgumentExpression("obj")] string name = "")
+    {
+        return isInRange() ? obj : throw new ArgumentOutOfRangeException(name, $"{name} must be between {min} and {max}.");
+    }
 
     /// <summary>
     /// transforms an object to a boolean if it is convertible.
