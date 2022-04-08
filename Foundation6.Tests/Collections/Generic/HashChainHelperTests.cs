@@ -1,4 +1,5 @@
 ﻿using NUnit.Framework;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -8,59 +9,64 @@ namespace Foundation.Collections.Generic;
 public class HashChainHelperTests
 {
     [Test]
-    public void IsConsistant_Should_Return_False_When_Manipulated_ByAddingAnElement()
+    public void IsConsistent_Should_Return_False_When_Manipulated_ByAddingAnElement()
     {
-        var elements = CreateElements(3).Append(HashChainElement.New("four", 4));
+        Func<string, int> getHash = x => x.GetHashCode();
+        var payload = "four";
+        var hash = getHash(payload);
 
-        Assert.IsFalse(HashChainHelper.IsConsistant(elements));
+        var elem = new HashChainElement<string, int>(payload, getHash, hash);
+        var elements = CreateElements(3).Append(elem);
+
+        Assert.IsFalse(HashChainHelper.IsConsistent(elements, x => x.PreviousElementHash));
     }
 
     [Test]
-    public void IsConsistant_Should_Return_False_When_Manipulated_ByRemovingAnElement()
+    public void IsConsistent_Should_Return_False_When_Manipulated_ByRemovingAnElement()
     {
         var elements = CreateElements(3).ToList();
         var element = elements[1];
         elements.Remove(element);
-        Assert.IsFalse(HashChainHelper.IsConsistant(elements));
+        Assert.IsFalse(HashChainHelper.IsConsistent(elements, x => x.PreviousElementHash));
     }
 
     [Test]
-    public void IsConsistant_Should_Return_False_When_Manipulated_ByReplacingAnElement()
+    public void IsConsistent_Should_Return_False_When_Manipulated_ByReplacingAnElement()
     {
         var elements = CreateElements(3).ToList();
         var element = elements[1];
     
         elements.Remove(element);
 
-        element = HashChainElement.New(element.Payload, 12345);
-        Assert.IsFalse(HashChainHelper.IsConsistant(elements));
+        element = HashChainElement.New(element.Payload, x => x.GetHashCode(), Opt.Some(element.Payload.GetHashCode()));
+        Assert.IsFalse(HashChainHelper.IsConsistent(elements, x => x.PreviousElementHash));
     }
 
     [Test]
-    public void IsConsistant_Should_Return_True_When_NotManipulated()
+    public void IsConsistent_Should_Return_True_When_NotManipulated()
     {
         var elements = CreateElements(3);
-        Assert.IsTrue(HashChainHelper.IsConsistant(elements));
+        Assert.IsTrue(HashChainHelper.IsConsistent(elements, x => x.PreviousElementHash));
     }
 
-    private static IEnumerable<HashChainElement<string>> CreateElements(int numberOfElements)
+    private static IEnumerable<HashChainElement<string, int>> CreateElements(int numberOfElements)
     {
-        var prevHash = 0;
+        var prevHash = Opt.None<int>();
         foreach(var number in Enumerable.Range(0, numberOfElements))
         {
             var str = number.ToString();
-            if(0 == prevHash)
+            if(prevHash.IsNone)
             {
-                var firstElem = new HashChainElement<string>(str);
-                prevHash = firstElem.GetHashCode();
+                var firstElem = new HashChainElement<string, int>(str, x => x.GetHashCode(), Opt.None<int>());
+                prevHash = Opt.Some(firstElem.Hash);
                 yield return firstElem;
                 continue;
             }
 
-            var elem = new HashChainElement<string>(str, prevHash);
+            var elem = new HashChainElement<string, int>(str, x => x.GetHashCode(), prevHash);
             yield return elem;
 
-            prevHash = elem.GetHashCode();
+            prevHash = Opt.Some(elem.Hash);
         }
     }
 }

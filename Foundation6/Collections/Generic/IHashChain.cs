@@ -2,5 +2,5 @@
 
 public interface IHashChain<T> : IReadOnlyCollection<T>
 {
-    bool IsConsistant { get; }
+    bool IsConsistent { get; }
 }

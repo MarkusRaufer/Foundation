@@ -2,37 +2,48 @@
 {
     public static class HashChainHelper
     {
-        public static bool IsConsistant<T>(IEnumerable<HashChainElement<T>> elems)
+        public static bool IsConsistent<T>(IEnumerable<T> elements, Func<T, Opt<int>> getPrevElementHash)
             where T : notnull
         {
-            return IsConsistant(elems, elem => elem.PreviousElementHash);
+            return IsConsistent(elements, elem => elem.GetHashCode(), getPrevElementHash);
         }
 
-        /// <summary>
-        /// Checks the consistancy of hash chain elements.
-        /// </summary>
-        /// <typeparam name="T">T must contain the hash code of the previous element. This hash code must not be 0 except for the first element.</typeparam>
-        /// <param name="elems">elements of a hash chain</param>
-        /// <param name="getPrevElementHash">returns the hash code of the previous element of a hash chain.</param>
-        /// <returns></returns>
-        public static bool IsConsistant<T>(IEnumerable<T> elems, Func<T, int> getPrevElementHash)
+        public static bool IsConsistent<T>(
+            IEnumerable<T> elements, 
+            Func<T, int> getHash, 
+            Func<T, Opt<int>> getPrevElementHash)
             where T : notnull
         {
-            var  prevHash = 0;
+            return IsConsistent<T, int>(elements, getHash, getPrevElementHash);
+        }
+
+        public static bool IsConsistent<T, THash>(
+            IEnumerable<T> elems, 
+            Func<T, THash> getElementHash, 
+            Func<T, Opt<THash>> getPrevElementHash)
+            where T : notnull
+            where THash : notnull
+        {
+            var prevHash = Opt.None<THash>();
 
             foreach (var elem in elems)
             {
-                if(elem is null) return false;
+                if (elem is null) return false;
 
-                var currentElemHash = elem.GetHashCode();
+                var currentElemHash = getElementHash(elem);
+                if(currentElemHash is null) return false;
+
                 var currentElemPrevHash = getPrevElementHash(elem);
-                if (0 == prevHash)
-                {
-                    if (0 == currentElemHash || 0 != currentElemPrevHash) return false;
 
-                    prevHash = currentElemHash;
+                if (prevHash.IsNone)
+                {
+                    if(currentElemPrevHash.IsSome) return false;
+
+                    prevHash = Opt.Some(currentElemHash);
                     continue;
                 }
+
+                if (currentElemPrevHash.IsNone) return false;
 
                 if (currentElemPrevHash != prevHash) return false;
 

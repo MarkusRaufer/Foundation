@@ -2,10 +2,14 @@
 
 public static class HashChainElement
 {
-    public static HashChainElement<TPayload> New<TPayload>(TPayload payload, int prevElementHash = 0)
+    public static HashChainElement<TPayload, THash> New<TPayload, THash>(
+        TPayload payload, 
+        Func<TPayload, THash> getHash,
+        Opt<THash> prevElementHash)
         where TPayload : notnull
+        where THash : notnull
     {
-        return new HashChainElement<TPayload>(payload, prevElementHash);
+        return new HashChainElement<TPayload, THash>(payload, getHash, prevElementHash);
     }
 }
 
@@ -13,44 +17,41 @@ public static class HashChainElement
 /// This immutable type has a payload and the hashcode of the previous element in a hash chain.
 /// </summary>
 /// <typeparam name="TPayload"></typeparam>
-public class HashChainElement<TPayload>
-    : IEquatable<HashChainElement<TPayload>>
+public class HashChainElement<TPayload, THash>
+    : IEquatable<HashChainElement<TPayload, THash>>
+    where TPayload : notnull
+    where THash : notnull
 {
-    private readonly int _hashCode;
-
-    //This should be used on the first element means when no previous element exists.
-    public HashChainElement(TPayload payload) : this(payload, 0)
-    {
-    }
-
-    public HashChainElement(TPayload payload, int previousElementHash)
+    public HashChainElement(TPayload payload, Func<TPayload, THash> getHash, Opt<THash> previousElementHash)
     {
         Payload = payload.ThrowIfNull();
 
+        Hash = getHash(Payload);
+
         PreviousElementHash = previousElementHash;
-
-        var hcb = HashCode.CreateBuilder();
-        hcb.AddObject(Payload);
-        hcb.AddHashCode(PreviousElementHash);
-
-        _hashCode = hcb.GetHashCode();
     }
 
+    public override bool Equals(object? obj) => Equals(obj as HashChainElement<TPayload, THash>);
+
+    public bool Equals(HashChainElement<TPayload, THash>? other)
+    {
+        return null != other
+            && PreviousElementHash.Equals(other.PreviousElementHash)
+            && Payload.Equals(other.Payload);
+    }
+
+    public override int GetHashCode() => Hash.GetHashCode();
+
+    public THash Hash { get; }
     public TPayload Payload { get; }
 
     /// <summary>
     /// This hash code must not be 0 except of the first element of a hash chain.
     /// </summary>
-    public int PreviousElementHash { get; }
+    public Opt<THash> PreviousElementHash { get; }
 
-    public override bool Equals(object? obj) => Equals(obj as HashChainElement<TPayload>);
-
-    public bool Equals(HashChainElement<TPayload>? other)
+    public override string ToString()
     {
-        return null != other 
-            && PreviousElementHash == other.PreviousElementHash
-            && EqualityComparer<TPayload>.Default.Equals(Payload, other.Payload);
+        return $"Payload:{Payload}, Hash:{Hash}, PreviousElementHash:{PreviousElementHash}";
     }
-
-    public override int GetHashCode() => _hashCode;
 }
