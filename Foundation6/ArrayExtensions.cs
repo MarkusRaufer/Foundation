@@ -10,7 +10,7 @@ public static class ArrayExtensions
     {
         if (lhs is null) return rhs is null;
 
-        if (lhs.Length != rhs.Length) return false;
+        if (rhs is null || lhs.Length != rhs.Length) return false;
         for (var i = 0; i < lhs.Length; i++)
         {
             if (!EqualityComparer<T>.Default.Equals(lhs[i], rhs[i])) return false;
