@@ -50,8 +50,8 @@ public ref struct SplitEnumerator<T>
         }
         _passed = true;
 
-        Current = span.Slice(0, index);
-        _span = span.Slice(index + 1);
+        Current = span[..index];
+        _span = span[(index + 1)..];
         return true;
     }
 

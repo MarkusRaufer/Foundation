@@ -44,10 +44,10 @@ public static class ReadOnlyMemoryExtensions
         while (-1 != (index = span.IndexOf(search.Span)))
         {
             if (-1 == pos) pos = index;
-            else pos += index + search.Length;
+            else pos += index + 1;
 
             yield return pos;
-            span = memory.Span[(index + search.Length)..];
+            span = memory.Span[(pos + 1)..];
         }
     }
 
