@@ -39,7 +39,8 @@ public struct TriState : IEquatable<TriState>
 
     public bool IsTrue { get; }
 
-    public override string ToString() => IsNone ? $"{nameof(IsNone)}" : IsTrue ? $"{nameof(IsTrue)}" : $"{nameof(IsFalse)}";
+    public override string ToString() => IsNone ? $"{nameof(IsNone)}" 
+                                       : IsTrue ? $"{nameof(IsTrue)}" : $"{nameof(IsFalse)}";
 }
 
 public struct TriState<TState1, TState2> : IEquatable<TriState<TState1, TState2>>
@@ -47,12 +48,16 @@ public struct TriState<TState1, TState2> : IEquatable<TriState<TState1, TState2>
 
     public TriState([DisallowNull] TState1 state1)
     {
+        state1.ThrowIfNull();
+
         State1 = Opt.Some(state1);
         State2 = Opt.None<TState2>();
     }
 
     public TriState([DisallowNull] TState2 state2)
     {
+        state2.ThrowIfNull();
+
         State1 = Opt.None<TState1>(); 
         State2 = Opt.Some(state2);
     }
@@ -75,7 +80,8 @@ public struct TriState<TState1, TState2> : IEquatable<TriState<TState1, TState2>
         return State1.IsSome && other.State1.IsSome || State2.IsSome && other.State2.IsSome;
     }
 
-    public override int GetHashCode() => IsNone ? 0 : State1.IsSome ? State1.GetHashCode() : State2.GetHashCode();
+    public override int GetHashCode() => IsNone ? 0 : 
+                                         State1.IsSome ? State1.GetHashCode() : State2.GetHashCode();
 
     public bool IsNone => State1.IsNone && State2.IsNone;
 
