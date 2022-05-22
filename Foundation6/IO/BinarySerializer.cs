@@ -31,7 +31,7 @@ namespace Foundation.IO
 
             stream.Position = 0L;
             var reader = new BinaryReader(stream);
-            reader.ReadObject(obj, GetMembers());
+            reader.ReadToObject(obj, GetMembers());
         }
 
         private static IEnumerable<MemberInfo> FilterFieldsAndProperties(IEnumerable<MemberInfo> memberInfos)

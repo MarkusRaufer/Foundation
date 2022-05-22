@@ -1,8 +1,5 @@
 ﻿using Foundation.Collections.Generic;
 using Foundation.Reflection;
-using System;
-using System.Collections.Generic;
-using System.IO;
 using System.Reflection;
 
 namespace Foundation.IO
@@ -13,6 +10,18 @@ namespace Foundation.IO
         {
             var ticks = reader.ReadInt64();
             return new DateTime(ticks);
+        }
+
+        public static IEnumerable<(MemberInfo, object)> ReadFromMembers(this BinaryReader reader, IEnumerable<MemberInfo> members)
+        {
+            foreach (var member in members)
+            {
+                var memberType = member.GetMemberType();
+                if (memberType is null) throw new ArgumentException($"member {member} not found");
+
+                var value = reader.ReadFromType(memberType);
+                yield return (member, value);
+            }
         }
 
         public static object ReadFromType(this BinaryReader reader, Type type)
@@ -38,7 +47,7 @@ namespace Foundation.IO
             };
         }
 
-        public static IEnumerable<(Type type, object value)> ReadFromTypes(this BinaryReader reader, params Type[] types)
+        public static IEnumerable<(Type type, object value)> ReadFromTypes(this BinaryReader reader, IEnumerable<Type> types)
         {
             foreach (var type in types)
             {
@@ -46,30 +55,28 @@ namespace Foundation.IO
             }
         }
 
-        public static void ReadObject(this BinaryReader reader, object obj)
+        public static void ReadToObject(this BinaryReader reader, object obj)
         {
             obj.ThrowIfNull();
 
-            ReadObject(reader, obj, obj.GetType().GetMembers());
+            ReadToObject(reader, obj, obj.GetType().GetMembers());
         }
 
-        public static void ReadObject(this BinaryReader reader, object obj, IEnumerable<string> memberNames)
+        public static void ReadToObject(this BinaryReader reader, object obj, IEnumerable<string> memberNames)
         {
             obj.ThrowIfNull();
 
             var type = obj.GetType();
             var members = memberNames.FilterMap(name => type.GetMember(name).FirstAsOpt());
-            ReadObject(reader, obj, members);
+            ReadToObject(reader, obj, members);
         }
 
-        public static void ReadObject(this BinaryReader reader, object obj, IEnumerable<MemberInfo> members)
+        public static void ReadToObject(this BinaryReader reader, object obj, IEnumerable<MemberInfo> members)
         {
             obj.ThrowIfNull();
 
-            foreach (var member in members)
+            foreach (var (member, value) in ReadFromMembers(reader, members))
             {
-                var memberType = member.GetMemberType();
-                var value = reader.ReadFromType(memberType);
                 ReflectionHelper.SetValue(obj, member, value);
             }
         }

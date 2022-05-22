@@ -87,23 +87,26 @@ namespace Foundation.Reflection
 
         public static object SetValue(Type type, object obj, string memberName, BindingFlags bindingFlags, object value)
         {
-            if (null == obj) throw new ArgumentNullException(nameof(obj));
-            if (string.IsNullOrWhiteSpace(memberName)) throw new ArgumentNullException(nameof(memberName));
+            obj.ThrowIfNull();
+            memberName.ThrowIfNullOrWhiteSpace();
+
             var members = type.GetMember(memberName, bindingFlags);
+
+            members.ThrowIfOutOfRange(() => 1 != memberName.Length);
 
             if (1 != members.Length) throw new ArgumentOutOfRangeException(nameof(memberName));
 
             return SetValue(type, obj, members[0], value);
         }
 
-        public static object SetValue(object obj, MemberInfo memberInfo, object value)
+        public static object SetValue([DisallowNull] object obj, MemberInfo memberInfo, object value)
         {
             if (null == obj) throw new ArgumentNullException(nameof(obj));
 
             return SetValue(obj.GetType(), obj, memberInfo, value);
         }
 
-        public static object SetValue(Type type, object obj, MemberInfo memberInfo, object value)
+        public static object SetValue([DisallowNull] Type type, [DisallowNull] object obj, [DisallowNull] MemberInfo memberInfo, object value)
         {
             if (null == type) throw new ArgumentNullException(nameof(type));
             if (null == obj) throw new ArgumentNullException(nameof(obj));
