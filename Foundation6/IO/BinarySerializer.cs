@@ -1,9 +1,5 @@
 ﻿using Foundation.Collections.Generic;
-using Foundation.Reflection;
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq.Expressions;
 using System.Reflection;
 
@@ -11,21 +7,18 @@ namespace Foundation.IO
 {
     public class BinarySerializer
     {
-        private readonly ICollection<string> _memberNames;
-        private ICollection<MemberInfo> _members;
+        private readonly ICollection<string>? _memberNames;
+        private ICollection<MemberInfo>? _memberCache;
+        private readonly Type _type;
 
-        public BinarySerializer()
+        public BinarySerializer([DisallowNull] Type type)
         {
+            _type = type.ThrowIfNull();
         }
 
-        public BinarySerializer(IEnumerable<MemberInfo> members)
+        public BinarySerializer([DisallowNull] Type type, IEnumerable<string> memberNames) : this(type)
         {
-            _members = FilterMembers(members.ThrowIfEmpty(nameof(members))).ToArray();
-        }
-
-        public BinarySerializer(IEnumerable<string> memberNames)
-        {
-            _memberNames = memberNames.ThrowIfEmpty(nameof(memberNames)).ToArray();
+            _memberNames = memberNames.ThrowIfEmpty().ToArray();
         }
 
         public void Deserialze(object obj, Stream stream)
@@ -33,31 +26,35 @@ namespace Foundation.IO
             if (null == obj) throw new ArgumentNullException(nameof(obj));
             if (null == stream) throw new ArgumentNullException(nameof(stream));
 
+            if(obj.GetType() != _type) 
+                throw new InvalidArgumentException($"{nameof(obj)} is not of type {_type.FullName}");
+
             stream.Position = 0L;
             var reader = new BinaryReader(stream);
-            reader.ReadObject(obj, GetMembers(obj.GetType()));
+            reader.ReadObject(obj, GetMembers());
         }
 
-        private static IEnumerable<MemberInfo> FilterMembers(IEnumerable<MemberInfo> memberInfos)
+        private static IEnumerable<MemberInfo> FilterFieldsAndProperties(IEnumerable<MemberInfo> memberInfos)
         {
             return memberInfos.Where(mi => mi is FieldInfo || mi is PropertyInfo);
         }
 
-        private IEnumerable<MemberInfo> GetMembers(Type type)
+        private IEnumerable<MemberInfo> GetMembers()
         {
-            if (null != _members && 0 < _members.Count) return _members;
-            
+            if (null != _memberCache) return _memberCache;
+
+            var members = FilterFieldsAndProperties(_type.GetMembers());
+
             if(null != _memberNames && 0 < _memberNames.Count)
             {
-                _members = FilterMembers(type.GetMembers(_memberNames)).ToArray();
-                return _members;
+                members = members.Where(member => _memberNames.Contains(member.Name));
             }
 
-            _members = FilterMembers(type.GetMembers()).ToArray();
-            return _members;
+            _memberCache = members.ToArray();
+            return _memberCache;
         }
 
-        public static BinarySerializer New<T>(params Expression<Func<T, object>>[] members)
+        public static BinarySerializer New<T>([DisallowNull] Type type, params Expression<Func<T, object>>[] members)
         {
             if(0 == members.Length) throw new ArgumentOutOfRangeException(nameof(members));
 
@@ -66,12 +63,12 @@ namespace Foundation.IO
                                      {
                                          return me.Member switch
                                          {
-                                             FieldInfo => Opt.Some(me.Member),
-                                             PropertyInfo => Opt.Some(me.Member),
-                                             _ => Opt.None<MemberInfo>()
+                                             FieldInfo => Opt.Some(me.Member.Name),
+                                             PropertyInfo => Opt.Some(me.Member.Name),
+                                             _ => Opt.None<string>()
                                          };
                                      });
-            return new BinarySerializer(memberInfos);
+            return new BinarySerializer(type, memberInfos);
         }
 
         public void Serialze(object obj, Stream stream)
@@ -80,7 +77,7 @@ namespace Foundation.IO
             if (null == stream) throw new ArgumentNullException(nameof(stream));
 
             var writer = new BinaryWriter(stream);
-            writer.WriteObject(obj, GetMembers(obj.GetType()));
+            writer.WriteObject(obj, GetMembers());
         }
     }
 }
