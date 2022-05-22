@@ -579,7 +579,7 @@ namespace Foundation.Collections.Generic
         {
             var items = new List<int> { 1, 3, 5 };
             var item = 4;
-            var newItems = items.Insert(item, Comparer<int>.Default).ToArray();
+            var newItems = items.PrependBy(item, Comparer<int>.Default).ToArray();
             Assert.AreEqual(4, newItems.Length);
             Assert.AreEqual(1, newItems[0]);
             Assert.AreEqual(3, newItems[1]);
@@ -588,12 +588,12 @@ namespace Foundation.Collections.Generic
         }
 
         [Test]
-        public void Insert_Should_InsertAnItem_When_Using_Predicate()
+        public void PrependBy_Should_InsertAnItem_When_Using_Predicate()
         {
             var items = new List<int> { 1, 3, 5 };
             var item = 4;
             {
-                var newItems = items.Insert(item, n => n > 3).ToArray();
+                var newItems = items.PrependBy(item, n => n > 3).ToArray();
                 Assert.AreEqual(4, newItems.Length);
                 Assert.AreEqual(1, newItems[0]);
                 Assert.AreEqual(3, newItems[1]);
@@ -601,7 +601,7 @@ namespace Foundation.Collections.Generic
                 Assert.AreEqual(5, newItems[3]);
             }
             {
-                var newItems = items.Insert(item, n => n > 3 && n <= 5).ToArray();
+                var newItems = items.PrependBy(item, n => n > 3 && n <= 5).ToArray();
                 Assert.AreEqual(4, newItems.Length);
                 Assert.AreEqual(1, newItems[0]);
                 Assert.AreEqual(3, newItems[1]);
@@ -611,20 +611,20 @@ namespace Foundation.Collections.Generic
         }
 
         [Test]
-        public void Insert_Should_InsertItem_When_EmptyEnumerable_UsingComparer()
+        public void PrependBy_Should_InsertItem_When_EmptyEnumerable_UsingComparer()
         {
             var items = new List<int>();
             var item = 4;
-            var newItems = items.Insert(item, Comparer<int>.Default).ToList();
+            var newItems = items.PrependBy(item, Comparer<int>.Default).ToList();
             Assert.IsTrue(newItems.Contains(item));
         }
 
         [Test]
-        public void Insert_Should_InsertItem_When_EmptyEnumerable_Predicate()
+        public void PrependBy_Should_InsertItem_When_EmptyEnumerable_Predicate()
         {
             var items = new List<int>();
             var item = 4;
-            var newItems = items.Insert(item, n => n > 3).ToList();
+            var newItems = items.PrependBy(item, n => n > 3).ToList();
             Assert.IsTrue(newItems.Contains(item));
         }
 
@@ -1367,50 +1367,37 @@ namespace Foundation.Collections.Generic
         }
 
         [Test]
-        public void WhereByIndex_InRange_IsBetweenValue()
-        {
-            var list = new List<string> { "0", "1", "2", "3", "4", "5", "6", "7", "8", "9" };
-            var items = list.AsEnumerable();
-            const int min = 2;
-            const int max = 6;
-            var foundItems = items.WhereByIndex(Range.Create(Is.Between<long>(min, max))).ToList();
-            Assert.AreEqual(5, foundItems.Count);
-            for (int i = min, j = 0; i <= max; i++, j++)
-                Assert.AreEqual(list[i], foundItems[j]);
-        }
-
-        [Test]
-        public void WhereByIndex_InRange_IsMatchingMaxValue()
+        public void WhereByIndex_Should_ReturnItemsFromStartToMax_When_OnlyMaxIsSet()
         {
             var list = new List<string> { "0", "1", "2", "3", "4", "5", "6", "7", "8", "9" };
             var items = list.AsEnumerable();
             const int max = 5;
-            var foundItems = items.WhereByIndex(Range.Create(Is.Matching<long>(x => x <= max))).ToList();
+            var foundItems = items.WhereByIndex(..max).ToList();
             Assert.AreEqual(6, foundItems.Count);
             for (int i = 0, j = 0; i < max; i++, j++)
                 Assert.AreEqual(list[i], foundItems[j]);
         }
 
         [Test]
-        public void WhereByIndex_InRange_IsMatchingMinValue()
+        public void WhereByIndex_ReturnFromMinToEnd_When_OnlyMinIsSet()
         {
             var list = new List<string> { "0", "1", "2", "3", "4", "5", "6", "7", "8", "9" };
             var items = list.AsEnumerable();
             const int min = 2;
-            var foundItems = items.WhereByIndex(Range.Create(Is.Matching<long>(x => x >= min))).ToList();
+            var foundItems = items.WhereByIndex(min..).ToList();
             Assert.AreEqual(8, foundItems.Count);
             for (int i = min, j = 0; i < list.Count; i++, j++)
                 Assert.AreEqual(list[i], foundItems[j]);
         }
 
         [Test]
-        public void WhereByIndex_InRange_IsMatchingMinAndMaxValue()
+        public void WhereByIndex_Should_ReturnFromMinToMax_When_MinAndMaxIstSet()
         {
             var list = new List<string> { "0", "1", "2", "3", "4", "5", "6", "7", "8", "9" };
             var items = list.AsEnumerable();
             const int min = 2;
             const int max = 6;
-            var foundItems = items.WhereByIndex(Range.Create(Is.Matching<long>(x => x >= min && x <= max))).ToList();
+            var foundItems = items.WhereByIndex(min..max).ToList();
             Assert.AreEqual(5, foundItems.Count);
             for (int i = min, j = 0; i <= max; i++, j++)
                 Assert.AreEqual(list[i], foundItems[j]);
