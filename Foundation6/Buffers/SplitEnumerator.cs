@@ -21,13 +21,12 @@ public ref struct SplitEnumerator<T>
     public SplitEnumerator(ReadOnlySpan<T> span, params T[] separators)
         : this(span, separators.AsSpan(), false)
     {
-        if (0 == separators.Length) throw new ArgumentNullException(nameof(separators));
+        separators.ThrowIf(() => 0 == separators.Length);
     }
 
     public SplitEnumerator(ReadOnlySpan<T> span, bool notFoundReturnsNothing, params T[] separators)
         : this(span, separators.AsSpan(), notFoundReturnsNothing)
     {
-        if (0 == separators.Length) throw new ArgumentNullException(nameof(separators));
     }
 
     // Needed to be compatible with the foreach operator
