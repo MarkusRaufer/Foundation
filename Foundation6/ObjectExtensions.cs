@@ -126,8 +126,9 @@ public static class ObjectExtensions
     /// <param name="obj"></param>
     /// <param name="type">e.g. IList<> (without definded generic parameter.</param>
     /// <returns></returns>
-    public static bool IsOfGenericType(this object obj, [DisallowNull] Type type)
+    public static bool IsOfGenericType([DisallowNull] this object obj, [DisallowNull] Type type)
     {
+        obj.ThrowIfNull();
         type.ThrowIfNull();
 
         var objType = obj.GetType();
@@ -138,29 +139,62 @@ public static class ObjectExtensions
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static T ThrowIf<T>(this T? obj, [DisallowNull] Func<T, bool> predicate, [CallerArgumentExpression("obj")] string name = "")
+    public static T ThrowIf<T>(this T? obj, [DisallowNull] Func<bool> predicate, [CallerArgumentExpression("obj")] string name = "")
     {
-        if (null == obj) throw new ArgumentNullException(name);
+        predicate.ThrowIfNull();
 
-        return predicate(obj) ? obj : throw new ArgumentNullException(name);
+        return predicate() ? throw new ArgumentException(name) : obj.ThrowIfNull();
+    }
+
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static T ThrowIf<T>(this T? obj, [DisallowNull] Func<bool> predicate, string message, [CallerArgumentExpression("obj")] string name = "")
+    {
+        predicate.ThrowIfNull();
+
+        return predicate() ? throw new ArgumentException(message, name) : obj.ThrowIfNull();
     }
 
     [return: NotNull]
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static T ThrowIfNull<T>(this T? obj, [CallerArgumentExpression("obj")] string name = "") => obj ?? throw new ArgumentNullException(name);
-
-    [return: NotNull]
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static T ThrowIfOutOfRange<T>([DisallowNull] this T obj, [DisallowNull] Func<bool> isInRange, [CallerArgumentExpression("obj")] string name = "")
+    public static T ThrowIfNull<T>(this T? obj, [CallerArgumentExpression("obj")] string name = "")
     {
-        return isInRange() ? obj : throw new ArgumentOutOfRangeException(name);
+        return obj ?? throw new ArgumentNullException(name);
     }
 
     [return: NotNull]
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static T ThrowIfOutOfRange<T>([DisallowNull] this T obj, [DisallowNull] Func<bool> isInRange, T min, T max, [CallerArgumentExpression("obj")] string name = "")
+    public static T ThrowIfOutOfRange<T>(
+        [DisallowNull] this T obj, 
+        [DisallowNull] Func<bool> isOutOfRange, 
+        [CallerArgumentExpression("obj")] string name = "")
     {
-        return isInRange() ? obj : throw new ArgumentOutOfRangeException(name, $"{name} must be between {min} and {max}.");
+        return isOutOfRange() ? throw new ArgumentOutOfRangeException(name) : obj.ThrowIfNull();
+    }
+
+    [return: NotNull]
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static T ThrowIfOutOfRange<T>(
+        [DisallowNull] this T obj, 
+        [DisallowNull] Func<bool> isOutOfRange,
+        T min,
+        T max, 
+        [CallerArgumentExpression("obj")] string name = "")
+    {
+        return isOutOfRange() 
+            ? throw new ArgumentOutOfRangeException(name, $"{name} must be between {min} and {max}.")
+            : obj.ThrowIfNull();
+    }
+
+    [return: NotNull]
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static T ThrowIfOutOfRange<T>(
+        [DisallowNull] this T obj,
+        [DisallowNull] Func<bool> isOutOfRange,
+        [DisallowNull] string message,
+        [CallerArgumentExpression("obj")] string name = "")
+    {
+        return isOutOfRange() ? throw new ArgumentOutOfRangeException(name, message) : obj.ThrowIfNull();
     }
 
     /// <summary>
@@ -197,6 +231,7 @@ public static class ObjectExtensions
     {
         return obj switch
         {
+            bool b => BitConverter.GetBytes(b),
             byte b => new byte[] { b },
             char c => BitConverter.GetBytes(c),
             DateTime dt => BitConverter.GetBytes(dt.Ticks),

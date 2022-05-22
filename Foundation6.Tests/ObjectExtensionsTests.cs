@@ -1,9 +1,5 @@
 ﻿using NUnit.Framework;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Foundation
 {
@@ -13,34 +9,36 @@ namespace Foundation
         [Test]
         public void ThrowIfOutOfRange_Should_ReturnValue_When_InRange()
         {
-            var input = 5;
+            var min = 5;
             var max = 10;
 
-            var number = 8.ThrowIfOutOfRange(() => input <= max);
+            var value = 8;
+            var number = value.ThrowIfOutOfRange(() => value < min || value > max);
             Assert.AreEqual(8, number);
         }
 
         [Test]
-        public void ThrowIfOutOfRange_Should_ThrowAnException_When_OutOfRange()
+        public void ThrowIfOutOfRange_Should_ThrowsAnException_When_OutOfRange()
         {
-            var input = 15;
-            var max = 10;
+            var min = 1;
+            var max = 7;
+            var value = 8;
 
             Assert.Throws<ArgumentOutOfRangeException>(() =>
             {
-                var number = 8.ThrowIfOutOfRange(() => input <= max);
+                var number = value.ThrowIfOutOfRange(() => value < min || value > max);
             });
         }
 
         [Test]
-        public void ThrowIfOutOfRange_Should_ThrowAnException_When_OutOfRange_UseMinMax()
+        public void ThrowIfOutOfRange_Should_ThrowsAnException_When_OutOfRange_UseMinMax()
         {
-            var input = 15;
-            var max = 10;
-
+            var min = 1;
+            var max = 7;
+            var value = 8;
             Assert.Throws<ArgumentOutOfRangeException>(() =>
             {
-                var number = 8.ThrowIfOutOfRange(() => input <= max, 1, max);
+                var number = value.ThrowIfOutOfRange(() => value < min || value > max, 1, max);
             });
         }
     }
