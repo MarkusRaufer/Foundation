@@ -101,7 +101,7 @@ namespace Foundation.Collections.Generic
             char pathSeparator = '/')
             : base(dictionary, pathSeparator)
         {
-            Identifier = identifier.ThrowIfEmpty(nameof(identifier));
+            Identifier = identifier.ThrowIfEmpty();
         }
 
         public override object this[string key]

@@ -7,7 +7,7 @@ public abstract class IndexedIdentifiable<TKey, TValue>
 {
     protected IndexedIdentifiable(KeyValue<TKey, TValue> identifier)
     {
-        Identifier = identifier.ThrowIfEmpty(nameof(identifier));
+        Identifier = identifier.ThrowIfEmpty();
     }
     public KeyValue<TKey, TValue> Identifier { get; }
 

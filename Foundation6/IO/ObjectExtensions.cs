@@ -6,7 +6,7 @@ namespace Foundation.IO
     {
         public static byte[] ToByteArray(this object obj)
         {
-            obj.ThrowIfNull(nameof(obj));
+            obj.ThrowIfNull();
 
             var stream = new MemoryStream();
             var writer = new BinaryWriter(stream);
@@ -17,7 +17,7 @@ namespace Foundation.IO
 
         public static byte[] ToByteArray(this object obj, IEnumerable<string> memberNames)
         {
-            obj.ThrowIfNull(nameof(obj));
+            obj.ThrowIfNull();
 
             var stream = new MemoryStream();
             var writer = new BinaryWriter(stream);
@@ -28,7 +28,7 @@ namespace Foundation.IO
 
         public static byte[] ToByteArray(this object obj, IEnumerable<MemberInfo> members)
         {
-            obj.ThrowIfNull(nameof(obj));
+            obj.ThrowIfNull();
 
             var stream = new MemoryStream();
             var writer = new BinaryWriter(stream);

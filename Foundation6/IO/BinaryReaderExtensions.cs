@@ -48,14 +48,14 @@ namespace Foundation.IO
 
         public static void ReadObject(this BinaryReader reader, object obj)
         {
-            obj.ThrowIfNull(nameof(obj));
+            obj.ThrowIfNull();
 
             ReadObject(reader, obj, obj.GetType().GetMembers());
         }
 
         public static void ReadObject(this BinaryReader reader, object obj, IEnumerable<string> memberNames)
         {
-            obj.ThrowIfNull(nameof(obj));
+            obj.ThrowIfNull();
 
             var type = obj.GetType();
             var members = memberNames.FilterMap(name => type.GetMember(name).FirstAsOpt());
@@ -64,7 +64,7 @@ namespace Foundation.IO
 
         public static void ReadObject(this BinaryReader reader, object obj, IEnumerable<MemberInfo> members)
         {
-            obj.ThrowIfNull(nameof(obj));
+            obj.ThrowIfNull();
 
             foreach (var member in members)
             {

@@ -1,4 +1,5 @@
 ﻿using System.Diagnostics.CodeAnalysis;
+using System.Runtime.CompilerServices;
 
 namespace Foundation;
 
@@ -12,12 +13,12 @@ public static class KeyValueExtensions
 
     [return: NotNull]
     public static KeyValue<TKey, TValue> ThrowIfEmpty<TKey, TValue>(
-        this KeyValue<TKey, TValue> keyValue, 
-        string argumentName,
-        bool valueNotNull = false)
+        this KeyValue<TKey, TValue> keyValue,
+        bool valueNotNull = false,
+        [CallerArgumentExpression("keyValue")] string name = "")
         where TKey : notnull
     {
-        if (keyValue.IsEmpty(valueNotNull)) throw new ArgumentNullException(argumentName);
+        if (keyValue.IsEmpty(valueNotNull)) throw new ArgumentNullException(name);
 
         return keyValue;
     }

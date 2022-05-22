@@ -43,7 +43,7 @@ public class EquatableMap<TKey, TValue>
 
     public void Add(KeyValuePair<TKey, TValue> item)
     {
-        item.ThrowIfEmpty(nameof(item));
+        item.ThrowIfEmpty();
 
         _keyValues.Add(item);
 
