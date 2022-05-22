@@ -10,13 +10,12 @@ public static class OptExtensions
     /// <typeparam name="T"></typeparam>
     /// <param name="lhs"></param>
     /// <param name="rhs"></param>
-    /// <param name="valueOnNull">In a sorted list it defines if the null values appear at the beginning -1 (Microsoft standard) or at the end 1.</param>
     /// <returns></returns>
-    public static int CompareTo<T>(this Opt<T> lhs, Opt<T> rhs, int valueOnNull = -1)
+    public static int CompareTo<T>(this Opt<T> lhs, Opt<T> rhs)
         where T : IComparable<T>
     {
-        if (lhs.IsNone) return rhs.IsNone ? 0 : valueOnNull;
-        if (rhs.IsNone) return valueOnNull * -1;
+        if(lhs.IsNone) return rhs.IsNone ? 0 : - 1;
+        if(rhs.IsNone) return 1;
 
         return lhs.Value!.CompareTo(rhs.Value);
     }
@@ -69,7 +68,7 @@ public static class OptExtensions
     [return: NotNull]
     public static T ValueOrElse<T>(this Opt<T> option, [DisallowNull] T value)
     {
-        return (option.IsSome) ? option.Value! : value.ThrowIfNull();
+        return option.IsSome ? option.Value! : value.ThrowIfNull();
     }
 
     [return: NotNull]

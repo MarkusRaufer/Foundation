@@ -112,4 +112,3 @@ public readonly struct Opt<T>
         }
     }
 }
-
