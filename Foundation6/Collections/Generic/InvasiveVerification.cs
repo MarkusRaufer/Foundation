@@ -1,21 +1,18 @@
 ﻿namespace Foundation.Collections.Generic;
-
-using System.Diagnostics.CodeAnalysis;
-
-public static class InvasivePredicates
+public static class InvasiveVerification
 {
-    public static InvasivePredicates<T> New<T>(params Func<T, bool>[] predicates) => new(predicates);
+    public static InvasiveVerification<T> New<T>(params Func<T, bool>[] predicates) => new(predicates);
 }
 
 /// <summary>
-/// a list of predicates that are checked each one times.
+/// a list of predicates that are checked each only one times.
 /// </summary>
 /// <typeparam name="T"></typeparam>
-public class InvasivePredicates<T>
+public class InvasiveVerification<T>
 {
     private readonly IList<Func<T, bool>> _predicates;
 
-    public InvasivePredicates(IEnumerable<Func<T, bool>> predicates)
+    public InvasiveVerification(IEnumerable<Func<T, bool>> predicates)
     {
         _predicates = predicates.ToList();
     }
@@ -24,8 +21,8 @@ public class InvasivePredicates<T>
     /// If a predicate matches, it is removed from the list. If multiple predicates are matching on one item all of them are removed from the list.
     /// </summary>
     /// <param name="item"></param>
-    /// <returns>return a TriState. IsNone means, there are no more predicates in the list.</returns>
-    public TriState Check(T item)
+    /// <returns>return a TriState. IsNone means, there are no more predicates in the list. If it does not match false is returned.</returns>
+    public TriState Verify(T item)
     {
         for (var i = 0; i < _predicates.Count; i++)
         {
