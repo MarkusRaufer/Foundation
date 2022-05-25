@@ -24,7 +24,7 @@ namespace Foundation.Reflection
             return type.GetField($"<{propertyName}>k__BackingField", BindingFlags.Instance | BindingFlags.NonPublic);
         }
 
-        public static IEnumerable<MemberInfo> GetMembers(this Type type, IEnumerable<string> keys)
+        public static IEnumerable<MemberInfo> GetMembers(this Type type, IEnumerable<string> memberNames)
         {
             if (null == type) throw new ArgumentNullException(nameof(type));
 
@@ -33,17 +33,14 @@ namespace Foundation.Reflection
                             | BindingFlags.NonPublic
                             | BindingFlags.Instance
                             | BindingFlags.FlattenHierarchy,
-                              keys);
+                              memberNames);
         }
 
-        public static IEnumerable<MemberInfo> GetMembers(this Type type, BindingFlags bindingFlags, IEnumerable<string> keys)
+        public static IEnumerable<MemberInfo> GetMembers(this Type type, BindingFlags bindingFlags, IEnumerable<string> memberNames)
         {
             if (null == type) throw new ArgumentNullException(nameof(type));
 
-            return keys.IntersectBy(type.GetMembers(bindingFlags),
-                                    key => key,
-                                    mi => mi.Name,
-                                    (key, mi) => mi);
+            return memberNames.FilterMap(name => type.GetMember(name).FirstAsOpt());
         }
 
 

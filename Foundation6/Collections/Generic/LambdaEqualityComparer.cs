@@ -31,7 +31,7 @@ public class LambdaEqualityComparer<T> : IEqualityComparer<T>
         };
     }
 
-    public LambdaEqualityComparer([DisallowNull] Func<T?, T?, bool> predicate, Func<T?, int>? hashCodeFunc)
+    public LambdaEqualityComparer([DisallowNull] Func<T?, T?, bool> predicate, Func<T?, int>? hashCodeFunc = null)
     {
         _predicate = predicate.ThrowIfNull();
         _hashCodeFunc = hashCodeFunc ?? DefaultHashCodeFunc;

@@ -9,7 +9,7 @@ public static class BitConverterExt
 
     public static decimal ToDecimal(byte[]? bytes)
     {
-        bytes.ThrowIfNull();
+        bytes = bytes.ThrowIfNull();
         bytes.ThrowIf(() => 16 != bytes!.Length, "A decimal must be created from exactly 16 bytes");
 
         //make an array to convert back to int32's
