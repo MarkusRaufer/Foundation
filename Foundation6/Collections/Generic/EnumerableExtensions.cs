@@ -1078,7 +1078,19 @@ public static class EnumerableExtensions
     {
         if (null == lhs) return null == rhs;
         if (null == rhs) return false;
-        return !lhs.QuantitativeDifference(rhs).Any();
+
+        var lhsArray = lhs.ToArray();
+        var rhsArray = rhs.ToArray();
+
+        if (lhsArray.Length != rhsArray.Length) return false;
+
+        var tuples = lhsArray.MatchWithOccurrencies(rhsArray);
+
+        foreach(var (left, right) in tuples)
+        {
+            if(left.count != right.count) return false;
+        }
+        return true;
     }
 
     /// <summary>
@@ -1234,6 +1246,112 @@ public static class EnumerableExtensions
         }
 
         return (lhsMap.Values.Select(t => t.Item1), rhsMap.Values.Select(t => t.Item1));
+    }
+
+    /// <summary>
+    /// Returns all matching items between two lists. The items are returned as tuples with their occurrencies.
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <param name="lhs"></param>
+    /// <param name="rhs"></param>
+    /// <returns>matching items with their occurrencies.</returns>
+    public static IEnumerable<((T? item, int count) lhs, (T? item, int count) rhs)> MatchWithOccurrencies<T>(
+        [DisallowNull] this IEnumerable<T?> lhs,
+        [DisallowNull] IEnumerable<T?> rhs)
+    {
+        lhs.ThrowIfNull();
+        rhs.ThrowIfNull();
+
+        var enumeratedLhs = lhs.Select(l => NullableKey.New(l))
+                               .Enumerate();
+
+        var enumeratedRhs = rhs.Select(r => NullableKey.New(r))
+                               .Enumerate();
+
+        var tuples = enumeratedLhs
+                    .Join(enumeratedRhs,
+                     left => left.item,
+                     right => right.item,
+                     (left, right) => (left, right)).ToArray();
+
+        
+        var lhsMap = new MultiMap<NullableKey<T>, (T?, int)>();
+        var rhsMap = new MultiMap<NullableKey<T>, (T?, int)>();
+
+        foreach (var (left, right) in tuples)
+        {
+            lhsMap.AddUnique(left.item, (left.item.Value, left.counter));
+            rhsMap.AddUnique(right.item, (right.item.Value, right.counter));
+        }
+
+        foreach (var pair in lhsMap)
+        {
+            var lhsTuples = lhsMap.GetValues(pair.Key);
+            var rhsTuples = rhsMap.GetValues(pair.Key);
+
+            var leftTuple = (pair.Key.Value, lhsTuples.Count());
+            var rightTuple = (pair.Key.Value, rhsTuples.Count());
+
+            yield return (leftTuple, rightTuple);
+        }
+    }
+
+    /// <summary>
+    /// Returns matching items of two lists with their occurrencies.
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <typeparam name="TKey"></typeparam>
+    /// <param name="lhs"></param>
+    /// <param name="rhs"></param>
+    /// <param name="keySelector"></param>
+    /// <returns></returns>
+    public static IEnumerable<((T item, int count) lhs, (T item, int count) rhs)> MatchOccurrencyTuples<T, TKey>(
+        [DisallowNull] this IEnumerable<T> lhs,
+        [DisallowNull] IEnumerable<T> rhs,
+        [DisallowNull] Func<T, TKey> keySelector)
+        where TKey : notnull
+    {
+        lhs.ThrowIfNull();
+        rhs.ThrowIfNull();
+        keySelector.ThrowIfNull();
+
+        var lhsMap = new MultiMap<TKey, (T, int)>();
+        var rhsMap = new MultiMap<TKey, (T, int)>();
+
+        var lhsTuples = lhs.Enumerate();
+        var rhsTuples = rhs.Enumerate();
+
+        var tuples = from left in lhsTuples
+                     join right in rhsTuples on keySelector(left.item) equals keySelector(right.item)
+                     select (left, right);
+
+        foreach (var (left, right) in tuples)
+        {
+            var key = keySelector(left.item);
+
+            lhsMap.AddUnique(key, left);
+            rhsMap.AddUnique(key, right);
+        }
+
+        (T item, int occurency) getTuple(IEnumerable<(T item, int counter)> tuples)
+        {
+            var item = default(T);
+            var occurency = 0;
+            foreach(var tuple in tuples.OnFirst(x => item = x.item))
+            {
+                occurency++;
+            }
+
+            return (item!, occurency);
+        }
+
+        foreach(var key in lhsMap.GetKeys())
+        {
+            var lhsValues = lhsMap.GetValues(key);
+            var rhsValues = rhsMap.GetValues(key);
+
+            yield return (getTuple(lhsValues), getTuple(rhsValues));
+        }
     }
 
     /// <summary>
@@ -1859,67 +1977,6 @@ public static class EnumerableExtensions
         yield return it.Current;
 
         while (it.MoveNext()) yield return it.Current;
-    }
-
-    /// <summary>
-    /// Returns the symmetric difference and also takes into account the difference between the number of occurrences.
-    /// </summary>
-    /// <typeparam name="T"></typeparam>
-    /// <param name="lhs"></param>
-    /// <param name="rhs"></param>
-    /// <returns></returns>
-    public static IEnumerable<T> QuantitativeDifference<T>([DisallowNull] this IEnumerable<T> lhs, [DisallowNull] IEnumerable<T> rhs)
-    {
-        lhs.ThrowIfNull();
-        rhs.ThrowIfNull();
-
-        var lhsGrouped = lhs.GroupBy(l => l);
-        var rhsGrouped = rhs.GroupBy(r => r);
-
-        var lhsGroupKeys = lhsGrouped.Select(g => g.Key);
-        var rhsGroupKeys = rhsGrouped.Select(g => g.Key);
-
-        foreach (var sameKey in lhsGroupKeys.Intersect(rhsGroupKeys))
-        {
-            if (null == sameKey) continue;
-
-            var lhsGroup = lhsGrouped.First(g => sameKey.Equals(g.Key));
-            var rhsGroup = rhsGrouped.First(g => sameKey.Equals(g.Key));
-
-            var itLhs = lhsGroup.GetEnumerator();
-            var itRhs = rhsGroup.GetEnumerator();
-
-            IEnumerator<T>? itRemaining = null;
-            while (true)
-            {
-                var hasNextLhs = itLhs.MoveNext();
-                var hasNextRhs = itRhs.MoveNext();
-                if (!hasNextLhs && !hasNextRhs) break;
-                if (hasNextLhs && hasNextRhs) continue;
-
-                itRemaining = hasNextLhs ? itLhs : itRhs;
-                break;
-            }
-
-            if (null == itRemaining) continue;
-
-            yield return itRemaining.Current;
-
-            while (itRemaining.MoveNext())
-                yield return itRemaining.Current;
-        }
-
-        foreach (var grouped in lhsGrouped.Except(rhsGrouped, grp => grp.Key, grp => grp.Key, grp => grp))
-        {
-            foreach (var elem in grouped)
-                yield return elem;
-        }
-
-        foreach (var grouped in rhsGrouped.Except(lhsGrouped, grp => grp.Key, grp => grp.Key, grp => grp))
-        {
-            foreach (var elem in grouped)
-                yield return elem;
-        }
     }
 
     /// <summary>

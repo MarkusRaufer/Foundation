@@ -120,12 +120,14 @@ namespace Foundation.Collections.Generic
             //odd number of elements
             {
                 IEnumerable<string> items = new List<string> { "a", "ab", "abc" };
+
                 var median = items.AverageMedian(x => x.Length);
                 Assert.AreEqual(2M, median);
             }
             //even number of elements
             {
                 IEnumerable<string> items = new List<string> { "a", "ab", "abc", "abcd" };
+
                 var median = items.AverageMedian(x => x.Length);
                 Assert.AreEqual(2.5M, median);
             }
@@ -137,12 +139,14 @@ namespace Foundation.Collections.Generic
             //odd number of elements
             {
                 var numbers = Enumerable.Range(1, 7);
+
                 var median = numbers.AverageMedian();
                 Assert.AreEqual(4, median);
             }
             //even number of elements
             {
                 var numbers = Enumerable.Range(1, 8);
+
                 var median = numbers.AverageMedian();
                 Assert.AreEqual(4.5, median);
             }
@@ -152,6 +156,7 @@ namespace Foundation.Collections.Generic
         public void AverageMedian_ShouldThrowException_WhenUsingValuesNotConvertibleToDecimal()
         {
             IEnumerable<string> items = new List<string> { "one", "two", "three" };
+
             Assert.Throws<FormatException>(() => items.AverageMedian());
         }
 
@@ -160,6 +165,7 @@ namespace Foundation.Collections.Generic
         {
             {
                 var numbers = Enumerable.Range(1, 7);
+
                 var (opt1, opt2) = numbers.AverageMedianValues();
                 Assert.IsFalse(opt2.IsSome);
                 Assert.AreEqual(4, opt1.ValueOrThrow());
@@ -167,18 +173,21 @@ namespace Foundation.Collections.Generic
             {
                 var numbers = Enumerable.Range(1, 8);
                 var (opt1, opt2) = numbers.AverageMedianValues();
+
                 Assert.IsTrue(opt2.IsSome);
                 Assert.AreEqual(4, opt1.ValueOrThrow());
                 Assert.AreEqual(5, opt2.ValueOrThrow());
             }
             {
                 var items = Enumerable.Range(1, 7).Select(x => x.ToString());
+
                 var (opt1, opt2) = items.AverageMedianValues();
                 Assert.IsFalse(opt2.IsSome);
                 Assert.AreEqual("4", opt1.ValueOrThrow());
             }
             {
                 var items = Enumerable.Range(1, 8).Select(x => x.ToString());
+
                 var (opt1, opt2) = items.AverageMedianValues();
                 Assert.IsTrue(opt2.IsSome);
                 Assert.AreEqual("4", opt1.ValueOrThrow());
@@ -209,6 +218,7 @@ namespace Foundation.Collections.Generic
         {
             var items1 = Enumerable.Range(0, 9);
             var items2 = Enumerable.Range(0, 9).Where(i => (i % 2) == 0);
+
             Assert.IsTrue(items1.Contains(items2));
 
             var items3 = new List<int> { 10, 11 };
@@ -220,6 +230,7 @@ namespace Foundation.Collections.Generic
         {
             var items1 = Enumerable.Range(0, 9);
             IEnumerable<int> items2 = new List<int> { 1, 5, 12 };
+
             Assert.IsTrue(items1.Contains(items2));
         }
 
@@ -227,6 +238,7 @@ namespace Foundation.Collections.Generic
         public void CyclicEnumerate()
         {
             var items = new List<string> { "A", "B", "C" };
+
             var e = items.CycleEnumerate().GetEnumerator();
 
             Assert.IsTrue(e.MoveNext());
@@ -252,6 +264,7 @@ namespace Foundation.Collections.Generic
         public void CyclicEnumerate_MinMax()
         {
             var items = new List<string> { "A", "B", "C", "D", "E" };
+
             var enumerated = items.CycleEnumerate(1, 2).ToList();
             var e = enumerated.GetEnumerator();
             Assert.IsTrue(e.MoveNext());
@@ -278,6 +291,7 @@ namespace Foundation.Collections.Generic
             var items1 = Enumerable.Range(0, 10);
             var items2 = Enumerable.Range(10, 10);
 
+            // return all items because lists are completely different
             var diff = items1.Difference(items2).ToList();
 
             Assert.AreEqual(20, diff.Count);
@@ -300,6 +314,7 @@ namespace Foundation.Collections.Generic
             var items1 = new List<int> { 1, 2, 3, 4, 5 };
             var items2 = new List<int> { 2, 4, 6 };
 
+            // return items of both lists that don't match
             var diff = items1.Difference(items2).ToList();
 
             Assert.AreEqual(4, diff.Count);
@@ -310,7 +325,9 @@ namespace Foundation.Collections.Generic
         public void Duplicates_DistinctIsFalse_WithMultipleDuplicateValues()
         {
             var items = new List<int> { 1, 2, 3, 4, 5, 2, 4, 2 };
+
             var result = items.Duplicates().ToList();
+
             Assert.AreEqual(3, result.Count);
             Assert.AreEqual(2, result[0]);
             Assert.AreEqual(2, result[1]);
@@ -321,8 +338,10 @@ namespace Foundation.Collections.Generic
         public void Duplicates_DistinctIsTrue_OnlySingleDuplicateValues()
         {
             var items = new List<int> { 1, 2, 3, 4, 5, 2, 4, 2 };
-            var result = items.Duplicates(true).ToList();
-            Assert.AreEqual(2, result.Count);
+
+            var result = items.Duplicates(true).ToArray();
+
+            Assert.AreEqual(2, result.Length);
             Assert.AreEqual(2, result[0]);
             Assert.AreEqual(4, result[1]);
         }
@@ -331,25 +350,31 @@ namespace Foundation.Collections.Generic
         public void Duplicates_DistinctIsFalse_WithoutDuplicateValues()
         {
             var items = new List<int> { 1, 2, 3, 4, 5 };
-            var result = items.Duplicates().ToList();
-            Assert.AreEqual(0, result.Count);
+
+            var result = items.Duplicates().ToArray();
+
+            Assert.AreEqual(0, result.Length);
         }
 
         [Test]
         public void Enumerate()
         {
             {
-                var items1 = Enumerable.Range(0, 9).ToList();
-                var enumerated = items1.Enumerate(n => n * 2).ToList();
-                Assert.AreEqual(items1.Count, enumerated.Count);
+                var items1 = Enumerable.Range(0, 9).ToArray();
 
-                foreach (var tuple in enumerated)
-                    Assert.AreEqual(tuple.Item1 * 2, tuple.Item2);
+                var enumerated = items1.Enumerate(n => n * 2).ToArray();
+
+                Assert.AreEqual(items1.Length, enumerated.Length);
+
+                foreach (var (item, counter) in enumerated)
+                    Assert.AreEqual(item * 2, counter);
             }
             {
                 var items = new[] { "one", "two", "three" };
                 var i = 0;
-                var enumerated = items.Enumerate(item => i++).ToList();
+
+                var enumerated = items.Enumerate(item => i++).ToArray();
+
                 Assert.AreEqual(("one", 0), enumerated[0]);
                 Assert.AreEqual(("two", 1), enumerated[1]);
                 Assert.AreEqual(("three", 2), enumerated[2]);
@@ -360,7 +385,9 @@ namespace Foundation.Collections.Generic
         public void Enumerate_WithMinMax()
         {
             var items = Enumerable.Range(1, 10).Select(x => x.ToString());
+
             var enumerated = items.Enumerate(MinMax.New(1, 3)).ToList();
+
             Assert.AreEqual(("1", 1), enumerated[0]);
             Assert.AreEqual(("2", 2), enumerated[1]);
             Assert.AreEqual(("3", 3), enumerated[2]);
@@ -377,12 +404,15 @@ namespace Foundation.Collections.Generic
         public void Enumerate_WithSeed()
         {
             var items = new[] { "1", "2", "3" };
+
             var enumerated = items.Enumerate(5).ToList();
+
             Assert.AreEqual(("1", 5), enumerated[0]);
             Assert.AreEqual(("2", 6), enumerated[1]);
             Assert.AreEqual(("3", 7), enumerated[2]);
         }
-[Test]
+        
+        [Test]
         public void Except()
         
         {
@@ -412,7 +442,9 @@ namespace Foundation.Collections.Generic
             var numbers = new [] { 1, 2, 3, 2, 4, 4, 5, 6, 7 };
             var predicates = new Func<int, bool>[] { n => n == 2, n => n == 4, n => n == 6 };
 
+            // if a predicate is fulfilled it is no longer used
             var foundNumbers = numbers.FindUntil(predicates).ToArray();
+
             Assert.AreEqual(3, foundNumbers.Length);
             Assert.AreEqual(2, foundNumbers[0]);
             Assert.AreEqual(4, foundNumbers[1]);
@@ -425,7 +457,7 @@ namespace Foundation.Collections.Generic
             var numbers = new TestEnumerable<int>(Enumerable.Range(1, 10));
 
             var calledMoveNext = 0;
-            Action<bool> onMoveNext = hasNext => calledMoveNext++;
+            void onMoveNext(bool hasNext) => calledMoveNext++;
 
             numbers.OnMoveNext.Subscribe(onMoveNext);
 
@@ -444,6 +476,7 @@ namespace Foundation.Collections.Generic
             var items = Enumerable.Range(0, 9);
             var iterationCounter = 0;
             void action(int n) => iterationCounter++;
+
             items.ForEach(action);
 
             Assert.AreEqual(9, iterationCounter);
@@ -454,7 +487,8 @@ namespace Foundation.Collections.Generic
         {
             var items = Enumerable.Empty<int>();
             var iterationCounter = 0;
-            Action<int> action = (n) => iterationCounter++;
+            void action(int n) => iterationCounter++;
+
             items.ForEach(action);
             Assert.AreEqual(0, iterationCounter);
         }
@@ -464,6 +498,7 @@ namespace Foundation.Collections.Generic
         {
             var items = new List<string> { "0", "1", "2", "3", "4", "5", "6", "7", "8", "9" };
             var selected = items.FromIndex(index => (index % 2) == 0).ToList();
+
             Assert.AreEqual(items.Count / 2, selected.Count);
             Assert.AreEqual("0", selected[0]);
             Assert.AreEqual("2", selected[1]);
@@ -546,7 +581,9 @@ namespace Foundation.Collections.Generic
         public void Ignore_Should_Ignore_Items_When_Match_On_Indices()
         {
             var numbers = Enumerable.Range(0, 10);
+
             var filtered = numbers.Ignore(new[] { 1, 3, 5, 7, 9 }).ToArray();
+
             Assert.AreEqual(5, filtered.Length);
             Assert.AreEqual(0, filtered[0]);
             Assert.AreEqual(2, filtered[1]);
@@ -559,7 +596,9 @@ namespace Foundation.Collections.Generic
         public void Ignore_Should_Ignore_Items_When_Matching_Predicate_Is_True()
         {
             var numbers = Enumerable.Range(0, 10);
+
             var filtered = numbers.Ignore(n => n % 2 == 0).ToArray();
+
             Assert.AreEqual(5, filtered.Length);
             Assert.AreEqual(1, filtered[0]);
             Assert.AreEqual(3, filtered[1]);
@@ -572,6 +611,7 @@ namespace Foundation.Collections.Generic
         public void IndexOf()
         {
             var items = Enumerable.Range(1, 5);
+
             Assert.AreEqual(0, items.IndexOf(1));
             Assert.AreEqual(1, items.IndexOf(2));
             Assert.AreEqual(2, items.IndexOf(3));
@@ -585,6 +625,7 @@ namespace Foundation.Collections.Generic
         {
             var items1 = Enumerable.Range(0, 5);
             var items2 = Enumerable.Range(0, 5);
+
             Assert.IsTrue(items1.IsEqualTo(items2));
             Assert.IsTrue(items2.IsEqualTo(items1));
         }
@@ -592,8 +633,19 @@ namespace Foundation.Collections.Generic
         [Test]
         public void IsEqualTo_Should_ReturnTrue_When_Items_SameNumberOfElementsAndDifferentOrder()
         {
+            var items1 = new[] { 1, 2, 3, 2 };
+            var items2 = new[] { 2, 3, 2, 1 };
+
+            Assert.IsTrue(items1.IsEqualTo(items2));
+            Assert.IsTrue(items2.IsEqualTo(items1));
+        }
+
+        [Test]
+        public void IsEqualTo_Should_ReturnTrue_When_Items_SameNumberOfElementsAndSameOrder()
+        {
             var items1 = Enumerable.Range(0, 5);
-            var items2 = Enumerable.Range(0, 5).Shuffle();
+            var items2 = Enumerable.Range(0, 5);
+
             Assert.IsTrue(items1.IsEqualTo(items2));
             Assert.IsTrue(items2.IsEqualTo(items1));
         }
@@ -603,6 +655,7 @@ namespace Foundation.Collections.Generic
         {
             var items1 = Enumerable.Range(0, 5);
             var items2 = Enumerable.Range(0, 6);
+
             Assert.IsFalse(items1.IsEqualTo(items2));
             Assert.IsFalse(items2.IsEqualTo(items1));
         }
@@ -612,6 +665,7 @@ namespace Foundation.Collections.Generic
         {
             {
                 var numbers = Enumerable.Range(0, 5);
+
                 Assert.IsTrue(numbers.IsInAscendingOrder((a, b) =>
                 {
                     if (a < b) return CompareResult.Smaller;
@@ -621,6 +675,7 @@ namespace Foundation.Collections.Generic
             }
             {
                 var numbers = new[] { 3, 4, 4, 7, 9 };
+
                 Assert.IsTrue(numbers.IsInAscendingOrder((a, b) =>
                 {
                     if (a < b) return CompareResult.Smaller;
@@ -630,6 +685,7 @@ namespace Foundation.Collections.Generic
             }
             {
                 var numbers = new[] { 4, 3, 7, 9 };
+
                 Assert.IsFalse(numbers.IsInAscendingOrder((a, b) =>
                 {
                     if (a < b) return CompareResult.Smaller;
@@ -643,7 +699,9 @@ namespace Foundation.Collections.Generic
         public void KCombinations_Should_ReturnPermutations_WithoutRepetitions_When_RepetitionsIsNotSet_Using_No_Duplicates()
         {
             var numbers = Enumerable.Range(1, 3);
+
             var kCombinations = numbers.KCombinations(2).ToArray();
+
             Assert.AreEqual(3, kCombinations.Length);
 
             Assert.IsTrue(kCombinations.Any(g => g.IsEqualTo(new[] { 1, 2 })));
@@ -655,7 +713,9 @@ namespace Foundation.Collections.Generic
         public void KCombinationsWithRepetition_Should_ReturnKCombinations_When_RepetitionsIsNotSet_Using_No_Duplicates()
         {
             var numbers = Enumerable.Range(1, 3);
+
             var kCombinations = numbers.KCombinationsWithRepetition(2).ToArray();
+
             Assert.AreEqual(6, kCombinations.Length);
 
             Assert.IsTrue(kCombinations.Any(g => g.IsEqualTo(new[] { 1, 1 })));
@@ -729,6 +789,7 @@ namespace Foundation.Collections.Generic
         public void MinMax_Should_ReturnMinMax_When_UsingSelectorWithDifferentValues()
         {
             var numbers = Enumerable.Range(1, 10);
+
             var actual = numbers.MinMax();
 
             var expected = MinMax.New(1, 10);
@@ -739,6 +800,7 @@ namespace Foundation.Collections.Generic
         public void MinMax_Should_ReturnMinMax_When_RepeatingValues()
         {
             var numbers = new[] { 1, 2, 2, 2, 5, 3, 3, 3, 3, 4 };
+
             var actual = numbers.MinMax();
 
             var expected = MinMax.New(1, 5);
@@ -749,7 +811,9 @@ namespace Foundation.Collections.Generic
         public void MostFrequent_Should_ReturnRightValue_When_MultipleMaxValue()
         {
             var numbers = new[] { 1, 2, 2, 2, 2, 3, 3, 3, 3, 4 };
+
             var (mostFrequent, count) = numbers.MostFrequent(x => x);
+
             var items = mostFrequent.ToArray();
             Assert.AreEqual(2, items.Length);
             Assert.AreEqual(2, items[0]);
@@ -761,7 +825,9 @@ namespace Foundation.Collections.Generic
         public void MostFrequent_Should_ReturnRightValue_When_SingleMaxValue()
         {
             var numbers = new[] { 1, 2, 2, 3, 3, 3, 3, 4 };
+
             var (mostFrequent, count) = numbers.MostFrequent(x => x);
+
             var items = mostFrequent.ToArray();
             Assert.AreEqual(1, items.Length);
             Assert.AreEqual(3, items[0]);       // 3 occurs most often
@@ -772,6 +838,7 @@ namespace Foundation.Collections.Generic
         public void Nth_Should_ReturnItemAtIndex_When_UsingValidIndex()
         {
             var items = new List<int> { 1, 2, 3, 4, 5 };
+
             Assert.AreEqual(1, items.Nth(0).ValueOrThrow());
             Assert.AreEqual(2, items.Nth(1).ValueOrThrow());
             Assert.AreEqual(3, items.Nth(2).ValueOrThrow());
@@ -783,8 +850,8 @@ namespace Foundation.Collections.Generic
         public void Nth_Should_ReturnNone_When_UsingInvalidIndex()
         {
             var items = new List<int> { 1, 2, 3, 4, 5 };
-
             var none = Opt.None<int>();
+
             Assert.AreEqual(none, items.Nth(-1));
             Assert.AreEqual(none, items.Nth(10));
         }
@@ -797,6 +864,7 @@ namespace Foundation.Collections.Generic
             const int min = 2;
 
             var foundItems = items.Nths(min..).ToArray();
+
             Assert.AreEqual(8, foundItems.Length);
 
             for (int i = min, j = 0; i < list.Count; i++, j++)
@@ -811,6 +879,7 @@ namespace Foundation.Collections.Generic
             const int max = 5;
 
             var foundItems = items.Nths(..max).ToArray();
+
             Assert.AreEqual(6, foundItems.Length);
 
             for (int i = 0, j = 0; i < max; i++, j++)
@@ -826,6 +895,7 @@ namespace Foundation.Collections.Generic
             const int max = 6;
 
             var foundItems = items.Nths(min..max).ToArray();
+
             Assert.AreEqual(5, foundItems.Length);
 
             for (int i = min, j = 0; i <= max; i++, j++)
@@ -841,6 +911,7 @@ namespace Foundation.Collections.Generic
             const int max = 15;
 
             var foundItems = items.Nths(min..max).ToArray();
+
             Assert.AreEqual(5, foundItems.Length);
 
             var end = min + foundItems.Length - 1;
@@ -855,6 +926,7 @@ namespace Foundation.Collections.Generic
             var items = Enumerable.Range(0, 10);
 
             var selected = items.Nths(1, 2, 5, 7).ToArray();
+
             Assert.AreEqual(4, selected.Length);
 
             Assert.AreEqual(1, selected[0]);
@@ -871,6 +943,7 @@ namespace Foundation.Collections.Generic
             //with invalid indexes
 
             var selected = items.Nths(-1, 2, 5, 17).ToArray();
+
             Assert.AreEqual(2, selected.Length);
 
             Assert.AreEqual(2, selected[0]);
@@ -975,11 +1048,11 @@ namespace Foundation.Collections.Generic
             var actionCounter = 0;
             var actionValue = -1;
             var loopCounter = 0;
-            Action<int> action = (x) =>
+            void action(int x)
             {
                 actionCounter++;
                 actionValue = x;
-            };
+            }
 
             foreach (var n in numbers.OnLast(action))
                 loopCounter++;
@@ -993,7 +1066,9 @@ namespace Foundation.Collections.Generic
         public void Permutations_Should_Return3Permutations_When_LengthIs1()
         {
             var numbers = Enumerable.Range(1, 3);
+
             var permutations = numbers.Permutations(1).ToArray();
+
             Assert.AreEqual(3, permutations.Length);
 
             Assert.IsTrue(permutations.Any(g => g.IsEqualTo(new[] { 1 })));
@@ -1005,7 +1080,9 @@ namespace Foundation.Collections.Generic
         public void Permutations_Should_ReturnPermutationsWithRepetitions_When_ContainsRepetitionsIsTrue()
         {
             var numbers = Enumerable.Range(1, 3);
+
             var permutations = numbers.Permutations(2).ToArray();
+
             Assert.AreEqual(9, permutations.Length);
 
             Assert.IsTrue(permutations.Any(g => g.IsEqualTo(new[] { 1, 1 })));
@@ -1023,6 +1100,7 @@ namespace Foundation.Collections.Generic
         public void Permutations_Should_ReturnPermutationsWithoutRepetitions_When_ContainsRepetitionsIsFalse()
         {
             var numbers = new[] { 1, 2, 3 };
+
             var permutations = numbers.Permutations(2, false).ToArray();
 
             Assert.IsTrue(permutations.Any(g => g.IsEqualTo(new[] { 1, 2 })));
@@ -1038,7 +1116,9 @@ namespace Foundation.Collections.Generic
         {
             var items = new List<int> { 1, 3, 5 };
             var item = 4;
+
             var newItems = items.PrependBy(item, Comparer<int>.Default).ToArray();
+
             Assert.AreEqual(4, newItems.Length);
             Assert.AreEqual(1, newItems[0]);
             Assert.AreEqual(3, newItems[1]);
@@ -1053,6 +1133,7 @@ namespace Foundation.Collections.Generic
             var item = 4;
             {
                 var newItems = items.PrependBy(item, n => n > 3).ToArray();
+
                 Assert.AreEqual(4, newItems.Length);
                 Assert.AreEqual(1, newItems[0]);
                 Assert.AreEqual(3, newItems[1]);
@@ -1061,6 +1142,7 @@ namespace Foundation.Collections.Generic
             }
             {
                 var newItems = items.PrependBy(item, n => n > 3 && n <= 5).ToArray();
+
                 Assert.AreEqual(4, newItems.Length);
                 Assert.AreEqual(1, newItems[0]);
                 Assert.AreEqual(3, newItems[1]);
@@ -1074,8 +1156,10 @@ namespace Foundation.Collections.Generic
         {
             var items = new List<int>();
             var item = 4;
+
             var newItems = items.PrependBy(item, Comparer<int>.Default).ToList();
-            Assert.IsTrue(newItems.Contains(item));
+
+            Assert.Contains(item, newItems);
         }
 
         [Test]
@@ -1083,55 +1167,68 @@ namespace Foundation.Collections.Generic
         {
             var items = new List<int>();
             var item = 4;
+
             var newItems = items.PrependBy(item, n => n > 3).ToList();
-            Assert.IsTrue(newItems.Contains(item));
+
+            Assert.Contains(item, newItems);
         }
 
         [Test]
-        public void QuantitativeDifference_Should_ReturnValues_When_DifferentElementsAndMultipleOccurence()
+        public void MatchWithOccurrencies_Should_ReturnValuesWithTheirOccurrencies_When_ItemsMatch()
         {
-            var items1 = new[] { 3, 2, 2, 1 };
-            var items2 = new[] { 1, 3, 4, 3 };
+            var lhs = new [] { 3, 2, 2, 1 };
+            var rhs = new [] { 1, 3, 4, 3 };
 
-            var diff = items1.QuantitativeDifference(items2).ToList();
-            Assert.AreEqual(4, diff.Count);
-            Assert.AreEqual(2, diff.Where(n => n == 2).Count());
-            Assert.AreEqual(1, diff.Where(n => n == 3).Count());
-            Assert.AreEqual(1, diff.Where(n => n == 4).Count());
+            var matching = lhs.MatchWithOccurrencies(rhs).ToArray();
+
+            Assert.AreEqual(2, matching.Length);
+            {
+                var tuple = matching.First(t => t.lhs.item == 1);
+                Assert.AreEqual(1, tuple.lhs.count);
+                Assert.AreEqual(1, tuple.rhs.count);
+            }
+            {
+                var tuple = matching.First(t => t.lhs.item == 3);
+                Assert.AreEqual(1, tuple.lhs.count);
+                Assert.AreEqual(2, tuple.rhs.count);
+            }
         }
 
         [Test]
-        public void QuantitativeDifference_Should_ReturnValues_When_DifferentElementsSameNumberOfElements()
+        public void MatchWithOccurrencies_Should_NotReturnValues_When_ItemsDonotMatch()
         {
-            var items1 = new[] { 1, 2, 3 };
-            var items2 = new[] { 1, 3, 4 };
+            var lhs = new[] { 1, 2, 3 };
+            var rhs = new[] { 4, 5, 6 };
 
-            var diff = items1.QuantitativeDifference(items2).ToList();
-            Assert.AreEqual(2, diff.Count);
-            Assert.Contains(2, diff);
-            Assert.Contains(4, diff);
+            var matching = lhs.MatchWithOccurrencies(rhs).ToArray();
+
+            Assert.AreEqual(0, matching.Length);
         }
 
         [Test]
-        public void QuantitativeDifference_Should_ReturnValues_When_SameElementsAndMultipleOccurence()
+        public void MatchWithOccurrencies_Should_ReturnValuesWithTheirOccurrencies_When_ItemsMatchIncludingNullValues()
         {
-            var items1 = new[] { 1, 2, 2, 3 };
-            var items2 = new[] { 1, 2, 3, 3 };
+            var lhs = new int?[] { 3, 2, null, 2, 1 };
+            var rhs = new int?[] { 1, null, 3, 4, null, 3 };
 
-            var diff = items1.QuantitativeDifference(items2).ToList();
-            Assert.AreEqual(2, diff.Count);
-            Assert.Contains(2, diff);
-            Assert.Contains(3, diff);
-        }
+            var matching = lhs.MatchWithOccurrencies(rhs).ToArray();
 
-        [Test]
-        public void QuantitativeDifference_Should_ReturnValues_When_SameElementsAndSameOccurence()
-        {
-            var items1 = new[] { 1, 2, 2, 3 };
-            var items2 = new[] { 1, 2, 2, 3 };
-
-            var diff = items1.QuantitativeDifference(items2).ToList();
-            Assert.AreEqual(0, diff.Count);
+            Assert.AreEqual(3, matching.Length);
+            {
+                var tuple = matching.First(t => t.lhs.item == null);
+                Assert.AreEqual(1, tuple.lhs.count);
+                Assert.AreEqual(2, tuple.rhs.count);
+            }
+            {
+                var tuple = matching.First(t => t.lhs.item == 1);
+                Assert.AreEqual(1, tuple.lhs.count);
+                Assert.AreEqual(1, tuple.rhs.count);
+            }
+            {
+                var tuple = matching.First(t => t.lhs.item == 3);
+                Assert.AreEqual(1, tuple.lhs.count);
+                Assert.AreEqual(2, tuple.rhs.count);
+            }
         }
 
         [Test]
@@ -1140,6 +1237,7 @@ namespace Foundation.Collections.Generic
             var numbers = Enumerable.Range(1, 5).ToList();
             {
                 var subset = numbers.RandomSubset(3).ToList();
+
                 Assert.AreEqual(3, subset.Count);
                 foreach (var randomSelected in subset)
                 {
@@ -1148,6 +1246,7 @@ namespace Foundation.Collections.Generic
             }
             {
                 var subset = numbers.RandomSubset(6).ToList();
+
                 Assert.AreEqual(5, subset.Count);
                 Assert.IsTrue(subset.IsEqualTo(numbers));
             }
@@ -1158,7 +1257,9 @@ namespace Foundation.Collections.Generic
         {
             var numbers = Enumerable.Range(0, 5);
             var expected = Enumerable.Range(0, 4);
+
             var actual = numbers.RemoveTail();
+
             CollectionAssert.AreEqual(expected, actual);
         }
 
@@ -1218,6 +1319,7 @@ namespace Foundation.Collections.Generic
         public void Replace_Should_ReturnReplacedList_When_ListIsLongerThanMaxReplaceIndex()
         {
             var numbers = Enumerable.Range(1, 5);
+
             var replaced = numbers.Replace(new[] { (20, 1), (40, 3) }).ToArray();
 
             Assert.AreEqual(5,  replaced.Length);
@@ -1232,6 +1334,7 @@ namespace Foundation.Collections.Generic
         public void Replace_Should_ReturnReplacedList_When_ListIsLongerThanMaxReplaceIndexAndProjectIsSet()
         {
             var numbers = Enumerable.Range(1, 5);
+
             var replaced = numbers.Replace(new[] { (20, 1), (40, 3) }, n => n.ToString()).ToArray();
 
             Assert.AreEqual(5, replaced.Length);
@@ -1246,6 +1349,7 @@ namespace Foundation.Collections.Generic
         public void Replace_Should_ReturnReplacedList_WhenListIsLongerThanMaxReplaceIndexAndUsingPredicate()
         {
             var numbers = Enumerable.Range(1, 5);
+
             var replaced = numbers.Replace((n, _) => 0 == n % 2 ? n * 10 : n).ToArray();
 
             Assert.AreEqual(5, replaced.Length);
@@ -1260,6 +1364,7 @@ namespace Foundation.Collections.Generic
         public void Replace_Should_ReturnReplacedList_When_ListIsShorterThanMaxReplaceIndex()
         {
             var numbers = Enumerable.Range(1, 5);
+
             var replaced = numbers.Replace(new[] { (20, 1), (40, 3), (60, 5) }).ToArray();
 
             Assert.AreEqual(5, replaced.Length);
@@ -1274,7 +1379,9 @@ namespace Foundation.Collections.Generic
         public void Shuffle()
         {
             var items = new List<string> { "0", "1", "2", "3", "4", "5", "6", "7", "8", "9" };
+
             var shuffled = items.ToList().Shuffle().ToList();
+
             Assert.IsFalse(shuffled.IsSameAs(items));
             Assert.IsTrue(EnumerableExtensions.IsEqualTo(items, shuffled));
         }
@@ -1284,7 +1391,9 @@ namespace Foundation.Collections.Generic
         {
             //{0, 1, 2, 3, 4, 5}
             var numbers = Enumerable.Range(0, 6);
+
             var spliced = numbers.Slice(n => n % 2 == 0, n => n % 2 != 0).ToArray();
+
             Assert.AreEqual(2, spliced.Length);
 
             var even = spliced[0].ToArray();
@@ -1309,7 +1418,9 @@ namespace Foundation.Collections.Generic
             var start = 1;
 
             var items = Enumerable.Range(start, numberOfItems);
+
             var slices = items.Slice(chopSize).ToArray();
+
             Assert.AreEqual(5, slices.Length);
             var value = start;
 
@@ -1331,7 +1442,9 @@ namespace Foundation.Collections.Generic
             var start = 1;
 
             var items = Enumerable.Range(start, numberOfItems);
+
             var slices = items.Slice(chopSize).ToArray();
+
             Assert.AreEqual(6, slices.Length);
             var value = start;
 
@@ -1492,6 +1605,7 @@ namespace Foundation.Collections.Generic
             var items2 = new List<A> { new A("a"), new A("b"), new A("c"), new A("1"), new A("3") };
 
             var mapping = items1.Zip(items2, (f, s) => f.Name == s.Name, (f, s) => (f, s)).ToList();
+
             Assert.AreEqual(2, mapping.Count);
             foreach (var (f, s) in mapping)
             {
@@ -1505,7 +1619,9 @@ namespace Foundation.Collections.Generic
         {
             var items1 = new List<A> { new A("1"), new A("2"), new A("3") };
             var items2 = new List<A> { new A("a"), new A("b"), new A("c"), new A("1"), new A("3"), new A("1") };
+
             var mapping = items1.Zip(items2, (f, s) => f.Name == s.Name, (f, s) => (f, s)).ToList();
+
             Assert.AreEqual(3, mapping.Count);
             foreach (var (f, s) in mapping)
             {
@@ -1519,7 +1635,9 @@ namespace Foundation.Collections.Generic
         {
             var items1 = new List<A> { new A("1"), new A("2"), new A("3") };
             var items2 = new List<A> { new A("a"), new A("b"), new A("c") };
+
             var mapping = items1.Zip(items2, (f, s) => f.Name == s.Name, (f, s) => (f, s)).ToList();
+
             Assert.AreEqual(0, mapping.Count);
         }
     }

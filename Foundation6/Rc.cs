@@ -76,7 +76,7 @@ public struct Rc<T>
         return Opt.Maybe(Object);
     }
 
-    public override int GetHashCode() => Object.GetNullableHashCode();
+    public override int GetHashCode() => System.HashCode.Combine(Counter, Object);
 
     public bool IsEmpty => Object is null;
 
