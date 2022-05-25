@@ -1785,20 +1785,6 @@ public static class EnumerableExtensions
     }
 
     /// <summary>
-    /// Creates permutations of a list. The permutation does not include repetitions.
-    /// </summary>
-    /// <typeparam name="T"></typeparam>
-    /// <param name="items">items must be sorted</param>
-    /// <param name="length">This is the permutation size.</param>
-    /// <returns></returns>
-    public static IEnumerable<IEnumerable<T>> PermutationsWithoutRepetition<T>(this IEnumerable<T> items, int length)
-    {
-        return items.ThrowIfNull()
-                    .Distinct()
-                    .Permutations(length, false);
-    }
-
-    /// <summary>
     /// inserts an item before the equal item.
     /// </summary>
     /// <typeparam name="T"></typeparam>
