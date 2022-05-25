@@ -215,7 +215,7 @@ public static class EnumerableExtensions
     /// <returns></returns>
     public static decimal AverageMedian<T>([DisallowNull] this IEnumerable<T> items, Func<T, decimal>? converter = null)
     {
-        var (opt1, opt2) = AverageMedianPosition(items);
+        var (opt1, opt2) = AverageMedianValues(items);
         if (opt1.IsNone) return 0;
 
         var value1 = (null == converter)
@@ -237,7 +237,7 @@ public static class EnumerableExtensions
     /// <typeparam name="T"></typeparam>
     /// <param name="items"></param>
     /// <returns></returns>
-    public static (Opt<T> pos1, Opt<T> pos2) AverageMedianPosition<T>([DisallowNull] this IEnumerable<T> items)
+    public static (Opt<T> value1, Opt<T> value2) AverageMedianValues<T>([DisallowNull] this IEnumerable<T> items)
     {
         var sorted = items.OrderBy(x => x);
         var count = sorted.Count();
@@ -276,7 +276,7 @@ public static class EnumerableExtensions
     }
 
     /// <summary>
-    /// Cycles an enumerable. Means it creates an endless list of items.
+    /// Creates an endless list of items.
     /// </summary>
     /// <typeparam name="T"></typeparam>
     /// <param name="items"></param>
@@ -383,12 +383,12 @@ public static class EnumerableExtensions
     }
 
     /// <summary>
-    /// returns the duplicates of a list. If there are e.g. three of a value, 2 will returned.
-    /// If distinct is true, only one example of every duplicate value is returned. 
+    /// returns the duplicate items of a list. If there are e.g. three of an item, 2 will returned.
+    /// If distinct is true, only one example of every duplicate item is returned. 
     /// </summary>
     /// <typeparam name="T"></typeparam>
     /// <param name="items"></param>
-    /// <param name="distinct">If true, only one example of every duplicate value is returned.</param>
+    /// <param name="distinct">If true, only one example of every duplicate item is returned.</param>
     /// <returns></returns>
     public static IEnumerable<T> Duplicates<T>([DisallowNull] this IEnumerable<T> items, bool distinct = false)
     {
@@ -563,7 +563,7 @@ public static class EnumerableExtensions
     }
 
     /// <summary>
-    /// Filter and transform items. It returns only Opt.Some values.
+    /// Filters and transform items. It returns only Opt.Some values.
     /// </summary>
     /// <typeparam name="T"></typeparam>
     /// <typeparam name="TResult"></typeparam>
@@ -610,7 +610,7 @@ public static class EnumerableExtensions
     }
 
     /// <summary>
-    /// Searches items until all predicates mached exactly one times. 
+    /// Searches items until all predicates matched exactly one time.
     /// </summary>
     /// <typeparam name="T"></typeparam>
     /// <param name="items"></param>
@@ -995,7 +995,7 @@ public static class EnumerableExtensions
     }
 
     /// <summary>
-    /// Ignores item if predicate returns true.
+    /// Ignores items when predicate returns true.
     /// </summary>
     /// <typeparam name="T"></typeparam>
     /// <param name="items"></param>
@@ -1038,57 +1038,6 @@ public static class EnumerableExtensions
         {
             yield return item;
         }
-    }
-
-    /// <summary>
-    /// Returns an intersection between lhs and rhs. The ordinal sorting position can be controlled with hashFunc.
-    /// </summary>
-    /// <typeparam name="T"></typeparam>
-    /// <param name="lhs"></param>
-    /// <param name="rhs"></param>
-    /// <param name="comparer"></param>
-    /// <param name="hashFunc"></param>
-    /// <returns></returns>
-    /// <exception cref="ArgumentNullException"></exception>
-    public static IEnumerable<T> IntersectBy<T>(
-        [DisallowNull] this IEnumerable<T> lhs,
-        [DisallowNull] IEnumerable<T> rhs,
-        [DisallowNull] Func<T?, T?, bool> comparer,
-        Func<T?, int>? hashFunc)
-    {
-        comparer.ThrowIfNull();
-
-        return lhs.Intersect(rhs, new LambdaEqualityComparer<T>(comparer, hashFunc));
-    }
-
-    /// <summary>
-    /// returns an intersection between lhs and rhs.
-    /// </summary>
-    /// <typeparam name="T1"></typeparam>
-    /// <typeparam name="T2"></typeparam>
-    /// <typeparam name="TKey"></typeparam>
-    /// <typeparam name="TResult"></typeparam>
-    /// <param name="lhs"></param>
-    /// <param name="rhs"></param>
-    /// <param name="firstKeySelector"></param>
-    /// <param name="secondKeySelector"></param>
-    /// <param name="resultSelector"></param>
-    /// <returns></returns>
-    public static IEnumerable<TResult> IntersectBy<T1, T2, TKey, TResult>(
-        [DisallowNull] this IEnumerable<T1> lhs,
-        [DisallowNull] IEnumerable<T2> rhs,
-        [DisallowNull] Func<T1, TKey> firstKeySelector,
-        [DisallowNull] Func<T2, TKey> secondKeySelector,
-        [DisallowNull] Func<T1, T2, TResult> resultSelector)
-    {
-        rhs.ThrowIfNull();
-        firstKeySelector.ThrowIfNull();
-        secondKeySelector.ThrowIfNull();
-        resultSelector.ThrowIfNull();
-
-        return from left in lhs
-               join right in rhs on firstKeySelector(left) equals secondKeySelector(right)
-               select resultSelector(left, right);
     }
 
     /// <summary>
@@ -1251,6 +1200,43 @@ public static class EnumerableExtensions
     }
 
     /// <summary>
+    /// Returns all matching items of two lists.
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <typeparam name="TKey">Key that is used for matching.</typeparam>
+    /// <param name="lhs"></param>
+    /// <param name="rhs"></param>
+    /// <param name="keySelector"></param>
+    /// <param name="unique"></param>
+    /// <returns></returns>
+    public static (IEnumerable<T> lhs, IEnumerable<T> rhs) Match<T, TKey>(
+        [DisallowNull] this IEnumerable<T> lhs,
+        [DisallowNull] IEnumerable<T> rhs,
+        [DisallowNull] Func<T, TKey> keySelector)
+        where TKey : notnull
+    {
+        lhs.ThrowIfNull();
+        rhs.ThrowIfNull();
+        keySelector.ThrowIfNull();
+
+        var lhsMap = new MultiMap<TKey, (T, int)>();
+        var rhsMap = new MultiMap<TKey, (T, int)>();
+        var lhsTuples = lhs.Enumerate();
+        var rhsTuples = rhs.Enumerate();
+        var tuples = from left in lhsTuples
+                     join right in rhsTuples on keySelector(left.item) equals keySelector(right.item)
+                     select (left, right);
+
+        foreach (var (left, right) in tuples)
+        {
+            lhsMap.AddUnique(keySelector(left.item), left);
+            rhsMap.AddUnique(keySelector(right.item), right);
+        }
+
+        return (lhsMap.Values.Select(t => t.Item1), rhsMap.Values.Select(t => t.Item1));
+    }
+
+    /// <summary>
     /// Returns the greatest item.
     /// </summary>
     /// <typeparam name="T"></typeparam>
@@ -1289,13 +1275,13 @@ public static class EnumerableExtensions
     }
 
     /// <summary>
-    /// Returns the min and max item.
+    /// Returns the min and max value.
     /// </summary>
     /// <typeparam name="T"></typeparam>
     /// <param name="items"></param>
     /// <returns></returns>
     public static MinMax<T>? MinMax<T>([DisallowNull] this IEnumerable<T> items)
-        where T : IComparable
+        where T : IComparable<T>
     {
         items.ThrowIfNull();
         T? min = default;
@@ -1410,7 +1396,7 @@ public static class EnumerableExtensions
     /// <typeparam name="T"></typeparam>
     /// <param name="items"></param>
     /// <param name="index"></param>
-    /// <returns></returns>
+    /// <returns>An optional.</returns>
     public static Opt<T> Nth<T>([DisallowNull] this IEnumerable<T> items, int index)
     {
         if (0 > index) return Opt.None<T>();
@@ -1426,6 +1412,25 @@ public static class EnumerableExtensions
             pos++;
         }
         return Opt.None<T>();
+    }
+
+
+    /// <summary>
+    /// Returns all items within the range of indices.
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <param name="items"></param>
+    /// <param name="range">range of indices. Indices from end are not supported</param>
+    /// <returns>all items within the range of indices</returns>
+    public static IEnumerable<T> Nths<T>([DisallowNull] this IEnumerable<T> items, System.Range range)
+    {
+        int i = 0;
+        foreach (var item in items.ThrowIfNull())
+        {
+            if (range.IsInRange(i)) yield return item;
+
+            i++;
+        }
     }
 
     /// <summary>
@@ -1690,7 +1695,7 @@ public static class EnumerableExtensions
     }
 
     /// <summary>
-    /// Partitions items into two lists. If predicate is true the item is added to matching otherwise notMatching.
+    /// Partitions items into two lists. If predicate is true the item is added to matching otherwise to notMatching.
     /// </summary>
     /// <typeparam name="T"></typeparam>
     /// <param name="items"></param>
@@ -1780,7 +1785,7 @@ public static class EnumerableExtensions
     }
 
     /// <summary>
-    /// Creates permutations of a list.
+    /// Creates permutations of a list. The permutation does not include repetitions.
     /// </summary>
     /// <typeparam name="T"></typeparam>
     /// <param name="items">items must be sorted</param>
@@ -2319,8 +2324,7 @@ public static class EnumerableExtensions
     {
         foreach(var item in items.ThrowIfNull())
         {
-            item.ThrowIfNull();
-            yield return item;
+            yield return item.ThrowIfNull(); ;
         }
     }
 
@@ -2355,7 +2359,7 @@ public static class EnumerableExtensions
     }
 
     /// <summary>
-    /// makes the enumerable breakable.
+    /// Makes the enumerable interruptible. This can be used for nested foreach loops.
     /// </summary>
     /// <typeparam name="T"></typeparam>
     /// <param name="items"></param>
@@ -2656,25 +2660,6 @@ public static class EnumerableExtensions
                 throw new ArgumentOutOfRangeException($"{item}");
 
             yield return item;
-        }
-    }
-
-    /// <summary>
-    /// Returns all items within the range of indices.
-    /// </summary>
-    /// <typeparam name="T"></typeparam>
-    /// <param name="items"></param>
-    /// <param name="range">range of indices. Indices from end are not supported</param>
-    /// <returns></returns>
-    //public static IEnumerable<T> WhereByIndex<T>([DisallowNull] this IEnumerable<T> items, Range<long, long> indexRange)
-    public static IEnumerable<T> WhereByIndex<T>([DisallowNull] this IEnumerable<T> items, System.Range range)
-    {
-        int i = 0;
-        foreach (var item in items.ThrowIfNull())
-        {
-            if (range.IsInRange(i)) yield return item;
-
-            i++;
         }
     }
 
