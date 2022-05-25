@@ -273,29 +273,35 @@ namespace Foundation.Collections.Generic
         }
 
         [Test]
-        public void Difference_CompletelyDifferent()
+        public void Difference_Should_ReturnAllItems_When_ListsAreCompletelyDifferent()
         {
             var items1 = Enumerable.Range(0, 10);
             var items2 = Enumerable.Range(10, 10);
+
             var diff = items1.Difference(items2).ToList();
+
             Assert.AreEqual(20, diff.Count);
         }
 
         [Test]
-        public void Difference_NoDifference()
+        public void Difference_Should_ReturnNoItem_When_ListsHaveTheSameItems()
         {
             var items1 = Enumerable.Range(0, 10);
             var items2 = Enumerable.Range(0, 10);
+
             var diff = items1.Difference(items2).ToList();
+
             Assert.AreEqual(0, diff.Count);
         }
 
         [Test]
-        public void Difference_PartiallyEqual()
+        public void Difference_Should_ReturnDifferentItemsFromBothLists_When_BothListsHaveDifferentItems()
         {
             var items1 = new List<int> { 1, 2, 3, 4, 5 };
             var items2 = new List<int> { 2, 4, 6 };
+
             var diff = items1.Difference(items2).ToList();
+
             Assert.AreEqual(4, diff.Count);
             CollectionAssert.AreEqual(new[] { 1, 3, 5, 6 }, diff);
         }
@@ -984,7 +990,19 @@ namespace Foundation.Collections.Generic
         }
 
         [Test]
-        public void Permutations_Should_ReturnPermutations_WithoutRepetitions_When_RepetitionsIsFalse_Using_No_Duplicates()
+        public void Permutations_Should_Return3Permutations_When_LengthIs1()
+        {
+            var numbers = Enumerable.Range(1, 3);
+            var permutations = numbers.Permutations(1).ToArray();
+            Assert.AreEqual(3, permutations.Length);
+
+            Assert.IsTrue(permutations.Any(g => g.IsEqualTo(new[] { 1 })));
+            Assert.IsTrue(permutations.Any(g => g.IsEqualTo(new[] { 2 })));
+            Assert.IsTrue(permutations.Any(g => g.IsEqualTo(new[] { 3 })));
+        }
+
+        [Test]
+        public void Permutations_Should_ReturnPermutationsWithRepetitions_When_ContainsRepetitionsIsTrue()
         {
             var numbers = Enumerable.Range(1, 3);
             var permutations = numbers.Permutations(2).ToArray();
@@ -1002,22 +1020,10 @@ namespace Foundation.Collections.Generic
         }
 
         [Test]
-        public void Permutations_Should_Return3Permutations_When_LengthIs1()
+        public void Permutations_Should_ReturnPermutationsWithoutRepetitions_When_ContainsRepetitionsIsFalse()
         {
-            var numbers = Enumerable.Range(1, 3);
-            var permutations = numbers.Permutations(1).ToArray();
-            Assert.AreEqual(3, permutations.Length);
-
-            Assert.IsTrue(permutations.Any(g => g.IsEqualTo(new[] { 1 })));
-            Assert.IsTrue(permutations.Any(g => g.IsEqualTo(new[] { 2 })));
-            Assert.IsTrue(permutations.Any(g => g.IsEqualTo(new[] { 3 })));
-        }
-
-        [Test]
-        public void PermutationsWithoutRepetition_Should_ReturnPermutations_WithoutRepetitions_When_Includes_Duplicates()
-        {
-            var numbers = new[] { 1, 1, 2, 3 };
-            var permutations = numbers.PermutationsWithoutRepetition(2).ToArray();
+            var numbers = new[] { 1, 2, 3 };
+            var permutations = numbers.Permutations(2, false).ToArray();
 
             Assert.IsTrue(permutations.Any(g => g.IsEqualTo(new[] { 1, 2 })));
             Assert.IsTrue(permutations.Any(g => g.IsEqualTo(new[] { 1, 3 })));
@@ -1025,23 +1031,6 @@ namespace Foundation.Collections.Generic
             Assert.IsTrue(permutations.Any(g => g.IsEqualTo(new[] { 2, 3 })));
             Assert.IsTrue(permutations.Any(g => g.IsEqualTo(new[] { 3, 1 })));
             Assert.IsTrue(permutations.Any(g => g.IsEqualTo(new[] { 3, 2 })));
-        }
-
-        [Test]
-        public void Permutations_Should_ReturnPermutations_WithRepetitions_When_ContainsRepetitionsIsSet()
-        {
-            var numbers = Enumerable.Range(1, 3);
-            var permutations = numbers.Permutations(2, true).ToArray();
-
-            Assert.IsTrue(permutations.Any(g => g.IsEqualTo(new[] { 1, 1 })));
-            Assert.IsTrue(permutations.Any(g => g.IsEqualTo(new[] { 1, 2 })));
-            Assert.IsTrue(permutations.Any(g => g.IsEqualTo(new[] { 1, 3 })));
-            Assert.IsTrue(permutations.Any(g => g.IsEqualTo(new[] { 2, 1 })));
-            Assert.IsTrue(permutations.Any(g => g.IsEqualTo(new[] { 2, 2 })));
-            Assert.IsTrue(permutations.Any(g => g.IsEqualTo(new[] { 2, 3 })));
-            Assert.IsTrue(permutations.Any(g => g.IsEqualTo(new[] { 3, 1 })));
-            Assert.IsTrue(permutations.Any(g => g.IsEqualTo(new[] { 3, 2 })));
-            Assert.IsTrue(permutations.Any(g => g.IsEqualTo(new[] { 3, 3 })));
         }
 
         [Test]
