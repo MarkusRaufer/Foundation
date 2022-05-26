@@ -621,6 +621,68 @@ namespace Foundation.Collections.Generic
         }
 
         [Test]
+        public void Insert_Should_InsertItem_When_EmptyEnumerable_Predicate()
+        {
+            var items = new List<int>();
+            var item = 4;
+
+            var newItems = items.Insert(item, n => n > 3).ToList();
+
+            Assert.Contains(item, newItems);
+        }
+
+        [Test]
+        public void Insert_Should_InsertItem_When_EmptyEnumerable_UsingComparer()
+        {
+            var items = new List<int>();
+            var item = 4;
+
+            var newItems = items.Insert(item, Comparer<int>.Default).ToList();
+
+            Assert.Contains(item, newItems);
+        }
+
+        [Test]
+        public void Insert_Should_InsertAnItem_When_Using_Comparer()
+        {
+            var items = new List<int> { 1, 3, 5 };
+            var item = 4;
+
+            var newItems = items.Insert(item, Comparer<int>.Default).ToArray();
+
+            Assert.AreEqual(4, newItems.Length);
+            Assert.AreEqual(1, newItems[0]);
+            Assert.AreEqual(3, newItems[1]);
+            Assert.AreEqual(4, newItems[2]);
+            Assert.AreEqual(5, newItems[3]);
+        }
+
+        [Test]
+        public void Insert_Should_InsertAnItem_When_Using_Predicate()
+        {
+            var items = new List<int> { 1, 3, 5 };
+            var item = 4;
+            {
+                var newItems = items.Insert(item, n => n > 3).ToArray();
+
+                Assert.AreEqual(4, newItems.Length);
+                Assert.AreEqual(1, newItems[0]);
+                Assert.AreEqual(3, newItems[1]);
+                Assert.AreEqual(4, newItems[2]);
+                Assert.AreEqual(5, newItems[3]);
+            }
+            {
+                var newItems = items.Insert(item, n => n > 3 && n <= 5).ToArray();
+
+                Assert.AreEqual(4, newItems.Length);
+                Assert.AreEqual(1, newItems[0]);
+                Assert.AreEqual(3, newItems[1]);
+                Assert.AreEqual(4, newItems[2]);
+                Assert.AreEqual(5, newItems[3]);
+            }
+        }
+
+        [Test]
         public void IsEqualTo_Should_ReturnTrue_When_SameNumberOfElementsAndSameOrder()
         {
             var items1 = Enumerable.Range(0, 5);
@@ -1109,68 +1171,6 @@ namespace Foundation.Collections.Generic
             Assert.IsTrue(permutations.Any(g => g.IsEqualTo(new[] { 2, 3 })));
             Assert.IsTrue(permutations.Any(g => g.IsEqualTo(new[] { 3, 1 })));
             Assert.IsTrue(permutations.Any(g => g.IsEqualTo(new[] { 3, 2 })));
-        }
-
-        [Test]
-        public void PrependBy_Should_InsertAnItem_When_Using_Comparer()
-        {
-            var items = new List<int> { 1, 3, 5 };
-            var item = 4;
-
-            var newItems = items.PrependBy(item, Comparer<int>.Default).ToArray();
-
-            Assert.AreEqual(4, newItems.Length);
-            Assert.AreEqual(1, newItems[0]);
-            Assert.AreEqual(3, newItems[1]);
-            Assert.AreEqual(4, newItems[2]);
-            Assert.AreEqual(5, newItems[3]);
-        }
-
-        [Test]
-        public void PrependBy_Should_InsertAnItem_When_Using_Predicate()
-        {
-            var items = new List<int> { 1, 3, 5 };
-            var item = 4;
-            {
-                var newItems = items.PrependBy(item, n => n > 3).ToArray();
-
-                Assert.AreEqual(4, newItems.Length);
-                Assert.AreEqual(1, newItems[0]);
-                Assert.AreEqual(3, newItems[1]);
-                Assert.AreEqual(4, newItems[2]);
-                Assert.AreEqual(5, newItems[3]);
-            }
-            {
-                var newItems = items.PrependBy(item, n => n > 3 && n <= 5).ToArray();
-
-                Assert.AreEqual(4, newItems.Length);
-                Assert.AreEqual(1, newItems[0]);
-                Assert.AreEqual(3, newItems[1]);
-                Assert.AreEqual(4, newItems[2]);
-                Assert.AreEqual(5, newItems[3]);
-            }
-        }
-
-        [Test]
-        public void PrependBy_Should_InsertItem_When_EmptyEnumerable_UsingComparer()
-        {
-            var items = new List<int>();
-            var item = 4;
-
-            var newItems = items.PrependBy(item, Comparer<int>.Default).ToList();
-
-            Assert.Contains(item, newItems);
-        }
-
-        [Test]
-        public void PrependBy_Should_InsertItem_When_EmptyEnumerable_Predicate()
-        {
-            var items = new List<int>();
-            var item = 4;
-
-            var newItems = items.PrependBy(item, n => n > 3).ToList();
-
-            Assert.Contains(item, newItems);
         }
 
         [Test]

@@ -1016,6 +1016,64 @@ public static class EnumerableExtensions
     }
 
     /// <summary>
+    /// inserts an item before the equal item.
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <param name="items"></param>
+    /// <param name="item"></param>
+    /// <param name="predicate"></param>
+    /// <returns></returns>
+    public static IEnumerable<T> Insert<T>(
+        [DisallowNull] this IEnumerable<T> items,
+        T item,
+        [DisallowNull] Func<T, bool> predicate)
+    {
+        predicate.ThrowIfNull();
+        items.Prepend(item);
+        var inserted = false;
+        foreach (var i in items.ThrowIfNull())
+        {
+            if (!inserted && predicate(i))
+            {
+                yield return item;
+                inserted = true;
+            }
+            yield return i;
+        }
+
+        if (!inserted) yield return item;
+    }
+
+    /// <summary>
+    /// inserts an item before the equal item.
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <param name="items"></param>
+    /// <param name="item"></param>
+    /// <param name="comparer"></param>
+    /// <returns></returns>
+    public static IEnumerable<T> Insert<T>(
+        [DisallowNull] this IEnumerable<T> items,
+        T item,
+        [DisallowNull] IComparer<T> comparer)
+    {
+        comparer.ThrowIfNull();
+
+        var inserted = false;
+        foreach (var i in items.ThrowIfNull())
+        {
+            if (!inserted && comparer.Compare(item, i) < 1)
+            {
+                yield return item;
+                inserted = true;
+            }
+            yield return i;
+        }
+
+        if (!inserted) yield return item;
+    }
+
+    /// <summary>
     /// Intersects all collections.
     /// </summary>
     /// <typeparam name="T"></typeparam>
@@ -1900,61 +1958,6 @@ public static class EnumerableExtensions
         return Permutations(items, length - 1)
                     .SelectMany(t => items.Where(o => !t.Contains(o)),
                                (t1, t2) => t1.Concat(new T[] { t2 }));
-    }
-
-    /// <summary>
-    /// inserts an item before the equal item.
-    /// </summary>
-    /// <typeparam name="T"></typeparam>
-    /// <param name="items"></param>
-    /// <param name="item"></param>
-    /// <param name="comparer"></param>
-    /// <returns></returns>
-    public static IEnumerable<T> PrependBy<T>(
-        [DisallowNull] this IEnumerable<T> items, 
-        T item,
-        [DisallowNull] IComparer<T> comparer)
-    {
-        comparer.ThrowIfNull();
-
-        var inserted = false;
-        foreach (var i in items.ThrowIfNull())
-        {
-            if (!inserted && comparer.Compare(item, i) < 1)
-            {
-                yield return item;
-                inserted = true;
-            }
-            yield return i;
-        }
-
-        if (!inserted) yield return item;
-    }
-
-    /// <summary>
-    /// inserts an item before the equal item.
-    /// </summary>
-    /// <typeparam name="T"></typeparam>
-    /// <param name="items"></param>
-    /// <param name="item"></param>
-    /// <param name="predicate"></param>
-    /// <returns></returns>
-    public static IEnumerable<T> PrependBy<T>([DisallowNull] this IEnumerable<T> items, T item, [DisallowNull] Func<T, bool> predicate)
-    {
-        predicate.ThrowIfNull();
-
-        var inserted = false;
-        foreach (var i in items.ThrowIfNull())
-        {
-            if (!inserted && predicate(i))
-            {
-                yield return item;
-                inserted = true;
-            }
-            yield return i;
-        }
-
-        if (!inserted) yield return item;
     }
 
     /// <summary>
