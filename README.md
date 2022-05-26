@@ -8,8 +8,8 @@ example:
 
 |framework|namespace|
 |---------|---------|
-|.NET| ```System.Collections.Generic```|
-|Foundation|```Foundation.Collections.Generic```|
+|.NET| `System.Collections.Generic`|
+|Foundation|`Foundation.Collections.Generic`|
 
 It is easy for a .NET developer to find a particular component because of the familiar namespace scheme.
 
