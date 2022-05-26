@@ -1270,7 +1270,7 @@ public static class EnumerableExtensions
     }
 
     /// <summary>
-    /// Returns all matching items of two lists.
+    /// Returns all matching items of both lists as a tuple of two lists.
     /// </summary>
     /// <typeparam name="T"></typeparam>
     /// <typeparam name="TKey">Key that is used for matching.</typeparam>
@@ -1278,7 +1278,7 @@ public static class EnumerableExtensions
     /// <param name="rhs"></param>
     /// <param name="keySelector"></param>
     /// <param name="unique"></param>
-    /// <returns></returns>
+    /// <returns>matching items as a tuple of two lists.</returns>
     public static (IEnumerable<T> lhs, IEnumerable<T> rhs) Match<T, TKey>(
         [DisallowNull] this IEnumerable<T> lhs,
         [DisallowNull] IEnumerable<T> rhs,
@@ -1289,13 +1289,14 @@ public static class EnumerableExtensions
         rhs.ThrowIfNull();
         keySelector.ThrowIfNull();
 
-        var lhsMap = new MultiMap<TKey, (T, int)>();
-        var rhsMap = new MultiMap<TKey, (T, int)>();
         var lhsTuples = lhs.Enumerate();
         var rhsTuples = rhs.Enumerate();
         var tuples = from left in lhsTuples
                      join right in rhsTuples on keySelector(left.item) equals keySelector(right.item)
                      select (left, right);
+
+        var lhsMap = new MultiMap<TKey, (T, int)>();
+        var rhsMap = new MultiMap<TKey, (T, int)>();
 
         foreach (var (left, right) in tuples)
         {
@@ -1355,7 +1356,7 @@ public static class EnumerableExtensions
     }
 
     /// <summary>
-    /// Returns matching items of two lists with their occurrencies.
+    /// Returns matching items of both lists with their occurrencies.
     /// </summary>
     /// <typeparam name="T"></typeparam>
     /// <typeparam name="TKey"></typeparam>
@@ -1363,7 +1364,7 @@ public static class EnumerableExtensions
     /// <param name="rhs"></param>
     /// <param name="keySelector"></param>
     /// <returns></returns>
-    public static IEnumerable<((T item, int count) lhs, (T item, int count) rhs)> MatchOccurrencyTuples<T, TKey>(
+    public static IEnumerable<((T item, int count) lhs, (T item, int count) rhs)> MatchWithOccurrencies<T, TKey>(
         [DisallowNull] this IEnumerable<T> lhs,
         [DisallowNull] IEnumerable<T> rhs,
         [DisallowNull] Func<T, TKey> keySelector)
@@ -1373,15 +1374,15 @@ public static class EnumerableExtensions
         rhs.ThrowIfNull();
         keySelector.ThrowIfNull();
 
+        var enumeratedLhs = lhs.Enumerate();
+        var enumeratedRhs = rhs.Enumerate();
+
+        var tuples = from left in enumeratedLhs
+                     join right in enumeratedRhs on keySelector(left.item) equals keySelector(right.item)
+                     select (left, right);
+
         var lhsMap = new MultiMap<TKey, (T, int)>();
         var rhsMap = new MultiMap<TKey, (T, int)>();
-
-        var lhsTuples = lhs.Enumerate();
-        var rhsTuples = rhs.Enumerate();
-
-        var tuples = from left in lhsTuples
-                     join right in rhsTuples on keySelector(left.item) equals keySelector(right.item)
-                     select (left, right);
 
         foreach (var (left, right) in tuples)
         {
@@ -1391,24 +1392,15 @@ public static class EnumerableExtensions
             rhsMap.AddUnique(key, right);
         }
 
-        (T item, int occurency) getTuple(IEnumerable<(T item, int counter)> tuples)
+        foreach(var pair in lhsMap)
         {
-            var item = default(T);
-            var occurency = 0;
-            foreach(var tuple in tuples.OnFirst(x => item = x.item))
-            {
-                occurency++;
-            }
+            var lhsTuples = lhsMap.GetValues(pair.Key);
+            var rhsTuples = rhsMap.GetValues(pair.Key);
 
-            return (item!, occurency);
-        }
+            var leftTuple = (pair.Value.Item1, lhsTuples.Count());
+            var rightTuple = (pair.Value.Item1, rhsTuples.Count());
 
-        foreach(var key in lhsMap.GetKeys())
-        {
-            var lhsValues = lhsMap.GetValues(key);
-            var rhsValues = rhsMap.GetValues(key);
-
-            yield return (getTuple(lhsValues), getTuple(rhsValues));
+            yield return (leftTuple, rightTuple);
         }
     }
 

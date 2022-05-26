@@ -134,30 +134,31 @@ This corresponds to the .NET counterpart System.Collections.Generic.
 
 Some examples:
 
-|method |description|
-|-------------------|-----------|
-|AfterEveryElement  |Is called after iterating each element except the last one.|
-|AtLeast            |Returns at least a number of elements. If the number of elements is smaller, an empty enumerable is returned.|
-|AverageMedian      |Returns the median of all values returned by the converter.|
-|AverageMedianValues|Returns the real values instead of a division of the median values.|
-|CartesianProduct   |Returns a cartesian product of two lists.|
-|CyclicEnumerate    |Creates an endless list of items.|
-|Difference         |Returns the symmetric difference of two lists.|
-|Duplicates         |Returns duplicate items of a list. If there are e.g. three of an item, 2 will returned.|
-|Enumerate          |Enumerates items.|
-|FilterMap          |Filters and transform items. It returns only Opt.Some values.|
-|FindUntil          |Searches items until all predicates matched exactly one time.|
-|Ignore             |Ignores items when predicate returns true.|
-|IsEqualTo          |Returns true, if all elements of items appear in the other list, the number of items and the occurrence are same.|
-|Match              |Returns all matching items of two lists.|
-|MinMax             |Returns the min and max value.|
-|MostFrequent       |returns the elements that occure most frequently.|
-|OnAdjacentElements |Calls action on all adjacent elements.|
-|OnFirst            |Calls action on first item.|
-|OnLast             |Calls action on last item.|
-|Partition          |Partitions items into two lists. If predicate is true the item is added to matching otherwise to notMatching.|
-|Permutations       |Creates permutations of a list.|
-|ToBreakable        |Makes the enumerable interruptible. This can be used for nested foreach loops.|
+|method |description  |
+|---------------------|-----------|
+|AfterEveryElement    |Is called after iterating each element except the last one.|
+|AtLeast              |Returns at least a number of elements. If the number of elements is smaller, an empty enumerable is returned.|
+|AverageMedian        |Returns the median of all values returned by the converter.|
+|AverageMedianValues  |Returns the real values instead of a division of the median values.|
+|CartesianProduct     |Returns a cartesian product of two lists.|
+|CyclicEnumerate      |Creates an endless list of items.|
+|Difference           |Returns the symmetric difference of two lists.|
+|Duplicates           |Returns duplicate items of a list. If there are e.g. three of an item, 2 will returned.|
+|Enumerate            |Enumerates items. Returns tuples (item, counter).|
+|FilterMap            |Filters and transform items. It returns only Opt.Some values.|
+|FindUntil            |Searches items until all predicates matched exactly one time.|
+|Ignore               |Ignores items when predicate returns true.|
+|IsEqualTo            |Returns true, if all elements of items appear in the other list, the number of items and the occurrence are same.|
+|Match                |Returns all matching items of both lists as a tuple of two lists.|
+|MatchWithOccurrencies|Returns matching items of both lists with their occurrencies.|
+|MinMax               |Returns the min and max value.|
+|MostFrequent         |returns the elements that occure most frequently.|
+|OnAdjacentElements   |Calls action on all adjacent elements.|
+|OnFirst              |Calls action on first item.|
+|OnLast               |Calls action on last item.|
+|Partition            |Partitions items into two lists. If predicate is true the item is added to matching otherwise to notMatching.|
+|Permutations         |Creates permutations of a list.|
+|ToBreakable          |Makes the enumerable interruptible. This can be used for nested foreach loops.|
 
 - **AfterEveryElement**
   
@@ -389,8 +390,8 @@ Some examples:
 
   var enumerated = items.Enumerate(item => i++).ToArray();
 
-  Assert.AreEqual(("one", 0), enumerated[0]);
-  Assert.AreEqual(("two", 1), enumerated[1]);
+  Assert.AreEqual(("one",   0), enumerated[0]);
+  Assert.AreEqual(("two",   1), enumerated[1]);
   Assert.AreEqual(("three", 2), enumerated[2]);
   ```
 
@@ -582,10 +583,10 @@ Some examples:
   Assert.AreEqual(5, matchingNumbers.Length);
   Assert.AreEqual(5, notMatchingNumbers.Length);
 
-  Assert.Contains(2, matchingNumbers);
-  Assert.Contains(4, matchingNumbers);
-  Assert.Contains(6, matchingNumbers);
-  Assert.Contains(8, matchingNumbers);
+  Assert.Contains(2,  matchingNumbers);
+  Assert.Contains(4,  matchingNumbers);
+  Assert.Contains(6,  matchingNumbers);
+  Assert.Contains(8,  matchingNumbers);
   Assert.Contains(10, matchingNumbers);
 
   Assert.Contains(1, notMatchingNumbers);
