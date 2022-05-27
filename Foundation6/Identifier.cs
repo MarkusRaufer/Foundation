@@ -5,6 +5,9 @@ using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.Runtime.Serialization;
 
+/// <summary>
+/// This identifier is ideal for rapid prototyping, if you do not want to commit to a specific type yet.
+/// </summary>
 [Serializable]
 public readonly struct Identifier
     : IIdentifier

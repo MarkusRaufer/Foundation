@@ -11,7 +11,7 @@ public class EquatableCollection<T>
     private readonly ICollection<T> _collection;
     private int _hashCode;
 
-    public EquatableCollection(bool allowDuplicates = true) : this(new List<T>())
+    public EquatableCollection(bool allowDuplicates = true) : this(new List<T>(), allowDuplicates)
     {
     }
 

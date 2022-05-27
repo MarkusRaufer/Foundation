@@ -40,8 +40,9 @@ namespace Foundation
             {
                 executed2 = true;
             }
-            
-            var sut = new Event<Action>();
+
+            // leaving the scope unregisters all subscriptions automatically.
+            using var sut = new Event<Action>();
 
             sut.Subscribe(func1);
             sut.Subscribe(func2);

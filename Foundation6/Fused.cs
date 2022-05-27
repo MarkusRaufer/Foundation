@@ -66,14 +66,18 @@ public static class FusedValueExtensions
     }
 }
 
+/// <summary>
+/// This structure reacts like a fuse. If the fuse has blown, the value won't change any longer.
+/// </summary>
+/// <typeparam name="T"></typeparam>
 public struct Fused<T>
 {
     private readonly Func<T, bool> _predicate;
     private T _value;
 
-    public Fused(T? value, [DisallowNull] Func<T, bool> predicate)
+    public Fused(T? seed, [DisallowNull] Func<T, bool> predicate)
     {
-        _value = value.ThrowIfNull();
+        _value = seed.ThrowIfNull();
         _predicate = predicate.ThrowIfNull();
         IsBlown = false;
     }

@@ -8,7 +8,7 @@ namespace Foundation
     }
 
     /// <summary>
-    /// Can be used as key for dictionaries.
+    /// Can be used as key for dictionaries. This allows null keys.
     /// </summary>
     /// <typeparam name="T"></typeparam>
     public struct NullableKey<T> : IEquatable<NullableKey<T>>
