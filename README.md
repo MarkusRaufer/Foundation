@@ -1,17 +1,26 @@
 # Foundation
 
-**Foundation** is an extension framework to .NET. It includes a lot of functionalities needed for the daily work of a C# developer.
+**Foundation** is an extension framework to **.NET 6**.
 
-The namespaces are based on Microsoft .NET namespaces.
+## Features
 
-example:
+- Additional base types and buffer manipulations
+- Additional collections and extensions to collections
+- Additional types for serialization and extensions
+- Reflection helpers and extensions
+
+examples:
 
 |framework|namespace|
 |---------|---------|
+|.NET| `System`|
+|Foundation|`Foundation`|
 |.NET| `System.Collections.Generic`|
 |Foundation|`Foundation.Collections.Generic`|
+|.NET| `System.IO`|
+|Foundation|`Foundation.IO`|
 
-It is easy for a .NET developer to find a particular component because of the familiar namespace scheme.
+The namespaces are based on Microsoft .NET namespaces. It is easy for a .NET developer to find a particular component because of the familiar namespace scheme.
 
 ## Namespaces
 
@@ -25,10 +34,14 @@ Some examples:
 |----------|-----------|
 |Disposable|Can be used to dispose components when exiting a method.|
 |Event     |Removes all subscribers on Dispose().|
-|HashCode  | Can create hashcodes from a list of objects and hashcodes.|
+|Fused     |Acts like a fuse. If blown the value won't change any longer.|
+|HashCode  |Can create hashcodes from a list of objects and hashcodes.|
+|Id        |Entity identifier|
+|Identifier|This identifier is ideal for rapid prototyping, if you do not want to commit to a specific type yet.
 |Opt       |Optional that can be Some or None.|
 |Period    |Period of time including duration.|
 |Result    |Result that can be Ok or Error.|
+|TimeDef   |time definition.|
 
 - **Disposable**
 
@@ -49,9 +62,78 @@ Some examples:
      if(condition) return;
      
   } 
-
   ```
 
+- **Event**
+  ```csharp
+
+  // example
+
+  var executed1 = false;
+  void func1()
+  {
+      executed1 = true;
+  }
+
+  var executed2 = false;
+  void func2()
+  {
+      executed2 = true;
+  }
+  
+  // leaving the scope unregisters all subscriptions automatically.
+  using var sut = new Event<Action>();
+
+  sut.Subscribe(func1);
+  sut.Subscribe(func2);
+
+  sut.Publish();
+
+  Assert.IsTrue(executed1);
+  Assert.IsTrue(executed2);
+
+  //calling subscribe twice does ignore the second subscription.
+  var disposable = sut.Subscribe(func1);
+
+  // unsubsribe the delegate.
+  disposable.Dispose();
+  ```
+
+- **Fused**
+  ```csharp
+
+  //example 1
+
+  // before
+  int init = -1;
+  int result = init;
+
+  result = service1.Get();
+
+  if(result == init)
+     result = service2.Get();
+
+  if(result == init)
+     result = service3.Get();
+
+  //after you don't need any if statement
+
+  var fused = Fused.Value(-1).BlowIfChanged();
+  
+  Assert.IsFalse(fused.IsBlown);
+
+  fused.Value = -1;
+  Assert.IsFalse(fused.IsBlown);
+  Assert.AreEqual(-1, fused.Value);
+
+  fused.Value = 4;
+  Assert.IsTrue(fused.IsBlown);
+  Assert.AreEqual(4, fused.Value);
+
+  fused.Value = 6;
+  Assert.IsTrue(fused.IsBlown);
+  Assert.AreEqual(4, fused.Value);
+  ```
 - **HashCode**
   
   ```csharp
@@ -64,11 +146,37 @@ Some examples:
 
   builder.AddObject(obj1, obj2, ...);
   builder.AddHashCode(hc1, hc2, ...);
+
   builder.AddObjects(objects);
   builder.AddHashCodes(hashcodes);
 
   var hashCode = builder.GetHashCode();
 
+  ```
+
+- **Id**
+  ```csharp
+
+  // examples
+
+  var invoiceNumber = new Id<Invoice>("294-5220381-3931160");
+
+  var deviceId = new Id<Device>(Guid.NewGuid());
+  var sessionId = new Id<Session>(Guid.NewGuid());
+  ```
+
+- **Identifier**
+  ```csharp
+
+  // example
+  
+  var id = new Identifier(Guid.NewGuid());
+
+  // a later change of the type of the value does not lead to changes of the rest
+
+  // e.g. var id = new Identifier("294-5220381-3931160")
+
+  var invoice = new Invoice<Identifier>(id);
   ```
 
 - **Opt<T>**
@@ -82,7 +190,8 @@ Some examples:
   if(maybe.IsSome) ...
 
   if(maybe.IsSome(out int number)) ...
-
+  
+  var some = Opt.Some(value);
   var none = Opt.None<int>();
 
   ```
@@ -124,6 +233,46 @@ Some examples:
   var result = Result.Error(new NotImplementedException());
   if(result.IsError) throw result.Error;
   
+  ```
+- **TimeDef**
+  ```csharp
+
+  //examples
+
+  var day = new TimeDef.Day(2); // year-month-day
+  
+  var duration = TimeDef.DateTimeSpan(from, to);
+  
+  var days = new TimeDef.Days(3); // number of days
+  
+  var hour = new TimeDef.Hour(8); // 08:00
+
+  var minutes = new TimeDef.Minutes(30);
+
+  var months = new TimeDef.Month(Month.Apr, Month.Jul);
+
+  var weekday = new TimeDef.Weekday(DayOfWeek.Monday, DayOfWeek.Wednesday);
+  var notMondayAndWednesday = new TimeDef.Not(weekday);
+
+  var day2 = new TimeDef.Day(2);
+  var day3 = new TimeDef.Day(3);
+  var day2OrDay3 = new TimeDef.Or(day2, day3);
+
+  var td1 = new TimeDef.And(
+               new TimeDef.And(
+                  new TimeDef.Year(2015),
+                  new TimeDef.Month(9)),
+               new TimeDef.Day(12));
+
+   var td2 = new TimeDef.And(
+               new TimeDef.And(
+                  new TimeDef.Year(2015),
+                  new TimeDef.Month(11)),
+               new TimeDef.Day(1));
+
+  td1.Equals(td2);
+  TimeDef.Difference(td1, td2);
+  TimeDef.Union(td1, td2);
   ```
 
 ## Foundation.Collections.Generic
