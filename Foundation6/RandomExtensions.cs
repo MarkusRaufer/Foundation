@@ -1,6 +1,7 @@
 ﻿namespace Foundation;
 
 using Foundation.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 
 public static class RandomExtensions
 {
@@ -22,6 +23,32 @@ public static class RandomExtensions
     public static double NextDouble(this Random random, double min, double max)
     {
         return random.NextDouble() * (max - min) + min;
+    }
+
+    /// <summary>
+    /// Creates deterministic guids often needed for tests. Duplicates are possible.
+    /// </summary>
+    /// <param name="random"></param>
+    /// <returns></returns>
+    public static Guid NextGuid([DisallowNull] this Random random)
+    {
+        return NextGuid(random, new byte[16]);
+    }
+
+    /// <summary>
+    /// Creates deterministic guids often needed for tests. Duplicates are possible.
+    /// </summary>
+    /// <param name="random"></param>
+    /// <param name="guidBuffer">A reusable buffer for creating Guids.</param>
+    /// <returns></returns>
+    public static Guid NextGuid([DisallowNull] this Random random, [DisallowNull] byte[] guidBuffer)
+    {
+        random.ThrowIfNull(nameof(random));
+        guidBuffer.ThrowIfNull(nameof(guidBuffer));
+        guidBuffer.ThrowIf(() => 16 != guidBuffer.Length, nameof(guidBuffer), "buffer for guid must have the size of 16");
+
+        random.NextBytes(guidBuffer);
+        return new Guid(guidBuffer);
     }
 }
 
