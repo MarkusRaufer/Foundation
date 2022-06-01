@@ -20,6 +20,7 @@ public struct FusedValue<T>
 
     public bool IsInitialized { get; }
 
+    public override string ToString() => $"{Value}";
     public T Value { get; }
 }
 
@@ -34,9 +35,10 @@ public static class FusedValueExtensions
         where T : IComparable<T>
     {
         var initialValue = value;
+
         return new Fused<T>(value.Value, x =>
         {
-            if (initialValue.IsInitialized) return null == x;
+            if (!initialValue.IsInitialized) return null == x;
             return !initialValue.Value.Equals(x);
         });
     }
@@ -70,7 +72,7 @@ public static class FusedValueExtensions
 /// This structure reacts like a fuse. If the fuse has blown, the value won't change any longer.
 /// </summary>
 /// <typeparam name="T"></typeparam>
-public struct Fused<T>
+public struct Fused<T> : IEquatable<Fused<T>>
 {
     private readonly Func<T, bool> _predicate;
     private T _value;
@@ -82,7 +84,34 @@ public struct Fused<T>
         IsBlown = false;
     }
 
+    public static bool operator ==(Fused<T> left, Fused<T> right)
+    {
+        return left.Equals(right);
+    }
+
+    public static bool operator !=(Fused<T> left, Fused<T> right)
+    {
+        return !(left == right);
+    }
+
+    public override bool Equals([NotNullWhen(true)] object? obj)
+    {
+        if(obj is Fused<T> other) return Equals(other);
+
+        return false;
+    }
+
+    public bool Equals(Fused<T> other)
+    {
+        if (Value is null) return other.Value is null;
+        return Value.Equals(other.Value);
+    }
+
+    public override int GetHashCode() => Value?.GetHashCode() ?? 0;
+
     public bool IsBlown { get; private set; }
+
+    public override string ToString() => $"Value:{Value}, IsBlown:{IsBlown}";
 
     public T Value
     {

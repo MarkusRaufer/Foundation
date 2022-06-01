@@ -7,13 +7,6 @@ namespace Foundation
     [TestFixture]
     public class FusedTests
     {
-        private class Person
-        {
-            public DateTime Birthday { get; set; }
-
-            public string LastName { get; set; }
-        }
-
         [Test]
         public void BlowIf()
         {
@@ -21,7 +14,7 @@ namespace Foundation
 
             var fused = Fused.Value(0).BlowIf(x => x == threshold);
 
-            foreach(var value in Enumerable.Range(0, 7))
+            foreach(var value in Enumerable.Range(1, 8))
             {
                 //if value matches the threshold then the fuse is blown and the value won't change any longer.
                 fused.Value = value;
