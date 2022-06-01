@@ -282,7 +282,7 @@ namespace Foundation
             var period3 = Period.New(newDate(3), newDate(6));
             var period4 = Period.New(newDate(8), newDate(9));
 
-            var intersected = period1.Intersect(new List<Period> { period2, period3, period4 }).ToList();
+            var intersected = period1.Intersect(new [] { period2, period3, period4 }).ToList();
             Assert.AreEqual(3, intersected.Count);
 
             Assert.AreEqual(new Period(newDate(2), newDate(4)), intersected[0]);
