@@ -139,20 +139,12 @@ public static class ObjectExtensions
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static T ThrowIf<T>(this T? obj, [DisallowNull] Func<bool> predicate, [CallerArgumentExpression("obj")] string name = "")
+    public static T ThrowIf<T>(this T? obj, [DisallowNull] Func<bool> predicate, string? message = null, [CallerArgumentExpression("obj")] string name = "")
     {
         predicate.ThrowIfNull();
 
-        return predicate() ? throw new ArgumentException(name) : obj.ThrowIfNull();
-    }
-
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static T ThrowIf<T>(this T? obj, [DisallowNull] Func<bool> predicate, string message, [CallerArgumentExpression("obj")] string name = "")
-    {
-        predicate.ThrowIfNull();
-
-        return predicate() ? throw new ArgumentException(message, name) : obj.ThrowIfNull();
+        var exception = message is null ? new ArgumentException(name) : new ArgumentException(message, name);
+        return predicate() ? throw exception : obj.ThrowIfNull();
     }
 
     [return: NotNull]
