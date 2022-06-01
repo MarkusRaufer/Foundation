@@ -220,6 +220,17 @@ Some examples:
   var union = period.Union(otherPeriod);
   union = period.Union(startDate, endDate);
 
+  var intersected = period1.Intersect(period2);
+
+  var listOfintersected = period1.Intersect(new [] { period2, period3, period4 });
+
+  var isOverlapping = period1.IsOverlapping(period2);
+
+  var isWithin = period.IsWithin(new DateTime(2015, 6, 1)); // is the date within the period?
+
+  var diff = period1.SymmetricDifference(period2);
+
+  var merged = period1.Union(period2); // only merge when overlapping.
   ```
 
 - **Result**
