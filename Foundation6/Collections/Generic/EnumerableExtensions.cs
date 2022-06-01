@@ -137,6 +137,43 @@ public static class EnumerableExtensions
     }
 
     /// <summary>
+    /// checks if all items are equal.
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <typeparam name="TSelector"></typeparam>
+    /// <param name="items"></param>
+    /// <returns></returns>
+    public static bool AllEqual<T>(this IEnumerable<T> items)
+    {
+        return AllEqual(items, x => x);
+    }
+
+    /// <summary>
+    /// checks if all values of the selector are equal.
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <typeparam name="TSelector"></typeparam>
+    /// <param name="items"></param>
+    /// <param name="selector"></param>
+    /// <returns></returns>
+    public static bool AllEqual<T, TSelector>(this IEnumerable<T> items, Func<T, TSelector> selector)
+    {
+        selector.ThrowIfNull(nameof(selector));
+        var it = items.ThrowIfNull(nameof(items)).GetEnumerator();
+
+        if (!it.MoveNext()) return true;
+
+        var first = selector(it.Current);
+
+        while (it.MoveNext())
+        {
+            if (!EqualityComparer<TSelector>.Default.Equals(selector(it.Current), first))
+                return false;
+        }
+        return true;
+    }
+
+    /// <summary>
     /// Returns at least numberOfElements elements. If the number of elements is smaller, an empty enumerable is returned.
     /// </summary>
     /// <typeparam name="T"></typeparam>
@@ -2027,6 +2064,46 @@ public static class EnumerableExtensions
             yield return prev;
             yield return it.Current;
         }
+    }
+
+    /// <summary>
+    /// Repeats the call of selector on each item.
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <typeparam name="TSelector"></typeparam>
+    /// <param name="items"></param>
+    /// <param name="repeat"></param>
+    /// <param name="selector"></param>
+    /// <returns></returns>
+    public static IEnumerable<TSelector> Repeat<T, TSelector>(
+        this IEnumerable<T> items,
+        int repeat,
+        Func<T, TSelector> selector)
+    {
+        foreach (var item in items)
+        {
+            for (var i = 0; i < repeat; i++)
+            {
+                yield return selector(item);
+            }
+        }
+    }
+
+    /// <summary>
+    /// Repeats the call of selector on each item and returns a list of selector lists.
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <typeparam name="TSelector"></typeparam>
+    /// <param name="items"></param>
+    /// <param name="repeat"></param>
+    /// <param name="selector"></param>
+    /// <returns></returns>
+    public static IEnumerable<IEnumerable<TSelector>> RepeatMany<T, TSelector>(
+        this IEnumerable<T> items,
+        int repeat,
+        Func<T, TSelector> selector)
+    {
+        return items.Select(item => Enumerable.Repeat(0, repeat).Select(_ => selector(item)));
     }
 
     /// <summary>
