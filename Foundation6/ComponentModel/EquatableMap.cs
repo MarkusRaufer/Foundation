@@ -5,11 +5,19 @@ using Foundation.Collections.Generic;
 using System.Collections;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
+using System.Runtime.Serialization;
 
+/// <summary>
+/// Equals of this map checks the equality of all elements.
+/// </summary>
+/// <typeparam name="TKey"></typeparam>
+/// <typeparam name="TValue"></typeparam>
+[Serializable]
 public class EquatableMap<TKey, TValue>
     : IDictionary<TKey, TValue>
     , ICollectionChanged<KeyValuePair<TKey, TValue>>
     , IEquatable<EquatableMap<TKey, TValue>>
+    , ISerializable
     where TKey : notnull
 {
     private int _hashCode;
@@ -27,6 +35,22 @@ public class EquatableMap<TKey, TValue>
     public EquatableMap([DisallowNull] IDictionary<TKey, TValue> keyValues)
     {
         _keyValues = keyValues.ThrowIfNull();
+        CreateHashCodeFromKeyValues();
+
+        CollectionChanged = new Event<Action<CollectionEvent<KeyValuePair<TKey, TValue>>>>();
+    }
+
+    public EquatableMap(SerializationInfo info, StreamingContext context)
+    {
+        if (info.GetValue(nameof(_keyValues), typeof(Dictionary<TKey, TValue>)) is Dictionary<TKey, TValue> keyValues)
+        {
+            _keyValues = keyValues;
+        }
+        else
+        {
+            _keyValues = new Dictionary<TKey, TValue>();
+        }
+
         CreateHashCodeFromKeyValues();
 
         CollectionChanged = new Event<Action<CollectionEvent<KeyValuePair<TKey, TValue>>>>();
@@ -141,6 +165,11 @@ public class EquatableMap<TKey, TValue>
     public IEnumerator<KeyValuePair<TKey, TValue>> GetEnumerator() => _keyValues.GetEnumerator();
 
     public override int GetHashCode() => _hashCode;
+
+    public void GetObjectData(SerializationInfo info, StreamingContext context)
+    {
+        info.AddValue(nameof(_keyValues), _keyValues);
+    }
 
     public bool IsReadOnly => _keyValues.IsReadOnly;
 

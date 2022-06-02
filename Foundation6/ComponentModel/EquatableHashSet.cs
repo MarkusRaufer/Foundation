@@ -3,13 +3,18 @@
 using Foundation.Collections.Generic;
 using System.Runtime.Serialization;
 
+/// <summary>
+/// Equals of this hashset checks the equality of all elements.
+/// </summary>
+/// <typeparam name="T"></typeparam>
 [Serializable]
 public class EquatableHashSet<T>
     : HashSet<T>
     , ICollectionChanged<T>
-    , ISerializable
     , IEquatable<EquatableHashSet<T>>
 {
+    private const string SerializationKey = "items";
+
     private int _hashCode;
 
     public EquatableHashSet() : base()
@@ -20,37 +25,37 @@ public class EquatableHashSet<T>
 
     public EquatableHashSet(IEnumerable<T> collection) : base(collection)
     {
-        _hashCode = HashCode.FromObjects(collection);
+        CreateHashCode();
         CollectionChanged = new Event<Action<CollectionEvent<T>>>();
     }
 
     public EquatableHashSet(IEqualityComparer<T>? comparer) :base(comparer)
     {
-        _hashCode = 0;
+        CreateHashCode();
         CollectionChanged = new Event<Action<CollectionEvent<T>>>();
     }
 
     public EquatableHashSet(int capacity) : base(capacity)
     {
-        _hashCode = 0;
+        CreateHashCode();
         CollectionChanged = new Event<Action<CollectionEvent<T>>>();
     }
 
     public EquatableHashSet(IEnumerable<T> collection, IEqualityComparer<T>? comparer) : base(collection, comparer)
     {
-        _hashCode = HashCode.FromObjects(collection);
+        CreateHashCode();
         CollectionChanged = new Event<Action<CollectionEvent<T>>>();
     }
 
     public EquatableHashSet(int capacity, IEqualityComparer<T>? comparer) : base(capacity, comparer)
     {
-        _hashCode = 0;
+        CreateHashCode();
         CollectionChanged = new Event<Action<CollectionEvent<T>>>();
     }
 
     public EquatableHashSet(SerializationInfo info, StreamingContext context) : base(info, context)
     {
-        _hashCode = HashCode.FromObjects(this);
+        CreateHashCode();
         CollectionChanged = new Event<Action<CollectionEvent<T>>>();
     }
 
@@ -71,11 +76,21 @@ public class EquatableHashSet<T>
     public new void Clear()
     {
         base.Clear();
-        _hashCode = 0;
+        CreateHashCode();
+
         CollectionChanged.Publish(new { State = CollectionChangedState.CollectionCleared });
     }
 
     public Event<Action<CollectionEvent<T>>> CollectionChanged { get; private set; }
+
+    protected void CreateHashCode()
+    {
+        var builder = HashCode.CreateBuilder();
+        builder.AddObject(typeof(EquatableHashSet<T>));
+        builder.AddObjects(this);
+
+        _hashCode = builder.GetHashCode();
+    }
 
     public override bool Equals(object? obj) => obj is EquatableHashSet<T> other && Equals(other);
 
@@ -95,7 +110,7 @@ public class EquatableHashSet<T>
 
         if (base.Remove(item))
         {
-            _hashCode = HashCode.FromObjects(this);
+            CreateHashCode();
             CollectionChanged.Publish(new { State = CollectionChangedState.ElementRemoved, Element = item });
             return true;
         }

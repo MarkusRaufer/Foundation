@@ -6,7 +6,7 @@ using System.Diagnostics.CodeAnalysis;
 using System.Runtime.Serialization;
 
 /// <summary>
-/// This Equals of this collection checks the equality of all elements.
+/// Equals of this collection checks the equality of all elements.
 /// </summary>
 /// <typeparam name="T"></typeparam>
 [Serializable]
@@ -43,7 +43,6 @@ public class EquatableCollection<T>
         }
         else
         {
-            _hashCode = 0;
             _collection = new List<T>();
         }
 
@@ -89,6 +88,7 @@ public class EquatableCollection<T>
         builder.AddObject(typeof(EquatableCollection<T>));
         builder.AddObjects(_collection);
     }
+
     public bool IsReadOnly => _collection.IsReadOnly;
 
     public override bool Equals(object? obj) => obj is EquatableCollection<T> other && Equals(other);
