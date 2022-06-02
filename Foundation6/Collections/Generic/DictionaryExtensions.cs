@@ -3,8 +3,7 @@
     public static  class DictionaryExtensions
     {
         public static bool IsEqualTo<TKey, TValue>(this IDictionary<TKey, TValue> lhs, IEnumerable<KeyValuePair<TKey, TValue>> rhs)
-                        where TKey : notnull
-
+            where TKey : notnull
         {
             var rhsCount = 0;
             foreach (var r in rhs)
@@ -29,6 +28,17 @@
                 if (!kvp.Value.EqualsNullable(rhsValue)) return false;
             }
             return true;
+        }
+
+        public static Opt<KeyValuePair<TKey, TValue>> RemovKey<TKey, TValue>(this IDictionary<TKey, TValue> dictionary, TKey key)
+            where TKey : notnull
+        {
+            dictionary.ThrowIfNull();
+
+            if (!dictionary.TryGetValue(key, out TValue? value)) return Opt.None<KeyValuePair<TKey, TValue>>();
+            
+            dictionary.Remove(key);
+            return Opt.Some(Pair.New(key, value));
         }
 
         public static IEnumerable<KeyValue<TKey, TValue>> ToKeyValues<TKey, TValue>(this IDictionary<TKey, TValue> dictionary)
