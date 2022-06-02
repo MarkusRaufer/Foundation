@@ -1,4 +1,7 @@
-﻿namespace Foundation.Collections.Generic;
+﻿namespace Foundation.ComponentModel;
+
+using Foundation;
+using Foundation.Collections.Generic;
 
 using System.Collections;
 using System.Diagnostics.CodeAnalysis;
@@ -32,7 +35,10 @@ public class EquatableReadOnlyDictionary<TKey, TValue>
 
     public bool Equals(EquatableReadOnlyDictionary<TKey, TValue>? other)
     {
-        return null != other && _dictionary.IsEqualTo(other._dictionary);
+        if (other is null) return false;
+        if (_hashCode != other._hashCode) return false;
+
+        return _dictionary.IsEqualTo(other._dictionary);
     }
 
     public IEnumerator<KeyValuePair<TKey, TValue>> GetEnumerator() => _dictionary.GetEnumerator();

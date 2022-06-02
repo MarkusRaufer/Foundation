@@ -1,8 +1,9 @@
-﻿namespace Foundation.Collections.ComponentModel;
+﻿namespace Foundation.ComponentModel;
 
 public enum CollectionChangedState
 {
     ElementAdded,
     ElementRemoved,
+    ElementReplaced,
     CollectionCleared
 }

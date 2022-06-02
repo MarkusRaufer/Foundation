@@ -1,4 +1,4 @@
-﻿namespace Foundation.Collections.ComponentModel;
+﻿namespace Foundation.ComponentModel;
 
 using Foundation.Collections.Generic;
 using System.Runtime.Serialization;
@@ -6,6 +6,7 @@ using System.Runtime.Serialization;
 [Serializable]
 public class EquatableHashSet<T>
     : HashSet<T>
+    , ICollectionChanged<T>
     , ISerializable
     , IEquatable<EquatableHashSet<T>>
 {
@@ -92,12 +93,12 @@ public class EquatableHashSet<T>
     {
         item.ThrowIfNull();
 
-        var removed = base.Remove(item);
-        if (removed)
+        if (base.Remove(item))
         {
             _hashCode = HashCode.FromObjects(this);
             CollectionChanged.Publish(new { State = CollectionChangedState.ElementRemoved, Element = item });
+            return true;
         }
-        return removed;
+        return false;
     }
 }

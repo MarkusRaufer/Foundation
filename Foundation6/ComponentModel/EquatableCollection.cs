@@ -1,4 +1,4 @@
-﻿namespace Foundation.Collections.ComponentModel;
+﻿namespace Foundation.ComponentModel;
 
 using Foundation.Collections.Generic;
 using System.Collections;
@@ -8,6 +8,7 @@ using System.Runtime.Serialization;
 [Serializable]
 public class EquatableCollection<T>
     : ICollection<T>
+    , ICollectionChanged<T>
     , ISerializable
     , IEquatable<EquatableCollection<T>>
 {
@@ -21,7 +22,7 @@ public class EquatableCollection<T>
     public EquatableCollection([DisallowNull] ICollection<T> collection)
     {
         _collection = collection.ThrowIfNull();
-        _hashCode = 0 == collection.Count ? 0 : HashCode.FromObjects(_collection);
+        CreateHashCode();
 
         CollectionChanged = new Event<Action<CollectionEvent<T>>>();
     }
@@ -35,13 +36,15 @@ public class EquatableCollection<T>
         if (info.GetValue(nameof(_collection), typeof(List<T>)) is List<T> collection)
         {
             _collection = collection;
-            _hashCode = HashCode.FromObjects(_collection);
         }
         else
         {
             _hashCode = 0;
             _collection = new List<T>();
         }
+
+        CreateHashCode();
+
         CollectionChanged = new Event<Action<CollectionEvent<T>>>();
     }
 
@@ -63,7 +66,8 @@ public class EquatableCollection<T>
     public void Clear()
     {
         _collection.Clear();
-        _hashCode = 0;
+        CreateHashCode();
+
         CollectionChanged.Publish(new { State = CollectionChangedState.CollectionCleared });
     }
 
@@ -75,6 +79,12 @@ public class EquatableCollection<T>
 
     public int Count => _collection.Count;
 
+    protected void CreateHashCode()
+    {
+        var builder = HashCode.CreateBuilder();
+        builder.AddObject(typeof(EquatableCollection<T>));
+        builder.AddObjects(_collection);
+    }
     public bool IsReadOnly => _collection.IsReadOnly;
 
     public override bool Equals(object? obj) => obj is EquatableCollection<T> other && Equals(other);
@@ -106,7 +116,7 @@ public class EquatableCollection<T>
 
         if (removed)
         {
-            _hashCode = HashCode.FromObjects(_collection);
+            CreateHashCode();
 
             CollectionChanged.Publish(new { State = CollectionChangedState.ElementRemoved, Element = item });
         }

@@ -8,10 +8,11 @@ using System.Linq;
 
 public class EquatableMap<TKey, TValue>
     : IDictionary<TKey, TValue>
-    , IEquatable<IDictionary<TKey, TValue>>
-    , IEquatable<IReadOnlyDictionary<TKey, TValue>>
+    , ICollectionChanged<KeyValuePair<TKey, TValue>>
+    , IEquatable<EquatableMap<TKey, TValue>>
     where TKey : notnull
 {
+    private int _hashCode;
     private readonly IDictionary<TKey, TValue> _keyValues;
 
     public EquatableMap() : this(new Dictionary<TKey, TValue>())
@@ -26,12 +27,33 @@ public class EquatableMap<TKey, TValue>
     public EquatableMap([DisallowNull] IDictionary<TKey, TValue> keyValues)
     {
         _keyValues = keyValues.ThrowIfNull();
+        CreateHashCodeFromKeyValues();
+
+        CollectionChanged = new Event<Action<CollectionEvent<KeyValuePair<TKey, TValue>>>>();
     }
 
     public TValue this[TKey key]
     {
         get => _keyValues[key];
-        set => _keyValues[key] = value;
+        set
+        {
+            var keyExists = _keyValues.ContainsKey(key);
+            if (keyExists)
+            {
+                var existingValue = _keyValues[key];
+                if (EqualityComparer<TValue>.Default.Equals(existingValue, value)) return;
+            }
+
+            _keyValues[key] = value;
+
+            CreateHashCodeFromKeyValues();
+
+            var changeEvent = keyExists
+                ? new { State = CollectionChangedState.ElementReplaced, Element = Pair.New(key, value) }
+                : new { State = CollectionChangedState.ElementAdded, Element = Pair.New(key, value) };
+
+            CollectionChanged.Publish(changeEvent);
+        }
     }
 
     public void Add(TKey key, TValue value)
@@ -41,41 +63,48 @@ public class EquatableMap<TKey, TValue>
         Add(Pair.New(key, value));
     }
 
-    public void Add(KeyValuePair<TKey, TValue> item)
+    public void Add(KeyValuePair<TKey, TValue> keyValue)
     {
-        item.ThrowIfEmpty();
+        keyValue.ThrowIfEmpty();
 
-        _keyValues.Add(item);
+        _keyValues.Add(keyValue);
 
-        var hcb = Foundation.HashCode.CreateBuilder();
-        hcb.AddHashCode(HashCode);
-        hcb.AddObject(item);
+        AddHashCodeFromKeyValues(new[] { keyValue });
 
-        HashCode = hcb.GetHashCode();
+        CollectionChanged.Publish(new { State = CollectionChangedState.ElementAdded, Element = keyValue });
     }
 
     public void Add(IEnumerable<KeyValuePair<TKey, TValue>> keyValues)
     {
         keyValues.ThrowIfNull();
-
-        var hcb = Foundation.HashCode.CreateBuilder();
         
-        foreach (var keyValue in keyValues.OnFirst(() => hcb.AddHashCode(HashCode)))
+        foreach (var keyValue in keyValues)
         {
             _keyValues.Add(keyValue);
-            hcb.AddObject(keyValue);
+            CollectionChanged.Publish(new { State = CollectionChangedState.ElementAdded, Element = keyValue });
         }
 
-        HashCode = hcb.GetHashCode();
+        AddHashCodeFromKeyValues(keyValues);
+
+    }
+
+    protected void AddHashCodeFromKeyValues(IEnumerable<KeyValuePair<TKey, TValue>> keyValues)
+    {
+        var builder = HashCode.CreateBuilder();
+        builder.AddHashCode(_hashCode);
+        builder.AddObjects(keyValues);
+        _hashCode = builder.GetHashCode();
     }
 
     public void Clear()
     {
         _keyValues.Clear();
-        HashCode = DefaultHashCode;
+        CreateHashCodeFromKeyValues();
+
+        CollectionChanged.Publish(new { State = CollectionChangedState.CollectionCleared });
     }
 
-    public int Count => _keyValues.Count;
+    public Event<Action<CollectionEvent<KeyValuePair<TKey, TValue>>>> CollectionChanged { get; private set; }
 
     public bool Contains(KeyValuePair<TKey, TValue> item) => _keyValues.Contains(item);
 
@@ -83,36 +112,35 @@ public class EquatableMap<TKey, TValue>
 
     public void CopyTo(KeyValuePair<TKey, TValue>[] array, int arrayIndex) => _keyValues.CopyTo(array, arrayIndex);
 
-    protected int CreateHashCode()
+    public int Count => _keyValues.Count;
+
+    protected void CreateHashCodeFromKeyValues()
     {
-        var hcb = Foundation.HashCode.CreateBuilder();
+        var hcb = HashCode.CreateBuilder();
+
         hcb.AddHashCode(DefaultHashCode);
         hcb.AddObjects(_keyValues);
 
-        return hcb.GetHashCode();
+        _hashCode = hcb.GetHashCode();
     }
 
     protected static int DefaultHashCode { get; } = typeof(EquatableMap<TKey, TValue>).GetHashCode();
 
     public override bool Equals(object? obj) => obj is IDictionary<TKey, TValue> other && Equals(other);
 
-    public bool Equals(IDictionary<TKey, TValue>? other)
+    public bool Equals(EquatableMap<TKey, TValue>? other)
     {
-        return null != other && _keyValues.IsEqualTo(other);
-    }
+        if (other is null) return false;
+        if (_hashCode != other._hashCode) return false;
 
-    public bool Equals(IReadOnlyDictionary<TKey, TValue>? other)
-    {
-        return null != other && _keyValues.IsEqualTo(other);
+        return _keyValues.IsEqualTo(other);
     }
 
     IEnumerator IEnumerable.GetEnumerator() => _keyValues.GetEnumerator();
 
     public IEnumerator<KeyValuePair<TKey, TValue>> GetEnumerator() => _keyValues.GetEnumerator();
 
-    public override int GetHashCode() => HashCode;
-
-    protected int HashCode { get; set; } = DefaultHashCode;
+    public override int GetHashCode() => _hashCode;
 
     public bool IsReadOnly => _keyValues.IsReadOnly;
 
@@ -120,18 +148,27 @@ public class EquatableMap<TKey, TValue>
 
     public bool Remove(TKey key)
     {
-        var removed = _keyValues.Remove(key);
-        if (removed) HashCode = CreateHashCode();
+        if (_keyValues.Remove(key))
+        {
+            CreateHashCodeFromKeyValues();
+            var element = Pair.New<TKey, TValue?>(key, default);
 
-        return removed;
+            CollectionChanged.Publish(new { State = CollectionChangedState.ElementRemoved, Element = element });
+            return true;
+        }
+
+        return false;
     }
 
     public bool Remove(KeyValuePair<TKey, TValue> item)
     {
-        var removed = _keyValues.Remove(item);
-        if (removed) HashCode = CreateHashCode();
-
-        return removed;
+        if (_keyValues.Remove(item))
+        {
+            CreateHashCodeFromKeyValues();
+            CollectionChanged.Publish(new { State = CollectionChangedState.ElementRemoved, Element = item });
+            return true;
+        }
+        return false;
     }
 
     public bool TryGetValue(TKey key, [MaybeNullWhen(false)] out TValue value) => _keyValues.TryGetValue(key, out value);
