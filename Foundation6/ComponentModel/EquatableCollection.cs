@@ -5,6 +5,10 @@ using System.Collections;
 using System.Diagnostics.CodeAnalysis;
 using System.Runtime.Serialization;
 
+/// <summary>
+/// This Equals of this collection checks the equality of all elements.
+/// </summary>
+/// <typeparam name="T"></typeparam>
 [Serializable]
 public class EquatableCollection<T>
     : ICollection<T>
