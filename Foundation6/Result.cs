@@ -71,11 +71,13 @@ public struct Result<TError>
     {
         if (IsOk) return other.IsOk;
 
-        return IsError && other.IsError
+        return other.IsError
             && EqualityComparer<TError>.Default.Equals(Error, other.Error);
     }
 
-    public override int GetHashCode() => System.HashCode.Combine(IsOk, IsError, Error);
+    public override int GetHashCode() => IsOk 
+                                         ? typeof(Result<TError>).GetHashCode()
+                                         : System.HashCode.Combine(typeof(Result<TError>), Error);
 
     public bool IsError { get; }
 
@@ -103,8 +105,8 @@ public struct Result<TOk, TError>
         _error = error;
 
         _hashCode = ok.IsSome
-            ? System.HashCode.Combine(typeof(TOk), ok.OrThrow())
-            : System.HashCode.Combine(typeof(TError), error.OrThrow());
+            ? System.HashCode.Combine(typeof(Result<TOk, TError>), ok.OrThrow())
+            : System.HashCode.Combine(typeof(Result<TOk, TError>), error.OrThrow());
     }
 
     public static bool operator ==(Result<TOk, TError> left, Result<TOk, TError> right)
