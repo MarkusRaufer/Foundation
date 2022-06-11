@@ -147,7 +147,7 @@ namespace Foundation.Collections.Generic
             var last = splitted.Last();
 
             foreach (var token in splitted.Take(splitted.Length - 1)
-                .AfterEveryElement(() => keyPart.Append(PathSeparator)))
+                .AfterEach(() => keyPart.Append(PathSeparator)))
             {
                 keyPart.Append(token);
             }

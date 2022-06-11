@@ -9,7 +9,7 @@ public static class ReadOnlyMemoryHelper
     public static string ToString<T>([DisallowNull] IEnumerable<ReadOnlyMemory<T>> items, T separator)
     {
         var sb = new StringBuilder();
-        foreach (var item in items.AfterEveryElement(() => sb.Append(separator)))
+        foreach (var item in items.AfterEach(() => sb.Append(separator)))
         {
             sb.Append(item);
         }
@@ -20,7 +20,7 @@ public static class ReadOnlyMemoryHelper
     public static string ToString<T>([DisallowNull] IEnumerable<ReadOnlyMemory<T>> items, ReadOnlyMemory<T> separator)
     {
         var sb = new StringBuilder();
-        foreach (var item in items.AfterEveryElement(() => sb.Append(separator)))
+        foreach (var item in items.AfterEach(() => sb.Append(separator)))
         {
             sb.Append(item);
         }

@@ -62,12 +62,42 @@ namespace Foundation.Collections.Generic
         // ReSharper disable InconsistentNaming
 
         [Test]
-        public void AfterEveryElement()
+        public void Adjacent()
+        {
+            var numbers = Enumerable.Range(0, 5);
+
+            var tuples = new List<string>();
+
+            foreach (var _ in numbers.Adjacent((lhs, rhs) => tuples.Add($"{lhs}, {rhs}")))
+            {
+            }
+
+            Assert.AreEqual(4, tuples.Count);
+
+            var it = tuples.GetEnumerator();
+
+            Assert.IsTrue(it.MoveNext());
+            Assert.AreEqual("0, 1", it.Current);
+
+            Assert.IsTrue(it.MoveNext());
+            Assert.AreEqual("1, 2", it.Current);
+
+            Assert.IsTrue(it.MoveNext());
+            Assert.AreEqual("2, 3", it.Current);
+
+            Assert.IsTrue(it.MoveNext());
+            Assert.AreEqual("3, 4", it.Current);
+
+            Assert.IsFalse(it.MoveNext());
+        }
+
+        [Test]
+        public void AfterEach()
         {
             var items = new List<string> { "1", "2", "3" };
             var sb = new StringBuilder();
 
-            foreach (var item in items.AfterEveryElement(() => sb.Append(',')))
+            foreach (var item in items.AfterEach(() => sb.Append(',')))
             {
                 sb.Append(item);
             }
@@ -90,29 +120,10 @@ namespace Foundation.Collections.Generic
 
             Assert.IsTrue(minmax.IsSome);
 
-            var (min, max) = minmax.ValueOrThrow();
+            var (min, max) = minmax.OrThrow();
             Assert.AreEqual(1, min);
             Assert.AreEqual(3, max);
         }
-
-        [Test]
-        public void AtLeast()
-        {
-            var items = new List<string> { "1", "2", "3" }.ToArray();
-            {
-                var actual = items.AtLeast(4).ToArray();
-                Assert.AreEqual(0, actual.Length);
-            }
-            {
-                var actual = items.AtLeast(2).ToArray();
-                Assert.AreEqual(3, actual.Length);
-            }
-            {
-                var actual = items.AtLeast(3).ToArray();
-                Assert.AreEqual(3, actual.Length);
-            }
-        }
-
 
         [Test]
         public void AverageMedian_ShouldReturnMedian_WhenUsingConverter()
@@ -168,30 +179,30 @@ namespace Foundation.Collections.Generic
 
                 var (opt1, opt2) = numbers.AverageMedianValues();
                 Assert.IsFalse(opt2.IsSome);
-                Assert.AreEqual(4, opt1.ValueOrThrow());
+                Assert.AreEqual(4, opt1.OrThrow());
             }
             {
                 var numbers = Enumerable.Range(1, 8);
                 var (opt1, opt2) = numbers.AverageMedianValues();
 
                 Assert.IsTrue(opt2.IsSome);
-                Assert.AreEqual(4, opt1.ValueOrThrow());
-                Assert.AreEqual(5, opt2.ValueOrThrow());
+                Assert.AreEqual(4, opt1.OrThrow());
+                Assert.AreEqual(5, opt2.OrThrow());
             }
             {
                 var items = Enumerable.Range(1, 7).Select(x => x.ToString());
 
                 var (opt1, opt2) = items.AverageMedianValues();
                 Assert.IsFalse(opt2.IsSome);
-                Assert.AreEqual("4", opt1.ValueOrThrow());
+                Assert.AreEqual("4", opt1.OrThrow());
             }
             {
                 var items = Enumerable.Range(1, 8).Select(x => x.ToString());
 
                 var (opt1, opt2) = items.AverageMedianValues();
                 Assert.IsTrue(opt2.IsSome);
-                Assert.AreEqual("4", opt1.ValueOrThrow());
-                Assert.AreEqual("5", opt2.ValueOrThrow());
+                Assert.AreEqual("4", opt1.OrThrow());
+                Assert.AreEqual("5", opt2.OrThrow());
             }
         }
 
@@ -762,6 +773,8 @@ namespace Foundation.Collections.Generic
         {
             var numbers = Enumerable.Range(1, 3);
 
+            var ints = new object [] { 1, 2, 3 };
+
             var kCombinations = numbers.KCombinations(2).ToArray();
 
             Assert.AreEqual(3, kCombinations.Length);
@@ -901,11 +914,11 @@ namespace Foundation.Collections.Generic
         {
             var items = new List<int> { 1, 2, 3, 4, 5 };
 
-            Assert.AreEqual(1, items.Nth(0).ValueOrThrow());
-            Assert.AreEqual(2, items.Nth(1).ValueOrThrow());
-            Assert.AreEqual(3, items.Nth(2).ValueOrThrow());
-            Assert.AreEqual(4, items.Nth(3).ValueOrThrow());
-            Assert.AreEqual(5, items.Nth(4).ValueOrThrow());
+            Assert.AreEqual(1, items.Nth(0).OrThrow());
+            Assert.AreEqual(2, items.Nth(1).OrThrow());
+            Assert.AreEqual(3, items.Nth(2).OrThrow());
+            Assert.AreEqual(4, items.Nth(3).OrThrow());
+            Assert.AreEqual(5, items.Nth(4).OrThrow());
         }
 
         [Test]
@@ -1019,36 +1032,6 @@ namespace Foundation.Collections.Generic
             var items = list.AsEnumerable();
 
             Assert.Throws<ArgumentOutOfRangeException>(() => items.Nths(-5..9).ToArray());
-        }
-
-        [Test]
-        public void OnAdjacentElements()
-        {
-            var numbers = Enumerable.Range(0, 5);
-
-            var tuples = new List<(int, int)>();
-
-            foreach (var _ in numbers.OnAdjacentElements((prev, curr) => tuples.Add((prev, curr))))
-            {
-            }
-
-            Assert.AreEqual(4, tuples.Count);
-
-            var it = tuples.GetEnumerator();
-
-            Assert.IsTrue(it.MoveNext());
-            Assert.AreEqual((0, 1), it.Current);
-
-            Assert.IsTrue(it.MoveNext());
-            Assert.AreEqual((1, 2), it.Current);
-
-            Assert.IsTrue(it.MoveNext());
-            Assert.AreEqual((2, 3), it.Current);
-
-            Assert.IsTrue(it.MoveNext());
-            Assert.AreEqual((3, 4), it.Current);
-
-            Assert.IsFalse(it.MoveNext());
         }
 
         [Test]
@@ -1459,6 +1442,60 @@ namespace Foundation.Collections.Generic
         }
 
         [Test]
+        public void TakeAtLeast_Should_Return0Elements_When_ListHas3ELementsAndNumberOfElementsIs4()
+        {
+            var items = new List<string> { "1", "2", "3" }.ToArray();
+
+            var actual = items.TakeAtLeast(4).ToArray();
+            Assert.AreEqual(0, actual.Length);
+        }
+
+        [Test]
+        public void TakeAtLeast_Should_Return3Elements_When_ListHas3ELementsAndNumberOfElementsIs2()
+        {
+            var items = new List<string> { "1", "2", "3" }.ToArray();
+
+            var actual = items.TakeAtLeast(2).ToArray();
+            Assert.AreEqual(3, actual.Length);
+        }
+
+        [Test]
+        public void TakeAtLeast_Should_Return3Elements_When_ListHas3ELementsAndNumberOfElementsIs3()
+        {
+            var items = new List<string> { "1", "2", "3" }.ToArray();
+
+            var actual = items.TakeAtLeast(3).ToArray();
+            Assert.AreEqual(3, actual.Length);
+        }
+
+        [Test]
+        public void TakeExact_Should_Return0Elements_When_ListHas3ELementsAndNumberOfElementsIs2()
+        {
+            var items = new List<string> { "1", "2", "3" }.ToArray();
+
+            var actual = items.TakeExact(2).ToArray();
+            Assert.AreEqual(0, actual.Length);
+        }
+
+        [Test]
+        public void TakeExact_Should_Return0Elements_When_ListHas3ELementsAndNumberOfElementsIs4()
+        {
+            var items = new List<string> { "1", "2", "3" }.ToArray();
+
+            var actual = items.TakeExact(4).ToArray();
+            Assert.AreEqual(0, actual.Length);
+        }
+
+        [Test]
+        public void TakeExact_Should_Return3Elements_When_ListHas3ELementsAndNumberOfElementsIs3()
+        {
+            var items = new List<string> { "1", "2", "3" }.ToArray();
+
+            var actual = items.TakeExact(3).ToArray();
+            Assert.AreEqual(3, actual.Length);
+        }
+
+        [Test]
         public void ToBreakable()
         {
             {
@@ -1467,7 +1504,7 @@ namespace Foundation.Collections.Generic
  
                 var i1 = 0;
                 var i2 = 0;
-                var stop = ObservableValue.Create(false);
+                var stop = ObservableValue.New(false);
                 foreach(var item1 in items1.ToBreakable(ref stop))
                 {
                     i1++;
@@ -1494,7 +1531,7 @@ namespace Foundation.Collections.Generic
 
                 foreach (var item1 in items1)
                 {
-                    var stop = ObservableValue.Create(false);
+                    var stop = ObservableValue.New(false);
 
                     i1++;
                     foreach (var item2 in items2.ToBreakable(ref stop))
@@ -1524,8 +1561,8 @@ namespace Foundation.Collections.Generic
             var i1 = 0;
             var i2 = 0;
             var i3 = 0;
-            var stop = ObservableValue.Create(false);
-            var stopAll = ObservableValue.Create(false);
+            var stop = ObservableValue.New(false);
+            var stopAll = ObservableValue.New(false);
             foreach (var item1 in items1.ToBreakable(ref stopAll))
             {
                 i1++;
