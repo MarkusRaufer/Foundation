@@ -220,8 +220,8 @@ namespace Foundation
             var period1 = Period.New(newDate(10), newDate(13));
             var period2 = Period.New(newDate(11), newDate(14));
 
-            Assert.AreEqual(new Period(newDate(11), newDate(13)), period1.Intersect(period2).ValueOrThrow());
-            Assert.AreEqual(new Period(newDate(11), newDate(13)), period2.Intersect(period1).ValueOrThrow());
+            Assert.AreEqual(new Period(newDate(11), newDate(13)), period1.Intersect(period2).OrThrow());
+            Assert.AreEqual(new Period(newDate(11), newDate(13)), period2.Intersect(period1).OrThrow());
         }
 
         [Test]
@@ -232,8 +232,8 @@ namespace Foundation
             var period1 = Period.New(newDate(10), newDate(13));
             var period2 = Period.New(newDate(13), newDate(14));
 
-            Assert.AreEqual(new Period(newDate(13), newDate(13)), period1.Intersect(period2).ValueOrThrow());
-            Assert.AreEqual(new Period(newDate(13), newDate(13)), period2.Intersect(period1).ValueOrThrow());
+            Assert.AreEqual(new Period(newDate(13), newDate(13)), period1.Intersect(period2).OrThrow());
+            Assert.AreEqual(new Period(newDate(13), newDate(13)), period2.Intersect(period1).OrThrow());
         }
 
         [Test]
@@ -244,8 +244,8 @@ namespace Foundation
             var period1 = Period.New(newDate(10), newDate(13));
             var period2 = Period.New(newDate(8), newDate(12));
 
-            Assert.AreEqual(new Period(newDate(10), newDate(12)), period1.Intersect(period2).ValueOrThrow());
-            Assert.AreEqual(new Period(newDate(10), newDate(12)), period2.Intersect(period1).ValueOrThrow());
+            Assert.AreEqual(new Period(newDate(10), newDate(12)), period1.Intersect(period2).OrThrow());
+            Assert.AreEqual(new Period(newDate(10), newDate(12)), period2.Intersect(period1).OrThrow());
         }
 
         [Test]
@@ -256,8 +256,8 @@ namespace Foundation
             var period1 = Period.New(newDate(10), newDate(13));
             var period2 = Period.New(newDate(8), newDate(13));
 
-            Assert.AreEqual(new Period(newDate(10), newDate(13)), period1.Intersect(period2).ValueOrThrow());
-            Assert.AreEqual(new Period(newDate(10), newDate(13)), period2.Intersect(period1).ValueOrThrow());
+            Assert.AreEqual(new Period(newDate(10), newDate(13)), period1.Intersect(period2).OrThrow());
+            Assert.AreEqual(new Period(newDate(10), newDate(13)), period2.Intersect(period1).OrThrow());
         }
 
         [Test]
@@ -268,8 +268,8 @@ namespace Foundation
             var period1 = Period.New(newDate(10), newDate(13));
             var period2 = Period.New(newDate(8), newDate(14));
 
-            Assert.AreEqual(new Period(newDate(10), newDate(13)), period1.Intersect(period2).ValueOrThrow());
-            Assert.AreEqual(new Period(newDate(10), newDate(13)), period2.Intersect(period1).ValueOrThrow());
+            Assert.AreEqual(new Period(newDate(10), newDate(13)), period1.Intersect(period2).OrThrow());
+            Assert.AreEqual(new Period(newDate(10), newDate(13)), period2.Intersect(period1).OrThrow());
         }
 
         [Test]
@@ -738,8 +738,8 @@ namespace Foundation
 
             var merged = period1.Union(period2);
 
-            Assert.AreEqual(merged.ValueOrThrow().Start, new DateTime(2015, 1, 1));
-            Assert.AreEqual(merged.ValueOrThrow().End, new DateTime(2015, 1, 4));
+            Assert.AreEqual(merged.OrThrow().Start, new DateTime(2015, 1, 1));
+            Assert.AreEqual(merged.OrThrow().End, new DateTime(2015, 1, 4));
         }
 
         [Test]
@@ -750,8 +750,8 @@ namespace Foundation
 
             var merged = period1.Union(period2);
 
-            Assert.AreEqual(merged.ValueOrThrow().Start, new DateTime(2015, 1, 1));
-            Assert.AreEqual(merged.ValueOrThrow().End, new DateTime(2015, 1, 4));
+            Assert.AreEqual(merged.OrThrow().Start, new DateTime(2015, 1, 1));
+            Assert.AreEqual(merged.OrThrow().End, new DateTime(2015, 1, 4));
         }
 
         [Test]
@@ -762,8 +762,8 @@ namespace Foundation
 
             var merged = period1.Union(period2);
 
-            Assert.AreEqual(merged.ValueOrThrow().Start, new DateTime(2015, 1, 1));
-            Assert.AreEqual(merged.ValueOrThrow().End, new DateTime(2015, 1, 4));
+            Assert.AreEqual(merged.OrThrow().Start, new DateTime(2015, 1, 1));
+            Assert.AreEqual(merged.OrThrow().End, new DateTime(2015, 1, 4));
         }
 
         [Test]
@@ -774,8 +774,8 @@ namespace Foundation
 
             var merged = period1.Union(period2);
 
-            Assert.AreEqual(merged.ValueOrThrow().Start, new DateTime(2015, 1, 1));
-            Assert.AreEqual(merged.ValueOrThrow().End, new DateTime(2015, 1, 4));
+            Assert.AreEqual(merged.OrThrow().Start, new DateTime(2015, 1, 1));
+            Assert.AreEqual(merged.OrThrow().End, new DateTime(2015, 1, 4));
         }
 
         [Test]
@@ -786,8 +786,8 @@ namespace Foundation
 
             var merged = period1.Union(period2);
 
-            Assert.AreEqual(merged.ValueOrThrow().Start, new DateTime(2015, 1, 1));
-            Assert.AreEqual(merged.ValueOrThrow().End, new DateTime(2015, 1, 3));
+            Assert.AreEqual(merged.OrThrow().Start, new DateTime(2015, 1, 1));
+            Assert.AreEqual(merged.OrThrow().End, new DateTime(2015, 1, 3));
         }
 
         [Test]

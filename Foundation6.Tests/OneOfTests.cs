@@ -13,7 +13,7 @@ namespace Foundation
                 var sut = new OneOf<int, string>(expected);
 
                 Assert.IsTrue(sut.Item1.IsSome);
-                Assert.AreEqual(expected, sut.Item1.ValueOrThrow());
+                Assert.AreEqual(expected, sut.Item1.OrThrow());
 
                 Assert.IsFalse(sut.Item2.IsSome);
             }
@@ -24,7 +24,7 @@ namespace Foundation
                 Assert.IsFalse(sut.Item1.IsSome);
 
                 Assert.IsTrue(sut.Item2.IsSome);
-                Assert.AreEqual(expected, sut.Item2.ValueOrThrow());
+                Assert.AreEqual(expected, sut.Item2.OrThrow());
             }
         }
 
@@ -36,7 +36,7 @@ namespace Foundation
                 var sut = new OneOf<int, string>(expected);
 
                 Assert.IsTrue(sut.Item1.IsSome);
-                Assert.AreEqual(expected, sut.Item1.ValueOrThrow());
+                Assert.AreEqual(expected, sut.Item1.OrThrow());
 
                 Assert.IsFalse(sut.Item2.IsSome);
             }
@@ -47,7 +47,7 @@ namespace Foundation
                 Assert.IsFalse(sut.Item1.IsSome);
 
                 Assert.IsTrue(sut.Item2.IsSome);
-                Assert.AreEqual(expected, sut.Item2.ValueOrThrow());
+                Assert.AreEqual(expected, sut.Item2.OrThrow());
             }
         }
 

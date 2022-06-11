@@ -1,4 +1,5 @@
 ﻿using System.Diagnostics.CodeAnalysis;
+using System.Runtime.CompilerServices;
 
 namespace Foundation;
 
@@ -11,6 +12,7 @@ public static class OptExtensions
     /// <param name="lhs"></param>
     /// <param name="rhs"></param>
     /// <returns></returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static int CompareTo<T>(this Opt<T> lhs, Opt<T> rhs)
         where T : IComparable<T>
     {
@@ -20,65 +22,113 @@ public static class OptExtensions
         return lhs.Value!.CompareTo(rhs.Value);
     }
 
-    public static bool Invoke<T>(this Opt<T> option, Action<T> action)
+    /// <summary>
+    /// Calls <paramref name="some"/> if IsSome is true. Calls <paramref name="none"/> if IsSome is false;
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <param name="option"></param>
+    /// <param name="some"></param>
+    /// <param name="none"></param>
+    /// <returns></returns>
+    [return: NotNull]
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static bool Match<T>(
+        this Opt<T> option,
+        Action<T>? some = null,
+        Action? none = null)
     {
         if (option.IsSome)
         {
-            action(option.Value!);
+            some?.Invoke(option.Value!);
             return true;
         }
+
+        none?.Invoke();
 
         return false;
     }
 
-    public static Opt<TResult> Map<T, TResult>(this Opt<T> option, [DisallowNull] Func<T, TResult> func)
-    {
-        if (option.IsSome)
-        {
-            return Opt.Some(func(option.Value!));
-        }
-
-        return Opt.None<TResult>();
-    }
-
-    public static bool IsSome<T>(this Opt<T> option, out T? value)
-    {
-        if (option.IsSome)
-        {
-            value = option.Value!;
-            return true;
-        }
-
-        value = default;
-        return false;
-    }
-
-    public static bool TryGetValue<T>(this Opt<T> option, out T? value)
-    {
-        if (option.IsSome)
-        {
-            value = option.Value;
-            return true;
-        }
-
-        value = default;
-        return false;
-    }
-
+    /// <summary>
+    /// Calls <paramref name="some"/> if IsSome is true. Calls <paramref name="none"/> if IsSome is false.
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <typeparam name="TResult"></typeparam>
+    /// <param name="option"></param>
+    /// <param name="some"></param>
+    /// <param name="none"></param>
+    /// <returns></returns>
     [return: NotNull]
-    public static T ValueOrElse<T>(this Opt<T> option, [DisallowNull] T value)
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static TResult Match<T, TResult>(
+        this Opt<T> option, 
+        [DisallowNull] Func<T, TResult> some, 
+        [DisallowNull] Func<TResult> none)
+        where TResult : notnull
     {
-        return option.IsSome ? option.Value! : value.ThrowIfNull();
+        some.ThrowIfNull();
+        none.ThrowIfNull();
+
+        return option.IsSome ? some(option.Value!) : none();
     }
 
+    /// <summary>
+    /// Returns the value if IsSome is true or returns <paramref name="none"/>
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <param name="option"></param>
+    /// <param name="none"></param>
+    /// <returns></returns>
     [return: NotNull]
-    public static T ValueOrThrow<T>(this Opt<T> option)
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static T Or<T>(this Opt<T> option, [DisallowNull] T none)
     {
-        return ValueOrThrow(option, () => new NullReferenceException(nameof(option)));
+        return option.IsSome ? option.Value! : none.ThrowIfNull();
     }
 
+    /// <summary>
+    /// Returns value if IsNone or calls <paramref name="none"/>;
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <param name="option"></param>
+    /// <param name="none"></param>
+    /// <returns></returns>
     [return: NotNull]
-    public static T ValueOrThrow<T, TException>(this Opt<T> option, [DisallowNull] Func<TException> exception)
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static T Or<T>(this Opt<T> option, [DisallowNull] Func<T> none)
+    {
+        none.ThrowIfNull();
+
+        if(option.IsSome) return option.Value!;
+
+        var value = none();
+
+        return value.ThrowIf(() => null == value, $"{nameof(none)} returned null");
+    }
+
+    /// <summary>
+    /// Throws NullReferenceException if IsSome is false or returns a value.
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <param name="option"></param>
+    /// <returns></returns>
+    [return: NotNull]
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static T OrThrow<T>(this Opt<T> option)
+    {
+        return OrThrow(option, () => new NullReferenceException(nameof(option)));
+    }
+
+    /// <summary>
+    /// Throws an exception if IsSome is false or returns a value. 
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <typeparam name="TException">exception which will be thrown when IsSome is false.</typeparam>
+    /// <param name="option"></param>
+    /// <param name="exception"></param>
+    /// <returns></returns>
+    [return: NotNull]
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static T OrThrow<T, TException>(this Opt<T> option, [DisallowNull] Func<TException> exception)
         where TException : Exception
     {
         if (option.IsSome) return option.Value!;

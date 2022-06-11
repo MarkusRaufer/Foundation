@@ -49,12 +49,12 @@ public class OneOf<T1, T2>
 
         var foundValue = OrdinalIndex switch
         {
-            1 => setValue(Item1.ValueOrThrow()),
-            2 => setValue(Item2.ValueOrThrow()),
+            1 => setValue(Item1.OrThrow()),
+            2 => setValue(Item2.OrThrow()),
             _ => Opt.None<T>()
         };
 
-        value = foundValue.IsSome ? foundValue.ValueOrThrow() : default;
+        value = foundValue.IsSome ? foundValue.OrThrow() : default;
         return foundValue.IsSome;
     }
 }
@@ -99,7 +99,7 @@ public class OneOf<T1, T2, T3> : OneOf<T1, T2>
 
         if (3 == OrdinalIndex)
         {
-            if (Item3.ValueOrThrow() is T t)
+            if (Item3.OrThrow() is T t)
             {
                 value = t;
                 return true;
@@ -156,7 +156,7 @@ public class OneOf<T1, T2, T3, T4> : OneOf<T1, T2, T3>
 
         if (4 == OrdinalIndex)
         {
-            if (Item4.ValueOrThrow() is T t)
+            if (Item4.OrThrow() is T t)
             {
                 value = t;
                 return true;
@@ -198,7 +198,7 @@ public class OneOf<T1, T2, T3, T4, T5> : OneOf<T1, T2, T3, T4>
 
         if (5 == OrdinalIndex)
         {
-            if (Item5.ValueOrThrow() is T t)
+            if (Item5.OrThrow() is T t)
             {
                 value = t;
                 return true;

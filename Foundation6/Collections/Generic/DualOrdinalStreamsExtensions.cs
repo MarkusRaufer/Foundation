@@ -64,7 +64,7 @@ namespace Foundation.Collections.Generic
 
             Opt<TRight> toRightValue(Opt<TLeft> opt)
             {
-                return opt.IsSome ? Opt.Some(project(opt.ValueOrThrow())) : Opt.None<TRight>();
+                return opt.IsSome ? Opt.Some(project(opt.OrThrow())) : Opt.None<TRight>();
             }
 
             var left = dualStreams.Left.OrdinalFill().Select(toRightValue);
@@ -81,13 +81,13 @@ namespace Foundation.Collections.Generic
 
                 if (!hasNextLeft)
                 {
-                    if (itRight.Current.IsSome) yield return itRight.Current.ValueOrThrow();
+                    if (itRight.Current.IsSome) yield return itRight.Current.OrThrow();
                     continue;
                 }
 
                 if (!hasNextRight)
                 {
-                    if (itLeft.Current.IsSome) yield return itLeft.Current.ValueOrThrow();
+                    if (itLeft.Current.IsSome) yield return itLeft.Current.OrThrow();
                     continue;
                 }
 
@@ -95,15 +95,15 @@ namespace Foundation.Collections.Generic
                 {
                     if (itRight.Current.IsSome)
                     {
-                        yield return itRight.Current.ValueOrThrow();
+                        yield return itRight.Current.OrThrow();
                         continue;
                     }
 
-                    yield return itLeft.Current.ValueOrThrow();
+                    yield return itLeft.Current.OrThrow();
                     continue;
                 }
 
-                if (itRight.Current.IsSome) yield return itRight.Current.ValueOrThrow();
+                if (itRight.Current.IsSome) yield return itRight.Current.OrThrow();
             }
         }
 

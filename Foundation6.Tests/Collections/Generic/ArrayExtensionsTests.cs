@@ -55,27 +55,27 @@ namespace Foundation.Collections.Generic
                 var numbers = Enumerable.Range(1, 7).ToArray();
                 var (opt1, opt2) = numbers.AverageMedianPosition();
                 Assert.IsFalse(opt2.IsSome);
-                Assert.AreEqual(4, opt1.ValueOrThrow());
+                Assert.AreEqual(4, opt1.OrThrow());
             }
             {
                 var numbers = Enumerable.Range(1, 8).ToArray();
                 var (opt1, opt2) = numbers.AverageMedianPosition();
                 Assert.IsTrue(opt2.IsSome);
-                Assert.AreEqual(4, opt1.ValueOrThrow());
-                Assert.AreEqual(5, opt2.ValueOrThrow());
+                Assert.AreEqual(4, opt1.OrThrow());
+                Assert.AreEqual(5, opt2.OrThrow());
             }
             {
                 var items = Enumerable.Range(1, 7).Select(x => x.ToString()).ToArray();
                 var (opt1, opt2) = items.AverageMedianPosition();
                 Assert.IsFalse(opt2.IsSome);
-                Assert.AreEqual("4", opt1.ValueOrThrow());
+                Assert.AreEqual("4", opt1.OrThrow());
             }
             {
                 var items = Enumerable.Range(1, 8).Select(x => x.ToString()).ToArray();
                 var (opt1, opt2) = items.AverageMedianPosition();
                 Assert.IsTrue(opt2.IsSome);
-                Assert.AreEqual("4", opt1.ValueOrThrow());
-                Assert.AreEqual("5", opt2.ValueOrThrow());
+                Assert.AreEqual("4", opt1.OrThrow());
+                Assert.AreEqual("5", opt2.OrThrow());
             }
         }
 

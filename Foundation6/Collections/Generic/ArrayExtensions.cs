@@ -15,14 +15,14 @@ public static class ArrayExtensions
         if (opt1.IsNone) return 0;
 
         var value1 = (null == converter)
-            ? Convert.ToDecimal(opt1.ValueOrThrow())
-            : converter(opt1.ValueOrThrow());
+            ? Convert.ToDecimal(opt1.OrThrow())
+            : converter(opt1.OrThrow());
 
         if (opt2.IsNone) return value1;
 
         var value2 = (null == converter)
-            ? Convert.ToDecimal(opt2.ValueOrThrow())
-            : converter(opt2.ValueOrThrow());
+            ? Convert.ToDecimal(opt2.OrThrow())
+            : converter(opt2.OrThrow());
 
         return (value1 + value2) / 2M;
     }

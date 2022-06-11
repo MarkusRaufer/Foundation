@@ -189,10 +189,21 @@ Some examples:
 
   if(maybe.IsSome) ...
 
-  if(maybe.IsSome(out int number)) ...
+  if(maybe.TryGet(out int number)) ...
   
   var some = Opt.Some(value);
   var none = Opt.None<int>();
+  
+  //case distinction without if statement.
+  var values = List<int>();
+  var noneCounter = 0;
+  maybe.Match(x => values.Add(x), () => noneCounter++);
+
+  var str = maybe.Match(x => x.ToString(), () => "unknown");
+
+  var some = maybe.Or(otherValue);
+  var some = maybe.Or(() => new MyObject());
+
 
   ```
 

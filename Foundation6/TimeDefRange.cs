@@ -10,13 +10,13 @@ public class TimeDefRange : TimeDefVisitor
     {
         ArgumentNullException.ThrowIfNull(td);
 
-        if (Greatest.IsNone || Greatest.ValueOrThrow().Compare(td) == -1)
+        if (Greatest.IsNone || Greatest.OrThrow().Compare(td) == -1)
             Greatest = Opt.Some(td);
     }
 
     protected void SetSmallest(TimeDef td)
     {
-        if (Smallest.IsNone || Smallest.ValueOrThrow().Compare(td) == 1)
+        if (Smallest.IsNone || Smallest.OrThrow().Compare(td) == 1)
             Smallest = Opt.Some(td);
     }
 

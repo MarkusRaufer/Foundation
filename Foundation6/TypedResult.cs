@@ -46,7 +46,7 @@ public struct TypedResult<T, TError>
     }
 
 
-    public TError Error => _error.ValueOrThrow();
+    public TError Error => _error.OrThrow();
 
     public bool IsError => _error.IsSome;
 

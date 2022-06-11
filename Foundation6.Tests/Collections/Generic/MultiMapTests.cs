@@ -51,7 +51,7 @@ namespace Foundation.Collections.Generic
             
             Assert.AreEqual(key, item.Key);
             Assert.AreEqual(value1, item.Value.First());
-            Assert.AreEqual(value2, item.Value.Nth(1).ValueOrThrow());
+            Assert.AreEqual(value2, item.Value.Nth(1).OrThrow());
         }
 
         [Test]

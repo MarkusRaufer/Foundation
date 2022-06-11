@@ -68,7 +68,7 @@ public struct TimedRc<T>
         if (IsEmpty) return Opt.None<int>();
 
         var result = _rc.OptionalCompareTo(other._rc);
-        if (result.IsNone || 0 != result.ValueOrThrow()) return result;
+        if (result.IsNone || 0 != result.OrThrow()) return result;
 
         return TimeStamp.CompareTo(other.TimeStamp);
     }

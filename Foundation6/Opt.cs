@@ -74,7 +74,7 @@ public readonly struct Opt<T>
         info.AddValue(nameof(Value), _value);
     }
 
-    public bool Is(out T? value)
+    public bool TryGet(out T? value)
     {
         if (IsSome)
         {
