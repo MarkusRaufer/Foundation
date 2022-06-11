@@ -1,21 +1,25 @@
 ﻿namespace Foundation;
 
 using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 
 public static class Result
 {
     public static Result<Exception> Error(Exception error)
     {
+        error.ThrowIfNull();
         return new Result<Exception>(error);
     }
 
     public static Result<TOk, Exception> Error<TOk>(Exception error)
     {
+        error.ThrowIfNull();
         return new Result<TOk, Exception>(Opt.None<TOk>(), Opt.Some(error));
     }
 
     public static Result<TOk, TError> Error<TOk, TError>(TError error)
     {
+        error.ThrowIfNull();
         return new Result<TOk, TError>(Opt.None<TOk>(), Opt.Some(error));
     }
 
@@ -25,25 +29,27 @@ public static class Result
 
     }
 
-    public static Result<TOk, Exception> Ok<TOk>(TOk value)
+    public static Result<TOk, Exception> Ok<TOk>([DisallowNull] TOk value)
     {
-        if (ReferenceEquals(null, value)) throw new ArgumentNullException(nameof(value));
+        value.ThrowIfNull();
+
         return new Result<TOk, Exception>(Opt.Some(value), Opt.None<Exception>());
     }
 
-    public static Result<TOk, TError> Ok<TOk, TError>(TOk value)
+    public static Result<TOk, TError> Ok<TOk, TError>([DisallowNull] TOk value)
     {
+        value.ThrowIfNull();
         return new Result<TOk, TError>(Opt.Some(value), Opt.None<TError>());
     }
 }
 
 public struct Result<TError>
-    : IBooleanResult<TError>
+    : IResult<TError>
     , IEquatable<Result<TError>>
 {
     internal Result(TError error)
     {
-        Error = error;
+        Error = error.ThrowIfNull();
         IsError = true;
     }
 
@@ -84,11 +90,10 @@ public struct Result<TOk, TError>
     : IResult<TOk, TError>
     , IEquatable<Result<TOk, TError>>
 {
-    private int _hashCode;
+    private readonly int _hashCode;
     private readonly Opt<TOk> _ok;
     private readonly Opt<TError> _error;
 
-    //TODO: remove Opt from error.
     internal Result(Opt<TOk> ok, Opt<TError> error)
     {
         if (ok.IsSome ^ error.IsNone)
@@ -98,8 +103,8 @@ public struct Result<TOk, TError>
         _error = error;
 
         _hashCode = ok.IsSome
-            ? System.HashCode.Combine(typeof(TOk), ok.ValueOrThrow())
-            : System.HashCode.Combine(typeof(TError), error.ValueOrThrow());
+            ? System.HashCode.Combine(typeof(TOk), ok.OrThrow())
+            : System.HashCode.Combine(typeof(TError), error.OrThrow());
     }
 
     public static bool operator ==(Result<TOk, TError> left, Result<TOk, TError> right)
@@ -126,7 +131,7 @@ public struct Result<TOk, TError>
         get
         {
             if (IsOk) throw new ArgumentException("The result conains no error");
-            return _error.ValueOrThrow();
+            return _error.OrThrow();
         }
     }
 
@@ -143,7 +148,7 @@ public struct Result<TOk, TError>
             if (IsError)
                 throw new ArgumentException("Ok is not valid because the result contains an error");
 
-            return _ok.ValueOrThrow();
+            return _ok.OrThrow();
         }
     }
 

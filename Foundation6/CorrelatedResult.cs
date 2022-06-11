@@ -34,7 +34,8 @@ public struct CorrelatedResult<TCorrelationId, TOk, TError> : ICorrelatedResult<
     internal CorrelatedResult(TCorrelationId id, TOk ok)
     {
         CorrelationId = id;
-        _result = Result.Ok<TOk, TError>(ok);
+
+        _result = Result.Ok<TOk, TError>(ok.ThrowIfNull());
     }
 
     internal CorrelatedResult(TCorrelationId id, TError error)
