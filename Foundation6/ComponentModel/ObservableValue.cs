@@ -2,7 +2,7 @@
 
 public static class ObservableValue
 {
-    public static ObservableValue<T> Create<T>(T value)
+    public static ObservableValue<T> New<T>(T value)
     {
         return new ObservableValue<T>(value);
     }
