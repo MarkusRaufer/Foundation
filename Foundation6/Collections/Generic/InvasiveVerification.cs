@@ -1,4 +1,5 @@
 ﻿namespace Foundation.Collections.Generic;
+
 public static class InvasiveVerification
 {
     public static InvasiveVerification<T> New<T>(params Func<T, bool>[] predicates) => new(predicates);

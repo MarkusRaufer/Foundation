@@ -91,6 +91,68 @@ public static class EnumerableExtensions
     }
 
     /// <summary>
+    /// Returns adjacent items as tuples.
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <typeparam name="TResult"></typeparam>
+    /// <param name="items"></param>
+    /// <param name="selector">First T is lhs item and second T is the rhs item and so on.</param>
+    /// <returns></returns>
+    public static IEnumerable<(T lhs, T rhs)> Adjacent<T>(
+        [DisallowNull] this IEnumerable<T> items)
+    {
+        var it = items.ThrowIfNull()
+                      .GetEnumerator();
+
+        if (!it.MoveNext()) yield break;
+
+        var lhs = it.Current;
+        while (it.MoveNext())
+        {
+            yield return (lhs, it.Current);
+
+            lhs = it.Current;
+        }
+    }
+
+    /// <summary>
+    /// Calls action on all adjacent elements.
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <param name="items"></param>
+    /// <param name="action">Contains the previous and the current item.</param>
+    /// <returns></returns>
+    public static IEnumerable<(T lhs, T rhs)> Adjacent<T>(
+        [DisallowNull] this IEnumerable<T> items,
+        [DisallowNull] Action<T, T> action)
+    {
+        action.ThrowIfNull();
+
+        foreach (var tuple in items.Adjacent())
+        {
+            action(tuple.lhs, tuple.rhs);
+            yield return tuple;
+        }
+    }
+
+    /// <summary>
+    /// Calls selector on all adjacent elements and transforms each element into TReturn.
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <param name="items"></param>
+    /// <param name="action">Contains the previous and the current item.</param>
+    /// <returns></returns>
+    public static IEnumerable<TReturn> Adjacent<T, TReturn>(
+        [DisallowNull] this IEnumerable<T> items,
+        [DisallowNull] Func<T, T, TReturn> selector)
+    {
+        selector.ThrowIfNull();
+
+        foreach (var (lhs, rhs) in items.Adjacent())
+            yield return selector(lhs, rhs);
+    }
+
+    /// <summary>
     /// Executes action after every item except the last one.
     /// </summary>
     /// <typeparam name="T"></typeparam>
@@ -98,7 +160,7 @@ public static class EnumerableExtensions
     /// <param name="action"></param>
     /// <returns></returns>
     /// <exception cref="ArgumentNullException"></exception>
-    public static IEnumerable<T> AfterEveryElement<T>([DisallowNull] this IEnumerable<T> items, [DisallowNull] Action action)
+    public static IEnumerable<T> AfterEach<T>([DisallowNull] this IEnumerable<T> items, [DisallowNull] Action action)
     {
         action.ThrowIfNull();
 
@@ -131,7 +193,7 @@ public static class EnumerableExtensions
         seed.ThrowIfNull();
         func.ThrowIfNull();
 
-        if (!items.FirstAsOpt().Is(out T? item)) return Opt.None<TAccumulate>();
+        if (!items.FirstAsOpt().TryGet(out T? item)) return Opt.None<TAccumulate>();
 
         return Opt.Some(items.Aggregate(seed(item!), func));
     }
@@ -174,76 +236,6 @@ public static class EnumerableExtensions
     }
 
     /// <summary>
-    /// Returns at least numberOfElements elements. If the number of elements is smaller, an empty enumerable is returned.
-    /// </summary>
-    /// <typeparam name="T"></typeparam>
-    /// <param name="items">Elements of the list.</param>
-    /// <param name="numberOfElements"></param>
-    /// <returns></returns>
-    public static IEnumerable<T> AtLeast<T>([DisallowNull] this IEnumerable<T> items, int numberOfElements)
-    {
-        if (0 > numberOfElements) throw new ArgumentOutOfRangeException(nameof(numberOfElements), "cannot be negative");
-
-        var it = items.GetEnumerator();
-
-        var required = new List<T>();
-        while (it.MoveNext())
-        {
-            required.Add(it.Current);
-            if (required.Count == numberOfElements) break;
-        }
-
-        if (required.Count != numberOfElements) yield break;
-
-        foreach (var item in required)
-        {
-            yield return item;
-        }
-
-        while (it.MoveNext())
-        {
-            yield return it.Current;
-        }
-    }
-
-    /// <summary>
-    /// Returns at least numberOfElements elements. If the number of elements is smaller, an empty enumerable is returned.
-    /// </summary>
-    /// <typeparam name="T"></typeparam>
-    /// <param name="items"></param>
-    /// <param name="numberOfElements"></param>
-    /// <param name="predicate"></param>
-    /// <returns></returns>
-    public static IEnumerable<T> AtLeast<T>([DisallowNull] this IEnumerable<T> items, int numberOfElements, [DisallowNull] Func<T, bool> predicate)
-    {
-        if (0 > numberOfElements) throw new ArgumentOutOfRangeException(nameof(numberOfElements), "cannot be negative");
-        predicate.ThrowIfNull();
-
-        var it = items.GetEnumerator();
-
-        var required = new List<T>();
-        while (it.MoveNext())
-        {
-            if (required.Count == numberOfElements) break;
-
-            if (predicate(it.Current))
-                required.Add(it.Current);
-        }
-
-        if (required.Count != numberOfElements) yield break;
-
-        foreach (var item in required)
-        {
-            yield return item;
-        }
-
-        while (it.MoveNext())
-        {
-            yield return it.Current;
-        }
-    }
-
-    /// <summary>
     /// Returns the median of all values returned by the converter.
     /// </summary>
     /// <typeparam name="T"></typeparam>
@@ -256,14 +248,14 @@ public static class EnumerableExtensions
         if (opt1.IsNone) return 0;
 
         var value1 = (null == converter)
-            ? Convert.ToDecimal(opt1.ValueOrThrow())
-            : converter(opt1.ValueOrThrow());
+            ? Convert.ToDecimal(opt1.OrThrow())
+            : converter(opt1.OrThrow());
 
         if (opt2.IsNone) return value1;
 
         var value2 = (null == converter)
-            ? Convert.ToDecimal(opt2.ValueOrThrow())
-            : converter(opt2.ValueOrThrow());
+            ? Convert.ToDecimal(opt2.OrThrow())
+            : converter(opt2.OrThrow());
 
         return (value1 + value2) / 2M;
     }
@@ -616,7 +608,7 @@ public static class EnumerableExtensions
         foreach (var item in items)
         {
             var option = selector(item);
-            if (option.IsSome) yield return option.ValueOrThrow();
+            if (option.IsSome) yield return option.OrThrow();
         }
     }
 
@@ -640,7 +632,7 @@ public static class EnumerableExtensions
         foreach (var item in items)
         {
             var option = selector(item);
-            if (option.IsSome) yield return (item: option.ValueOrThrow(), index: i);
+            if (option.IsSome) yield return (item: option.OrThrow(), index: i);
 
             ++i;
         }
@@ -655,6 +647,8 @@ public static class EnumerableExtensions
     /// <returns></returns>
     public static IEnumerable<T> FindUntil<T>([DisallowNull] this IEnumerable<T> items, params Func<T, bool>[] predicates)
     {
+        items.ThrowIfNull();
+
         var invasivePredicates = new InvasiveVerification<T>(predicates);
         var isNone = new TriState();
         var isTrue = new TriState(true);
@@ -1596,6 +1590,32 @@ public static class EnumerableExtensions
     }
 
     /// <summary>
+    /// Returns all items not of type <paramref name="types"/>.
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <typeparam name="TResult"></typeparam>
+    /// <param name="items"></param>
+    /// <param name="selector"></param>
+    /// <param name="types"></param>
+    /// <returns></returns>
+    public static IEnumerable<TResult> NotOfType<T, TResult>(
+        [DisallowNull] this IEnumerable<T> items, 
+        Func<T, TResult> selector,
+        params Type[] types)
+    {
+        foreach (var item in items.ThrowIfNull())
+        {
+            if (null == item) continue;
+
+            var itemType = item.GetType();
+            
+            if (types.Any(t => t.Equals(itemType) || t.IsAssignableFrom(itemType))) continue;
+
+            yield return selector(item);
+        }
+    }
+
+    /// <summary>
     /// gets the item on a certain index.
     /// </summary>
     /// <typeparam name="T"></typeparam>
@@ -1657,47 +1677,28 @@ public static class EnumerableExtensions
         }
     }
 
-    public static IEnumerable<TResult> OfTypes<T, TResult>([DisallowNull] this IEnumerable<T> items, params Type[] types)
+    /// <summary>
+    /// Returns all items of type T.
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <typeparam name="TResult"></typeparam>
+    /// <param name="items"></param>
+    /// <param name="selector"></param>
+    /// <param name="types"></param>
+    /// <returns></returns>
+    public static IEnumerable<TResult> OfTypes<T, TResult>(
+        [DisallowNull] this IEnumerable<T> items,
+        Func<T, TResult> selector, 
+        params Type[] types)
     {
-        var resultType = typeof(TResult);
-        if (!types.All(t => resultType.IsAssignableFrom(t))) yield break;
-
         foreach (var item in items.ThrowIfNull())
         {
             if (null == item) continue;
 
             var itemType = item.GetType();
             if (!types.Any(t => t.Equals(itemType) || t.IsAssignableFrom(itemType))) continue;
-            if (item is TResult result) yield return result;
-        }
-    }
 
-
-    /// <summary>
-    /// Calls action on all adjacent elements.
-    /// </summary>
-    /// <typeparam name="T"></typeparam>
-    /// <param name="items"></param>
-    /// <param name="action">Contains the previous and the current item.</param>
-    /// <returns></returns>
-    public static IEnumerable<T> OnAdjacentElements<T>([DisallowNull] this IEnumerable<T> items, [DisallowNull] Action<T, T> action)
-    {
-        action.ThrowIfNull();
-
-        var it = items.ThrowIfNull()
-                      .GetEnumerator();
-
-        if (!it.MoveNext()) yield break;
-
-        yield return it.Current;
-
-        var prevItem = it.Current;
-        while (it.MoveNext())
-        {
-            action(prevItem, it.Current);
-            yield return it.Current;
-
-            prevItem = it.Current;
+            yield return selector(item);
         }
     }
 
@@ -2214,7 +2215,7 @@ public static class EnumerableExtensions
                 notAllItems = true;
                 break;
             }
-            results = results.Append(opt.ValueOrThrow());
+            results = results.Append(opt.OrThrow());
         }
 
         return notAllItems ? Enumerable.Empty<TResult>() : results;
@@ -2274,7 +2275,7 @@ public static class EnumerableExtensions
     {
         return items.ThrowIfNull()
                     .Where(item => item.IsSome)
-                    .Select(opt => opt.ValueOrThrow());
+                    .Select(opt => opt.OrThrow());
     }
 
     /// <summary>
@@ -2427,6 +2428,106 @@ public static class EnumerableExtensions
     }
 
     /// <summary>
+    /// Returns at least numberOfElements elements. If the number of elements is smaller, an empty enumerable is returned.
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <param name="items">Elements of the list.</param>
+    /// <param name="numberOfElements"></param>
+    /// <returns></returns>
+    public static IEnumerable<T> TakeAtLeast<T>([DisallowNull] this IEnumerable<T> items, int numberOfElements)
+    {
+        if (0 > numberOfElements) throw new ArgumentOutOfRangeException(nameof(numberOfElements), "cannot be negative");
+
+        var it = items.GetEnumerator();
+
+        var required = new List<T>();
+        while (it.MoveNext())
+        {
+            required.Add(it.Current);
+            if (required.Count == numberOfElements) break;
+        }
+
+        if (required.Count != numberOfElements) yield break;
+
+        foreach (var item in required)
+        {
+            yield return item;
+        }
+
+        while (it.MoveNext())
+        {
+            yield return it.Current;
+        }
+    }
+
+    /// <summary>
+    /// Returns at least numberOfElements elements. If the number of elements is smaller, an empty enumerable is returned.
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <param name="items"></param>
+    /// <param name="numberOfElements"></param>
+    /// <param name="predicate"></param>
+    /// <returns></returns>
+    public static IEnumerable<T> TakeAtLeast<T>([DisallowNull] this IEnumerable<T> items, int numberOfElements, [DisallowNull] Func<T, bool> predicate)
+    {
+        if (0 > numberOfElements) throw new ArgumentOutOfRangeException(nameof(numberOfElements), "cannot be negative");
+        predicate.ThrowIfNull();
+
+        var it = items.GetEnumerator();
+
+        var required = new List<T>();
+        while (it.MoveNext())
+        {
+            if (required.Count == numberOfElements) break;
+
+            if (predicate(it.Current))
+                required.Add(it.Current);
+        }
+
+        if (required.Count != numberOfElements) yield break;
+
+        foreach (var item in required)
+        {
+            yield return item;
+        }
+
+        while (it.MoveNext())
+        {
+            yield return it.Current;
+        }
+    }
+
+    /// <summary>
+    /// Returns <paramref name="numberOfElements"/> if items contains exactly <paramref name="numberOfElements"/>.
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <param name="items"></param>
+    /// <param name="numberOfElements"></param>
+    /// <returns></returns>
+    /// <exception cref="ArgumentOutOfRangeException"></exception>
+    public static IEnumerable<T> TakeExact<T>([DisallowNull] this IEnumerable<T> items, int numberOfElements)
+    {
+        if (0 > numberOfElements) throw new ArgumentOutOfRangeException(nameof(numberOfElements), "cannot be negative");
+
+        var required = new List<T>();
+
+        var it = items.GetEnumerator();
+        while (it.MoveNext())
+        {
+            required.Add(it.Current);
+            if (required.Count == numberOfElements) break;
+        }
+
+        if (required.Count != numberOfElements) yield break;
+        if (it.MoveNext()) yield break;
+
+        foreach (var item in required)
+        {
+            yield return item;
+        }
+    }
+
+    /// <summary>
     /// Throw an ArgumentNullException when an element is null.
     /// </summary>
     /// <typeparam name="T"></typeparam>
@@ -2471,6 +2572,22 @@ public static class EnumerableExtensions
             throw exception;
         }
         return items;
+    }
+
+    /// <summary>
+    /// Returns <paramref name="numberOfElements"/> if items contains exactly <paramref name="numberOfElements"/> or throws an excption.
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <param name="items"></param>
+    /// <param name="numberOfElements"></param>
+    /// <returns></returns>
+    /// <exception cref="ArgumentException">is thrown when number of elements differs from  <paramref name="numberOfElements"/></exception>
+    public static IEnumerable<T> ThrowIfNumberNotExact<T>([DisallowNull] this IEnumerable<T> items, int numberOfElements)
+    {
+        var elems = items.TakeExact(numberOfElements).ToArray();
+        if (0 == elems.Length) throw new ArgumentException($"items does not have exact {numberOfElements} elements");
+
+        return elems;
     }
 
     /// <summary>
@@ -2664,7 +2781,7 @@ public static class EnumerableExtensions
     {
         items.ThrowIfNull();
         var sb = new StringBuilder();
-        foreach (var item in items.AfterEveryElement(() => sb.Append(separator)))
+        foreach (var item in items.AfterEach(() => sb.Append(separator)))
         {
             sb.Append(item);
         }
@@ -2794,7 +2911,7 @@ public static class EnumerableExtensions
     /// <returns></returns>
     public static IEnumerable<T> WhereSome<T>([DisallowNull] this IEnumerable<Opt<T>> items)
     {
-        return items.Where(item => item.IsSome).Select(opt => opt.ValueOrThrow());
+        return items.Where(item => item.IsSome).Select(opt => opt.OrThrow());
     }
 
     /// <summary>
