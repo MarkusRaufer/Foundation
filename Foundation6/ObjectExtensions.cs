@@ -138,43 +138,88 @@ public static class ObjectExtensions
         return generic == type;
     }
 
+    /// <summary>
+    /// Throws an exception if <paramref name="predicate"/> returns true.
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <param name="obj"></param>
+    /// <param name="predicate"></param>
+    /// <param name="message"></param>
+    /// <param name="paramName"></param>
+    /// <returns></returns>
+    [return: NotNull]
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static T ThrowIf<T>(this T? obj, [DisallowNull] Func<bool> predicate, string? message = null, [CallerArgumentExpression("obj")] string name = "")
+    public static T ThrowIf<T>(
+        this T? obj, 
+        [DisallowNull] Func<bool> predicate, 
+        string? message = null, 
+        [CallerArgumentExpression("obj")] string paramName = "")
     {
         predicate.ThrowIfNull();
 
-        var exception = message is null ? new ArgumentException(name) : new ArgumentException(message, name);
-        return predicate() ? throw exception : obj.ThrowIfNull();
+        Func<ArgumentException> exception = message is null 
+            ? () => new ArgumentException(paramName) 
+            : () => new ArgumentException(message, paramName);
+
+        return predicate() ? throw exception() : obj.ThrowIfNull();
     }
 
+    /// <summary>
+    /// Throws ArgumentNullException if obj is null.
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <param name="obj"></param>
+    /// <param name="paramName"></param>
+    /// <returns></returns>
+    /// <exception cref="ArgumentNullException"></exception>
     [return: NotNull]
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static T ThrowIfNull<T>(this T? obj, [CallerArgumentExpression("obj")] string name = "")
+    public static T ThrowIfNull<T>(this T? obj, [CallerArgumentExpression("obj")] string paramName = "")
     {
-        return obj ?? throw new ArgumentNullException(name);
+        return obj ?? throw new ArgumentNullException(paramName);
     }
 
+    /// <summary>
+    /// Throws ArgumentOutOfRangeException if outOfRangePredicate returns true.
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <param name="obj"></param>
+    /// <param name="outOfRangePredicate"></param>
+    /// <param name="paramName"></param>
+    /// <returns></returns>
+    /// <exception cref="ArgumentOutOfRangeException"></exception>
     [return: NotNull]
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static T ThrowIfOutOfRange<T>(
         [DisallowNull] this T obj, 
-        [DisallowNull] Func<bool> isOutOfRange, 
-        [CallerArgumentExpression("obj")] string name = "")
+        [DisallowNull] Func<bool> outOfRangePredicate, 
+        [CallerArgumentExpression("obj")] string paramName = "")
     {
-        return isOutOfRange() ? throw new ArgumentOutOfRangeException(name) : obj.ThrowIfNull();
+        return outOfRangePredicate() ? throw new ArgumentOutOfRangeException(paramName) : obj.ThrowIfNull();
     }
 
+    /// <summary>
+    /// Throws ArgumentOutOfRangeException if outOfRangePredicate returns true.
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <param name="obj"></param>
+    /// <param name="outOfRangePredicate"></param>
+    /// <param name="min">min value in message.</param>
+    /// <param name="max">max value in message.</param>
+    /// <param name="paramName"></param>
+    /// <returns></returns>
+    /// <exception cref="ArgumentOutOfRangeException"></exception>
     [return: NotNull]
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static T ThrowIfOutOfRange<T>(
         [DisallowNull] this T obj, 
-        [DisallowNull] Func<bool> isOutOfRange,
+        [DisallowNull] Func<bool> outOfRangePredicate,
         T min,
         T max, 
-        [CallerArgumentExpression("obj")] string name = "")
+        [CallerArgumentExpression("obj")] string paramName = "")
     {
-        return isOutOfRange() 
-            ? throw new ArgumentOutOfRangeException(name, $"{name} must be between {min} and {max}.")
+        return outOfRangePredicate() 
+            ? throw new ArgumentOutOfRangeException(paramName, $"{paramName} must be between {min} and {max}.")
             : obj.ThrowIfNull();
     }
 
@@ -184,9 +229,9 @@ public static class ObjectExtensions
         [DisallowNull] this T obj,
         [DisallowNull] Func<bool> isOutOfRange,
         [DisallowNull] string message,
-        [CallerArgumentExpression("obj")] string name = "")
+        [CallerArgumentExpression("obj")] string paramName = "")
     {
-        return isOutOfRange() ? throw new ArgumentOutOfRangeException(name, message) : obj.ThrowIfNull();
+        return isOutOfRange() ? throw new ArgumentOutOfRangeException(paramName, message) : obj.ThrowIfNull();
     }
 
     /// <summary>
