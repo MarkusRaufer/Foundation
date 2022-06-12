@@ -284,13 +284,14 @@ public static class EnumerableExtensions
     /// <param name="lhs"></param>
     /// <param name="rhs"></param>
     /// <returns></returns>
-    public static IEnumerable<(T, T)> CartesianProduct<T>(
+    public static IEnumerable<TResult> CartesianProduct<T, TResult>(
         [DisallowNull] this IEnumerable<T> lhs, 
-        [DisallowNull] IEnumerable<T> rhs)
+        [DisallowNull] IEnumerable<T> rhs,
+        Func<T, T, TResult> selector)
     {
         return from l in lhs
                from r in rhs
-               select (l, r);
+               select selector(l, r);
     }
 
     /// <summary>
@@ -611,32 +612,6 @@ public static class EnumerableExtensions
         {
             var option = selector(item);
             if (option.IsSome) yield return option.OrThrow();
-        }
-    }
-
-    /// <summary>
-    /// Filter and transform items. The functor match is called when predicate is true otherwise noMatch is called.
-    /// </summary>
-    /// <typeparam name="T"></typeparam>
-    /// <typeparam name="TResult"></typeparam>
-    /// <param name="items"></param>
-    /// <param name="predicate"></param>
-    /// <param name="match"></param>
-    /// <param name="noMatch"></param>
-    /// <returns>Tuples with item and index.</returns>
-    public static IEnumerable<(TResult item, int index)> FilterMapIndexed<T, TResult>(
-        [DisallowNull] this IEnumerable<T> items,
-        [DisallowNull] Func<T, Opt<TResult>> selector)
-    {
-        selector.ThrowIfNull();
-
-        var i = 0;
-        foreach (var item in items)
-        {
-            var option = selector(item);
-            if (option.IsSome) yield return (item: option.OrThrow(), index: i);
-
-            ++i;
         }
     }
 

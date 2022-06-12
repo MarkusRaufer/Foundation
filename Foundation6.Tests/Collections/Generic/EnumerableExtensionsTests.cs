@@ -212,7 +212,7 @@ namespace Foundation.Collections.Generic
             var items1 = new List<string> {"1", "2", "3"};
             var items2 = new List<string> {"a", "b", "c"};
 
-            var erg = items1.CartesianProduct(items2).ToArray();
+            var erg = items1.CartesianProduct(items2, (l, r) => (l, r)).ToArray();
             Assert.AreEqual(("1", "a"), erg[0]);
             Assert.AreEqual(("1", "b"), erg[1]);
             Assert.AreEqual(("1", "c"), erg[2]);
@@ -368,28 +368,41 @@ namespace Foundation.Collections.Generic
         }
 
         [Test]
-        public void Enumerate()
+        public void Enumerate_ShouldReturn9Elements_When_CalledWithCreateValue()
         {
-            {
-                var items1 = Enumerable.Range(0, 9).ToArray();
+            var items1 = Enumerable.Range(0, 9).ToArray();
 
-                var enumerated = items1.Enumerate(n => n * 2).ToArray();
+            var enumerated = items1.Enumerate(n => n * 2).ToArray();
 
-                Assert.AreEqual(items1.Length, enumerated.Length);
+            Assert.AreEqual(items1.Length, enumerated.Length);
 
-                foreach (var (item, counter) in enumerated)
-                    Assert.AreEqual(item * 2, counter);
-            }
-            {
-                var items = new[] { "one", "two", "three" };
-                var i = 0;
+            foreach (var (item, counter) in enumerated)
+                Assert.AreEqual(item * 2, counter);
+        }
 
-                var enumerated = items.Enumerate(item => i++).ToArray();
+        [Test]
+        public void Enumerate_ShouldReturn3Tuples_When_CalledWithoutParamenter()
+        {
+            var items = new[] { "one", "two", "three" };
 
-                Assert.AreEqual(("one", 0), enumerated[0]);
-                Assert.AreEqual(("two", 1), enumerated[1]);
-                Assert.AreEqual(("three", 2), enumerated[2]);
-            }
+            var enumerated = items.Enumerate().ToArray();
+
+            Assert.AreEqual(("one", 0), enumerated[0]);
+            Assert.AreEqual(("two", 1), enumerated[1]);
+            Assert.AreEqual(("three", 2), enumerated[2]);
+        }
+
+        [Test]
+        public void Enumerate_ShouldReturn3Tuples_When_CalledWithParamenter()
+        {
+            var items = new[] { "one", "two", "three" };
+            var i = 10;
+
+            var enumerated = items.Enumerate(item => i++).ToArray();
+
+            Assert.AreEqual(("one",   10), enumerated[0]);
+            Assert.AreEqual(("two",   11), enumerated[1]);
+            Assert.AreEqual(("three", 12), enumerated[2]);
         }
 
         [Test]
