@@ -284,7 +284,9 @@ public static class EnumerableExtensions
     /// <param name="lhs"></param>
     /// <param name="rhs"></param>
     /// <returns></returns>
-    public static IEnumerable<(T, T)> CartesianProduct<T>([DisallowNull] this IEnumerable<T> lhs, [DisallowNull] IEnumerable<T> rhs)
+    public static IEnumerable<(T, T)> CartesianProduct<T>(
+        [DisallowNull] this IEnumerable<T> lhs, 
+        [DisallowNull] IEnumerable<T> rhs)
     {
         return from l in lhs
                from r in rhs
@@ -635,29 +637,6 @@ public static class EnumerableExtensions
             if (option.IsSome) yield return (item: option.OrThrow(), index: i);
 
             ++i;
-        }
-    }
-
-    /// <summary>
-    /// Searches items until all predicates matched exactly one time.
-    /// </summary>
-    /// <typeparam name="T"></typeparam>
-    /// <param name="items"></param>
-    /// <param name="predicates"></param>
-    /// <returns></returns>
-    public static IEnumerable<T> FindUntil<T>([DisallowNull] this IEnumerable<T> items, params Func<T, bool>[] predicates)
-    {
-        items.ThrowIfNull();
-
-        var invasivePredicates = new InvasiveVerification<T>(predicates);
-        var isNone = new TriState();
-        var isTrue = new TriState(true);
-
-        foreach (var item in items)
-        {
-            var triState = invasivePredicates.Verify(item);
-            if (isNone == triState) yield break;
-            if (isTrue == triState) yield return item;
         }
     }
 
@@ -2068,46 +2047,6 @@ public static class EnumerableExtensions
     }
 
     /// <summary>
-    /// Repeats the call of selector on each item.
-    /// </summary>
-    /// <typeparam name="T"></typeparam>
-    /// <typeparam name="TSelector"></typeparam>
-    /// <param name="items"></param>
-    /// <param name="repeat"></param>
-    /// <param name="selector"></param>
-    /// <returns></returns>
-    public static IEnumerable<TSelector> Repeat<T, TSelector>(
-        this IEnumerable<T> items,
-        int repeat,
-        Func<T, TSelector> selector)
-    {
-        foreach (var item in items)
-        {
-            for (var i = 0; i < repeat; i++)
-            {
-                yield return selector(item);
-            }
-        }
-    }
-
-    /// <summary>
-    /// Repeats the call of selector on each item and returns a list of selector lists.
-    /// </summary>
-    /// <typeparam name="T"></typeparam>
-    /// <typeparam name="TSelector"></typeparam>
-    /// <param name="items"></param>
-    /// <param name="repeat"></param>
-    /// <param name="selector"></param>
-    /// <returns></returns>
-    public static IEnumerable<IEnumerable<TSelector>> RepeatMany<T, TSelector>(
-        this IEnumerable<T> items,
-        int repeat,
-        Func<T, TSelector> selector)
-    {
-        return items.Select(item => Enumerable.Repeat(0, repeat).Select(_ => selector(item)));
-    }
-
-    /// <summary>
     /// Replaces the items from a list at specified indexes with the specified values of replaceTuples.
     /// </summary>
     /// <typeparam name="T"></typeparam>
@@ -2164,30 +2103,12 @@ public static class EnumerableExtensions
         project.ThrowIfNull();
 
         var orderedTuples = replaceTuples.Where(tuple => 0 <= tuple.index)
-                                         .OrderBy(tuple => tuple.index)
-                                         .ToArray();
+                                         .OrderBy(tuple => tuple.index);
 
-        if (0 == orderedTuples.Length) yield break;
-
-        var tupleIndex = 0;
-        var tupleIndexMax = orderedTuples.Length - 1;
-        var replaceIndexMax = orderedTuples[tupleIndexMax].index;
-
-        var (replaceItem, replaceIndex) = orderedTuples[tupleIndex];
-
-        foreach (var (item, i) in items.Enumerate())
-        {
-            if (i < replaceIndexMax && tupleIndex < tupleIndexMax)
-            {
-                if (i > replaceIndex) ++tupleIndex;
-
-                if (i > replaceIndex)
-                    (replaceItem, replaceIndex) = orderedTuples[tupleIndex];
-            }
-
-            if (i == replaceIndex) yield return project(replaceItem);
-            else yield return project(item);
-        }
+        return items.Enumerate()
+                    .ZipLeft(orderedTuples,
+                            (lhs, rhs) => lhs.Item2 == rhs.Item2 ? BinarySelectionValue.Right : BinarySelectionValue.Left,
+                            tuple => project(tuple.item));
     }
 
     /// <summary>
@@ -2528,6 +2449,52 @@ public static class EnumerableExtensions
     }
 
     /// <summary>
+    /// Returns elements from a sequence as long as a specified condition is false, and then skips the remaining elements.
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <param name="items"></param>
+    /// <param name="predicate"></param>
+    /// <returns></returns>
+    public static IEnumerable<T> TakeUntil<T>(
+        [DisallowNull] this IEnumerable<T> items, 
+        Func<T, bool> predicate, 
+        bool inclusive = false)
+    {
+        foreach (var item in items)
+        {
+            if (predicate(item))
+            {
+                if (inclusive) yield return item;
+                yield break;
+            }
+            yield return item;
+        }
+    }
+
+    /// <summary>
+    /// Searches items until all predicates matched exactly one time.
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <param name="items"></param>
+    /// <param name="predicates"></param>
+    /// <returns></returns>
+    public static IEnumerable<T> TakeUntilAllHitOnce<T>([DisallowNull] this IEnumerable<T> items, params Func<T, bool>[] predicates)
+    {
+        items.ThrowIfNull();
+
+        var invasivePredicates = new InvasiveVerification<T>(predicates);
+        var isNone = new TriState();
+        var isTrue = new TriState(true);
+
+        foreach (var item in items)
+        {
+            var triState = invasivePredicates.Verify(item);
+            if (isNone == triState) yield break;
+            if (isTrue == triState) yield return item;
+        }
+    }
+
+    /// <summary>
     /// Throw an ArgumentNullException when an element is null.
     /// </summary>
     /// <typeparam name="T"></typeparam>
@@ -2684,7 +2651,7 @@ public static class EnumerableExtensions
         return dictionary;
     }
 
-    public static IEnumerable<KeyValuePair<TLhs, IEnumerable<TRhs>>> ToOne2Many<TSource, TLhs, TRhs>(
+    public static IEnumerable<KeyValuePair<TLhs, IEnumerable<TRhs>>> ToOneToMany<TSource, TLhs, TRhs>(
         [DisallowNull] this IEnumerable<TSource> source,
         [DisallowNull] Func<TSource, TLhs> lhsSelector,
         [DisallowNull] Func<TSource, TRhs> rhsSelector)
@@ -2724,7 +2691,7 @@ public static class EnumerableExtensions
     /// <param name="lhsSelector"></param>
     /// <param name="rhsSelector"></param>
     /// <returns></returns>
-    public static IEnumerable<(TLhs, TRhs)> ToOne2One<TSource, TLhs, TRhs>(
+    public static IEnumerable<(TLhs, TRhs)> ToOneToOne<TSource, TLhs, TRhs>(
         [DisallowNull] this IEnumerable<TSource> source,
         [DisallowNull] Func<TSource, TLhs> lhsSelector,
         [DisallowNull] Func<TSource, IEnumerable<TRhs>> rhsSelector)
@@ -2939,6 +2906,49 @@ public static class EnumerableExtensions
                from secondItem in second
                where comparer(firstItem, secondItem)
                select resultSelector(firstItem, secondItem);
+    }
+
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <typeparam name="TResult"></typeparam>
+    /// <param name="lhs"></param>
+    /// <param name="rhs"></param>
+    /// <param name="binarySelector"></param>
+    /// <param name="selector"></param>
+    /// <returns></returns>
+    public static IEnumerable<TResult> ZipLeft<T, TResult>(
+        this IEnumerable<T> lhs,
+        IEnumerable<T> rhs,
+        Func<T, T, BinarySelectionValue> binarySelector,
+        Func<T, TResult> selector)
+    {
+        var itRhs = rhs.GetEnumerator();
+
+        var hasNext = Fused.Value(true).BlowIfChanged();
+
+        var selection = BinarySelectionValue.Right;
+        foreach (var item in lhs)
+        {
+            if(hasNext.Value)
+            {
+                if(BinarySelectionValue.Right == selection) hasNext.Value = itRhs.MoveNext();
+
+                if(hasNext.Value)
+                {
+                    selection = binarySelector(item, itRhs.Current);
+                    
+                    if (BinarySelectionValue.Right == selection)
+                    {
+                        yield return selector(itRhs.Current);
+                        continue;
+                    }
+                }
+            }
+
+            yield return selector(item);
+        }
     }
 }
 

@@ -448,40 +448,6 @@ namespace Foundation.Collections.Generic
         }
         
         [Test]
-        public void FindUntil_Should_ReturnOneValueForEachMach_When_ListHasDuplicateValues()
-        {
-            var numbers = new [] { 1, 2, 3, 2, 4, 4, 5, 6, 7 };
-            var predicates = new Func<int, bool>[] { n => n == 2, n => n == 4, n => n == 6 };
-
-            // if a predicate is fulfilled it is no longer used
-            var foundNumbers = numbers.FindUntil(predicates).ToArray();
-
-            Assert.AreEqual(3, foundNumbers.Length);
-            Assert.AreEqual(2, foundNumbers[0]);
-            Assert.AreEqual(4, foundNumbers[1]);
-            Assert.AreEqual(6, foundNumbers[2]);
-        }
-
-        [Test]
-        public void FindUntil_Should_StopIteration_When_AllPredicatesMatched()
-        {
-            var numbers = new TestEnumerable<int>(Enumerable.Range(1, 10));
-
-            var calledMoveNext = 0;
-            void onMoveNext(bool hasNext) => calledMoveNext++;
-
-            numbers.OnMoveNext.Subscribe(onMoveNext);
-
-            var predicates = new Func<int, bool>[] { n => n == 2, n => n == 5 };
-
-            var foundNumbers = numbers.FindUntil(predicates).ToArray();
-            Assert.AreEqual(6, calledMoveNext);
-            Assert.AreEqual(2, foundNumbers.Length);
-            Assert.AreEqual(2, foundNumbers[0]);
-            Assert.AreEqual(5, foundNumbers[1]);
-        }
-
-        [Test]
         public void ForEach_Returning_number_of_processed_acctions()
         {
             var items = Enumerable.Range(0, 9);
@@ -1493,6 +1459,64 @@ namespace Foundation.Collections.Generic
 
             var actual = items.TakeExact(3).ToArray();
             Assert.AreEqual(3, actual.Length);
+        }
+
+        [Test]
+        public void TakeUntil_Should_Return4_When_InclusiveIsFalse()
+        {
+            var numbers = Enumerable.Range(1, 10);
+            var foundNumbers = numbers.TakeUntil(x => x == 5).ToArray();
+
+            Assert.AreEqual(4, foundNumbers.Length);
+
+            var expected = Enumerable.Range(1, 4);
+            Assert.IsTrue(expected.SequenceEqual(foundNumbers));
+        }
+
+        [Test]
+        public void TakeUntil_Should_Return5_When_InclusiveIsTrue()
+        {
+            var numbers = Enumerable.Range(1, 10);
+            var foundNumbers = numbers.TakeUntil(x => x == 5, inclusive: true).ToArray();
+
+            Assert.AreEqual(5, foundNumbers.Length);
+
+            var expected = Enumerable.Range(1, 5);
+            Assert.IsTrue(expected.SequenceEqual(foundNumbers));
+        }
+
+        [Test]
+        public void TakeUntilAllHitOnce_Should_ReturnOneValueForEachMach_When_ListHasDuplicateValues()
+        {
+            var numbers = new[] { 1, 2, 3, 2, 4, 4, 5, 6, 7 };
+            var predicates = new Func<int, bool>[] { n => n == 2, n => n == 4, n => n == 6 };
+
+            // if a predicate is fulfilled it is no longer used
+            var foundNumbers = numbers.TakeUntilAllHitOnce(predicates).ToArray();
+
+            Assert.AreEqual(3, foundNumbers.Length);
+            Assert.AreEqual(2, foundNumbers[0]);
+            Assert.AreEqual(4, foundNumbers[1]);
+            Assert.AreEqual(6, foundNumbers[2]);
+        }
+
+        [Test]
+        public void TakeUntilAllHitOnce_Should_StopIteration_When_AllPredicatesMatched()
+        {
+            var numbers = new TestEnumerable<int>(Enumerable.Range(1, 10));
+
+            var calledMoveNext = 0;
+            void onMoveNext(bool hasNext) => calledMoveNext++;
+
+            numbers.OnMoveNext.Subscribe(onMoveNext);
+
+            var predicates = new Func<int, bool>[] { n => n == 2, n => n == 5 };
+
+            var foundNumbers = numbers.TakeUntilAllHitOnce(predicates).ToArray();
+            Assert.AreEqual(6, calledMoveNext);
+            Assert.AreEqual(2, foundNumbers.Length);
+            Assert.AreEqual(2, foundNumbers[0]);
+            Assert.AreEqual(5, foundNumbers[1]);
         }
 
         [Test]
