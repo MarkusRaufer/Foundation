@@ -307,7 +307,8 @@ Some examples:
 
 |method |description  |
 |---------------------|-----------|
-|AfterEveryElement    |Is called after iterating each element except the last one.|
+|Adjacent             |Calls action on all adjacent elements.|
+|AfterEach            |Is called after iterating each element except the last one.|
 |AtLeast              |Returns at least a number of elements. If the number of elements is smaller, an empty enumerable is returned.|
 |AverageMedian        |Returns the median of all values returned by the converter.|
 |AverageMedianValues  |Returns the real values instead of a division of the median values.|
@@ -324,14 +325,43 @@ Some examples:
 |MatchWithOccurrencies|Returns matching items of both lists with their occurrencies.|
 |MinMax               |Returns the min and max value.|
 |MostFrequent         |returns the elements that occure most frequently.|
-|OnAdjacentElements   |Calls action on all adjacent elements.|
 |OnFirst              |Calls action on first item.|
 |OnLast               |Calls action on last item.|
 |Partition            |Partitions items into two lists. If predicate is true the item is added to matching otherwise to notMatching.|
 |Permutations         |Creates permutations of a list.|
 |ToBreakable          |Makes the enumerable interruptible. This can be used for nested foreach loops.|
 
-- **AfterEveryElement**
+- **Adjacent**
+
+  ```csharp
+  
+  // example
+
+  var numbers = Enumerable.Range(0, 5);
+  var tuples = new List<(int, int)>();
+
+  foreach (var _ in numbers.Adjacent((prev, curr) => tuples.Add((prev, curr))))
+  {
+  }
+
+  Assert.AreEqual(4, tuples.Count);
+
+  var it = tuples.GetEnumerator();
+
+  Assert.IsTrue(it.MoveNext());
+  Assert.AreEqual((0, 1), it.Current);
+
+  Assert.IsTrue(it.MoveNext());
+  Assert.AreEqual((1, 2), it.Current);
+
+  Assert.IsTrue(it.MoveNext());
+  Assert.AreEqual((2, 3), it.Current);
+
+  Assert.IsTrue(it.MoveNext());
+  Assert.AreEqual((3, 4), it.Current); 
+  ```
+
+- **AfterEach**
   
   ```csharp
 
@@ -340,7 +370,7 @@ Some examples:
   var items = new List<string> { "1", "2", "3" };
   var sb = new StringBuilder();
 
-  foreach (var item in items.AfterEveryElement(() => sb.Append(',')))
+  foreach (var item in items.AfterEach(() => sb.Append(',')))
   {
      sb.Append(item);
   }
@@ -686,36 +716,6 @@ Some examples:
   Assert.AreEqual(1, items.Length);
   Assert.AreEqual(3, items[0]);     // 3 occurs most often
   Assert.AreEqual(4, count);        // occurrs 4 times
-
-  ```
-- **OnAdjacentElements**
-
-  ```csharp
-  
-  // example
-
-  var numbers = Enumerable.Range(0, 5);
-  var tuples = new List<(int, int)>();
-
-  foreach (var _ in numbers.OnAdjacentElements((prev, curr) => tuples.Add((prev, curr))))
-  {
-  }
-
-  Assert.AreEqual(4, tuples.Count);
-
-  var it = tuples.GetEnumerator();
-
-  Assert.IsTrue(it.MoveNext());
-  Assert.AreEqual((0, 1), it.Current);
-
-  Assert.IsTrue(it.MoveNext());
-  Assert.AreEqual((1, 2), it.Current);
-
-  Assert.IsTrue(it.MoveNext());
-  Assert.AreEqual((2, 3), it.Current);
-
-  Assert.IsTrue(it.MoveNext());
-  Assert.AreEqual((3, 4), it.Current); 
   ```
 
 - **OnFirst, OnLast**
@@ -728,7 +728,7 @@ Some examples:
   var sb = new StringBuilder();
 
   foreach(var number in numbers.OnFirst(() => sb.Append("("))
-                               .AfterEveryElement(() => sb.Append(", "))
+                               .AfterEach(() => sb.Append(", "))
                                .OnLast(() => sb.Append(")"))
   {
       sb.Append(number);
