@@ -1,6 +1,6 @@
 ﻿namespace Foundation;
 
-public enum BinarySelectionValue
+public enum BinarySelection
 {
     None = 0,
     Left = 1,

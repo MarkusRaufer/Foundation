@@ -1,4 +1,4 @@
 ﻿namespace Foundation
 {
-    public record struct BinaryResult<T>(BinarySelectionValue Selection, T Value);
+    public record struct BinaryResult<T>(BinarySelection Selection, T Value);
 }
