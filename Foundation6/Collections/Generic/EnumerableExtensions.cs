@@ -476,7 +476,7 @@ public static class EnumerableExtensions
     /// </summary>
     /// <typeparam name="T"></typeparam>
     /// <param name="items"></param>
-    /// <param name="minMax"></param>
+    /// <param name="minMax">Allows also negative numbers.</param>
     /// <returns></returns>
     public static IEnumerable<(T item, int counter)> Enumerate<T>([DisallowNull] this IEnumerable<T> items, MinMax<int> minMax)
     {
@@ -484,6 +484,28 @@ public static class EnumerableExtensions
         foreach (var item in items)
         {
             if (i > minMax.Max) i = minMax.Min;
+
+            yield return (item, i);
+            i++;
+        }
+    }
+
+    /// <summary>
+    /// Enumerates items. Starting from Min until Max. If the counter reaches Max it starts again from Min.
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <param name="items"></param>
+    /// <param name="minMax"></param>
+    /// <returns></returns>
+    public static IEnumerable<(T item, int counter)> Enumerate<T>([DisallowNull] this IEnumerable<T> items, System.Range range)
+    {
+        if(range.Start.IsFromEnd) throw new ArgumentException($"{range.Start}.IsFromEnd is not allowed");
+        if (range.End.IsFromEnd) throw new ArgumentException($"{range.End}.IsFromEnd is not allowed");
+
+        var i = range.Start.Value;
+        foreach (var item in items)
+        {
+            if (i > range.End.Value) i = range.Start.Value;
 
             yield return (item, i);
             i++;
@@ -2082,7 +2104,7 @@ public static class EnumerableExtensions
 
         return items.Enumerate()
                     .ZipLeft(orderedTuples,
-                            (lhs, rhs) => lhs.Item2 == rhs.Item2 ? BinarySelectionValue.Right : BinarySelectionValue.Left,
+                            (lhs, rhs) => lhs.Item2 == rhs.Item2 ? BinarySelection.Right : BinarySelection.Left,
                             tuple => project(tuple.item));
     }
 
@@ -2896,25 +2918,25 @@ public static class EnumerableExtensions
     public static IEnumerable<TResult> ZipLeft<T, TResult>(
         this IEnumerable<T> lhs,
         IEnumerable<T> rhs,
-        Func<T, T, BinarySelectionValue> binarySelector,
+        Func<T, T, BinarySelection> binarySelector,
         Func<T, TResult> selector)
     {
         var itRhs = rhs.GetEnumerator();
 
         var hasNext = Fused.Value(true).BlowIfChanged();
 
-        var selection = BinarySelectionValue.Right;
+        var selection = BinarySelection.Right;
         foreach (var item in lhs)
         {
             if(hasNext.Value)
             {
-                if(BinarySelectionValue.Right == selection) hasNext.Value = itRhs.MoveNext();
+                if(BinarySelection.Right == selection) hasNext.Value = itRhs.MoveNext();
 
                 if(hasNext.Value)
                 {
                     selection = binarySelector(item, itRhs.Current);
                     
-                    if (BinarySelectionValue.Right == selection)
+                    if (BinarySelection.Right == selection)
                     {
                         yield return selector(itRhs.Current);
                         continue;

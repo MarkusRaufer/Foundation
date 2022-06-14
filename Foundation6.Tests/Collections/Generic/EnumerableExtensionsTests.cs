@@ -410,18 +410,39 @@ namespace Foundation.Collections.Generic
         {
             var items = Enumerable.Range(1, 10).Select(x => x.ToString());
 
-            var enumerated = items.Enumerate(MinMax.New(1, 3)).ToList();
+            var enumerated = items.Enumerate(MinMax.New(-1, 1)).ToArray();
 
-            Assert.AreEqual(("1", 1), enumerated[0]);
-            Assert.AreEqual(("2", 2), enumerated[1]);
-            Assert.AreEqual(("3", 3), enumerated[2]);
-            Assert.AreEqual(("4", 1), enumerated[3]);
-            Assert.AreEqual(("5", 2), enumerated[4]);
-            Assert.AreEqual(("6", 3), enumerated[5]);
-            Assert.AreEqual(("7", 1), enumerated[6]);
-            Assert.AreEqual(("8", 2), enumerated[7]);
-            Assert.AreEqual(("9", 3), enumerated[8]);
-            Assert.AreEqual(("10", 1), enumerated[9]);
+            Assert.AreEqual(("1",  -1), enumerated[0]);
+            Assert.AreEqual(("2",   0), enumerated[1]);
+            Assert.AreEqual(("3",   1), enumerated[2]);
+            Assert.AreEqual(("4",  -1), enumerated[3]);
+            Assert.AreEqual(("5",   0), enumerated[4]);
+            Assert.AreEqual(("6",   1), enumerated[5]);
+            Assert.AreEqual(("7",  -1), enumerated[6]);
+            Assert.AreEqual(("8",   0), enumerated[7]);
+            Assert.AreEqual(("9",   1), enumerated[8]);
+            Assert.AreEqual(("10", -1), enumerated[9]);
+        }
+
+        [Test]
+        public void Enumerate_WithRange()
+        {
+            var items = Enumerable.Range(1, 10).Select(x => x.ToString());
+
+            var x = items.Enumerate(10..12).ToArray();
+
+            var enumerated = items.Enumerate(10..12).ToArray();
+
+            Assert.AreEqual(("1",  10), enumerated[0]);
+            Assert.AreEqual(("2",  11), enumerated[1]);
+            Assert.AreEqual(("3",  12), enumerated[2]);
+            Assert.AreEqual(("4",  10), enumerated[3]);
+            Assert.AreEqual(("5",  11), enumerated[4]);
+            Assert.AreEqual(("6",  12), enumerated[5]);
+            Assert.AreEqual(("7",  10), enumerated[6]);
+            Assert.AreEqual(("8",  11), enumerated[7]);
+            Assert.AreEqual(("9",  12), enumerated[8]);
+            Assert.AreEqual(("10", 10), enumerated[9]);
         }
 
         [Test]
@@ -1087,6 +1108,32 @@ namespace Foundation.Collections.Generic
         }
 
         [Test]
+        public void Partition_Should_ReturnTupleWithEvenAndOddNumbers_When_PredicateSelectsEventNumbers()
+        {
+            var numbers = Enumerable.Range(1, 10);
+
+            var(matching, notMatching) = numbers.Partition(x => x % 2 == 0);
+
+            var even = matching.ToArray();
+            var odd = notMatching.ToArray();
+
+            Assert.AreEqual(5, even.Length);
+            Assert.AreEqual(5, odd.Length);
+
+            Assert.Contains(2,  even);
+            Assert.Contains(4,  even);
+            Assert.Contains(6,  even);
+            Assert.Contains(8,  even);
+            Assert.Contains(10, even);
+
+            Assert.Contains(1, odd);
+            Assert.Contains(3, odd);
+            Assert.Contains(5, odd);
+            Assert.Contains(7, odd);
+            Assert.Contains(9, odd);
+        }
+
+        [Test]
         public void Permutations_Should_Return3Permutations_When_LengthIs1()
         {
             var numbers = Enumerable.Range(1, 3);
@@ -1136,6 +1183,63 @@ namespace Foundation.Collections.Generic
         }
 
         [Test]
+        public void Match_Should_ReturnValues_When_ItemsMatch()
+        {
+            var lhs = new[] { 3, 2, 2, 1 };
+            var rhs = new[] { 1, 3, 4, 3 };
+
+            var (l, r) = lhs.Match(rhs, x => x);
+
+            var lhsMatch = l.OrderBy(x => x).ToArray();
+            Assert.AreEqual(2, lhsMatch.Length);
+
+            {
+                Assert.AreEqual(1, lhsMatch[0]);
+                Assert.AreEqual(3, lhsMatch[1]);
+            }
+
+            var rhsMatch = r.OrderBy(x => x).ToArray();
+
+            Assert.AreEqual(3, rhsMatch.Length);
+            {
+                Assert.AreEqual(1, rhsMatch[0]);
+                Assert.AreEqual(3, rhsMatch[1]);
+                Assert.AreEqual(3, rhsMatch[2]);
+            }
+        }
+
+        [Test]
+        public void Match_Should_ReturnValues_When_ItemsMatchKey()
+        {
+            var dates1 = new List<DateTime>
+            {
+               new DateTime(2017, 4, 13),
+               new DateTime(2017, 5,  2),
+               new DateTime(2017, 9,  3),
+               new DateTime(2018, 7,  1)
+            };
+
+            var dates2 = new List<DateTime>
+            {
+                new DateTime(2015, 4, 29),
+                new DateTime(2019, 2,  5),
+                new DateTime(2019, 6,  1),
+                new DateTime(2020, 4,  1)
+            };
+
+            var (lhs, rhs) = dates1.Match(dates2, dt => new { dt.Day, dt.Month });
+
+            var lhsFound = lhs.Single();
+            Assert.AreEqual(new DateTime(2017, 4, 13), lhsFound);
+
+            var rhsFound = rhs.ToArray();
+            Assert.AreEqual(2, rhsFound.Length);
+
+            Assert.AreEqual(new DateTime(2020, 4, 29), rhsFound[0]);
+            Assert.AreEqual(new DateTime(2020, 4,  1), rhsFound[1]);
+        }
+
+        [Test]
         public void MatchWithOccurrencies_Should_ReturnValuesWithTheirOccurrencies_When_ItemsMatch()
         {
             var lhs = new [] { 3, 2, 2, 1 };
@@ -1154,6 +1258,40 @@ namespace Foundation.Collections.Generic
                 Assert.AreEqual(1, tuple.lhs.count);
                 Assert.AreEqual(2, tuple.rhs.count);
             }
+        }
+
+        [Test]
+        public void MatchWithOccurrencies_Should_ReturnValuesWithTheirOccurrencies_When_KeysMatch()
+        {
+            var dates1 = new List<DateTime>
+            {
+               new DateTime(2017, 4, 13),
+               new DateTime(2017, 5,  2),
+               new DateTime(2017, 9,  3),
+               new DateTime(2018, 7,  1)
+            };
+
+            var dates2 = new List<DateTime>
+            {
+                new DateTime(2015, 4, 29),
+                new DateTime(2019, 2,  5),
+                new DateTime(2019, 6,  1),
+                new DateTime(2020, 4,  1)
+            };
+
+            var matching = dates1.MatchWithOccurrencies(dates2, dt => dt.Month).ToArray();
+
+            //Assert.AreEqual(2, matching.Length);
+            //{
+            //    var tuple = matching.First(t => t.lhs.item == 1);
+            //    Assert.AreEqual(1, tuple.lhs.count);
+            //    Assert.AreEqual(1, tuple.rhs.count);
+            //}
+            //{
+            //    var tuple = matching.First(t => t.lhs.item == 3);
+            //    Assert.AreEqual(1, tuple.lhs.count);
+            //    Assert.AreEqual(2, tuple.rhs.count);
+            //}
         }
 
         [Test]
