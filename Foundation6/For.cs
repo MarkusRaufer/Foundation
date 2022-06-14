@@ -1,4 +1,5 @@
 ﻿using System.Collections;
+using System.Diagnostics.CodeAnalysis;
 
 namespace Foundation
 {
@@ -86,10 +87,9 @@ namespace Foundation
 
         public ForEnumerator(Func<T> generator) => _generator = generator.ThrowIfNull();
 
-        //[MaybeNull]
-        public T Current => _current;
+        public T Current => _current ?? throw new InvalidOperationException("Current should not be used in the current state");
 
-        object IEnumerator.Current => Current;
+        object IEnumerator.Current => Current!;
 
         public void Dispose()
         {
