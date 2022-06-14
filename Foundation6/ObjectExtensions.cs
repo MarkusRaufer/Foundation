@@ -291,9 +291,11 @@ public static class ObjectExtensions
     {
         return value switch
         {
+            DateOnly d => d.ToDateTime(),
             DateTime dt => dt,
             int i => new DateTime(i),
             long l => new DateTime(l),
+            TimeOnly to => to.ToDateTime(),
             _ => null
         };
     }
@@ -302,9 +304,11 @@ public static class ObjectExtensions
     {
         return value switch
         {
+            DateOnly d => d.ToDateTime(kind),
             DateTime dt => new DateTime(dt.Ticks, kind),
             int i => new DateTime(i, kind),
             long l => new DateTime(l, kind),
+            TimeOnly to => to.ToDateTime(kind),
             _ => null
         };
     }
