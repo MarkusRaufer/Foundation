@@ -3,15 +3,6 @@ using System.Diagnostics.CodeAnalysis;
 
 namespace Foundation
 {
-    //public interface IForStart<T>
-    //{
-    //    IForReturns<T> StartAt(T seed);
-
-    //    IForReturns<T> Returns(Func<T> func);
-
-    //    IForReturns<T> Returns(Func<T, T> func);
-    //}
-
     public interface IForReturns<T>
     {
         IEnumerable<T> Returns(Func<T, T> generator);
@@ -119,7 +110,6 @@ namespace Foundation
             _generator = generator.ThrowIfNull();
         }
 
-        //[MaybeNull]
         public T Current
         {
             get
