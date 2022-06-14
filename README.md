@@ -34,6 +34,7 @@ Some examples:
 |----------|-----------|
 |Disposable|Can be used to dispose components when exiting a method.|
 |Event     |Removes all subscribers on Dispose().|
+|For       |For loop that returns a list.|
 |Fused     |Acts like a fuse. If blown the value won't change any longer.|
 |HashCode  |Can create hashcodes from a list of objects and hashcodes.|
 |Id        |Entity identifier|
@@ -98,7 +99,25 @@ Some examples:
   // unsubsribe the delegate.
   disposable.Dispose();
   ```
+- **For**
+```csharp
+//example 1
 
+var value = 1;
+
+//generates [1, 2, 3, 4, 5]
+var values = For.Returns(() => value++)
+                .Take(5)
+                .ToArray();
+
+//example 2
+
+//generates [1, 2, 3, 4, 5]
+var values = For.StartAt(() => 1).Returns(value => ++value)
+                                 .TakeUntil(x => x == 5)
+                                 .ToArray();
+
+```
 - **Fused**
   ```csharp
 
@@ -122,6 +141,7 @@ Some examples:
   
   Assert.IsFalse(fused.IsBlown);
 
+  //value is not changed
   fused.Value = -1;
   Assert.IsFalse(fused.IsBlown);
   Assert.AreEqual(-1, fused.Value);
@@ -309,14 +329,17 @@ Some examples:
 |---------------------|-----------|
 |Adjacent             |Calls action on all adjacent elements.|
 |AfterEach            |Is called after iterating each element except the last one.|
+|AllEqual             |Return true when all elements are equal.|
 |AtLeast              |Returns at least a number of elements. If the number of elements is smaller, an empty enumerable is returned.|
 |AverageMedian        |Returns the median of all values returned by the converter.|
 |AverageMedianValues  |Returns the real values instead of a division of the median values.|
+|Contains             |Checks if lhs contains at least one element of rhs.|
 |CartesianProduct     |Returns a cartesian product of two lists.|
+|Checks if lhs contains at least one element of rhs.
 |CyclicEnumerate      |Creates an endless list of items.|
 |Difference           |Returns the symmetric difference of two lists.|
 |Duplicates           |Returns duplicate items of a list. If there are e.g. three of an item, 2 will returned.|
-|Enumerate            |Enumerates items. Returns tuples (item, counter).|
+|Enumerate            |Enumerates items. Returns tuples of (item, counter).|
 |FilterMap            |Filters and transform items. It returns only Opt.Some values.|
 |FindUntil            |Searches items until all predicates matched exactly one time.|
 |Ignore               |Ignores items when predicate returns true.|
@@ -378,6 +401,18 @@ Some examples:
   var actual = sb.ToString();
   Assert.AreEqual("1,2,3", actual);
   ```
+
+- **AllEqual**
+```csharp
+
+//example
+
+var numbers = Enumerable.Repeat(1, 10);
+
+//returns true
+var eq = numbers.AllEqual();
+
+```
 
 - **AtLeast**
   
@@ -465,6 +500,14 @@ Some examples:
   }
   ```
 
+- **Contains**
+  ```csharp
+  var items1 = Enumerable.Range(0, 9);
+  var items2 = Enumerable.Range(0, 9).Where(i => (i % 2) == 0);
+
+  var result = items.Contains(items2);
+  ```
+
 - **CyclicEnumerate**
 
   ```csharp
@@ -525,8 +568,8 @@ Some examples:
 
   ```csharp
 
-  //examples
   
+  //example 1
   {
      var items1 = Enumerable.Range(0, 10);
      var items2 = Enumerable.Range(10, 10);
@@ -536,11 +579,13 @@ Some examples:
 
      Assert.AreEqual(20, diff.Length);
   }
+
+  //example 2
   {
      var items1 = new List<int> { 1, 2, 3, 4, 5 };
      var items2 = new List<int> { 2, 4, 6 };
 
-     // return items of both lists that don't match
+     // returns the symmetric difference
      var diff = items1.Difference(items2).ToArray();
 
      Assert.AreEqual(4, diff.Length);
@@ -584,16 +629,52 @@ Some examples:
 
   ```csharp
 
-  // example
+  // example 1
+  {
+     var items = new[] { "one", "two", "three" };
 
-  var items = new[] { "one", "two", "three" };
-  var i = 0;
+     var enumerated = items.Enumerate().ToArray();
 
-  var enumerated = items.Enumerate(item => i++).ToArray();
+     Assert.AreEqual(("one",   0), enumerated[0]);
+     Assert.AreEqual(("two",   1), enumerated[1]);
+     Assert.AreEqual(("three", 2), enumerated[2]);
+  }
+  // example 2
+  {
+     var items = new[] { "one", "two", "three" };
+     var i = 10;
 
-  Assert.AreEqual(("one",   0), enumerated[0]);
-  Assert.AreEqual(("two",   1), enumerated[1]);
-  Assert.AreEqual(("three", 2), enumerated[2]);
+     var enumerated = items.Enumerate(item => i++).ToArray();
+
+     Assert.AreEqual(("one",   10), enumerated[0]);
+     Assert.AreEqual(("two",   11), enumerated[1]);
+     Assert.AreEqual(("three", 12), enumerated[2]);
+  }
+  
+  // example 3
+  {
+     var items = Enumerable.Range(1, 8);
+    
+     // { (1, 10), (2, 11), (3, 12), (4, 10), (5, 11), (6, 12), (7, 10), (8, 11) }
+     var enumerated = items.Enumerate(10..12).ToArray();
+    
+     //with negative counter
+     // { (1, -1), (2, 0), (3, 1), (4, -1), (5, 0), (6, 1), (7, -1), (8, 0) }
+     var enumerated = items.Enumerate(MinMax.New(-1, 1)).ToArray();
+  }
+ 
+  // example 4
+  {
+     var items1 = Enumerable.Range(0, 9).ToArray();
+     
+     var enumerated = items1.Enumerate(n => n * 2).ToArray();
+     
+     Assert.AreEqual(items1.Length, enumerated.Length);
+     
+     foreach (var (item, counter) in enumerated)
+         Assert.AreEqual(item * 2, counter);
+  }
+  
   ```
 
 - **FindUntil**
@@ -666,26 +747,30 @@ Some examples:
 
   var dates1 = new List<DateTime>
   {
-	 new DateTime(2017, 4, 1),
-	 new DateTime(2017, 5, 2),
-	 new DateTime(2017, 9, 3),
-	 new DateTime(2018, 7, 1)
+     new DateTime(2017, 4, 13),
+     new DateTime(2017, 5,  2),
+     new DateTime(2017, 9,  3),
+     new DateTime(2018, 7,  1)
   };
 
   var dates2 = new List<DateTime>
   {
-	 new DateTime(2019, 2, 5),
-	 new DateTime(2019, 6, 1),
-	 new DateTime(2020, 4, 1)
+     new DateTime(2015, 4, 29),
+     new DateTime(2019, 2,  5),
+     new DateTime(2019, 6,  1),
+     new DateTime(2020, 4,  1)
   };
 
   var (lhs, rhs) = dates1.Match(dates2, dt => new { dt.Day, dt.Month });
 
   var lhsFound = lhs.Single();
-  var rhsFound = rhs.Single();
+  Assert.AreEqual(new DateTime(2017, 4, 13), lhsFound);
 
-  Assert.AreEqual(new DateTime(2017, 4, 1), lhsFound);
-  Assert.AreEqual(new DateTime(2020, 4, 1), rhsFound);
+  var rhsFound = rhs.ToArray();
+  Assert.AreEqual(2, rhsFound.Length);
+
+  Assert.AreEqual(new DateTime(2015, 4, 29), rhsFound[0]);
+  Assert.AreEqual(new DateTime(2020, 4,  1), rhsFound[1]);
   ```
 
 - **MinMax**
@@ -695,7 +780,8 @@ Some examples:
   // example  
 
   var numbers = new[] { 1, 2, 2, 2, 5, 3, 3, 3, 3, 4 };
-
+  
+  //returns min and max of numbers
   var actual = numbers.MinMax();  
 
   var expected = MinMax.New(1, 5);
@@ -746,25 +832,25 @@ Some examples:
 
   var numbers = Enumerable.Range(1, 10);
 
-  var (matching, notMatching) numbers.Partition(x => x % 2 == 0);
+  var (matching, notMatching) = numbers.Partition(x => x % 2 == 0);
 
-  var matchingNumbers = matching.ToArray();
-  var notMatchingNumbers = notMatching.ToArray();
+  var even = matching.ToArray();
+  var odd = notMatching.ToArray();
 
-  Assert.AreEqual(5, matchingNumbers.Length);
-  Assert.AreEqual(5, notMatchingNumbers.Length);
+  Assert.AreEqual(5, even.Length);
+  Assert.AreEqual(5, odd.Length);
 
-  Assert.Contains(2,  matchingNumbers);
-  Assert.Contains(4,  matchingNumbers);
-  Assert.Contains(6,  matchingNumbers);
-  Assert.Contains(8,  matchingNumbers);
-  Assert.Contains(10, matchingNumbers);
+  Assert.Contains(2,  even);
+  Assert.Contains(4,  even);
+  Assert.Contains(6,  even);
+  Assert.Contains(8,  even);
+  Assert.Contains(10, even);
 
-  Assert.Contains(1, notMatchingNumbers);
-  Assert.Contains(3, notMatchingNumbers);
-  Assert.Contains(5, notMatchingNumbers);
-  Assert.Contains(7, notMatchingNumbers);
-  Assert.Contains(9, notMatchingNumbers);
+  Assert.Contains(1, odd);
+  Assert.Contains(3, odd);
+  Assert.Contains(5, odd);
+  Assert.Contains(7, odd);
+  Assert.Contains(9, odd);
   ```
 
 - **Permutations**
