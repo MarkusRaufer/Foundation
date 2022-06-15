@@ -1,5 +1,6 @@
 ﻿namespace Foundation;
 
+using System.Diagnostics.CodeAnalysis;
 using System.Runtime.Serialization;
 
 public static class Opt
@@ -22,7 +23,7 @@ public readonly struct Opt<T>
 {
     private readonly T? _value;
 
-    public Opt(T value)
+    internal Opt(T value)
     {
         IsSome = value is not null;
         _value = value;
@@ -94,21 +95,21 @@ public readonly struct Opt<T>
 
     internal static readonly Opt<T> None = new();
 
-    internal T? Value
+    internal T Value
     {
         get
         {
             if (IsNone) throw new NullReferenceException(nameof(Value));
-            return _value;
+            return _value!;
         }
     }
 
-    internal object? ValueAsObject
+    internal object ValueAsObject
     {
         get
         {
             if (IsNone) throw new NullReferenceException(nameof(ValueAsObject));
-            return _value;
+            return _value!;
         }
     }
 }
