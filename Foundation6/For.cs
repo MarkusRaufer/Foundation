@@ -8,7 +8,8 @@ namespace Foundation
     }
 
     /// <summary>
-    /// For loop that returns an enumerable.
+    /// For is a generator that returns an endless list of items. Be aware to limit the number of generated items.
+    /// You can use Take or TakeUntil.
     /// </summary>
     public static class For
     {

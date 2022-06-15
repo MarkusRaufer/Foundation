@@ -35,8 +35,8 @@ public class RandomTests
             var random1 = new Random(seed);
             var random2 = new Random(seed);
 
-            var guids1 = Loop.For(() => random1.NextGuid()).Take(numberOfGuids).ToArray();
-            var guids2 = Loop.For(() => random2.NextGuid()).Take(numberOfGuids).ToArray();
+            var guids1 = For.Returns(() => random1.NextGuid()).Take(numberOfGuids).ToArray();
+            var guids2 = For.Returns(() => random2.NextGuid()).Take(numberOfGuids).ToArray();
 
             CollectionAssert.AreEqual(guids1, guids2);
         }
