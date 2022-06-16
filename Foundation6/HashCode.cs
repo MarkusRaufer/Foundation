@@ -99,6 +99,21 @@ public static class HashCode
             }
         }
 
+        public void AddObjects<TKey, TValue>([DisallowNull] IEnumerable<KeyValuePair<TKey, TValue>> pairs)
+            where TKey : notnull
+        {
+            if (null == pairs) return;
+
+            foreach (var pair in pairs)
+            {
+
+                AddHashCode(pair.Key.GetHashCode());
+                if (null == pair.Value) continue;
+
+                AddHashCode(pair.Value.GetHashCode());
+            }
+        }
+
         public void Clear()
         {
             _hash = _seed;
