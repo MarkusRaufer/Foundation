@@ -8,7 +8,7 @@ using System.Linq;
 using System.Runtime.Serialization;
 
 /// <summary>
-/// Equals of this map checks the equality of all elements.
+/// This map considers the equality of all keys and values <see cref="Equals"/>. The position of the elements are ignored.
 /// </summary>
 /// <typeparam name="TKey"></typeparam>
 /// <typeparam name="TValue"></typeparam>
@@ -143,8 +143,18 @@ public class EquatableMap<TKey, TValue>
 
     protected static int DefaultHashCode { get; } = typeof(EquatableMap<TKey, TValue>).GetHashCode();
 
+    /// <summary>
+    /// Considers keys and values only. Positions of the elements are ignored.
+    /// </summary>
+    /// <param name="obj"></param>
+    /// <returns></returns>
     public override bool Equals(object? obj) => obj is IDictionary<TKey, TValue> other && Equals(other);
 
+    /// <summary>
+    /// Considers keys and values only. Positions of the elements are ignored.
+    /// </summary>
+    /// <param name="other"></param>
+    /// <returns></returns>
     public bool Equals(EquatableMap<TKey, TValue>? other)
     {
         if (other is null) return false;
@@ -157,6 +167,10 @@ public class EquatableMap<TKey, TValue>
 
     public IEnumerator<KeyValuePair<TKey, TValue>> GetEnumerator() => _keyValues.GetEnumerator();
 
+    /// <summary>
+    /// Considers all keys and values. Positions of the elements are ignored.
+    /// </summary>
+    /// <returns></returns>
     public override int GetHashCode() => _hashCode;
 
     public void GetObjectData(SerializationInfo info, StreamingContext context)

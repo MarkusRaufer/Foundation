@@ -6,6 +6,12 @@ using Foundation.Collections.Generic;
 using System.Collections;
 using System.Diagnostics.CodeAnalysis;
 
+/// <summary>
+/// This dictionary considers the equality of all keys and values <see cref="Equals"/>.
+/// The position of the elements are ignored.
+/// </summary>
+/// <typeparam name="TKey"></typeparam>
+/// <typeparam name="TValue"></typeparam>
 public class EquatableReadOnlyDictionary<TKey, TValue>
     : IReadOnlyDictionary<TKey, TValue>
     , IEquatable<EquatableReadOnlyDictionary<TKey, TValue>>
@@ -22,7 +28,7 @@ public class EquatableReadOnlyDictionary<TKey, TValue>
     public EquatableReadOnlyDictionary(IDictionary<TKey, TValue> dictionary)
     {
         _dictionary = dictionary.ThrowIfNull();
-        _hashCode = HashCode.FromObjects(_dictionary.ToKeyValues());
+        _hashCode = HashCode.FromObjects(_dictionary);
     }
 
     public TValue this[TKey key] => _dictionary[key];
@@ -30,6 +36,8 @@ public class EquatableReadOnlyDictionary<TKey, TValue>
     public int Count => _dictionary.Count;
 
     public bool ContainsKey(TKey key) => _dictionary.ContainsKey(key);
+
+    protected static int DefaultHashCode { get; } = typeof(EquatableReadOnlyDictionary<TKey, TValue>).GetHashCode();
 
     public override bool Equals(object? obj) => Equals(obj as EquatableReadOnlyDictionary<TKey, TValue>);
 

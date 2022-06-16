@@ -92,10 +92,15 @@ public class EquatableCollection<T>
 
     protected static int DefaultHashCode { get; } = typeof(EquatableCollection<T>).GetHashCode();
 
+    /// <summary>
+    /// Checks the equality of all elements. Positions of the elements are ignored.
+    /// </summary>
+    /// <param name="obj"></param>
+    /// <returns></returns>
     public override bool Equals(object? obj) => obj is EquatableCollection<T> other && Equals(other);
 
     /// <summary>
-    /// Checks the equality of all elements. The position of the elements are ignored.
+    /// Checks the equality of all elements. Positions of the elements are ignored.
     /// </summary>
     /// <param name="other"></param>
     /// <returns></returns>
@@ -112,7 +117,7 @@ public class EquatableCollection<T>
     public IEnumerator<T> GetEnumerator() => _collection.GetEnumerator();
 
     /// <summary>
-    /// Considers values only. Position of the values are ignored.
+    /// Considers values only. Positions of the elements are ignored.
     /// </summary>
     /// <returns></returns>
     public override int GetHashCode() => _hashCode;

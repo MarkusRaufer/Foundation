@@ -84,6 +84,8 @@ namespace Foundation.ComponentModel
             _hashCode = builder.GetHashCode();
         }
 
+        protected static int DefaultHashCode { get; } = typeof(EquatableList<T>).GetHashCode();
+
         /// <summary>
         /// Checks the equality of all elements and their position.
         /// </summary>
@@ -103,8 +105,6 @@ namespace Foundation.ComponentModel
 
             return this.IsSameAs(other);
         }
-
-        protected static int DefaultHashCode { get; } = typeof(EquatableList<T>).GetHashCode();
 
         /// <summary>
         /// Considers values and their position.
