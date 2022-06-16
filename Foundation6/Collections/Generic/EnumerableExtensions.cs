@@ -1144,18 +1144,44 @@ public static class EnumerableExtensions
         if (null == lhs) return null == rhs;
         if (null == rhs) return false;
 
-        var lhsArray = lhs.ToArray();
-        var rhsArray = rhs.ToArray();
+        var itRhs = rhs.GetEnumerator();
 
-        if (lhsArray.Length != rhsArray.Length) return false;
-
-        var tuples = lhsArray.MatchWithOccurrencies(rhsArray);
-
-        foreach(var (left, right) in tuples)
+        foreach (var left in lhs)
         {
-            if(left.count != right.count) return false;
+            if (!itRhs.MoveNext()) return false;
+
+            if (!left.EqualsNullable(itRhs.Current)) return false;
         }
-        return true;
+
+        return !itRhs.MoveNext();
+    }
+
+    /// <summary>
+    /// Checks the equality of all elements of two lists and their positions.
+    /// </summary>
+    /// <typeparam name="TKey"></typeparam>
+    /// <typeparam name="TValue"></typeparam>
+    /// <param name="lhs"></param>
+    /// <param name="rhs"></param>
+    /// <returns></returns>
+    public static bool IsEqualTo<TKey, TValue>(
+        [DisallowNull] this IEnumerable<KeyValuePair<TKey, TValue>> lhs,
+        [DisallowNull] IEnumerable<KeyValuePair<TKey, TValue>> rhs)
+        where TKey : notnull
+    {
+        if (null == lhs) return null == rhs;
+        if (null == rhs) return false;
+
+        var itRhs = rhs.GetEnumerator();
+
+        foreach (var left in lhs)
+        {
+            if (!itRhs.MoveNext()) return false;
+
+            if (!left.Key.Equals(itRhs.Current.Key) || !left.Value.EqualsNullable(itRhs.Current.Value)) return false;
+        }
+
+        return !itRhs.MoveNext();
     }
 
     /// <summary>
