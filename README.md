@@ -325,34 +325,37 @@ This corresponds to the .NET counterpart System.Collections.Generic.
 
 Some examples:
 
-|method |description  |
-|---------------------|-----------|
-|Adjacent             |Calls action on all adjacent elements.|
-|AfterEach            |Is called after iterating each element except the last one.|
-|AllEqual             |Return true when all elements are equal.|
-|AtLeast              |Returns at least a number of elements. If the number of elements is smaller, an empty enumerable is returned.|
-|AverageMedian        |Returns the median of all values returned by the converter.|
-|AverageMedianValues  |Returns the real values instead of a division of the median values.|
-|Contains             |Checks if lhs contains at least one element of rhs.|
-|CartesianProduct     |Returns a cartesian product of two lists.|
-|Checks if lhs contains at least one element of rhs.
-|CyclicEnumerate      |Creates an endless list of items.|
-|Difference           |Returns the symmetric difference of two lists.|
-|Duplicates           |Returns duplicate items of a list. If there are e.g. three of an item, 2 will returned.|
-|Enumerate            |Enumerates items. Returns tuples of (item, counter).|
-|FilterMap            |Filters and transform items. It returns only Opt.Some values.|
-|FindUntil            |Searches items until all predicates matched exactly one time.|
-|Ignore               |Ignores items when predicate returns true.|
-|IsEqualTo            |Returns true, if all elements of items appear in the other list, the number of items and the occurrence are same.|
-|Match                |Returns all matching items of both lists as a tuple of two lists.|
-|MatchWithOccurrencies|Returns matching items of both lists with their occurrencies.|
-|MinMax               |Returns the min and max value.|
-|MostFrequent         |returns the elements that occure most frequently.|
-|OnFirst              |Calls action on first item.|
-|OnLast               |Calls action on last item.|
-|Partition            |Partitions items into two lists. If predicate is true the item is added to matching otherwise to notMatching.|
-|Permutations         |Creates permutations of a list.|
-|ToBreakable          |Makes the enumerable interruptible. This can be used for nested foreach loops.|
+|method |description        |
+|---------------------------|-----------|
+|Adjacent                   |Calls action on all adjacent elements.|
+|AfterEach                  |Is called after iterating each element except the last one.|
+|AllEqual                   |Return true when all elements are equal.|
+|AtLeast                    |Returns at least a number of elements. If the number of elements is smaller, an empty enumerable is returned.|
+|AverageMedian              |Returns the median of all values returned by the converter.|
+|AverageMedianValues        |Returns the real values instead of a division of the median values.|
+|Contains                   |Checks if lhs contains at least one element of rhs.|
+|CartesianProduct           |Returns a cartesian product of two lists.|
+|Contains                   |Checks if lhs contains at least one element of rhs.
+|CyclicEnumerate            |Creates an endless list of items.|
+|Difference                 |Returns the symmetric difference of two lists.|
+|Duplicates                 |Returns duplicate items of a list. If there are e.g. three of an item, 2 will returned.|
+|Enumerate                  |Enumerates items. Returns tuples of (item, counter).|
+|FilterMap                  |Filters and transform items. It returns only Opt.Some values.|
+|FindUntil                  |Searches items until all predicates matched exactly one time.|
+|FirstAsOpt                 |Returns first item as Opt. If the list is empty None is returned.|
+|Ignore                     |Ignores items when predicate returns true.|
+|IsEqualTo                  |Returns true, if all elements of items appear in the other list, the number of items and the occurrence are same.|
+|KCombinations              |Returns a list of k-combinations without repetition.|
+|KCombinationsWithRepetition|Returns a list of k-combinations with repetitions.|
+|Match                      |Returns all matching items of both lists as a tuple of two lists.|
+|MatchWithOccurrencies      |Returns matching items of both lists with their occurrencies.|
+|MinMax                     |Returns the min and max value.|
+|MostFrequent               |returns the elements that occure most frequently.|
+|OnFirst                    |Calls action on first item.|
+|OnLast                     |Calls action on last item.|
+|Partition                  |Partitions items into two lists. If predicate is true the item is added to matching otherwise to notMatching.|
+|Permutations               |Creates permutations of a list.|
+|ToBreakable                |Makes the enumerable interruptible. This can be used for nested foreach loops.|
 
 - **Adjacent**
 
@@ -695,6 +698,23 @@ var eq = numbers.AllEqual();
   Assert.AreEqual(6, foundNumbers[2]);
   ```
 
+- **FirstAsOpt**
+```csharp
+  var items = Enumerable.Empty<int>();
+  
+  // you don't know if list is empty or contains 0.
+  var item = items.FirstOrDefault();
+
+  var optional = items.FirstAsOpt();
+
+  // item exists.
+  if(optional.IsSome)...
+
+  // item does not exist
+  if(optional.IsNone)...
+
+```
+
 - **Ignore**
 
   ```csharp
@@ -731,14 +751,73 @@ var eq = numbers.AllEqual();
 - **IsEqualTo**
   ```csharp
 
-  // example
+  // example 1
+  {
+    var items1 = new[] { 1, 2, 3, 2 };
+    var items2 = new[] { 2, 3, 2, 1 };
 
-  var items1 = new[] { 1, 2, 3, 2 };
-  var items2 = new[] { 2, 3, 2, 1 };
+    Assert.IsTrue(items1.IsEqualTo(items2));
+    Assert.IsTrue(items2.IsEqualTo(items1));
+  }
 
-  Assert.IsTrue(items1.IsEqualTo(items2));
-  Assert.IsTrue(items2.IsEqualTo(items1));
+  // example 2
+  {
+     var keyValues1 = new Dictionary<string, object>
+     {
+       { "one",   1 },
+       { "two",   2 },
+       { "three", 3 }
+     };
+
+     var keyValues1 = new Dictionary<string, object>
+     {
+       { "three", 3 }
+       { "one",   1 },
+       { "two",   2 },
+     };
+
+     // dictionary Equals
+     Assert.IsFalse(items1.Equals(items2));
+
+     //IsEqualTo
+     Assert.IsTrue(items1.IsEqualTo(items2));
+  }
   ```
+
+- **KCombinations**
+```csharp
+  // example
+  {
+     var numbers = Enumerable.Range(1, 3);
+
+     //k-combinations without repetitions
+     var kCombinations = numbers.KCombinations(2).ToArray();
+
+     Assert.AreEqual(3, kCombinations.Length);
+     Assert.IsTrue(kCombinations.Any(g => g.IsEqualTo(new[] { 1, 2 })));
+     Assert.IsTrue(kCombinations.Any(g => g.IsEqualTo(new[] { 1, 3 })));
+     Assert.IsTrue(kCombinations.Any(g => g.IsEqualTo(new[] { 2, 3 })));
+  }
+```
+
+- **KCombinationsWithRepetition**
+```csharp
+  // example
+  {
+     var numbers = Enumerable.Range(1, 3);
+
+     //k-combinations without repetitions
+     var kCombinations = numbers.KCombinationsWithRepetition(2).ToArray();
+
+     Assert.AreEqual(6, kCombinations.Length);
+     Assert.IsTrue(kCombinations.Any(g => g.IsEqualTo(new[] { 1, 1 })));
+     Assert.IsTrue(kCombinations.Any(g => g.IsEqualTo(new[] { 1, 2 })));
+     Assert.IsTrue(kCombinations.Any(g => g.IsEqualTo(new[] { 1, 3 })));
+     Assert.IsTrue(kCombinations.Any(g => g.IsEqualTo(new[] { 2, 2 })));
+     Assert.IsTrue(kCombinations.Any(g => g.IsEqualTo(new[] { 2, 3 })));
+     Assert.IsTrue(kCombinations.Any(g => g.IsEqualTo(new[] { 3, 3 })));
+  }
+```
 
 - **Match**
   ```csharp
@@ -761,6 +840,8 @@ var eq = numbers.AllEqual();
      new DateTime(2020, 4,  1)
   };
 
+  // lhs contains matching items from dates1.
+  // rhs contains matching items from dates2.
   var (lhs, rhs) = dates1.Match(dates2, dt => new { dt.Day, dt.Month });
 
   var lhsFound = lhs.Single();
