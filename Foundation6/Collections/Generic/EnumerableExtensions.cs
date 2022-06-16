@@ -1134,7 +1134,7 @@ public static class EnumerableExtensions
     }
 
     /// <summary>
-    /// Returns true, if all elements of items appear in the other list, the number of items and the occurrence are same.
+    /// Returns true, if all elements of lhs appear in rhs and the number of items and their occurrency are same.
     /// </summary>
     /// <param name="lhs"></param>
     /// <param name="rhs"></param>
@@ -2906,20 +2906,21 @@ public static class EnumerableExtensions
     }
 
     /// <summary>
-    /// 
+    /// Merges two lists. If lhs has more elements than rhs, the lhs elements are returned until the end.
+    /// If rhs has more elements than lhs, the rhs elements are skipped.
     /// </summary>
     /// <typeparam name="T"></typeparam>
     /// <typeparam name="TResult"></typeparam>
     /// <param name="lhs"></param>
     /// <param name="rhs"></param>
-    /// <param name="binarySelector"></param>
     /// <param name="selector"></param>
+    /// <param name="projection"></param>
     /// <returns></returns>
     public static IEnumerable<TResult> ZipLeft<T, TResult>(
         this IEnumerable<T> lhs,
         IEnumerable<T> rhs,
-        Func<T, T, BinarySelection> binarySelector,
-        Func<T, TResult> selector)
+        Func<T, T, BinarySelection> selector,
+        Func<T, TResult> projection)
     {
         var itRhs = rhs.GetEnumerator();
 
@@ -2934,17 +2935,17 @@ public static class EnumerableExtensions
 
                 if(hasNext.Value)
                 {
-                    selection = binarySelector(item, itRhs.Current);
+                    selection = selector(item, itRhs.Current);
                     
                     if (BinarySelection.Right == selection)
                     {
-                        yield return selector(itRhs.Current);
+                        yield return projection(itRhs.Current);
                         continue;
                     }
                 }
             }
 
-            yield return selector(item);
+            yield return projection(item);
         }
     }
 }

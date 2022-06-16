@@ -6,7 +6,7 @@ using System.Diagnostics.CodeAnalysis;
 using System.Runtime.Serialization;
 
 /// <summary>
-/// Equals of this collection checks the equality of all elements.
+/// This collection considers the equality of all elements <see cref="Equals"/>. The position of the elements are ignored.
 /// </summary>
 /// <typeparam name="T"></typeparam>
 [Serializable]
@@ -26,7 +26,8 @@ public class EquatableCollection<T>
     public EquatableCollection([DisallowNull] ICollection<T> collection)
     {
         _collection = collection.ThrowIfNull();
-        CreateHashCode();
+
+        _hashCode = CreateHashCode();
 
         CollectionChanged = new Event<Action<CollectionEvent<T>>>();
     }
@@ -46,7 +47,7 @@ public class EquatableCollection<T>
             _collection = new List<T>();
         }
 
-        CreateHashCode();
+        _hashCode = CreateHashCode();
 
         CollectionChanged = new Event<Action<CollectionEvent<T>>>();
     }
@@ -57,11 +58,7 @@ public class EquatableCollection<T>
         
         _collection.Add(item);
 
-        var hcb = HashCode.CreateBuilder();
-        hcb.AddHashCode(_hashCode);
-        hcb.AddObject(item);
-
-        _hashCode = hcb.GetHashCode();
+        _hashCode = CreateHashCode();
 
         CollectionChanged.Publish(new { State = CollectionChangedState.ElementAdded, Element = item });
     }
@@ -69,7 +66,7 @@ public class EquatableCollection<T>
     public void Clear()
     {
         _collection.Clear();
-        CreateHashCode();
+        _hashCode = CreateHashCode();
 
         CollectionChanged.Publish(new { State = CollectionChangedState.CollectionCleared });
     }
@@ -82,17 +79,26 @@ public class EquatableCollection<T>
 
     public int Count => _collection.Count;
 
-    protected void CreateHashCode()
+    protected int CreateHashCode()
     {
         var builder = HashCode.CreateBuilder();
-        builder.AddObject(typeof(EquatableCollection<T>));
-        builder.AddObjects(_collection);
+
+        builder.AddHashCode(DefaultHashCode);
+        builder.AddHashCodes(_collection.Select(x => x.GetNullableHashCode())
+                                        .OrderBy(x => x));
+
+        return builder.GetHashCode();
     }
 
-    public bool IsReadOnly => _collection.IsReadOnly;
+    protected static int DefaultHashCode { get; } = typeof(EquatableCollection<T>).GetHashCode();
 
     public override bool Equals(object? obj) => obj is EquatableCollection<T> other && Equals(other);
 
+    /// <summary>
+    /// Checks the equality of all elements. The position of the elements are ignored.
+    /// </summary>
+    /// <param name="other"></param>
+    /// <returns></returns>
     public bool Equals(EquatableCollection<T>? other)
     {
         if (other is null) return false;
@@ -105,12 +111,18 @@ public class EquatableCollection<T>
 
     public IEnumerator<T> GetEnumerator() => _collection.GetEnumerator();
 
+    /// <summary>
+    /// Considers values only. Position of the values are ignored.
+    /// </summary>
+    /// <returns></returns>
     public override int GetHashCode() => _hashCode;
 
     public void GetObjectData(SerializationInfo info, StreamingContext context)
     {
         info.AddValue(nameof(_collection), _collection);
     }
+
+    public bool IsReadOnly => _collection.IsReadOnly;
 
     public bool Remove(T item)
     {
@@ -120,7 +132,7 @@ public class EquatableCollection<T>
 
         if (removed)
         {
-            CreateHashCode();
+            _hashCode = CreateHashCode();
 
             CollectionChanged.Publish(new { State = CollectionChangedState.ElementRemoved, Element = item });
         }

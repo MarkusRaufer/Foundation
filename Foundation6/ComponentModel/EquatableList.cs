@@ -4,7 +4,7 @@ using System.Runtime.Serialization;
 namespace Foundation.ComponentModel
 {
     /// <summary>
-    /// This Equals of this list checks the equality of all elements.
+    /// This list checks the equality of all elements and their positions.
     /// </summary>
     /// <typeparam name="T"></typeparam>
     [Serializable]
@@ -67,6 +67,7 @@ namespace Foundation.ComponentModel
             base.Add(item);
 
             var builder = HashCode.CreateBuilder();
+
             builder.AddHashCode(_hashCode);
             builder.AddObject(item);
 
@@ -77,23 +78,38 @@ namespace Foundation.ComponentModel
         {
             var builder = HashCode.CreateBuilder();
 
-            builder.AddObject(typeof(EquatableList<T>));
-
+            builder.AddObject(DefaultHashCode);
             builder.AddObjects(this);
 
             _hashCode = builder.GetHashCode();
         }
 
+        /// <summary>
+        /// Checks the equality of all elements and their position.
+        /// </summary>
+        /// <param name="obj"></param>
+        /// <returns></returns>
         public override bool Equals(object? obj) => Equals(obj as EquatableList<T>);
 
+        /// <summary>
+        /// Checks the equality of all elements and their position.
+        /// </summary>
+        /// <param name="other"></param>
+        /// <returns></returns>
         public bool Equals(EquatableList<T>? other)
         {
             if (other is null) return false;
             if (_hashCode != other._hashCode) return false;
 
-            return this.IsEqualTo(other);
+            return this.IsSameAs(other);
         }
 
+        protected static int DefaultHashCode { get; } = typeof(EquatableList<T>).GetHashCode();
+
+        /// <summary>
+        /// Considers values and their position.
+        /// </summary>
+        /// <returns></returns>
         public override int GetHashCode() => _hashCode;
 
         public void GetObjectData(SerializationInfo info, StreamingContext context)

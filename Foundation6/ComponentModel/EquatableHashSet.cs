@@ -4,7 +4,7 @@ using Foundation.Collections.Generic;
 using System.Runtime.Serialization;
 
 /// <summary>
-/// Equals of this hashset checks the equality of all elements.
+/// This hashset considers the equality of all elements <see cref="Equals"/>. The position of the elements are ignored.
 /// </summary>
 /// <typeparam name="T"></typeparam>
 [Serializable]
@@ -65,7 +65,7 @@ public class EquatableHashSet<T>
         {
             var hcb = HashCode.CreateBuilder();
             hcb.AddHashCode(_hashCode);
-            hcb.AddObject(item);
+            hcb.AddObjects(this);
 
             _hashCode = hcb.GetHashCode();
 
@@ -86,14 +86,23 @@ public class EquatableHashSet<T>
     protected void CreateHashCode()
     {
         var builder = HashCode.CreateBuilder();
-        builder.AddObject(typeof(EquatableHashSet<T>));
-        builder.AddObjects(this);
+
+        builder.AddHashCode(DefaultHashCode);
+        builder.AddHashCodes(this.Select(x => x.GetNullableHashCode())
+                                 .OrderBy(x => x));
 
         _hashCode = builder.GetHashCode();
     }
 
+    protected static int DefaultHashCode { get; } = typeof(EquatableHashSet<T>).GetHashCode();
+
     public override bool Equals(object? obj) => obj is EquatableHashSet<T> other && Equals(other);
 
+    /// <summary>
+    /// Checks the equality of all elements. The position of the elements are ignored.
+    /// </summary>
+    /// <param name="other"></param>
+    /// <returns></returns>
     public bool Equals(EquatableHashSet<T>? other)
     {
         if (null == other) return false;
@@ -102,6 +111,10 @@ public class EquatableHashSet<T>
         return this.IsEqualTo(other);
     }
 
+    /// <summary>
+    /// Considers values only. Position of the values are ignored.
+    /// </summary>
+    /// <returns></returns>
     public override int GetHashCode() => _hashCode;
 
     public new bool Remove(T item)

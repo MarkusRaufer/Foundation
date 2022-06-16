@@ -7,7 +7,7 @@ namespace Foundation.ComponentModel
     public class EquatableReadOnlyDictionaryTests
     {
         [Test]
-        public void Equals_Should_Return_False_When_KeysAreDifferent()
+        public void Equals_Should_ReturnFalse_When_KeysAreDifferent()
         {
             var keyValues1 = new Dictionary<string, object>
             {
@@ -31,7 +31,7 @@ namespace Foundation.ComponentModel
         }
 
         [Test]
-        public void Equals_Should_Return_False_When_KeysAndValuesAreDifferent()
+        public void Equals_Should_ReturnFalse_When_KeysAndValuesAreDifferent()
         {
             var keyValues1 = new Dictionary<string, object>
             {
@@ -55,7 +55,7 @@ namespace Foundation.ComponentModel
         }
 
         [Test]
-        public void Equals_Should_Return_False_When_ValuesAreDifferent()
+        public void Equals_Should_ReturnFalse_When_ValuesAreDifferent()
         {
             var keyValues1 = new Dictionary<string, object>
             {
@@ -79,7 +79,7 @@ namespace Foundation.ComponentModel
         }
 
         [Test]
-        public void Equals_Should_Return_True_When_KeysAndValuesAreSame()
+        public void Equals_Should_ReturnTrue_When_KeysAndValuesAreSame()
         {
             var keyValues1 = new Dictionary<string, object>
             {
