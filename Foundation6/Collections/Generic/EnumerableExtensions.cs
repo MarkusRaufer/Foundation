@@ -30,7 +30,7 @@ public static class EnumerableExtensions
 
         public void EndIf()
         {
-            foreach (var item in Else())
+            foreach (var _ in Else())
             {
             }
         }
@@ -637,6 +637,12 @@ public static class EnumerableExtensions
         }
     }
 
+    /// <summary>
+    /// Returns first item as Opt. If the list is empty None is returned.
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <param name="items"></param>
+    /// <returns></returns>
     public static Opt<T> FirstAsOpt<T>([DisallowNull] this IEnumerable<T> items)
     {
         if (null == items) return Opt.None<T>();
@@ -1488,7 +1494,7 @@ public static class EnumerableExtensions
     /// <summary>
     /// Returns the min and max value.
     /// </summary>
-    /// <typeparam name="T"></typeparam>
+    /// <typeparam name="T">T must implement IComparable<T></typeparam>
     /// <param name="items"></param>
     /// <returns></returns>
     public static MinMax<T>? MinMax<T>([DisallowNull] this IEnumerable<T> items)

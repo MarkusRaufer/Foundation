@@ -773,8 +773,6 @@ namespace Foundation.Collections.Generic
         {
             var numbers = Enumerable.Range(1, 3);
 
-            var ints = new object [] { 1, 2, 3 };
-
             var kCombinations = numbers.KCombinations(2).ToArray();
 
             Assert.AreEqual(3, kCombinations.Length);
