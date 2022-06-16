@@ -75,6 +75,11 @@ public static class HashCode
             AddObjects(objects);
         }
 
+        public void AddObject<TKey, TValue>(params KeyValuePair<TKey, TValue>[] pairs)
+        {
+            AddObjects(pairs);
+        }
+
         public void AddObjects([DisallowNull] IEnumerable<object> objects)
         {
             if (null == objects) return;
@@ -100,14 +105,15 @@ public static class HashCode
         }
 
         public void AddObjects<TKey, TValue>([DisallowNull] IEnumerable<KeyValuePair<TKey, TValue>> pairs)
-            where TKey : notnull
         {
             if (null == pairs) return;
 
             foreach (var pair in pairs)
             {
+                if (null == pair.Key) continue;
 
                 AddHashCode(pair.Key.GetHashCode());
+
                 if (null == pair.Value) continue;
 
                 AddHashCode(pair.Value.GetHashCode());
@@ -211,6 +217,18 @@ public static class HashCode
         return hcb.GetHashCode();
     }
 
+    public static int FromObject<TKey, TValue>(params KeyValuePair<TKey, TValue>?[] pairs)
+    {
+        if (0 == pairs.Length) return 0;
+
+        var hcb = HashCodeBuilder.Create();
+
+        foreach (var pair in pairs)
+            hcb.AddObject(pair);
+
+        return hcb.GetHashCode();
+    }
+
     public static int FromObjects<T>([DisallowNull] IEnumerable<T> objects)
     {
         var list = objects.ToArray();
@@ -219,6 +237,18 @@ public static class HashCode
         var hcb = HashCodeBuilder.Create();
 
         hcb.AddObjects(objects);
+
+        return hcb.GetHashCode();
+    }
+
+    public static int FromObjects<TKey, TValue>([DisallowNull] IEnumerable<KeyValuePair<TKey, TValue>> pairs)
+    {
+        var keyValues = pairs.ToArray();
+        if (0 == keyValues.Length) return 0;
+
+        var hcb = HashCodeBuilder.Create();
+
+        hcb.AddObjects(keyValues);
 
         return hcb.GetHashCode();
     }
