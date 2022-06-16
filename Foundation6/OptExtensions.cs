@@ -6,7 +6,7 @@ namespace Foundation;
 public static class OptExtensions
 {
     /// <summary>
-    /// 
+    /// Compares two optionals.
     /// </summary>
     /// <typeparam name="T"></typeparam>
     /// <param name="lhs"></param>
@@ -23,7 +23,7 @@ public static class OptExtensions
     }
 
     /// <summary>
-    /// Calls <paramref name="some"/> if IsSome is true. Calls <paramref name="none"/> if IsSome is false;
+    /// Calls <paramref name="some"/> if IsSome is true. Calls <paramref name="none"/> if IsSome is false.
     /// </summary>
     /// <typeparam name="T"></typeparam>
     /// <param name="option"></param>
