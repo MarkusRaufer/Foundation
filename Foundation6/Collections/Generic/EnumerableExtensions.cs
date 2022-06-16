@@ -1167,7 +1167,6 @@ public static class EnumerableExtensions
     public static bool IsEqualTo<TKey, TValue>(
         [DisallowNull] this IEnumerable<KeyValuePair<TKey, TValue>> lhs,
         [DisallowNull] IEnumerable<KeyValuePair<TKey, TValue>> rhs)
-        where TKey : notnull
     {
         if (null == lhs) return null == rhs;
         if (null == rhs) return false;
@@ -1178,7 +1177,18 @@ public static class EnumerableExtensions
         {
             if (!itRhs.MoveNext()) return false;
 
-            if (!left.Key.Equals(itRhs.Current.Key) || !left.Value.EqualsNullable(itRhs.Current.Value)) return false;
+            var right = itRhs.Current;
+
+            if (null == left.Key)
+            {
+                if (null != right.Value) return false;
+            }
+            else
+            {
+                if (!left.Key.Equals(right.Key)) return false;
+            }
+
+            if (!left.Value.EqualsNullable(right.Value)) return false;
         }
 
         return !itRhs.MoveNext();
