@@ -313,7 +313,7 @@ public static class EnumerableExtensions
     /// <typeparam name="T"></typeparam>
     /// <param name="items"></param>
     /// <returns></returns>
-    public static IEnumerable<T> CycleEnumerate<T>([DisallowNull] this IEnumerable<T> items)
+    public static IEnumerable<T> Cycle<T>([DisallowNull] this IEnumerable<T> items)
     {
         return new CyclicEnumerable<T>(items);
     }
@@ -1985,20 +1985,20 @@ public static class EnumerableExtensions
     /// <typeparam name="T"></typeparam>
     /// <param name="items">items must be sorted</param>
     /// <param name="length">This is the permutation size.</param>
-    /// <param name="containsRepetitions">If true, it contains repetitions.</param>
+    /// <param name="repetitions">If true, it contains repetitions.</param>
     /// <returns></returns>
     public static IEnumerable<IEnumerable<T>> Permutations<T>(
         [DisallowNull] this IEnumerable<T> items,
         int length,
-        bool containsRepetitions = true)
+        bool repetitions = true)
     {
         items.ThrowIfNull();
 
         if (length == 1) return items.Select(t => new T[] { t });
 
-        if (containsRepetitions)
+        if (repetitions)
         {
-            return Permutations(items, length - 1, containsRepetitions)
+            return Permutations(items, length - 1, repetitions)
                         .SelectMany(t => items,
                                    (t1, t2) => t1.Concat(new T[] { t2 }));
         }

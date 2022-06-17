@@ -66,29 +66,18 @@ namespace Foundation.Collections.Generic
         {
             var numbers = Enumerable.Range(0, 5);
 
-            var tuples = new List<string>();
+            var tupleStrings = new List<string>();
 
-            foreach (var _ in numbers.Adjacent((lhs, rhs) => tuples.Add($"{lhs}, {rhs}")))
+            foreach (var _ in numbers.Adjacent((lhs, rhs) => tupleStrings.Add($"{lhs}, {rhs}")))
             {
             }
 
-            Assert.AreEqual(4, tuples.Count);
+            Assert.AreEqual(4, tupleStrings.Count);
 
-            var it = tuples.GetEnumerator();
-
-            Assert.IsTrue(it.MoveNext());
-            Assert.AreEqual("0, 1", it.Current);
-
-            Assert.IsTrue(it.MoveNext());
-            Assert.AreEqual("1, 2", it.Current);
-
-            Assert.IsTrue(it.MoveNext());
-            Assert.AreEqual("2, 3", it.Current);
-
-            Assert.IsTrue(it.MoveNext());
-            Assert.AreEqual("3, 4", it.Current);
-
-            Assert.IsFalse(it.MoveNext());
+            Assert.AreEqual("0, 1", tupleStrings[0]);
+            Assert.AreEqual("1, 2", tupleStrings[1]);
+            Assert.AreEqual("2, 3", tupleStrings[2]);
+            Assert.AreEqual("3, 4", tupleStrings[3]);
         }
 
         [Test]
@@ -246,29 +235,19 @@ namespace Foundation.Collections.Generic
         }
 
         [Test]
-        public void CyclicEnumerate()
+        public void Cycle()
         {
             var items = new List<string> { "A", "B", "C" };
 
-            var e = items.CycleEnumerate().GetEnumerator();
+            var elements = items.Cycle().Take(7).ToArray();
 
-            Assert.IsTrue(e.MoveNext());
-            Assert.AreEqual("A", e.Current);
-
-            Assert.IsTrue(e.MoveNext());
-            Assert.AreEqual("B", e.Current);
-
-            Assert.IsTrue(e.MoveNext());
-            Assert.AreEqual("C", e.Current);
-
-            Assert.IsTrue(e.MoveNext());
-            Assert.AreEqual("A", e.Current);
-
-            Assert.IsTrue(e.MoveNext());
-            Assert.AreEqual("B", e.Current);
-
-            Assert.IsTrue(e.MoveNext());
-            Assert.AreEqual("C", e.Current);
+            Assert.AreEqual("A", elements[0]);
+            Assert.AreEqual("B", elements[1]);
+            Assert.AreEqual("C", elements[2]);
+            Assert.AreEqual("A", elements[3]);
+            Assert.AreEqual("B", elements[4]);
+            Assert.AreEqual("C", elements[5]);
+            Assert.AreEqual("A", elements[6]);
         }
 
         [Test]
@@ -276,24 +255,12 @@ namespace Foundation.Collections.Generic
         {
             var items = new List<string> { "A", "B", "C", "D", "E" };
 
-            var enumerated = items.CycleEnumerate(1, 2).ToList();
-            var e = enumerated.GetEnumerator();
-            Assert.IsTrue(e.MoveNext());
-            Assert.AreEqual((1, "A"), e.Current);
-
-            Assert.IsTrue(e.MoveNext());
-            Assert.AreEqual((2, "B"), e.Current);
-
-            Assert.IsTrue(e.MoveNext());
-            Assert.AreEqual((1, "C"), e.Current);
-
-            Assert.IsTrue(e.MoveNext());
-            Assert.AreEqual((2, "D"), e.Current);
-
-            Assert.IsTrue(e.MoveNext());
-            Assert.AreEqual((1, "E"), e.Current);
-
-            Assert.IsFalse(e.MoveNext());
+            var enumerated = items.CycleEnumerate(1, 2).Take(5).ToArray();
+            Assert.AreEqual((1, "A"), enumerated[0]);
+            Assert.AreEqual((2, "B"), enumerated[1]);
+            Assert.AreEqual((1, "C"), enumerated[2]);
+            Assert.AreEqual((2, "D"), enumerated[3]);
+            Assert.AreEqual((1, "E"), enumerated[4]);
         }
 
         [Test]
