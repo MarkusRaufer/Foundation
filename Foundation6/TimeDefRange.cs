@@ -22,6 +22,18 @@ public class TimeDefRange : TimeDefVisitor
 
     public Opt<TimeDef> Smallest { get; private set; }
 
+    protected override void VisitDateSpan(TimeDef.DateSpan td)
+    {
+        SetGreatest(td);
+        SetSmallest(td);
+    }
+
+    protected override void VisitDateTimeSpan(TimeDef.DateTimeSpan td)
+    {
+        SetGreatest(td);
+        SetSmallest(td);
+    }
+
     protected override void VisitDay(TimeDef.Day td)
     {
         SetGreatest(td);
