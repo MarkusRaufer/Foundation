@@ -300,6 +300,19 @@ namespace Foundation.Collections.Generic
         }
 
         [Test]
+        public void Difference_Should_ReturnItemsFromLeftList_When_BothHave_SameElements_ButDifferentSize()
+        {
+            var items1 = new List<int> { 1, 1, 1, 1 };
+            var items2 = new List<int> { 1, 1, 2, 2, 3 };
+
+            // return items of both lists that don't match
+            var diff = items1.Difference(items2).ToArray();
+
+            Assert.AreEqual(5, diff.Length);
+            CollectionAssert.AreEqual(new[] { 1, 1, 2, 2, 3 }, diff);
+        }
+
+        [Test]
         public void Duplicates_DistinctIsFalse_WithMultipleDuplicateValues()
         {
             var items = new List<int> { 1, 2, 3, 4, 5, 2, 4, 2 };
@@ -1181,7 +1194,7 @@ namespace Foundation.Collections.Generic
                new DateTime(2017, 4, 13),
                new DateTime(2017, 5,  2),
                new DateTime(2017, 9,  3),
-               new DateTime(2018, 7,  1)
+               new DateTime(2018, 7,  1),
             };
 
             var dates2 = new List<DateTime>
@@ -1192,7 +1205,7 @@ namespace Foundation.Collections.Generic
                 new DateTime(2020, 4,  1)
             };
 
-            var (lhs, rhs) = dates1.Match(dates2, dt => new { dt.Day, dt.Month });
+            var (lhs, rhs) = dates1.Match(dates2, dt => new { dt.Month });
 
             var lhsFound = lhs.Single();
             Assert.AreEqual(new DateTime(2017, 4, 13), lhsFound);
@@ -1200,7 +1213,7 @@ namespace Foundation.Collections.Generic
             var rhsFound = rhs.ToArray();
             Assert.AreEqual(2, rhsFound.Length);
 
-            Assert.AreEqual(new DateTime(2020, 4, 29), rhsFound[0]);
+            Assert.AreEqual(new DateTime(2015, 4, 29), rhsFound[0]);
             Assert.AreEqual(new DateTime(2020, 4,  1), rhsFound[1]);
         }
 

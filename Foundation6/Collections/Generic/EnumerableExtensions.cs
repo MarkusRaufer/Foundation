@@ -359,11 +359,43 @@ public static class EnumerableExtensions
     /// <param name="lhs"></param>
     /// <param name="rhs"></param>
     /// <returns></returns>
-    public static IEnumerable<T> Difference<T>([DisallowNull] this IEnumerable<T> lhs, [DisallowNull] IEnumerable<T> rhs)
+    public static IEnumerable<T> Difference<T>(
+        [DisallowNull] this IEnumerable<T> lhs, 
+        [DisallowNull] IEnumerable<T> rhs,
+        bool ignoreDuplicates = false)
     {
-        var diff = new HashSet<T>(lhs);
-        diff.SymmetricExceptWith(rhs);
-        return diff;
+        if(ignoreDuplicates)
+        {
+            var diff = new HashSet<T>(lhs);
+            diff.SymmetricExceptWith(rhs);
+
+            foreach(var item in diff)
+            {
+                yield return item;
+            }
+
+            yield break;
+        }
+        {
+            var lhsGrouped = lhs.GroupBy(x => x).Select(grp => (key: grp.Key, count: grp.Count()));
+            var rhsGrouped = rhs.GroupBy(x => x).Select(grp => (key: grp.Key, count:grp.Count()));
+
+            var diff = new HashSet<(T, int)>(lhsGrouped);
+            diff.SymmetricExceptWith(rhsGrouped);
+
+            foreach (var grouped in diff.GroupBy(x => x.Item1).ToArray())
+            {
+                var tuples = grouped.ToArray();
+                var count = 1 == tuples.Length 
+                    ? tuples.First().Item2 
+                    : Math.Abs(tuples[0].Item2 - tuples[1].Item2);
+
+                for (var i = 0; i < count; i++)
+                {
+                    yield return grouped.Key;
+                }
+            }
+        }
     }
 
     /// <summary>
@@ -451,7 +483,6 @@ public static class EnumerableExtensions
     public static IEnumerable<(T item, int counter)> Enumerate<T>([DisallowNull] this IEnumerable<T> items, int seed = 0)
     {
         var i = seed;
-
         return Enumerate(items, (item) => i++);
     }
 
@@ -1150,16 +1181,17 @@ public static class EnumerableExtensions
         if (null == lhs) return null == rhs;
         if (null == rhs) return false;
 
-        var itRhs = rhs.GetEnumerator();
+        return !lhs.Difference(rhs).Any();
+        //var itRhs = rhs.GetEnumerator();
 
-        foreach (var left in lhs)
-        {
-            if (!itRhs.MoveNext()) return false;
+        //foreach (var left in lhs)
+        //{
+        //    if (!itRhs.MoveNext()) return false;
 
-            if (!left.EqualsNullable(itRhs.Current)) return false;
-        }
+        //    if (!left.EqualsNullable(itRhs.Current)) return false;
+        //}
 
-        return !itRhs.MoveNext();
+        //return !itRhs.MoveNext();
     }
 
     /// <summary>
@@ -1223,13 +1255,13 @@ public static class EnumerableExtensions
     {
         rhs.ThrowIfNull();
 
-        var itLhs = lhs.GetEnumerator();
         var itRhs = rhs.GetEnumerator();
-        while (itLhs.MoveNext())
+        foreach(var left in lhs)
         {
             if (!itRhs.MoveNext()) return false;
 
-            if (!itLhs.Current.EqualsNullable(itRhs.Current)) return false;
+            if (!left.EqualsNullable(itRhs.Current)) return false;
+
         }
 
         return !itRhs.MoveNext();
@@ -1338,8 +1370,9 @@ public static class EnumerableExtensions
         rhs.ThrowIfNull();
         keySelector.ThrowIfNull();
 
-        var lhsTuples = lhs.Enumerate();
-        var rhsTuples = rhs.Enumerate();
+        var lhsTuples = lhs.Enumerate().ToArray();
+        var rhsTuples = rhs.Enumerate().ToArray();
+
         var tuples = from left in lhsTuples
                      join right in rhsTuples on keySelector(left.item) equals keySelector(right.item)
                      select (left, right);
