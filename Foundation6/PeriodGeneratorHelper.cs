@@ -51,7 +51,7 @@ public class PeriodGeneratorHelper
 
     public static IPeriodGenerator Day(TimeDef.Day day)
     {
-        return Day(day.Values.ToArray());
+        return Day(day.DayOfMonth);
     }
 
     public static IPeriodGenerator Days(int days)
@@ -69,7 +69,7 @@ public class PeriodGeneratorHelper
 
     public static IPeriodGenerator Days(TimeDef.Days days)
     {
-        return Days(days.Value);
+        return Days(days.Quantity);
     }
 
     public static IPeriodGenerator Hour(params int[] hour)
@@ -79,7 +79,7 @@ public class PeriodGeneratorHelper
 
     public static IPeriodGenerator Hour(TimeDef.Hour hour)
     {
-        return Hour(hour.Values.ToArray());
+        return Hour(hour.HourOfDay);
     }
 
     public static IPeriodGenerator Hours(int hours)
@@ -97,7 +97,7 @@ public class PeriodGeneratorHelper
 
     public static IPeriodGenerator Hours(TimeDef.Hours hours)
     {
-        return Hours(hours.Value);
+        return Hours(hours.Quantity);
     }
 
     public static IPeriodGenerator Minute(params int[] minute)
@@ -107,7 +107,7 @@ public class PeriodGeneratorHelper
 
     public static IPeriodGenerator Minute(TimeDef.Minute minute)
     {
-        return Minute(minute.Values.ToArray());
+        return Minute(minute.MinuteOfHour);
     }
 
     public static IPeriodGenerator Minutes(int minutes)
@@ -125,7 +125,7 @@ public class PeriodGeneratorHelper
 
     public static IPeriodGenerator Minutes(TimeDef.Minutes minutes)
     {
-        return Minutes(minutes.Value);
+        return Minutes(minutes.Quantity);
     }
 
     public static IPeriodGenerator Month(params Month[] month)
@@ -136,7 +136,7 @@ public class PeriodGeneratorHelper
 
     public static IPeriodGenerator Month(TimeDef.Month month)
     {
-        return Month(month.Values.ToArray());
+        return Month(month.MonthOfYear);
     }
 
     public static IPeriodGenerator Months(int months)
@@ -154,7 +154,7 @@ public class PeriodGeneratorHelper
 
     public static IPeriodGenerator Months(TimeDef.Months months)
     {
-        return Months(months.Value);
+        return Months(months.Quantity);
     }
 
     public static IPeriodGenerator Not(IPeriodGenerator all, IPeriodGenerator not)
@@ -171,7 +171,7 @@ public class PeriodGeneratorHelper
     {
         return new PeriodGenerator(period =>
         {
-            var allPeriods = PeriodGenerator.GeneratePeriodsFromSmallestTimeDef(td, period);
+            var allPeriods = PeriodGenerator.GeneratePeriods(td, period);
             var notPeriods = CreateGenerator(td).GeneratePeriods(period);
             return allPeriods.Except(notPeriods);
         });
@@ -234,7 +234,7 @@ public class PeriodGeneratorHelper
 
     public static IPeriodGenerator Week(TimeDef.WeekOfMonth weekOfMonth)
     {
-        return Week(weekOfMonth.WeekStartsWith, weekOfMonth.Values.ToArray());
+        return Week(weekOfMonth.WeekStartsWith, weekOfMonth.Week);
     }
 
     public static IPeriodGenerator Weekday(params DayOfWeek[] weekday)
@@ -244,7 +244,7 @@ public class PeriodGeneratorHelper
 
     public static IPeriodGenerator Weekday(TimeDef.Weekday weekday)
     {
-        return Weekday(weekday.Values.ToArray());
+        return Weekday(weekday.DayOfWeek);
     }
 
     public static IPeriodGenerator Weeks(int weeks, DayOfWeek start)
@@ -265,7 +265,7 @@ public class PeriodGeneratorHelper
 
     public static IPeriodGenerator Weeks(TimeDef.Weeks weeks)
     {
-        return Weeks(weeks.Value, weeks.WeekStartsWith);
+        return Weeks(weeks.Quantity, weeks.WeekStartsWith);
     }
 
     public static IPeriodGenerator Year(params int[] year)
@@ -278,7 +278,7 @@ public class PeriodGeneratorHelper
 
     public static IPeriodGenerator Year(TimeDef.Year year)
     {
-        return Year(year.Values.ToArray());
+        return Year(year.YearOfDate);
     }
 
     public static IPeriodGenerator Years(int years)
@@ -294,6 +294,6 @@ public class PeriodGeneratorHelper
 
     public static IPeriodGenerator Years(TimeDef.Years years)
     {
-        return Years(years.Value);
+        return Years(years.Quantity);
     }
 }

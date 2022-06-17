@@ -31,17 +31,17 @@ public static class TimeDefExtensions
             TimeDef.DateTimeSpan l => rhs is TimeDef.DateTimeSpan r
                                       && Equals(l.From, r.From)
                                       && Equals(l.To, r.To),
-            TimeDef.Day l => rhs is TimeDef.Day r && equals(l.Values, r.Values),
-            TimeDef.Days l => rhs is TimeDef.Days r && l.Value == r.Value,
+            TimeDef.Day l => rhs is TimeDef.Day r && equals(l.DayOfMonth, r.DayOfMonth),
+            TimeDef.Days l => rhs is TimeDef.Days r && l.Quantity == r.Quantity,
             TimeDef.Difference l => rhs is TimeDef.Difference r
                                     && Equals(l.Lhs, r.Lhs)
                                     && Equals(l.Rhs, r.Rhs),
-            TimeDef.Hour l => rhs is TimeDef.Hour r && equals(l.Values, r.Values),
-            TimeDef.Hours l => rhs is TimeDef.Hours r && l.Value == r.Value,
-            TimeDef.Minute l => rhs is TimeDef.Minute r && equals(l.Values, r.Values),
-            TimeDef.Minutes l => rhs is TimeDef.Minutes r && l.Value == r.Value,
-            TimeDef.Month l => rhs is TimeDef.Month r && equals(l.Values, r.Values),
-            TimeDef.Months l => rhs is TimeDef.Months r && l.Value == r.Value,
+            TimeDef.Hour l => rhs is TimeDef.Hour r && equals(l.HourOfDay, r.HourOfDay),
+            TimeDef.Hours l => rhs is TimeDef.Hours r && l.Quantity == r.Quantity,
+            TimeDef.Minute l => rhs is TimeDef.Minute r && equals(l.MinuteOfHour, r.MinuteOfHour),
+            TimeDef.Minutes l => rhs is TimeDef.Minutes r && l.Quantity == r.Quantity,
+            TimeDef.Month l => rhs is TimeDef.Month r && equals(l.MonthOfYear, r.MonthOfYear),
+            TimeDef.Months l => rhs is TimeDef.Months r && l.Quantity == r.Quantity,
             TimeDef.Not l => rhs is TimeDef.Not r && Equals(l.TimeDef, r.TimeDef),
             TimeDef.Or l => rhs is TimeDef.Or r
                             && Equals(l.Lhs, r.Lhs)
@@ -52,15 +52,15 @@ public static class TimeDefExtensions
             TimeDef.Union l => rhs is TimeDef.Union r
                                && Equals(l.Lhs, r.Lhs)
                                && Equals(l.Rhs, r.Rhs),
-            TimeDef.Weekday l => rhs is TimeDef.Weekday r && equals(l.Values, r.Values),
+            TimeDef.Weekday l => rhs is TimeDef.Weekday r && equals(l.DayOfWeek, r.DayOfWeek),
             TimeDef.WeekOfMonth l => rhs is TimeDef.WeekOfMonth r
-                                     && equals(l.Values, r.Values)
+                                     && equals(l.Week, r.Week)
                                      && l.WeekStartsWith == r.WeekStartsWith,
             TimeDef.Weeks l => rhs is TimeDef.Weeks r
-                               && l.Value == r.Value
+                               && l.Quantity == r.Quantity
                                && l.WeekStartsWith == r.WeekStartsWith,
-            TimeDef.Year l => rhs is TimeDef.Year r && equals(l.Values, r.Values),
-            TimeDef.Years l => rhs is TimeDef.Years r && l.Value == r.Value,
+            TimeDef.Year l => rhs is TimeDef.Year r && equals(l.YearOfDate, r.YearOfDate),
+            TimeDef.Years l => rhs is TimeDef.Years r && l.Quantity == r.Quantity,
             _ => throw new NotImplementedException($"{lhs}")
         };
     }

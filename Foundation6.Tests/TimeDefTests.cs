@@ -16,9 +16,9 @@ namespace Foundation
 
             var sut = new TimeDef.And(
                         new TimeDef.And(
-                            new TimeDef.Year(year),
-                            new TimeDef.Month(month)),
-                        new TimeDef.Day(day));
+                            new TimeDef.Year(new[] { year }),
+                            new TimeDef.Month(new[] { month })),
+                        new TimeDef.Day(new[] { day }));
 
             if (sut.Lhs is not TimeDef.And @and)
             {
@@ -31,14 +31,14 @@ namespace Foundation
                 Assert.Fail();
                 return;
             }
-            Assert.AreEqual(year, tdYear.Values.Single());
+            Assert.AreEqual(year, tdYear.YearOfDate.Single());
 
             if (@and.Rhs is not TimeDef.Month tdMonth)
             {
                 Assert.Fail();
                 return;
             }
-            Assert.AreEqual(month, tdMonth.Values.Single());
+            Assert.AreEqual(month, tdMonth.MonthOfYear.Single());
 
             if (sut.Rhs is not TimeDef.Day tdDay)
             {
@@ -46,7 +46,7 @@ namespace Foundation
                 return;
             }
 
-            Assert.AreEqual(day, tdDay.Values.Single());
+            Assert.AreEqual(day, tdDay.DayOfMonth.Single());
         }
 
         [Test]
@@ -58,15 +58,15 @@ namespace Foundation
 
             var sut1 = new TimeDef.And(
                         new TimeDef.And(
-                            new TimeDef.Year(year),
-                            new TimeDef.Month(month)),
-                        new TimeDef.Day(day));
+                            new TimeDef.Year(new[] { year }),
+                            new TimeDef.Month(new[] { month })),
+                        new TimeDef.Day(new[] { day }));
 
             var sut2 = new TimeDef.And(
                         new TimeDef.And(
-                            new TimeDef.Year(year),
-                            new TimeDef.Month(month)),
-                        new TimeDef.Day(day));
+                            new TimeDef.Year(new[] { year }),
+                            new TimeDef.Month(new[] { month })),
+                        new TimeDef.Day(new[] { day }));
 
             var result = sut1.Equals(sut2);
             Assert.IsTrue(result);
@@ -76,17 +76,35 @@ namespace Foundation
         public void Equals_Should_ReturnTrue_When_And_HasSameValue()
         {
             {
-                var sut1 = new TimeDef.And(new TimeDef.Day(2), new TimeDef.Day(3));
-                var sut2 = new TimeDef.And(new TimeDef.Day(2), new TimeDef.Day(3));
+                var sut1 = new TimeDef.And(new TimeDef.Day(new[] { 2 }), new TimeDef.Day(new[] { 3 }));
+                var sut2 = new TimeDef.And(new TimeDef.Day(new[] { 2 }), new TimeDef.Day(new[] { 3 }));
 
                 Assert.AreEqual(sut1.GetHashCode(), sut2.GetHashCode());
 
             }
             {
-                TimeDef sut1 = new TimeDef.And(new TimeDef.Day(2), new TimeDef.Day(3));
-                TimeDef sut2 = new TimeDef.And(new TimeDef.Day(2), new TimeDef.Day(3));
+                TimeDef sut1 = new TimeDef.And(new TimeDef.Day(new[] { 2 }), new TimeDef.Day(new[] { 3 }));
+                TimeDef sut2 = new TimeDef.And(new TimeDef.Day(new[] { 2 }), new TimeDef.Day(new[] { 3 }));
 
                 Assert.AreEqual(sut1.GetHashCode(), sut2.GetHashCode());
+            }
+        }
+
+        [Test]
+        public void Equals_Should_ReturnTrue_When_DateSpan_HasSameValue()
+        {
+            var from = new DateOnly(2015, 1, 1);
+            var to = new DateOnly(2015, 3, 1);
+
+            {
+                var sut1 = new TimeDef.DateSpan(from, to);
+                var sut2 = new TimeDef.DateSpan(from, to);
+
+                Assert.IsTrue(sut1.Equals(sut2));
+                Assert.IsTrue(sut1 == sut2);
+
+                Assert.IsTrue(sut2.Equals(sut1));
+                Assert.IsTrue(sut2 == sut1);
             }
         }
 
@@ -116,15 +134,15 @@ namespace Foundation
         public void Equals_Should_ReturnTrue_When_Day_HasSameValue()
         {
             {
-                var sut1 = new TimeDef.Day(2);
-                var sut2 = new TimeDef.Day(2);
+                var sut1 = new TimeDef.Day(new[] { 2 });
+                var sut2 = new TimeDef.Day(new[] { 2 });
 
                 Assert.IsTrue(sut1.Equals(sut2));
                 Assert.IsTrue(sut1 == sut2);
             }
             {
-                TimeDef sut1 = new TimeDef.Day(2);
-                TimeDef sut2 = new TimeDef.Day(2);
+                TimeDef sut1 = new TimeDef.Day(new[] { 2 });
+                TimeDef sut2 = new TimeDef.Day(new[] { 2 });
 
                 Assert.IsTrue(sut1.Equals(sut2));
                 Assert.IsTrue(sut1 == sut2);
@@ -153,8 +171,8 @@ namespace Foundation
         [Test]
         public void Equals_Should_ReturnTrue_When_Difference_HasSameValue()
         {
-            var days2 = new TimeDef.Day(2);
-            var days3 = new TimeDef.Day(3);
+            var days2 = new TimeDef.Day(new[] { 2 });
+            var days3 = new TimeDef.Day(new[] { 3 });
 
             {
                 var sut1 = new TimeDef.Difference(days2, days3);
@@ -176,15 +194,15 @@ namespace Foundation
         public void Equals_Should_ReturnTrue_When_Hour_HasSameValue()
         {
             {
-                var sut1 = new TimeDef.Hour(8, 13);
-                var sut2 = new TimeDef.Hour(8, 13);
+                var sut1 = new TimeDef.Hour(new[] { 8, 13 });
+                var sut2 = new TimeDef.Hour(new[] { 8, 13 });
 
                 Assert.IsTrue(sut1.Equals(sut2));
                 Assert.IsTrue(sut1 == sut2);
             }
             {
-                TimeDef sut1 = new TimeDef.Hour(8, 13);
-                TimeDef sut2 = new TimeDef.Hour(8, 13);
+                TimeDef sut1 = new TimeDef.Hour(new[] { 8, 13 });
+                TimeDef sut2 = new TimeDef.Hour(new[] { 8, 13 });
 
                 Assert.IsTrue(sut1.Equals(sut2));
                 Assert.IsTrue(sut1 == sut2);
@@ -214,15 +232,15 @@ namespace Foundation
         public void Equals_Should_ReturnTrue_When_Minute_HasSameValue()
         {
             {
-                var sut1 = new TimeDef.Minute(15, 45);
-                var sut2 = new TimeDef.Minute(15, 45);
+                var sut1 = new TimeDef.Minute(new[] { 15, 45 });
+                var sut2 = new TimeDef.Minute(new[] { 15, 45 });
 
                 Assert.IsTrue(sut1.Equals(sut2));
                 Assert.IsTrue(sut1 == sut2);
             }
             {
-                TimeDef sut1 = new TimeDef.Minute(15, 45);
-                TimeDef sut2 = new TimeDef.Minute(15, 45);
+                TimeDef sut1 = new TimeDef.Minute(new[] { 15, 45 });
+                TimeDef sut2 = new TimeDef.Minute(new[] { 15, 45 });
 
                 Assert.IsTrue(sut1.Equals(sut2));
                 Assert.IsTrue(sut1 == sut2);
@@ -252,15 +270,22 @@ namespace Foundation
         public void Equals_Should_ReturnTrue_When_Month_HasSameValue()
         {
             {
-                var sut1 = new TimeDef.Month(Month.Apr, Month.Jul);
-                var sut2 = new TimeDef.Month(Month.Apr, Month.Jul);
+                var sut1 = new TimeDef.Month(new[] { Month.Apr, Month.Jul });
+                var sut2 = new TimeDef.Month(new[] { Month.Apr, Month.Jul });
+
+                var gen = new TimeDefPeriodGenerator();
+
+                var now = DateTime.Now;
+                var end = now.AddDays(10);
+
+                var items = gen.Days(sut1, Period.New(now, end)).ToArray();
 
                 Assert.IsTrue(sut1.Equals(sut2));
                 Assert.IsTrue(sut1 == sut2); 
             }
             {
-                TimeDef sut1 = new TimeDef.Month(Month.Apr, Month.Jul);
-                TimeDef sut2 = new TimeDef.Month(Month.Apr, Month.Jul);
+                TimeDef sut1 = new TimeDef.Month(new[] { Month.Apr, Month.Jul });
+                TimeDef sut2 = new TimeDef.Month(new[] { Month.Apr, Month.Jul });
 
                 Assert.IsTrue(sut1.Equals(sut2));
                 Assert.IsTrue(sut1 == sut2);
@@ -289,7 +314,7 @@ namespace Foundation
         [Test]
         public void Equals_Should_ReturnTrue_When_Not_HasSameValue()
         {
-            var day = new TimeDef.Day(2);
+            var day = new TimeDef.Day(new[] { 2 });
 
             {
                 var sut1 = new TimeDef.Not(day);
@@ -310,8 +335,8 @@ namespace Foundation
         [Test]
         public void Equals_Should_ReturnTrue_When_Or_HasSameValue()
         {
-            var day2 = new TimeDef.Day(2);
-            var day3 = new TimeDef.Day(3);
+            var day2 = new TimeDef.Day(new[] { 2 });
+            var day3 = new TimeDef.Day(new[] { 3 });
 
             {
                 var sut1 = new TimeDef.Or(day2, day3);
@@ -354,8 +379,8 @@ namespace Foundation
         [Test]
         public void Equals_Should_ReturnTrue_When_Union_HasSameValue()
         {
-            var day2 = new TimeDef.Day(2);
-            var day3 = new TimeDef.Day(3);
+            var day2 = new TimeDef.Day(new[] { 2 });
+            var day3 = new TimeDef.Day(new[] { 3 });
 
             {
                 var sut1 = new TimeDef.Union(day2, day3);
@@ -377,15 +402,15 @@ namespace Foundation
         public void Equals_Should_ReturnTrue_When_Weekday_HasSameValue()
         {
             {
-                var sut1 = new TimeDef.Weekday(DayOfWeek.Monday, DayOfWeek.Wednesday);
-                var sut2 = new TimeDef.Weekday(DayOfWeek.Monday, DayOfWeek.Wednesday);
+                var sut1 = new TimeDef.Weekday(new[] { DayOfWeek.Monday, DayOfWeek.Wednesday });
+                var sut2 = new TimeDef.Weekday(new[] { DayOfWeek.Monday, DayOfWeek.Wednesday });
 
                 Assert.IsTrue(sut1.Equals(sut2));
                 Assert.IsTrue(sut1 == sut2); 
             }
             {
-                TimeDef sut1 = new TimeDef.Weekday(DayOfWeek.Monday, DayOfWeek.Wednesday);
-                TimeDef sut2 = new TimeDef.Weekday(DayOfWeek.Monday, DayOfWeek.Wednesday);
+                TimeDef sut1 = new TimeDef.Weekday(new[] { DayOfWeek.Monday, DayOfWeek.Wednesday });
+                TimeDef sut2 = new TimeDef.Weekday(new[] { DayOfWeek.Monday, DayOfWeek.Wednesday });
 
                 Assert.IsTrue(sut1.Equals(sut2));
                 Assert.IsTrue(sut1 == sut2);
@@ -396,15 +421,15 @@ namespace Foundation
         public void Equals_Should_ReturnTrue_When_WeekOfMonth_HasSameValue()
         {
             {
-                var sut1 = new TimeDef.WeekOfMonth(DayOfWeek.Monday, 2);
-                var sut2 = new TimeDef.WeekOfMonth(DayOfWeek.Monday, 2);
+                var sut1 = new TimeDef.WeekOfMonth(DayOfWeek.Monday, new[] { 2 });
+                var sut2 = new TimeDef.WeekOfMonth(DayOfWeek.Monday, new[] { 2 });
 
                 Assert.IsTrue(sut1.Equals(sut2));
                 Assert.IsTrue(sut1 == sut2); 
             }
             {
-                TimeDef sut1 = new TimeDef.WeekOfMonth(DayOfWeek.Monday, 2);
-                TimeDef sut2 = new TimeDef.WeekOfMonth(DayOfWeek.Monday, 2);
+                TimeDef sut1 = new TimeDef.WeekOfMonth(DayOfWeek.Monday, new[] { 2 });
+                TimeDef sut2 = new TimeDef.WeekOfMonth(DayOfWeek.Monday, new[] { 2 });
 
                 Assert.IsTrue(sut1.Equals(sut2));
                 Assert.IsTrue(sut1 == sut2);
@@ -435,15 +460,15 @@ namespace Foundation
         public void Equals_Should_ReturnTrue_When_Year_HasSameValue()
         {
             {
-                var sut1 = new TimeDef.Year(2015, 2016);
-                var sut2 = new TimeDef.Year(2015, 2016);
+                var sut1 = new TimeDef.Year(new[] { 2015, 2016 });
+                var sut2 = new TimeDef.Year(new[] { 2015, 2016 });
 
                 Assert.IsTrue(sut1.Equals(sut2));
                 Assert.IsTrue(sut1 == sut2); 
             }
             {
-                TimeDef sut1 = new TimeDef.Year(2015, 2016);
-                TimeDef sut2 = new TimeDef.Year(2015, 2016);
+                TimeDef sut1 = new TimeDef.Year(new[] { 2015, 2016 });
+                TimeDef sut2 = new TimeDef.Year(new[] { 2015, 2016 });
 
                 Assert.IsTrue(sut1.Equals(sut2));
                 Assert.IsTrue(sut1 == sut2);
@@ -473,17 +498,40 @@ namespace Foundation
         public void GetHashCode_Should_ReturnSameHashCode_When_And_HasSameValue()
         {
             {
-                var sut1 = new TimeDef.And(new TimeDef.Day(2), new TimeDef.Day(3));
-                var sut2 = new TimeDef.And(new TimeDef.Day(2), new TimeDef.Day(3));
+                var sut1 = new TimeDef.And(new TimeDef.Day(new[] { 2 }), new TimeDef.Day(new[] { 3 }));
+                var sut2 = new TimeDef.And(new TimeDef.Day(new[] { 2 }), new TimeDef.Day(new[] { 3 }));
 
                 Assert.AreEqual(sut1.GetHashCode(), sut2.GetHashCode()); 
             }
             {
-                TimeDef sut1 = new TimeDef.And(new TimeDef.Day(2), new TimeDef.Day(3));
-                TimeDef sut2 = new TimeDef.And(new TimeDef.Day(2), new TimeDef.Day(3));
+                TimeDef sut1 = new TimeDef.And(new TimeDef.Day(new[] { 2 }), new TimeDef.Day(new[] { 3 }));
+                TimeDef sut2 = new TimeDef.And(new TimeDef.Day(new[] { 2 }), new TimeDef.Day(new[] { 3 }));
 
                 Assert.AreEqual(sut1.GetHashCode(), sut2.GetHashCode());
             }
+        }
+
+        [Test]
+        public void GetHashCode_Should_ReturnSameHashCode_When_ComplexTimeDef_HasSameValue()
+        {
+            var year = 2016;
+            var month = Month.Jul;
+            var day = 18;
+
+            var sut1 = new TimeDef.And(
+                        new TimeDef.And(
+                            new TimeDef.Year(new[] { year }),
+                            new TimeDef.Month(new[] { month })),
+                        new TimeDef.Day(new[] { day }));
+
+            var sut2 = new TimeDef.And(
+                        new TimeDef.And(
+                            new TimeDef.Year(new[] { year }),
+                            new TimeDef.Month(new[] { month })),
+                        new TimeDef.Day(new[] { day }));
+
+            var result = sut1.GetHashCode().Equals(sut2.GetHashCode());
+            Assert.IsTrue(result);
         }
 
         [Test]
@@ -510,14 +558,14 @@ namespace Foundation
         public void GetHashCode_Should_ReturnSameHashCode_When_Day_HasSameValue()
         {
             {
-                var sut1 = new TimeDef.Day(2);
-                var sut2 = new TimeDef.Day(2);
+                var sut1 = new TimeDef.Day(new[] { 2 });
+                var sut2 = new TimeDef.Day(new[] { 2 });
 
                 Assert.AreEqual(sut1.GetHashCode(), sut2.GetHashCode()); 
             }
             {
-                TimeDef sut1 = new TimeDef.Day(2);
-                TimeDef sut2 = new TimeDef.Day(2);
+                TimeDef sut1 = new TimeDef.Day(new[] { 2 });
+                TimeDef sut2 = new TimeDef.Day(new[] { 2 });
 
                 Assert.AreEqual(sut1.GetHashCode(), sut2.GetHashCode());
             }
@@ -543,8 +591,8 @@ namespace Foundation
         [Test]
         public void GetHashCode_Should_ReturnSameHashCode_When_Difference_HasSameValue()
         {
-            var days2 = new TimeDef.Day(2);
-            var days3 = new TimeDef.Day(3);
+            var days2 = new TimeDef.Day(new[] { 2 });
+            var days3 = new TimeDef.Day(new[] { 3 });
 
             {
                 var sut1 = new TimeDef.Difference(days2, days3);
@@ -564,14 +612,14 @@ namespace Foundation
         public void GetHashCode_Should_ReturnSameHashCode_When_Hour_HasSameValue()
         {
             {
-                var sut1 = new TimeDef.Hour(8, 13);
-                var sut2 = new TimeDef.Hour(8, 13);
+                var sut1 = new TimeDef.Hour(new[] { 8, 13 });
+                var sut2 = new TimeDef.Hour(new[] { 8, 13 });
 
                 Assert.AreEqual(sut1.GetHashCode(), sut2.GetHashCode()); 
             }
             {
-                TimeDef sut1 = new TimeDef.Hour(8, 13);
-                TimeDef sut2 = new TimeDef.Hour(8, 13);
+                TimeDef sut1 = new TimeDef.Hour(new[] { 8, 13 });
+                TimeDef sut2 = new TimeDef.Hour(new[] { 8, 13 });
 
                 Assert.AreEqual(sut1.GetHashCode(), sut2.GetHashCode());
             }
@@ -598,14 +646,14 @@ namespace Foundation
         public void GetHashCode_Should_ReturnSameHashCode_When_Minute_HasSameValue()
         {
             {
-                var sut1 = new TimeDef.Minute(15, 45);
-                var sut2 = new TimeDef.Minute(15, 45);
+                var sut1 = new TimeDef.Minute(new[] { 15, 45 });
+                var sut2 = new TimeDef.Minute(new[] { 15, 45 });
 
                 Assert.AreEqual(sut1.GetHashCode(), sut2.GetHashCode()); 
             }
             {
-                TimeDef sut1 = new TimeDef.Minute(15, 45);
-                TimeDef sut2 = new TimeDef.Minute(15, 45);
+                TimeDef sut1 = new TimeDef.Minute(new[] { 15, 45 });
+                TimeDef sut2 = new TimeDef.Minute(new[] { 15, 45 });
 
                 Assert.AreEqual(sut1.GetHashCode(), sut2.GetHashCode());
             }
@@ -632,14 +680,14 @@ namespace Foundation
         public void GetHashCode_Should_ReturnSameHashCode_When_Month_HasSameValue()
         {
             {
-                var sut1 = new TimeDef.Month(Month.Apr, Month.Jul);
-                var sut2 = new TimeDef.Month(Month.Apr, Month.Jul);
+                var sut1 = new TimeDef.Month(new[] { Month.Apr, Month.Jul });
+                var sut2 = new TimeDef.Month(new[] { Month.Apr, Month.Jul });
 
                 Assert.AreEqual(sut1.GetHashCode(), sut2.GetHashCode()); 
             }
             {
-                TimeDef sut1 = new TimeDef.Month(Month.Apr, Month.Jul);
-                TimeDef sut2 = new TimeDef.Month(Month.Apr, Month.Jul);
+                TimeDef sut1 = new TimeDef.Month(new[] { Month.Apr, Month.Jul });
+                TimeDef sut2 = new TimeDef.Month(new[] { Month.Apr, Month.Jul });
 
                 Assert.AreEqual(sut1.GetHashCode(), sut2.GetHashCode());
             }
@@ -665,7 +713,7 @@ namespace Foundation
         [Test]
         public void GetHashCode_Should_ReturnSameHashCode_When_Not_HasSameValue()
         {
-            var day = new TimeDef.Day(2);
+            var day = new TimeDef.Day(new[] { 2 });
 
             {
                 var sut1 = new TimeDef.Not(day);
@@ -684,8 +732,8 @@ namespace Foundation
         [Test]
         public void GetHashCode_Should_ReturnSameHashCode_When_Or_HasSameValue()
         {
-            var day2 = new TimeDef.Day(2);
-            var day3 = new TimeDef.Day(3);
+            var day2 = new TimeDef.Day(new[] { 2 });
+            var day3 = new TimeDef.Day(new[] { 3 });
 
             {
                 var sut1 = new TimeDef.Or(day2, day3);
@@ -724,8 +772,8 @@ namespace Foundation
         [Test]
         public void GetHashCode_Should_ReturnSameHashCode_When_Union_HasSameValue()
         {
-            var day2 = new TimeDef.Day(2);
-            var day3 = new TimeDef.Day(3);
+            var day2 = new TimeDef.Day(new[] { 2 });
+            var day3 = new TimeDef.Day(new[] { 3 });
 
             {
                 var sut1 = new TimeDef.Union(day2, day3);
@@ -745,14 +793,14 @@ namespace Foundation
         public void GetHashCode_Should_ReturnSameHashCode_When_Weekday_HasSameValue()
         {
             {
-                var sut1 = new TimeDef.Weekday(DayOfWeek.Monday, DayOfWeek.Wednesday);
-                var sut2 = new TimeDef.Weekday(DayOfWeek.Monday, DayOfWeek.Wednesday);
+                var sut1 = new TimeDef.Weekday(new[] { DayOfWeek.Monday, DayOfWeek.Wednesday });
+                var sut2 = new TimeDef.Weekday(new[] { DayOfWeek.Monday, DayOfWeek.Wednesday });
 
                 Assert.AreEqual(sut1.GetHashCode(), sut2.GetHashCode()); 
             }
             {
-                TimeDef sut1 = new TimeDef.Weekday(DayOfWeek.Monday, DayOfWeek.Wednesday);
-                TimeDef sut2 = new TimeDef.Weekday(DayOfWeek.Monday, DayOfWeek.Wednesday);
+                TimeDef sut1 = new TimeDef.Weekday(new[] { DayOfWeek.Monday, DayOfWeek.Wednesday });
+                TimeDef sut2 = new TimeDef.Weekday(new[] { DayOfWeek.Monday, DayOfWeek.Wednesday });
 
                 Assert.AreEqual(sut1.GetHashCode(), sut2.GetHashCode());
             }
@@ -762,14 +810,14 @@ namespace Foundation
         public void GetHashCode_Should_ReturnSameHashCode_When_WeekOfMonth_HasSameValue()
         {
             {
-                var sut1 = new TimeDef.WeekOfMonth(DayOfWeek.Monday, 2);
-                var sut2 = new TimeDef.WeekOfMonth(DayOfWeek.Monday, 2);
+                var sut1 = new TimeDef.WeekOfMonth(DayOfWeek.Monday, new[] { 2 });
+                var sut2 = new TimeDef.WeekOfMonth(DayOfWeek.Monday, new[] { 2 });
 
                 Assert.AreEqual(sut1.GetHashCode(), sut2.GetHashCode()); 
             }
             {
-                TimeDef sut1 = new TimeDef.WeekOfMonth(DayOfWeek.Monday, 2);
-                TimeDef sut2 = new TimeDef.WeekOfMonth(DayOfWeek.Monday, 2);
+                TimeDef sut1 = new TimeDef.WeekOfMonth(DayOfWeek.Monday, new[] { 2 });
+                TimeDef sut2 = new TimeDef.WeekOfMonth(DayOfWeek.Monday, new[] { 2 });
 
                 Assert.AreEqual(sut1.GetHashCode(), sut2.GetHashCode());
             }
@@ -796,14 +844,14 @@ namespace Foundation
         public void GetHashCode_Should_ReturnSameHashCode_When_Year_HasSameValue()
         {
             {
-                var sut1 = new TimeDef.Year(2015, 2016);
-                var sut2 = new TimeDef.Year(2015, 2016);
+                var sut1 = new TimeDef.Year(new[] { 2015, 2016 });
+                var sut2 = new TimeDef.Year(new[] { 2015, 2016 });
 
                 Assert.AreEqual(sut1.GetHashCode(), sut2.GetHashCode()); 
             }
             {
-                TimeDef sut1 = new TimeDef.Year(2015, 2016);
-                TimeDef sut2 = new TimeDef.Year(2015, 2016);
+                TimeDef sut1 = new TimeDef.Year(new[] { 2015, 2016 });
+                TimeDef sut2 = new TimeDef.Year(new[] { 2015, 2016 });
 
                 Assert.AreEqual(sut1.GetHashCode(), sut2.GetHashCode());
             }
