@@ -30,16 +30,10 @@ namespace Foundation
         public void Invoke_ShouldCallAllSubscriptions_When_Multiple_Actions_Subscribed()
         {
             var executed1 = false;
-            void func1()
-            {
-                executed1 = true;
-            }
+            void func1() => executed1 = true;
 
             var executed2 = false;
-            void func2()
-            {
-                executed2 = true;
-            }
+            void func2() => executed2 = true;
 
             // leaving the scope unregisters all subscriptions automatically.
             using var sut = new Event<Action>();
