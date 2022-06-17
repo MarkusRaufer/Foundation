@@ -18,22 +18,22 @@ public static class DateTimeExtensions
 
     public static DateTime EndOfDay(this DateTime dateTime)
     {
-        return new DateTime(dateTime.Year, dateTime.Month, dateTime.Day).AddDays(1);
+        return new DateTime(dateTime.Year, dateTime.Month, dateTime.Day, 0, 0, 0, dateTime.Kind).AddDays(1);
     }
 
     public static DateTime EndOfHour(this DateTime dateTime)
     {
-        return new DateTime(dateTime.Year, dateTime.Month, dateTime.Day, dateTime.Hour, 0, 0).AddHours(1);
+        return new DateTime(dateTime.Year, dateTime.Month, dateTime.Day, dateTime.Hour, 0, 0, dateTime.Kind).AddHours(1);
     }
 
     public static DateTime EndOfMinute(this DateTime dateTime)
     {
-        return new DateTime(dateTime.Year, dateTime.Month, dateTime.Day, dateTime.Hour, dateTime.Minute, 0).AddMinutes(1);
+        return new DateTime(dateTime.Year, dateTime.Month, dateTime.Day, dateTime.Hour, dateTime.Minute, 0, dateTime.Kind).AddMinutes(1);
     }
 
     public static DateTime EndOfMonth(this DateTime date)
     {
-        return new DateTime(date.Year, date.Month, LastDayOfMonth(date));
+        return new DateTime(date.Year, date.Month, LastDayOfMonth(date), 0, 0, 0, date.Kind);
     }
 
     public static DateTime EndOfWeek(this DateTime date)
@@ -58,9 +58,9 @@ public static class DateTimeExtensions
         return EndOfWeek(date, culture.DateTimeFormat.FirstDayOfWeek);
     }
 
-    public static DateTime EndOfYear(this DateTime dateTime)
+    public static DateTime EndOfYear(this DateTime dt)
     {
-        return new DateTime(dateTime.Year, 12, 31);
+        return new DateTime(dt.Year + 1, 1, 1, 0, 0, 0, dt.Kind);
     }
 
     public static DateTime FirstDayOfWeek(this DateTime dateTime)
@@ -99,14 +99,14 @@ public static class DateTimeExtensions
         return DateTime.DaysInMonth(date.Year, date.Month);
     }
 
-    public static DateTime SetDate(this DateTime dt, DateTime date)
+    public static DateTime SetDate(this DateTime dt, DateOnly date)
     {
-        return new DateTime(date.Year, date.Month, date.Day, dt.Hour, dt.Minute, dt.Second, dt.Millisecond);
+        return new DateTime(date.Year, date.Month, date.Day, dt.Hour, dt.Minute, dt.Second, dt.Millisecond, dt.Kind);
     }
 
-    public static DateTime SetTime(this DateTime dt, DateTime time)
+    public static DateTime SetTime(this DateTime dt, TimeOnly time)
     {
-        return new DateTime(dt.Year, dt.Month, dt.Day, time.Hour, time.Minute, time.Second, time.Millisecond);
+        return new DateTime(dt.Year, dt.Month, dt.Day, time.Hour, time.Minute, time.Second, time.Millisecond, dt.Kind);
     }
 
     public static string ToIso8601String(this DateTime dt)
@@ -134,25 +134,14 @@ public static class DateTimeExtensions
         return new DateTime(date.Ticks - (date.Ticks % resolution), date.Kind);
     }
 
-    public static DateTime TruncateTime(this DateTime dt)
-    {
-        return new DateTime(dt.Year, dt.Month, dt.Day);
-    }
-
-    public static DateTime TruncateDate(this DateTime dt)
-    {
-        //return new DateTime(1, 1, 1, dt.Hour, dt.Minute, dt.Second, dt.Millisecond);
-        return default(DateTime).Add(dt.TimeOfDay);
-    }
-
     public static DateTime TruncateMilliseconds(this DateTime dt)
     {
-        return new DateTime(dt.Year, dt.Month, dt.Day, dt.Hour, dt.Minute, dt.Second, 0);
+        return new DateTime(dt.Year, dt.Month, dt.Day, dt.Hour, dt.Minute, dt.Second, 0, dt.Kind);
     }
 
     public static DateTime TruncateSeconds(this DateTime dt)
     {
-        return new DateTime(dt.Year, dt.Month, dt.Day, dt.Hour, dt.Minute, 0, 0);
+        return new DateTime(dt.Year, dt.Month, dt.Day, dt.Hour, dt.Minute, 0, dt.Kind);
     }
 }
 
