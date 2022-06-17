@@ -7,6 +7,7 @@ public class TimeDefVisitor
         switch (timedef)
         {
             case TimeDef.And td: VisitAnd(td); break;
+            case TimeDef.DateSpan td: VisitDateSpan(td); break;
             case TimeDef.DateTimeSpan td: VisitDateTimeSpan(td); break;
             case TimeDef.Day td: VisitDay(td); break;
             case TimeDef.Days td: VisitDays(td); break;
@@ -33,6 +34,10 @@ public class TimeDefVisitor
     {
         Visit(td.Lhs);
         Visit(td.Rhs);
+    }
+
+    protected virtual void VisitDateSpan(TimeDef.DateSpan td)
+    {
     }
 
     protected virtual void VisitDateTimeSpan(TimeDef.DateTimeSpan td)
