@@ -59,7 +59,7 @@ public static class OptExtensions
     /// <returns></returns>
     [return: NotNull]
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static TResult Match<T, TResult>(
+    public static TResult MatchReturn<T, TResult>(
         this Opt<T> option, 
         [DisallowNull] Func<T, TResult> some, 
         [DisallowNull] Func<TResult> none)
