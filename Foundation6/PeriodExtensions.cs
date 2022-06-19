@@ -7,6 +7,36 @@ public static class PeriodExtensions
         return Period.New(period.Start, period.Duration + duration);
     }
 
+    public static bool ContainsDay(this Period period, int day)
+    {
+        return period.Days().Any(p => p.Start.Day == day);
+    }
+
+    public static bool ContainsHour(this Period period, int hour)
+    {
+        return period.Hours().Any(p => p.Start.Hour == hour);
+    }
+
+    public static bool ContainsMinute(this Period period, int minute)
+    {
+        return period.Minutes().Any(p => p.Start.Minute == minute);
+    }
+
+    public static bool ContainsMonth(this Period period, int month)
+    {
+        return period.Months().Any(p => p.Start.Month == month);
+    }
+
+    public static bool ContainsWeekday(this Period period, DayOfWeek dayOfWeek)
+    {
+        return period.Days().Any(p => p.Start.DayOfWeek == dayOfWeek);
+    }
+
+    public static bool ContainsYear(this Period period, int year)
+    {
+        return period.Years().Any(p => p.Start.Year == year);
+    }
+
     /// <summary>
     /// returns a period for each day.
     /// </summary>
@@ -126,7 +156,7 @@ public static class PeriodExtensions
     }
 
     /// <summary>
-    /// Checks if the period is between the start and end date.
+    /// Checks if the period is between the start and end datetime.
     /// </summary>
     /// <param name="period"></param>
     /// <param name="start"></param>
@@ -135,6 +165,30 @@ public static class PeriodExtensions
     public static bool IsBetween(this Period period, DateTime start, DateTime end)
     {
         return period.Start >= start && period.End <= end;
+    }
+
+    /// <summary>
+    /// Checks if the period is between the start and end date
+    /// </summary>
+    /// <param name="period"></param>
+    /// <param name="start"></param>
+    /// <param name="end"></param>
+    /// <returns></returns>
+    public static bool IsBetween(this Period period, DateOnly start, DateOnly end)
+    {
+        return period.Start.ToDateOnly() >= start && period.End.ToDateOnly() <= end;
+    }
+
+    /// <summary>
+    /// Checks if the period is between the start and end time
+    /// </summary>
+    /// <param name="period"></param>
+    /// <param name="start"></param>
+    /// <param name="end"></param>
+    /// <returns></returns>
+    public static bool IsBetween(this Period period, TimeOnly start, TimeOnly end)
+    {
+        return period.Start.ToTimeOnly() >= start && period.End.ToTimeOnly() <= end;
     }
 
     /// <summary>
@@ -167,6 +221,31 @@ public static class PeriodExtensions
             diffs.Add(diff.Value);
         }
         return IsBetween(period, diffs);
+    }
+
+    public static bool IsDayBetween(this Period period, int day)
+    {
+        return day >= period.Start.Day && day <= period.End.Day;
+    }
+
+    public static bool IsHourBetween(this Period period, int hour)
+    {
+        return hour >= period.Start.Hour && hour <= period.End.Hour;
+    }
+
+    public static bool IsMinuteBetween(this Period period, int minute)
+    {
+        return minute >= period.Start.Minute && minute <= period.End.Minute;
+    }
+
+    public static bool IsMonthBetween(this Period period, int month)
+    {
+        return month >= period.Start.Month && month <= period.End.Month;
+    }
+
+    public static bool IsYearBetween(this Period period, int year)
+    {
+        return year >= period.Start.Year && year <= period.End.Year;
     }
 
     /// <summary>
@@ -209,14 +288,13 @@ public static class PeriodExtensions
     /// The date is ignored.
     /// </summary>
     /// <param name="period"></param>
-    /// <param name="dateTime"></param>
+    /// <param name="time"></param>
     /// <returns></returns>
-    public static bool IsTimeBetween(this Period period, DateTime dateTime)
+    public static bool IsTimeBetween(this Period period, TimeOnly time)
     {
-        var start = period.Start.TruncateDate();
-        var end = period.End.TruncateDate();
+        var start = period.Start.ToTimeOnly();
+        var end = period.End.ToTimeOnly();
 
-        var time = dateTime.TruncateDate();
         return time >= start && time <= end;
     }
 
@@ -229,11 +307,11 @@ public static class PeriodExtensions
     /// <returns></returns>
     public static bool IsTimeBetween(this Period period, Period other)
     {
-        var start = period.Start.TruncateDate();
-        var end = period.End.TruncateDate();
+        var start = period.Start.ToTimeOnly();
+        var end = period.End.ToTimeOnly();
 
-        var otherStart = other.Start.TruncateDate();
-        var otherEnd = other.End.TruncateDate();
+        var otherStart = other.Start.ToTimeOnly();
+        var otherEnd = other.End.ToTimeOnly();
 
         return otherStart >= start && otherEnd <= end;
     }
@@ -418,7 +496,7 @@ public static class PeriodExtensions
         var currentYear = period.Start;
         while (currentYear < period.End)
         {
-            var end = currentYear.EndOfYear().EndOfDay();
+            var end = currentYear.EndOfYear();
             if (end > period.End) end = period.End;
             yield return Period.New(currentYear, end);
             currentYear = currentYear.Date.AddYears(1);

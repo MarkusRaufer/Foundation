@@ -14,14 +14,14 @@ namespace Foundation
         [Test]
         public void Days_3Days()
         {
-            DateTime newDate(int day) => new DateTime(2015, 7, day);
+            static DateTime newDate(int day) => new (2015, 7, day);
 
             var startDate = newDate(1);
             const int duration = 3;
             var period = Period.New(startDate, startDate.Add(TimeSpan.FromDays(duration)));
 
-            var days = period.Days().ToList();
-            Assert.AreEqual(duration, days.Count);
+            var days = period.Days().ToArray();
+            Assert.AreEqual(duration, days.Length);
 
             var oneDay = TimeSpan.FromDays(1);
 
@@ -42,24 +42,24 @@ namespace Foundation
         [Test]
         public void Days_3FullDays()
         {
-            DateTime newDate(int day, int hour) => new DateTime(2015, 1, day, hour, 0, 0);
+            static DateTime newDate(int day, int hour) => new (2015, 1, day, hour, 0, 0);
 
             var period = Period.New(newDate(1, 8), newDate(3, 17));
 
             var periods = period.Days().ToList();
             Assert.AreEqual(3, periods.Count);
-            Assert.AreEqual(newDate(1, 8), periods[0].Start);
-            Assert.AreEqual(newDate(2, 0), periods[0].End);
-            Assert.AreEqual(newDate(2, 0), periods[1].Start);
-            Assert.AreEqual(newDate(3, 0), periods[1].End);
-            Assert.AreEqual(newDate(3, 0), periods[2].Start);
+            Assert.AreEqual(newDate(1,  8), periods[0].Start);
+            Assert.AreEqual(newDate(2,  0), periods[0].End);
+            Assert.AreEqual(newDate(2,  0), periods[1].Start);
+            Assert.AreEqual(newDate(3,  0), periods[1].End);
+            Assert.AreEqual(newDate(3,  0), periods[2].Start);
             Assert.AreEqual(newDate(3, 17), periods[2].End);
         }
 
         [Test]
         public void Days_1Month()
         {
-            DateTime newDate(int month, int day) => new DateTime(2016, month, day);
+            static DateTime newDate(int month, int day) => new (2016, month, day);
 
             var period = Period.New(newDate(3, 1), newDate(4, 1));
 
@@ -100,8 +100,8 @@ namespace Foundation
         [Test]
         public void Except_LeftStartSmaller_EndEqual()
         {
-            var period1 = Period.New(new DateTime(2015, 1, 1), new DateTime(2015, 1, 3));
-            var period2 = Period.New(new DateTime(2015, 1, 2), new DateTime(2015, 1, 3));
+            var period1 = Period.New(new (2015, 1, 1), new (2015, 1, 3));
+            var period2 = Period.New(new (2015, 1, 2), new (2015, 1, 3));
 
             var diff = period1.Except(period2).ToList();
 
@@ -114,8 +114,8 @@ namespace Foundation
         [Test]
         public void Except_LeftStartGreater_EndEqual()
         {
-            var period1 = Period.New(new DateTime(2015, 1, 2), new DateTime(2015, 1, 3));
-            var period2 = Period.New(new DateTime(2015, 1, 1), new DateTime(2015, 1, 3));
+            var period1 = Period.New(new (2015, 1, 2), new (2015, 1, 3));
+            var period2 = Period.New(new (2015, 1, 1), new (2015, 1, 3));
 
             var diff = period1.Except(period2).ToList();
 
@@ -125,8 +125,8 @@ namespace Foundation
         [Test]
         public void Except_StartEqual_LeftEndSmaller()
         {
-            var period1 = Period.New(new DateTime(2015, 1, 1), new DateTime(2015, 1, 2));
-            var period2 = Period.New(new DateTime(2015, 1, 1), new DateTime(2015, 1, 3));
+            var period1 = Period.New(new (2015, 1, 1), new (2015, 1, 2));
+            var period2 = Period.New(new (2015, 1, 1), new (2015, 1, 3));
         
             var diff = period1.Except(period2).ToList();
 
@@ -136,8 +136,8 @@ namespace Foundation
         [Test]
         public void Except_StartEqual_LeftEndGreater()
         {
-            var period1 = Period.New(new DateTime(2015, 1, 1), new DateTime(2015, 1, 3));
-            var period2 = Period.New(new DateTime(2015, 1, 1), new DateTime(2015, 1, 2));
+            var period1 = Period.New(new (2015, 1, 1), new (2015, 1, 3));
+            var period2 = Period.New(new (2015, 1, 1), new (2015, 1, 2));
 
             var diff = period1.Except(period2).ToList();
 
@@ -150,8 +150,8 @@ namespace Foundation
         [Test]
         public void Except_LeftStartGreater_LeftEndGreater()
         {
-            var period1 = Period.New(new DateTime(2015, 1, 2), new DateTime(2015, 1, 3));
-            var period2 = Period.New(new DateTime(2015, 1, 1), new DateTime(2015, 1, 2));
+            var period1 = Period.New(new (2015, 1, 2), new (2015, 1, 3));
+            var period2 = Period.New(new (2015, 1, 1), new (2015, 1, 2));
 
             var diff = period1.Except(period2).ToList();
 
@@ -164,8 +164,8 @@ namespace Foundation
         [Test]
         public void Except_LeftStartSmaller_LeftEndGreater()
         {
-            var period1 = Period.New(new DateTime(2015, 1, 1), new DateTime(2015, 1, 4));
-            var period2 = Period.New(new DateTime(2015, 1, 2), new DateTime(2015, 1, 3));
+            var period1 = Period.New(new (2015, 1, 1), new (2015, 1, 4));
+            var period2 = Period.New(new (2015, 1, 2), new (2015, 1, 3));
 
             var diff = period1.Except(period2).ToList();
 
@@ -186,10 +186,12 @@ namespace Foundation
             var end = new DateTime(2016, 3, 2, 2, 45, 0);
 
             var sut = Period.New(start, end);
+
             var hours = sut.Hours().ToArray();
+
             Assert.AreEqual(4, hours.Length);
 
-            var period = Period.New(start, new DateTime(2016, 3, 2, 0, 0, 0));
+            var period = Period.New(start, new (2016, 3, 2, 0, 0, 0));
             Assert.AreEqual(period, hours[0]);
 
             period = Period.New(period.End, period.End + TimeSpan.FromHours(1));
@@ -337,12 +339,12 @@ namespace Foundation
         [Test]
         public void IsBetween_List_3Overlapping_2NonOverlapping()
         {
-            var period1 = Period.New(new DateTime(2015, 1, 1), new DateTime(2015, 1, 6));
-            var period2 = Period.New(new DateTime(2015, 1, 1), new DateTime(2015, 1, 2));
-            var period3 = Period.New(new DateTime(2015, 1, 8), new DateTime(2015, 1, 9));
-            var period4 = Period.New(new DateTime(2015, 1, 4), new DateTime(2015, 1, 6));
-            var period5 = Period.New(new DateTime(2015, 1, 9), new DateTime(2015, 1, 10));
-            var period6 = Period.New(new DateTime(2015, 1, 2), new DateTime(2015, 1, 4));
+            var period1 = Period.New(new (2015, 1, 1), new (2015, 1, 6));
+            var period2 = Period.New(new (2015, 1, 1), new (2015, 1, 2));
+            var period3 = Period.New(new (2015, 1, 8), new (2015, 1, 9));
+            var period4 = Period.New(new (2015, 1, 4), new (2015, 1, 6));
+            var period5 = Period.New(new (2015, 1, 9), new (2015, 1, 10));
+            var period6 = Period.New(new (2015, 1, 2), new (2015, 1, 4));
 
             Assert.IsTrue(period1.IsBetween(EnumerableHelper.AsEnumerable(period2, period3, period4, period5, period6)));
         }
@@ -356,8 +358,8 @@ namespace Foundation
         [TestCase(10, 13, 14, 15, false)]
         public void IsOverlapping(int startDay1, int endDay1, int startDay2, int endDay2, bool isValid)
         {
-            var period1 = Period.New(new DateTime(2015, 1, startDay1), new DateTime(2015, 1, endDay1));
-            var period2 = Period.New(new DateTime(2015, 1, startDay2), new DateTime(2015, 1, endDay2));
+            var period1 = Period.New(new (2015, 1, startDay1), new (2015, 1, endDay1));
+            var period2 = Period.New(new (2015, 1, startDay2), new (2015, 1, endDay2));
 
             Assert.AreEqual(isValid, period1.IsOverlapping(period2));
         }
@@ -393,7 +395,9 @@ namespace Foundation
             var end = new DateTime(2016, 3, 2, 0, 3, 47);
 
             var sut = Period.New(start, end);
+
             var minutes = sut.Minutes().ToArray();
+
             Assert.AreEqual(6, minutes.Length);
 
             var period = Period.New(start, new DateTime(2016, 3, 1, 23, 59, 0));
@@ -418,7 +422,7 @@ namespace Foundation
         [Test]
         public void Months_3Months()
         {
-            DateTime newDate(int month, int day, int hour) => new DateTime(2015, month, day, hour, 0, 0);
+            static DateTime newDate(int month, int day, int hour) => new (2015, month, day, hour, 0, 0);
 
             var period = Period.New(newDate(1, 1, 8), newDate(3, 5, 17));
 
@@ -640,8 +644,8 @@ namespace Foundation
         [Test]
         public void SymmetricDifference_LeftStartGreater_EndEqual()
         {
-            var period1 = Period.New(new DateTime(2015, 1, 2), new DateTime(2015, 1, 3));
-            var period2 = Period.New(new DateTime(2015, 1, 1), new DateTime(2015, 1, 3));
+            var period1 = Period.New(new (2015, 1, 2), new (2015, 1, 3));
+            var period2 = Period.New(new (2015, 1, 1), new (2015, 1, 3));
 
             var diff = period1.SymmetricDifference(period2).ToArray();
 
@@ -655,8 +659,8 @@ namespace Foundation
         [Test]
         public void SymmetricDifference_LeftStartGreater_LeftEndSmaller()
         {
-            var period1 = Period.New(new DateTime(2015, 1, 2), new DateTime(2015, 1, 3));
-            var period2 = Period.New(new DateTime(2015, 1, 1), new DateTime(2015, 1, 4));
+            var period1 = Period.New(new (2015, 1, 2), new (2015, 1, 3));
+            var period2 = Period.New(new (2015, 1, 1), new (2015, 1, 4));
 
             var diff = period1.SymmetricDifference(period2).ToArray();
 
@@ -673,8 +677,8 @@ namespace Foundation
         [Test]
         public void SymmetricDifference_LeftStartSmaller_EndEqual()
         {
-            var period1 = Period.New(new DateTime(2015, 1, 1), new DateTime(2015, 1, 3));
-            var period2 = Period.New(new DateTime(2015, 1, 2), new DateTime(2015, 1, 3));
+            var period1 = Period.New(new (2015, 1, 1), new (2015, 1, 3));
+            var period2 = Period.New(new (2015, 1, 2), new (2015, 1, 3));
 
             var diff = period1.SymmetricDifference(period2).ToList();
 
@@ -687,8 +691,8 @@ namespace Foundation
         [Test]
         public void SymmetricDifference_LeftStartSmaller_LeftEndGreater()
         {
-            var period1 = Period.New(new DateTime(2015, 1, 1), new DateTime(2015, 1, 4));
-            var period2 = Period.New(new DateTime(2015, 1, 2), new DateTime(2015, 1, 3));
+            var period1 = Period.New(new (2015, 1, 1), new (2015, 1, 4));
+            var period2 = Period.New(new (2015, 1, 2), new (2015, 1, 3));
 
             var diff = period1.SymmetricDifference(period2).ToList();
 
@@ -705,8 +709,8 @@ namespace Foundation
         [Test]
         public void SymmetricDifference_StartEqual_LeftEndGreater()
         {
-            var period1 = Period.New(new DateTime(2015, 1, 1), new DateTime(2015, 1, 3));
-            var period2 = Period.New(new DateTime(2015, 1, 1), new DateTime(2015, 1, 2));
+            var period1 = Period.New(new (2015, 1, 1), new (2015, 1, 3));
+            var period2 = Period.New(new (2015, 1, 1), new (2015, 1, 2));
 
             var diff = period1.SymmetricDifference(period2).ToList();
 
@@ -719,8 +723,8 @@ namespace Foundation
         [Test]
         public void SymmetricDifference_StartEqual_LeftEndSmaller()
         {
-            var period1 = Period.New(new DateTime(2015, 1, 1), new DateTime(2015, 1, 2));
-            var period2 = Period.New(new DateTime(2015, 1, 1), new DateTime(2015, 1, 3));
+            var period1 = Period.New(new (2015, 1, 1), new (2015, 1, 2));
+            var period2 = Period.New(new (2015, 1, 1), new (2015, 1, 3));
 
             var diff = period1.SymmetricDifference(period2).ToList();
 
@@ -733,8 +737,8 @@ namespace Foundation
         [Test]
         public void Union_LeftStartGreater_LeftEndGreater()
         {
-            var period1 = Period.New(new DateTime(2015, 1, 2), new DateTime(2015, 1, 4));
-            var period2 = Period.New(new DateTime(2015, 1, 1), new DateTime(2015, 1, 3));
+            var period1 = Period.New(new (2015, 1, 2), new (2015, 1, 4));
+            var period2 = Period.New(new (2015, 1, 1), new (2015, 1, 3));
 
             var merged = period1.Union(period2);
 
@@ -745,8 +749,8 @@ namespace Foundation
         [Test]
         public void Union_LeftStartGreater_LeftEndSmaller()
         {
-            var period1 = Period.New(new DateTime(2015, 1, 2), new DateTime(2015, 1, 3));
-            var period2 = Period.New(new DateTime(2015, 1, 1), new DateTime(2015, 1, 4));
+            var period1 = Period.New(new (2015, 1, 2), new (2015, 1, 3));
+            var period2 = Period.New(new (2015, 1, 1), new (2015, 1, 4));
 
             var merged = period1.Union(period2);
 
@@ -757,8 +761,8 @@ namespace Foundation
         [Test]
         public void Union_LeftStartSmaller_LeftEndGreater()
         {
-            var period1 = Period.New(new DateTime(2015, 1, 1), new DateTime(2015, 1, 4));
-            var period2 = Period.New(new DateTime(2015, 1, 2), new DateTime(2015, 1, 3));
+            var period1 = Period.New(new (2015, 1, 1), new (2015, 1, 4));
+            var period2 = Period.New(new (2015, 1, 2), new (2015, 1, 3));
 
             var merged = period1.Union(period2);
 
@@ -769,8 +773,8 @@ namespace Foundation
         [Test]
         public void Union_LeftStartSmaller_LeftEndSmaller()
         {
-            var period1 = Period.New(new DateTime(2015, 1, 1), new DateTime(2015, 1, 3));
-            var period2 = Period.New(new DateTime(2015, 1, 2), new DateTime(2015, 1, 4));
+            var period1 = Period.New(new (2015, 1, 1), new (2015, 1, 3));
+            var period2 = Period.New(new (2015, 1, 2), new (2015, 1, 4));
 
             var merged = period1.Union(period2);
 
@@ -781,8 +785,8 @@ namespace Foundation
         [Test]
         public void Union_StartEqual_LeftEndGreater()
         {
-            var period1 = Period.New(new DateTime(2015, 1, 1), new DateTime(2015, 1, 3));
-            var period2 = Period.New(new DateTime(2015, 1, 1), new DateTime(2015, 1, 2));
+            var period1 = Period.New(new (2015, 1, 1), new (2015, 1, 3));
+            var period2 = Period.New(new (2015, 1, 1), new (2015, 1, 2));
 
             var merged = period1.Union(period2);
 
@@ -796,9 +800,11 @@ namespace Foundation
             var start = new DateTime(2015, 7, 1, 8, 0, 0);
             var end = new DateTime(2015, 8, 2, 18, 0, 0);
             var period = Period.New(start, end);
-            DateTime newDate(int month, int day) => new DateTime(2015, month, day);
+
+            static DateTime newDate(int month, int day) => new (2015, month, day);
 
             var periods = period.Weeks().ToArray();
+
             Assert.AreEqual(5, periods.Length);
             Assert.AreEqual(start, periods[0].Start);
             Assert.AreEqual(newDate(7,  6), periods[0].End);
@@ -824,13 +830,15 @@ namespace Foundation
         [Test]
         public void Weeks_2MonthsWithTime()
         {
-            Func<int, int, int, DateTime> newDate = (month, day, hour) => new DateTime(2015, month, day, hour, 0, 0);
+            static DateTime newDate(int month, int day, int hour) => new (2015, month, day, hour, 0, 0);
+
             var start = newDate(7, 1, 8);
             var end = newDate(8, 4, 18);
             var period = Period.New(start, end);
 
-            var periods = period.Weeks().ToList();
-            Assert.AreEqual(6, periods.Count);
+            var periods = period.Weeks().ToArray();
+
+            Assert.AreEqual(6, periods.Length);
             Assert.AreEqual(start, periods[0].Start);
             Assert.AreEqual(newDate(7, 6, 0), periods[0].End);
 
@@ -857,8 +865,9 @@ namespace Foundation
 
             var period = Period.New(newDate(2013, 1, 1).AddHours(8), newDate(2015, 7, 5).AddHours(5));
 
-            var periods = period.Years().ToList();
-            Assert.AreEqual(3, periods.Count);
+            var periods = period.Years().ToArray();
+
+            Assert.AreEqual(3, periods.Length);
             Assert.AreEqual(newDate(2013, 1, 1).AddHours(8), periods[0].Start);
             Assert.AreEqual(newDate(2014, 1, 1), periods[0].End);
             Assert.AreEqual(newDate(2014, 1, 1), periods[1].Start);

@@ -97,6 +97,22 @@ public struct Period : IComparable<Period>
         return new Period(start, end);
     }
 
+    public static Period New(DateOnly start, DateOnly end, DateTimeKind kind = DateTimeKind.Utc)
+    {
+        if (start > end)
+            throw new ArgumentException("end is before start");
+
+        return new Period(start.ToDateTime(kind), end.ToDateTime(kind));
+    }
+
+    public static Period New(TimeOnly start, TimeOnly end, DateTimeKind kind = DateTimeKind.Utc)
+    {
+        if (start > end)
+            throw new ArgumentException("end is before start");
+
+        return new Period(start.ToDateTime(kind), end.ToDateTime(kind));
+    }
+
     /// <summary>
     /// Creates a new Period-Object.
     /// </summary>
