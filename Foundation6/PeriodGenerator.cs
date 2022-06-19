@@ -14,7 +14,7 @@ public class PeriodGenerator : IPeriodGenerator
         return _generator(period);
     }
 
-    public static IEnumerable<Period> GeneratePeriodsFromSmallestTimeDef(TimeDef td, Period period)
+    public static IEnumerable<Period> GeneratePeriods(TimeDef td, Period period)
     {
         var range = new TimeDefRange();
         range.Visit(td);
