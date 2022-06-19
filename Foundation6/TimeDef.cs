@@ -1,6 +1,7 @@
-﻿using Foundation.ComponentModel;
+﻿namespace Foundation;
 
-namespace Foundation;
+using Foundation.ComponentModel;
+
 public abstract record TimeDef
 {
     public record And(TimeDef Lhs, TimeDef Rhs) : TimeDef;

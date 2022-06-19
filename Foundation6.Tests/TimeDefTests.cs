@@ -273,12 +273,15 @@ namespace Foundation
                 var sut1 = new TimeDef.Month(new[] { Month.Apr, Month.Jul });
                 var sut2 = new TimeDef.Month(new[] { Month.Apr, Month.Jul });
 
-                var gen = new TimeDefPeriodGenerator();
+                var validator = new TimeDefPeriodValidator();
 
-                var now = DateTime.Now;
-                var end = now.AddDays(10);
+                var start = new DateTime(2022, 6, 1);
+                var end = new DateTime(2022, 6, 30);
 
-                var items = gen.Days(sut1, Period.New(now, end)).ToArray();
+                var weekday = new TimeDef.Weekday(new DayOfWeek[] { DayOfWeek.Monday, DayOfWeek.Wednesday });
+                var month = new TimeDef.DateSpan(new DateOnly(2022, 6, 1), new DateOnly(2022, 6, 30));
+                var and = new TimeDef.And(month, weekday);
+                var valid = validator.Validate(and, Period.New(start, end));
 
                 Assert.IsTrue(sut1.Equals(sut2));
                 Assert.IsTrue(sut1 == sut2); 

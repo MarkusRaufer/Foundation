@@ -2,20 +2,6 @@
 
 public static class TimeDefExtensions
 {
-    public static int ChronologicalOrderWeight(this TimeDef timedef)
-    {
-        return timedef switch
-        {
-            TimeDef.Minute or TimeDef.Minutes or TimeDef.Timespan => 0,
-            TimeDef.Hour or TimeDef.Hours => 1,
-            TimeDef.Day or TimeDef.Days => 2,
-            TimeDef.Weekday or TimeDef.WeekOfMonth or TimeDef.Weeks => 3,
-            TimeDef.Month or TimeDef.Months => 4,
-            TimeDef.Year or TimeDef.Years => 5,
-            _ => 6
-        };
-    }
-
     public static bool Equals(this TimeDef lhs, TimeDef rhs)
     {
         static bool equals<T>(IEnumerable<T> lhs, IEnumerable<T> rhs)
@@ -67,8 +53,8 @@ public static class TimeDefExtensions
 
     public static int Compare(this TimeDef lhs, TimeDef rhs)
     {
-        var leftWeight = ChronologicalOrderWeight(lhs);
-        var rightWeight = ChronologicalOrderWeight(rhs);
+        var leftWeight = TimeDefHelper.ChronologicalOrderWeight(lhs);
+        var rightWeight = TimeDefHelper.ChronologicalOrderWeight(rhs);
         if (leftWeight < rightWeight) return -1;
         if (leftWeight > rightWeight) return 1;
         return 0;
