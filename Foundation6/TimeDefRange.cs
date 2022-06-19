@@ -6,116 +6,152 @@ public class TimeDefRange : TimeDefVisitor
 {
     public Opt<TimeDef> Greatest { get; private set; }
 
-    protected void SetGreatest([DisallowNull] TimeDef? td)
+    protected bool SetGreatest([DisallowNull] TimeDef? td)
     {
         ArgumentNullException.ThrowIfNull(td);
 
         if (Greatest.IsNone || Greatest.OrThrow().Compare(td) == -1)
             Greatest = Opt.Some(td);
+
+        return true;
     }
 
-    protected void SetSmallest(TimeDef td)
+    protected bool SetSmallest(TimeDef td)
     {
         if (Smallest.IsNone || Smallest.OrThrow().Compare(td) == 1)
             Smallest = Opt.Some(td);
+
+        return true;
     }
 
     public Opt<TimeDef> Smallest { get; private set; }
 
-    protected override void VisitDateSpan(TimeDef.DateSpan td)
+    protected override bool VisitDateSpan(TimeDef.DateSpan td)
     {
         SetGreatest(td);
         SetSmallest(td);
+
+        return true;
     }
 
-    protected override void VisitDateTimeSpan(TimeDef.DateTimeSpan td)
+    protected override bool VisitDateTimeSpan(TimeDef.DateTimeSpan td)
     {
         SetGreatest(td);
         SetSmallest(td);
+
+        return true;
     }
 
-    protected override void VisitDay(TimeDef.Day td)
+    protected override bool VisitDay(TimeDef.Day td)
     {
         SetGreatest(td);
         SetSmallest(td);
+
+        return true;
     }
 
-    protected override void VisitDays(TimeDef.Days td)
+    protected override bool VisitDays(TimeDef.Days td)
     {
         SetGreatest(td);
         SetSmallest(td);
+
+        return true;
     }
 
-    protected override void VisitHour(TimeDef.Hour td)
+    protected override bool VisitHour(TimeDef.Hour td)
     {
         SetGreatest(td);
         SetSmallest(td);
+
+        return true;
     }
 
-    protected override void VisitHours(TimeDef.Hours td)
+    protected override bool VisitHours(TimeDef.Hours td)
     {
         SetGreatest(td);
         SetSmallest(td);
+
+        return true;
     }
 
-    protected override void VisitMinute(TimeDef.Minute td)
+    protected override bool VisitMinute(TimeDef.Minute td)
     {
         SetGreatest(td);
         SetSmallest(td);
+
+        return true;
     }
 
-    protected override void VisitMinutes(TimeDef.Minutes td)
+    protected override bool VisitMinutes(TimeDef.Minutes td)
     {
         SetGreatest(td);
         SetSmallest(td);
+
+        return true;
     }
 
-    protected override void VisitMonth(TimeDef.Month td)
+    protected override bool VisitMonth(TimeDef.Month td)
     {
         SetGreatest(td);
         SetSmallest(td);
+
+        return true;
     }
 
-    protected override void VisitMonths(TimeDef.Months td)
+    protected override bool VisitMonths(TimeDef.Months td)
     {
         SetGreatest(td);
         SetSmallest(td);
+
+        return true;
     }
 
-    protected override void VisitTimespan(TimeDef.Timespan td)
+    protected override bool VisitTimespan(TimeDef.Timespan td)
     {
         SetGreatest(td);
         SetSmallest(td);
+
+        return true;
     }
 
-    protected override void VisitWeekday(TimeDef.Weekday td)
+    protected override bool VisitWeekday(TimeDef.Weekday td)
     {
         SetGreatest(td);
         SetSmallest(td);
+
+        return true;
     }
 
-    protected override void VisitWeekOfMonth(TimeDef.WeekOfMonth td)
+    protected override bool VisitWeekOfMonth(TimeDef.WeekOfMonth td)
     {
         SetGreatest(td);
         SetSmallest(td);
+
+        return true;
     }
 
-    protected override void VisitWeeks(TimeDef.Weeks td)
+    protected override bool VisitWeeks(TimeDef.Weeks td)
     {
         SetGreatest(td);
         SetSmallest(td);
+
+        return true;
     }
 
-    protected override void VisitYear(TimeDef.Year td)
+    protected override bool VisitYear(TimeDef.Year td)
     {
         SetGreatest(td);
         SetSmallest(td);
+
+        return true;
     }
 
-    protected override void VisitYears(TimeDef.Years td)
+    protected override bool VisitYears(TimeDef.Years td)
     {
         SetGreatest(td);
         SetSmallest(td);
+
+        return true;
     }
 }
 
