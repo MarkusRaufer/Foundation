@@ -1,6 +1,8 @@
-﻿namespace Foundation.Collections.Generic;
+﻿using System.Collections;
 
-public struct Params
+namespace Foundation.Collections.Generic;
+
+public struct Params : IEnumerable<object>
 {
     public bool _isInitialized;
 
@@ -12,12 +14,9 @@ public struct Params
         _isInitialized = true;
     }
 
-    public ValueEnumerator<object> GetEnumerator()
-    {
-        var values = _values ?? Array.Empty<object>();
+    public IEnumerator<object> GetEnumerator() => _values.GetEnumerator();
 
-        return new ValueEnumerator<object>(values.GetEnumerator());
-    }
+    IEnumerator IEnumerable.GetEnumerator() => _values.GetEnumerator();
 
     public bool IsEmpty => !_isInitialized;
 
@@ -25,11 +24,9 @@ public struct Params
     {
         return new Params<T>(values);
     }
-
-    public IEnumerable<object> ToEnumerable() => new Enumerable<object>(GetEnumerator());
 }
 
-public struct Params<T>
+public struct Params<T> : IEnumerable<T>
 {
     public bool _isInitialized;
 
@@ -41,15 +38,9 @@ public struct Params<T>
         _isInitialized = true;
     }
 
-    public ValueEnumerator<T> GetEnumerator()
-    {
-        var values = _values ?? Array.Empty<T>();
-
-        return new ValueEnumerator<T>(values.GetEnumerator());
-    }
-
     public bool IsEmpty => !_isInitialized;
 
-    public IEnumerable<T> ToEnumerable() => new Enumerable<T>(GetEnumerator());
-}
+    public IEnumerator<T> GetEnumerator() => _values.GetEnumerator();
 
+    IEnumerator IEnumerable.GetEnumerator() => _values.GetEnumerator();
+}
