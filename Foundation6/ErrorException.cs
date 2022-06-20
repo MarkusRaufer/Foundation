@@ -1,25 +1,23 @@
-﻿using System.Diagnostics.CodeAnalysis;
+﻿namespace Foundation;
 
-namespace Foundation;
-
-public struct ExceptionError<TError, TException>
-    : IEquatable<ExceptionError<TError, TException>>
+public struct ErrorException<TError, TException>
+    : IEquatable<ErrorException<TError, TException>>
     where TException : Exception
 {
     private int _hashCode;
 
-    public ExceptionError(TError error, TException exception)
+    public ErrorException(TError error, TException exception)
     {
         Error = error.ThrowIfNull();
         Exception = exception.ThrowIfNull();
         _hashCode = 0;
     }
-    public static bool operator ==(ExceptionError<TError, TException> left, ExceptionError<TError, TException> right)
+    public static bool operator ==(ErrorException<TError, TException> left, ErrorException<TError, TException> right)
     {
         return left.Equals(right);
     }
 
-    public static bool operator !=(ExceptionError<TError, TException> left, ExceptionError<TError, TException> right)
+    public static bool operator !=(ErrorException<TError, TException> left, ErrorException<TError, TException> right)
     {
         return !(left == right);
     }
@@ -27,9 +25,9 @@ public struct ExceptionError<TError, TException>
     public TError Error { get; }
     public TException Exception { get; }
 
-    public override bool Equals(object? obj) => obj is ExceptionError<TError, TException> other && Equals(other);
+    public override bool Equals(object? obj) => obj is ErrorException<TError, TException> other && Equals(other);
 
-    public bool Equals(ExceptionError<TError, TException> other)
+    public bool Equals(ErrorException<TError, TException> other)
     {
         if (!IsInitalized) return !other.IsInitalized;
 
@@ -50,4 +48,3 @@ public struct ExceptionError<TError, TException>
 
     public override string ToString() => $"Error:{Error}, Exception:{Exception}";
 }
-
