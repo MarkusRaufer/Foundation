@@ -1,7 +1,6 @@
 ﻿namespace Foundation.Buffers;
 
 using Foundation.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
 using System.Text;
 
 public static class ReadOnlyMemoryHelper

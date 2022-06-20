@@ -1,7 +1,6 @@
 ﻿namespace Foundation.Collections.Generic;
 
 using System.Collections;
-using System.Diagnostics.CodeAnalysis;
 
 public class CyclicEnumerable<T> : IEnumerable<T>
 {

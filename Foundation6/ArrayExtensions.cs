@@ -1,7 +1,6 @@
 ﻿namespace Foundation;
 
 using Foundation.Collections;
-using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
 
 public static class ArrayExtensions

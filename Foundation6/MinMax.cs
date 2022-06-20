@@ -1,7 +1,5 @@
 ﻿namespace Foundation;
 
-using System.Diagnostics.CodeAnalysis;
-
 public static class MinMax
 {
     public static MinMax<T> New<T>(T min, T max) where T : notnull => new(min, max);

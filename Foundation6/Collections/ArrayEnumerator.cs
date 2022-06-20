@@ -1,7 +1,6 @@
 ﻿namespace Foundation.Collections;
 
 using System.Collections;
-using System.Diagnostics.CodeAnalysis;
 
 public class ArrayEnumerator<T> : IEnumerator<T>
 {

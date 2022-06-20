@@ -2,7 +2,6 @@
 
 using Foundation.Collections.Generic;
 using System.Collections;
-using System.Diagnostics.CodeAnalysis;
 
 public static class EnumerableExtensions
 {
