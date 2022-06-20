@@ -13,65 +13,110 @@ public class EquatableHashSet<T>
     : HashSet<T>
     , ICollectionChanged<T>
     , IEquatable<EquatableHashSet<T>>
+    , ISerializable
 {
-    private const string SerializationKey = "items";
-
     private int _hashCode;
 
-    public EquatableHashSet() : base()
+    public EquatableHashSet(bool exceptionOnDuplicates = false) : base()
     {
+        ExceptionOnDuplicates = exceptionOnDuplicates;
+
         _hashCode = 0;
         CollectionChanged = new Event<Action<CollectionEvent<T>>>();
     }
 
-    public EquatableHashSet(IEnumerable<T> collection) : base(collection)
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="collection">EnumerableCounter is needed to detect wether the collection contains duplicates.
+    /// Use T[], Collection<typeparamref name="T"/> or List<typeparamref name="T"/></param>
+    /// <param name="exceptionOnDuplicates"></param>
+    /// <exception cref="ArgumentException"></exception>
+    public EquatableHashSet(EnumerableCounter<T> collection, bool exceptionOnDuplicates = false) : base(collection)
     {
+        ExceptionOnDuplicates = exceptionOnDuplicates;
+
+        if (ExceptionOnDuplicates && collection.Count != Count)
+            throw new ArgumentException($"contains duplicates", nameof(collection));
+
         CreateHashCode();
         CollectionChanged = new Event<Action<CollectionEvent<T>>>();
     }
 
-    public EquatableHashSet(IEqualityComparer<T>? comparer) : base(comparer)
+    public EquatableHashSet(IEqualityComparer<T>? comparer, bool exceptionOnDuplicates = false) : base(comparer)
     {
+        ExceptionOnDuplicates = exceptionOnDuplicates;
+
         CreateHashCode();
         CollectionChanged = new Event<Action<CollectionEvent<T>>>();
     }
 
-    public EquatableHashSet(int capacity) : base(capacity)
+    public EquatableHashSet(int capacity, bool exceptionOnDuplicates = false) : base(capacity)
     {
+        ExceptionOnDuplicates = exceptionOnDuplicates;
+
         CreateHashCode();
         CollectionChanged = new Event<Action<CollectionEvent<T>>>();
     }
 
-    public EquatableHashSet(IEnumerable<T> collection, IEqualityComparer<T>? comparer) : base(collection, comparer)
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="collection">EnumerableCounter is needed to detect wether the collection contains duplicates.
+    /// Use T[], Collection<typeparamref name="T"/> or List<typeparamref name="T"/></param>
+    /// <param name="comparer"></param>
+    /// <param name="exceptionOnDuplicates"></param>
+    /// <exception cref="ArgumentException"></exception>
+    public EquatableHashSet(
+        EnumerableCounter<T> collection, 
+        IEqualityComparer<T>? comparer,
+        bool exceptionOnDuplicates = false) : base(collection, comparer)
     {
+        ExceptionOnDuplicates = exceptionOnDuplicates;
+
+        if (ExceptionOnDuplicates && collection.Count != Count)
+            throw new ArgumentException($"contains duplicates", nameof(collection));
+
         CreateHashCode();
         CollectionChanged = new Event<Action<CollectionEvent<T>>>();
     }
 
-    public EquatableHashSet(int capacity, IEqualityComparer<T>? comparer) : base(capacity, comparer)
+    public EquatableHashSet(int capacity, IEqualityComparer<T>? comparer, bool exceptionOnDuplicates = false)
+        : base(capacity, comparer)
     {
+        ExceptionOnDuplicates = exceptionOnDuplicates;
+
         CreateHashCode();
         CollectionChanged = new Event<Action<CollectionEvent<T>>>();
     }
 
     public EquatableHashSet(SerializationInfo info, StreamingContext context) : base(info, context)
     {
+        if (info.GetValue(nameof(ExceptionOnDuplicates), typeof(bool)) is bool exceptionOnDuplicates)
+        {
+            ExceptionOnDuplicates = exceptionOnDuplicates;
+        }
+        
         CreateHashCode();
         CollectionChanged = new Event<Action<CollectionEvent<T>>>();
     }
 
+    /// <summary>
+    /// Adds an item to the hashset.
+    /// </summary>
+    /// <param name="item"></param>
+    /// <exception cref="ArgumentException">If ExceptionOnDuplicates is true an exception is thrown if the item exists.</exception>
     public new void Add(T item)
     {
-        if (base.Add(item.ThrowIfNull()))
+        var added = base.Add(item.ThrowIfNull());
+        if (added)
         {
-            var hcb = HashCode.CreateBuilder();
-            hcb.AddHashCode(_hashCode);
-            hcb.AddObjects(this);
-
-            _hashCode = hcb.GetHashCode();
+            CreateHashCode();
 
             CollectionChanged.Publish(new { State = CollectionChangedState.ElementAdded, Element = item });
+            return;
         }
+        if (ExceptionOnDuplicates) throw new ArgumentException($"{nameof(item)} exists", nameof(item));
     }
 
     public new void Clear()
@@ -109,14 +154,25 @@ public class EquatableHashSet<T>
         if (null == other) return false;
         if (_hashCode != other._hashCode) return false;
 
-        return this.IsEqualTo(other);
+        return this.IsEqualTo(other, ignoreDuplicates: true);
     }
+
+    /// <summary>
+    /// If true an exception is thrown, if same value is added twice.
+    /// </summary>
+    protected bool ExceptionOnDuplicates { get; }
 
     /// <summary>
     /// Considers values only. Position of the values are ignored.
     /// </summary>
     /// <returns></returns>
     public override int GetHashCode() => _hashCode;
+
+    public override void GetObjectData(SerializationInfo info, StreamingContext context)
+    {
+        info.AddValue(nameof(ExceptionOnDuplicates), ExceptionOnDuplicates);
+        base.GetObjectData(info, context);
+    }
 
     public new bool Remove(T item)
     {
