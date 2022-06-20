@@ -9,7 +9,7 @@ namespace Foundation
     public class ParamsTests
     {
         [Test]
-        public void ToEnumerable_ShouldReturnTheCtorArguments_When_Using_Numbers()
+        public void New_ShouldReturnTheCtorArguments_When_Using_Numbers()
         {
             var expected = Enumerable.Range(1, 3).ToArray();
 
@@ -21,7 +21,7 @@ namespace Foundation
         }
 
         [Test]
-        public void ToEnumerable_ShouldReturnTheCtorArguments_When_Using_Objects()
+        public void New_ShouldReturnTheCtorArguments_When_Using_Objects()
         {
             var number = 5;
             var name = "test";
