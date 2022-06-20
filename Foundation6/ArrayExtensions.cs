@@ -5,6 +5,11 @@ using System.Runtime.CompilerServices;
 
 public static class ArrayExtensions
 {
+    public static IEnumerable<T> AsEnumerable<T>(params T[] items)
+    {
+        return items;
+    }
+
     public static bool EqualsArray<T>(this T[] lhs, T[] rhs)
     {
         if (lhs is null) return rhs is null;

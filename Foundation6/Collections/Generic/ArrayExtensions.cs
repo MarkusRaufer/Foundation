@@ -1,14 +1,7 @@
-﻿using System.Diagnostics.CodeAnalysis;
-
-namespace Foundation.Collections.Generic;
+﻿namespace Foundation.Collections.Generic;
 
 public static class ArrayExtensions
 {
-    public static IEnumerable<T> AsEnumerable<T>(params T[] items)
-    {
-        return items;
-    }
-
     public static decimal AverageMedian<T>(this T[] array, Func<T, decimal>? converter = null)
     {
         var (opt1, opt2) = AverageMedianPosition(array);
@@ -83,9 +76,8 @@ public static class ArrayExtensions
         for (int i = 0; i < (n - 1); i++)
         {
             var r = i + random.Next(n - i);
-            var t = array[r];
-            array[r] = array[i];
-            array[i] = t;
+
+            (array[i], array[r]) = (array[r], array[i]);
         }
 
         return array;
