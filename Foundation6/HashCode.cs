@@ -1,6 +1,4 @@
-﻿using System.Diagnostics.CodeAnalysis;
-
-namespace Foundation;
+﻿namespace Foundation;
 
 public static class HashCode
 {
