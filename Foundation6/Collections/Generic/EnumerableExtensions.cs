@@ -1175,23 +1175,17 @@ public static class EnumerableExtensions
     /// </summary>
     /// <param name="lhs"></param>
     /// <param name="rhs"></param>
+    /// <param name="ignoreDuplicates">If true duplicates are ignored which is faster.</param>
     /// <typeparam name="T"></typeparam>
-    public static bool IsEqualTo<T>([DisallowNull] this IEnumerable<T> lhs, [DisallowNull] IEnumerable<T> rhs)
+    public static bool IsEqualTo<T>(
+        [DisallowNull] this IEnumerable<T> lhs,
+        [DisallowNull] IEnumerable<T> rhs, 
+        bool ignoreDuplicates = false)
     {
         if (null == lhs) return null == rhs;
         if (null == rhs) return false;
 
-        return !lhs.Difference(rhs).Any();
-        //var itRhs = rhs.GetEnumerator();
-
-        //foreach (var left in lhs)
-        //{
-        //    if (!itRhs.MoveNext()) return false;
-
-        //    if (!left.EqualsNullable(itRhs.Current)) return false;
-        //}
-
-        //return !itRhs.MoveNext();
+        return !lhs.Difference(rhs, ignoreDuplicates).Any();
     }
 
     /// <summary>
