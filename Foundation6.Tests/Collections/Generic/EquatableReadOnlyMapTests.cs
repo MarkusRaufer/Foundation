@@ -1,10 +1,10 @@
 ﻿using NUnit.Framework;
 using System.Collections.Generic;
 
-namespace Foundation.ComponentModel
+namespace Foundation.Collections.Generic
 {
     [TestFixture]
-    public class EquatableReadOnlyDictionaryTests
+    public class EquatableReadOnlyMapTests
     {
         [Test]
         public void Equals_Should_ReturnFalse_When_KeysAreDifferent()
@@ -23,8 +23,8 @@ namespace Foundation.ComponentModel
                 { "four", 3 }
             };
 
-            var sut1 = new EquatableReadOnlyDictionary<string, object>(keyValues1);
-            var sut2 = new EquatableReadOnlyDictionary<string, object>(keyValues2);
+            var sut1 = new EquatableReadOnlyMap<string, object>(keyValues1);
+            var sut2 = new EquatableReadOnlyMap<string, object>(keyValues2);
 
             Assert.AreNotEqual(sut1, sut2);
             Assert.AreNotEqual(sut1.GetHashCode(), sut2.GetHashCode());
@@ -47,8 +47,8 @@ namespace Foundation.ComponentModel
                 { "four", 4 }
             };
 
-            var sut1 = new EquatableReadOnlyDictionary<string, object>(keyValues1);
-            var sut2 = new EquatableReadOnlyDictionary<string, object>(keyValues2);
+            var sut1 = new EquatableReadOnlyMap<string, object>(keyValues1);
+            var sut2 = new EquatableReadOnlyMap<string, object>(keyValues2);
 
             Assert.AreNotEqual(sut1, sut2);
             Assert.AreNotEqual(sut1.GetHashCode(), sut2.GetHashCode());
@@ -71,8 +71,8 @@ namespace Foundation.ComponentModel
                 { "three", 4 }
             };
 
-            var sut1 = new EquatableReadOnlyDictionary<string, object>(keyValues1);
-            var sut2 = new EquatableReadOnlyDictionary<string, object>(keyValues2);
+            var sut1 = new EquatableReadOnlyMap<string, object>(keyValues1);
+            var sut2 = new EquatableReadOnlyMap<string, object>(keyValues2);
 
             Assert.AreNotEqual(sut1, sut2);
             Assert.AreNotEqual(sut1.GetHashCode(), sut2.GetHashCode());
@@ -95,8 +95,8 @@ namespace Foundation.ComponentModel
                 { "three", 3 }
             };
 
-            var sut1 = new EquatableReadOnlyDictionary<string, object>(keyValues1);
-            var sut2 = new EquatableReadOnlyDictionary<string, object>(keyValues2);
+            var sut1 = new EquatableReadOnlyMap<string, object>(keyValues1);
+            var sut2 = new EquatableReadOnlyMap<string, object>(keyValues2);
 
             Assert.AreEqual(sut1, sut2);
             Assert.AreEqual(sut1.GetHashCode(), sut2.GetHashCode());

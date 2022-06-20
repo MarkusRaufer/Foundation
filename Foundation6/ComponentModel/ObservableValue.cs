@@ -57,7 +57,7 @@ public struct ObservableValue<T> : IEquatable<ObservableValue<T>>
             if (null != _value && _value.Equals(value)) return;
 
             _value = value;
-            if (null != ValueChanged) ValueChanged(_value);
+            ValueChanged?.Invoke(_value);
         }
     }
 }

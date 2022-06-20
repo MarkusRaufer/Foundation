@@ -1,7 +1,7 @@
 ﻿using System.Collections;
 using System.Diagnostics.CodeAnalysis;
 
-namespace Foundation.ComponentModel
+namespace Foundation.Collections.Generic
 {
     public static class EquatableArray
     {
@@ -11,7 +11,7 @@ namespace Foundation.ComponentModel
         }
     }
 
-    public struct EquatableArray<T> 
+    public struct EquatableArray<T>
         : ICloneable
         , IEnumerable<T>
         , IEquatable<EquatableArray<T>>
@@ -44,7 +44,7 @@ namespace Foundation.ComponentModel
 
         public object Clone()
         {
-            return IsEmpty 
+            return IsEmpty
                 ? new EquatableArray<T>(Array.Empty<T>())
                 : new EquatableArray<T>((T[])_values.Clone());
         }
@@ -54,13 +54,13 @@ namespace Foundation.ComponentModel
         public bool Equals(T[]? other)
         {
             if (IsEmpty) return null == other || 0 == other.Length;
-            
+
             return null != other && _values.SequenceEqual(other);
         }
 
         public bool Equals(EquatableArray<T> other)
         {
-            if(IsEmpty) return other.IsEmpty;
+            if (IsEmpty) return other.IsEmpty;
             return !other.IsEmpty && _values.SequenceEqual(other._values);
         }
 

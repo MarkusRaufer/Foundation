@@ -1,6 +1,6 @@
 ﻿namespace Foundation;
 
-using Foundation.ComponentModel;
+using Foundation.Collections.Generic;
 
 public abstract record TimeDef
 {

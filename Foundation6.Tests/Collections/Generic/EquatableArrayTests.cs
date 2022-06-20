@@ -2,7 +2,7 @@
 using System;
 using System.Linq;
 
-namespace Foundation.ComponentModel
+namespace Foundation.Collections.Generic
 {
     [TestFixture]
     public class EquatableArrayTests
@@ -24,7 +24,7 @@ namespace Foundation.ComponentModel
 
             bool method(EquatableArray<int> sut)
             {
-               return ints.SequenceEqual(sut);
+                return ints.SequenceEqual(sut);
             }
 
             Assert.IsTrue(method(ints));

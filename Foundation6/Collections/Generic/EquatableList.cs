@@ -1,14 +1,13 @@
-﻿using Foundation.Collections.Generic;
-using System.Runtime.Serialization;
+﻿using System.Runtime.Serialization;
 
-namespace Foundation.ComponentModel
+namespace Foundation.Collections.Generic
 {
     /// <summary>
     /// This list checks the equality of all elements and their positions.
     /// </summary>
     /// <typeparam name="T"></typeparam>
     [Serializable]
-    public class EquatableList<T> 
+    public class EquatableList<T>
         : List<T>
         , IEquatable<EquatableList<T>>
         , ISerializable
@@ -24,7 +23,7 @@ namespace Foundation.ComponentModel
 
         public EquatableList(IEnumerable<T> collection)
         {
-            foreach(T item in collection)
+            foreach (T item in collection)
                 base.Add(item);
 
             CreateHashCode();
@@ -61,7 +60,7 @@ namespace Foundation.ComponentModel
                 CreateHashCode();
             }
         }
-        
+
         public new void Add(T item)
         {
             base.Add(item);
@@ -114,12 +113,12 @@ namespace Foundation.ComponentModel
 
         public void GetObjectData(SerializationInfo info, StreamingContext context)
         {
-            info.AddValue(SerializationKey, (List<T>)this);
+            info.AddValue(SerializationKey, this);
         }
 
         public new bool Remove(T item)
         {
-            if(base.Remove(item))
+            if (base.Remove(item))
             {
                 CreateHashCode();
                 return true;

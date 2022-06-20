@@ -1,6 +1,5 @@
-﻿namespace Foundation.Tests.ComponentModel;
+﻿namespace Foundation.Collections.Generic;
 
-using Foundation.Collections.Generic;
 using Foundation.ComponentModel;
 using NUnit.Framework;
 using System;

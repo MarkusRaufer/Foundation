@@ -1,6 +1,7 @@
-﻿namespace Foundation.ComponentModel;
+﻿namespace Foundation.Collections.Generic;
 
-using Foundation.Collections.Generic;
+using Foundation;
+using Foundation.ComponentModel;
 using System.Collections;
 using System.Diagnostics.CodeAnalysis;
 using System.Runtime.Serialization;
@@ -55,7 +56,7 @@ public class EquatableCollection<T>
     public void Add(T item)
     {
         item.ThrowIfNull();
-        
+
         _collection.Add(item);
 
         _hashCode = CreateHashCode();

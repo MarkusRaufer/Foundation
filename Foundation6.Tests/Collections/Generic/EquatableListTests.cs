@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Foundation.ComponentModel
+namespace Foundation.Collections.Generic
 {
     [TestFixture]
     public class EquatableListTests
@@ -39,7 +39,7 @@ namespace Foundation.ComponentModel
         {
             var sut1 = new EquatableList<int> { 1, 2, 3 };
             var sut2 = new EquatableList<int> { 1, 2, 3 };
-            Assert.True(sut1.Equals(sut2));     
+            Assert.True(sut1.Equals(sut2));
         }
 
         [Test]
@@ -74,7 +74,7 @@ namespace Foundation.ComponentModel
         {
             var sut1 = new EquatableList<int> { 1, 2, 3 };
             var sut2 = new EquatableList<int> { 1, 2, 3 };
-            
+
             Assert.True(sut1.GetHashCode() == sut2.GetHashCode());
         }
     }

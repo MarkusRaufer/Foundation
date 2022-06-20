@@ -1,7 +1,7 @@
-﻿namespace Foundation.ComponentModel;
+﻿namespace Foundation.Collections.Generic;
 
 using Foundation;
-using Foundation.Collections.Generic;
+using Foundation.ComponentModel;
 using System.Collections;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
@@ -27,7 +27,7 @@ public class EquatableMap<TKey, TValue>
     {
     }
 
-    public EquatableMap([DisallowNull] IEnumerable<KeyValuePair<TKey, TValue>> keyValues) 
+    public EquatableMap([DisallowNull] IEnumerable<KeyValuePair<TKey, TValue>> keyValues)
         : this(keyValues.ToDictionary(kv => kv.Key, kv => kv.Value))
     {
     }
@@ -101,7 +101,7 @@ public class EquatableMap<TKey, TValue>
     public void Add(IEnumerable<KeyValuePair<TKey, TValue>> keyValues)
     {
         keyValues.ThrowIfNull();
-        
+
         foreach (var keyValue in keyValues)
         {
             _keyValues.Add(keyValue);

@@ -1,7 +1,6 @@
-﻿namespace Foundation.ComponentModel;
+﻿namespace Foundation.Collections.Generic;
 
 using Foundation;
-using Foundation.Collections.Generic;
 
 using System.Collections;
 using System.Diagnostics.CodeAnalysis;
@@ -12,20 +11,20 @@ using System.Diagnostics.CodeAnalysis;
 /// </summary>
 /// <typeparam name="TKey"></typeparam>
 /// <typeparam name="TValue"></typeparam>
-public class EquatableReadOnlyDictionary<TKey, TValue>
+public class EquatableReadOnlyMap<TKey, TValue>
     : IReadOnlyDictionary<TKey, TValue>
-    , IEquatable<EquatableReadOnlyDictionary<TKey, TValue>>
+    , IEquatable<EquatableReadOnlyMap<TKey, TValue>>
     where TKey : notnull
 {
     private readonly IDictionary<TKey, TValue> _dictionary;
     private readonly int _hashCode;
 
-    public EquatableReadOnlyDictionary(IEnumerable<KeyValuePair<TKey, TValue>> keyValues)
+    public EquatableReadOnlyMap(IEnumerable<KeyValuePair<TKey, TValue>> keyValues)
         : this(keyValues.ToDictionary(kvp => kvp.Key, kvp => kvp.Value))
     {
     }
 
-    public EquatableReadOnlyDictionary(IDictionary<TKey, TValue> dictionary)
+    public EquatableReadOnlyMap(IDictionary<TKey, TValue> dictionary)
     {
         _dictionary = dictionary.ThrowIfNull();
         _hashCode = HashCode.FromObjects(_dictionary);
@@ -37,11 +36,11 @@ public class EquatableReadOnlyDictionary<TKey, TValue>
 
     public bool ContainsKey(TKey key) => _dictionary.ContainsKey(key);
 
-    protected static int DefaultHashCode { get; } = typeof(EquatableReadOnlyDictionary<TKey, TValue>).GetHashCode();
+    protected static int DefaultHashCode { get; } = typeof(EquatableReadOnlyMap<TKey, TValue>).GetHashCode();
 
-    public override bool Equals(object? obj) => Equals(obj as EquatableReadOnlyDictionary<TKey, TValue>);
+    public override bool Equals(object? obj) => Equals(obj as EquatableReadOnlyMap<TKey, TValue>);
 
-    public bool Equals(EquatableReadOnlyDictionary<TKey, TValue>? other)
+    public bool Equals(EquatableReadOnlyMap<TKey, TValue>? other)
     {
         if (other is null) return false;
         if (_hashCode != other._hashCode) return false;

@@ -1,6 +1,7 @@
-﻿namespace Foundation.ComponentModel;
+﻿namespace Foundation.Collections.Generic;
 
-using Foundation.Collections.Generic;
+using Foundation;
+using Foundation.ComponentModel;
 using System.Runtime.Serialization;
 
 /// <summary>
@@ -29,7 +30,7 @@ public class EquatableHashSet<T>
         CollectionChanged = new Event<Action<CollectionEvent<T>>>();
     }
 
-    public EquatableHashSet(IEqualityComparer<T>? comparer) :base(comparer)
+    public EquatableHashSet(IEqualityComparer<T>? comparer) : base(comparer)
     {
         CreateHashCode();
         CollectionChanged = new Event<Action<CollectionEvent<T>>>();
@@ -106,7 +107,7 @@ public class EquatableHashSet<T>
     public bool Equals(EquatableHashSet<T>? other)
     {
         if (null == other) return false;
-        if(_hashCode != other._hashCode) return false;
+        if (_hashCode != other._hashCode) return false;
 
         return this.IsEqualTo(other);
     }
