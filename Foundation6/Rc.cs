@@ -1,7 +1,5 @@
 ﻿namespace Foundation;
 
-using System.Diagnostics.CodeAnalysis;
-
 public static class Rc
 {
     /// <summary>

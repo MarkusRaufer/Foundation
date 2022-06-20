@@ -1,7 +1,5 @@
 ﻿namespace Foundation;
 
-using System.Diagnostics.CodeAnalysis;
-
 /// <summary>
 /// can be IsTrue, IsFalse or IsNone. IsNone means that it is neither true nor false.
 /// </summary>

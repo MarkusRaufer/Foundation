@@ -1,6 +1,4 @@
-﻿using System.Diagnostics.CodeAnalysis;
-
-namespace Foundation;
+﻿namespace Foundation;
 
 public record struct RatedValue<TValue, TRating>(TValue Value, TRating Rating)
 {

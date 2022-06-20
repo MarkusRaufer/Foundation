@@ -1,7 +1,6 @@
 ﻿namespace Foundation;
 
 using System.Diagnostics;
-using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.Runtime.Serialization;
 
@@ -117,7 +116,6 @@ public readonly struct Identifier
         return (T)Value;
     }
 
-    [NotNull]
     public IComparable Value { get; }
 }
 

@@ -1,7 +1,6 @@
 ﻿namespace Foundation;
 
 using System.ComponentModel;
-using System.Diagnostics.CodeAnalysis;
 
 /// <summary>
 /// Value-object with a name and a value It implements INotifyPropertyChanged.

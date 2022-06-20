@@ -1,6 +1,4 @@
-﻿using System.Diagnostics.CodeAnalysis;
-
-namespace Foundation;
+﻿namespace Foundation;
 
 public static class NumberHelper
 {
@@ -47,4 +45,3 @@ public static class NumberHelper
             yield return d;
     }
 }
-

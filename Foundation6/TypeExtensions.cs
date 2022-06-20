@@ -1,7 +1,6 @@
 ﻿namespace Foundation;
 
 using System.Collections;
-using System.Diagnostics.CodeAnalysis;
 using System.Text;
 
 public static class TypeExtensions

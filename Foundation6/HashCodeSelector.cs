@@ -1,7 +1,8 @@
-﻿using System.Diagnostics.CodeAnalysis;
+﻿namespace Foundation;
 
-namespace Foundation;
-
+/// <summary>
+/// TODO: check if obsolete
+/// </summary>
 public class HashCodeSelector
 {
     public static HashCodeSelector<T> Create<T, TSelector>(T? obj, params Func<T, TSelector>[] selectors)

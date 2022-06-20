@@ -1,6 +1,5 @@
 ﻿namespace Foundation;
 
-using System.Diagnostics.CodeAnalysis;
 using System.Linq.Expressions;
 
 public static class NumericHelper

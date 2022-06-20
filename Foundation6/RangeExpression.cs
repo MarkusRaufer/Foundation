@@ -129,22 +129,21 @@ public class Exactly<T>
     : ISingleValueRangeExpression<T>
     , IEquatable<ISingleValueRangeExpression<T>>
 {
-    public Exactly([DisallowNull] T value)
+    public Exactly(T value)
     {
-        Value = value;
+        Value = value.ThrowIfNull();
     }
 
     public override bool Equals(object? obj) => obj is ISingleValueRangeExpression<T> other && Equals(other);
 
-    public bool Equals(ISingleValueRangeExpression<T>? other) => null != other && Value.Equals(other.Value);
+    public bool Equals(ISingleValueRangeExpression<T>? other) => null != other && Value!.Equals(other.Value);
 
-    public override int GetHashCode() => Value.GetHashCode();
+    public override int GetHashCode() => Value!.GetHashCode();
 
-    public bool IsInRange(T? value) => Value.Equals(value);
+    public bool IsInRange(T value) => Value!.Equals(value);
 
     public override string ToString() => $"{Value}";
 
-    [NotNull]
     public T Value { get; }
 
 }

@@ -1,7 +1,5 @@
 ﻿namespace Foundation;
 
-using System.Diagnostics.CodeAnalysis;
-
 public abstract class Identifiable<TId> : IEquatable<IIdentifiable<TId>>
     where TId : notnull
 {
@@ -16,7 +14,6 @@ public abstract class Identifiable<TId> : IEquatable<IIdentifiable<TId>>
 
     public override int GetHashCode() => Id.GetHashCode();
 
-    [NotNull]
     public TId Id { get; }
 
     public override string ToString() => $"Id: {Id}";

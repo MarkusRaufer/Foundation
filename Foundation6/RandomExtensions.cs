@@ -1,7 +1,6 @@
 ﻿namespace Foundation;
 
 using Foundation.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
 
 public static class RandomExtensions
 {
