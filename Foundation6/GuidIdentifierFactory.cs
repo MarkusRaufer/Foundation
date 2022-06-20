@@ -1,6 +1,4 @@
-﻿using System.Diagnostics.CodeAnalysis;
-
-namespace Foundation;
+﻿namespace Foundation;
 
 public class GuidIdentifierFactory : IIdentifierFactory
 {
@@ -16,7 +14,7 @@ public class GuidIdentifierFactory : IIdentifierFactory
 
     public Identifier CreateIdentifier(Guid id) => Identifier.New(id);
 
-    public static Identifier CreateIdentifierFromString(string value)
+    public Identifier CreateIdentifierFromString(string value)
     {
         value.ThrowIfNullOrEmpty(nameof(value));
 
