@@ -1,6 +1,4 @@
-﻿using System.Diagnostics.CodeAnalysis;
-
-namespace Foundation.Collections.Generic;
+﻿namespace Foundation.Collections.Generic;
 
 public static class EnumerableEx
 {
