@@ -1649,6 +1649,26 @@ namespace Foundation.Collections.Generic
         }
 
         [Test]
+        public void ThrowIfNumberNotExact_Should_ReturnNumberOfElements_When_ExactNumberOfElements_Exist()
+        {
+            var numberOfElems = 10;
+            var numbers = Enumerable.Range(1, numberOfElems);
+
+            var exactNumberOfElems = numbers.ThrowIfNumberNotExact(numberOfElems).ToArray();
+            Assert.AreEqual(numberOfElems, exactNumberOfElems.Length);
+        }
+
+        [Test]
+        public void ThrowIfNumberNotExact_Should_ThrowException_When_NumberOfElements_IsDifferent()
+        {
+            var numberOfElems = 10;
+            var numbers = Enumerable.Range(1, numberOfElems).ToArray();
+
+            Assert.Throws<ArgumentException>(() => numbers.ThrowIfNumberNotExact(numberOfElems - 1).ToArray());
+            Assert.Throws<ArgumentException>(() => numbers.ThrowIfNumberNotExact(numberOfElems + 1).ToArray());
+        }
+
+        [Test]
         public void ToBreakable()
         {
             {

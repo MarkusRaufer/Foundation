@@ -2494,7 +2494,8 @@ public static class EnumerableExtensions
     /// <exception cref="ArgumentOutOfRangeException"></exception>
     public static IEnumerable<T> TakeExact<T>(this IEnumerable<T> items, int numberOfElements)
     {
-        if (0 > numberOfElements) throw new ArgumentOutOfRangeException(nameof(numberOfElements), "cannot be negative");
+        if (0 > numberOfElements)
+            throw new ArgumentOutOfRangeException(nameof(numberOfElements), "cannot be negative");
 
         var required = new List<T>();
 
@@ -2601,7 +2602,7 @@ public static class EnumerableExtensions
 
         if (!items.Any())
         {
-            var exception = exceptionFactory() ?? throw new ArgumentException("factory returned null");
+            var exception = exceptionFactory() ?? throw new ArgumentException("returned null", nameof(exceptionFactory));
             throw exception;
         }
         return items;
@@ -2617,10 +2618,18 @@ public static class EnumerableExtensions
     /// <exception cref="ArgumentException">is thrown when number of elements differs from  <paramref name="numberOfElements"/></exception>
     public static IEnumerable<T> ThrowIfNumberNotExact<T>(this IEnumerable<T> items, int numberOfElements)
     {
-        var elems = items.TakeExact(numberOfElements).ToArray();
-        if (0 == elems.Length) throw new ArgumentException($"items does not have exact {numberOfElements} elements");
+        if (!items.TakeExact(numberOfElements).Any()) 
+            throw new ArgumentException($"items does not have exact {numberOfElements} elements");
 
-        return elems;
+        return items;
+    }
+
+    public static IEnumerable<T> ThrowIfNullElement<T>(this IEnumerable<T> items)
+    {
+
+        if (items.Any(x => null == x)) throw new ArgumentNullException(nameof(items), $"has null elements");
+
+        return items;
     }
 
     /// <summary>
