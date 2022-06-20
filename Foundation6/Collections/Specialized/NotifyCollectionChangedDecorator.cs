@@ -1,6 +1,5 @@
 ﻿using Foundation.ComponentModel;
 using System.Collections.Specialized;
-using System.Diagnostics.CodeAnalysis;
 
 namespace Foundation.Collections.Specialized
 {

@@ -1,7 +1,6 @@
 ﻿namespace Foundation.Collections.Generic;
 
 using Foundation.ComponentModel;
-using System.Diagnostics.CodeAnalysis;
 
 public class TypedIdPropertyMap<TId> : TypedIdPropertyMap<string, TId>
     where TId : notnull

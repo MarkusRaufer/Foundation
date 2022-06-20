@@ -1,6 +1,4 @@
-﻿using System.Diagnostics.CodeAnalysis;
-
-namespace Foundation;
+﻿namespace Foundation;
 
 public struct Fused
 {
@@ -94,16 +92,12 @@ public struct Fused<T> : IEquatable<Fused<T>>
         return !(left == right);
     }
 
-    public override bool Equals([NotNullWhen(true)] object? obj)
-    {
-        if(obj is Fused<T> other) return Equals(other);
-
-        return false;
-    }
+    public override bool Equals(object? obj) => obj is Fused<T> other && Equals(other);
 
     public bool Equals(Fused<T> other)
     {
         if (Value is null) return other.Value is null;
+
         return Value.Equals(other.Value);
     }
 

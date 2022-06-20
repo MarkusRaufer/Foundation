@@ -1,6 +1,5 @@
 ﻿namespace Foundation;
 
-using System.Diagnostics.CodeAnalysis;
 using System.Runtime.Serialization;
 
 public static class Opt

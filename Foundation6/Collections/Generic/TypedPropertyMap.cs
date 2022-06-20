@@ -2,7 +2,6 @@
 
 using Foundation.ComponentModel;
 using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
 
 public class TypedPropertyMap<TObjectType> 
     : PropertyMap<TObjectType, PropertyChangedEvent<TObjectType>>

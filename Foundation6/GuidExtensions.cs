@@ -1,10 +1,10 @@
-﻿namespace Foundation;
+﻿using System.Runtime.CompilerServices;
 
-using System.Diagnostics.CodeAnalysis;
+namespace Foundation;
 
 public static class GuidExtensions
 {
-    public static ref Guid ThrowIfEmpty(this ref Guid guid, string argumentName)
+    public static ref Guid ThrowIfEmpty(this ref Guid guid, [CallerArgumentExpression("guid")] string argumentName = "")
     {
         if(Guid.Empty == guid) throw new ArgumentNullException(argumentName);
         return ref guid;
