@@ -19,7 +19,7 @@ public readonly struct Identifier
     private readonly bool _isInitialized;
     #region ctors
 
-    internal Identifier([DisallowNull] IComparable value)
+    internal Identifier(IComparable value)
     {
         Value = value.ThrowIfNull();
 

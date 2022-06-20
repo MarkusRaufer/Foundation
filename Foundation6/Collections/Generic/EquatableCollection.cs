@@ -24,7 +24,7 @@ public class EquatableCollection<T>
     {
     }
 
-    public EquatableCollection([DisallowNull] ICollection<T> collection)
+    public EquatableCollection(ICollection<T> collection)
     {
         _collection = collection.ThrowIfNull();
 

@@ -94,7 +94,7 @@ public static class ReadOnlyMemoryExtensions
     /// <returns></returns>
     public static IEnumerable<int> IndicesOfAny<T>(
         this ReadOnlyMemory<T> memory, 
-        [DisallowNull] IEnumerable<T> selectors)
+        IEnumerable<T> selectors)
     {
         for (var i = 0; i < memory.Length; i++)
         {

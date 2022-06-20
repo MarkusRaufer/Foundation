@@ -10,7 +10,7 @@ namespace Foundation.Collections.Specialized
 
         private readonly ICollectionChanged<T> _collectionChanged;
 
-        public NotifyCollectionChangedDecorator([DisallowNull] ICollectionChanged<T> collectionChanged)
+        public NotifyCollectionChangedDecorator(ICollectionChanged<T> collectionChanged)
         {
             _collectionChanged = collectionChanged.ThrowIfNull();
             _collectionChanged.CollectionChanged.Subscribe(OnCollectionChanged);

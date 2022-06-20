@@ -31,7 +31,7 @@ namespace Foundation.Collections.ObjectModel
         {
             Dispose();
         }
-        public PropertyCollection([DisallowNull] IEnumerable<Property>? properties)
+        public PropertyCollection(IEnumerable<Property> properties)
         {
             properties.ThrowIfNull();
 
@@ -158,7 +158,7 @@ namespace Foundation.Collections.ObjectModel
             }
         }
 
-        protected void RegisterPropertyChanged([DisallowNull] Property? property)
+        protected void RegisterPropertyChanged(Property property)
         {
             property.ThrowIfNull();
 
@@ -178,7 +178,7 @@ namespace Foundation.Collections.ObjectModel
             return Remove(property);
         }
 
-        public bool Remove([DisallowNull] Property property)
+        public bool Remove(Property property)
         {
             if (IsReadOnly) throw new InvalidOperationException("collection is readonly");
 

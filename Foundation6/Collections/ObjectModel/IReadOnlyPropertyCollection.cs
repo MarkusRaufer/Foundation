@@ -8,7 +8,7 @@ namespace Foundation.Collections.ObjectModel
 
     public interface IReadOnlyPropertyCollection<TProperty> : IReadOnlyCollection<TProperty>
     {
-        bool ContainsProperty([DisallowNull] string name);
-        bool TryGetProperty([DisallowNull] string name, [MaybeNullWhen(false)] out TProperty? property);
+        bool ContainsProperty(string name);
+        bool TryGetProperty(string name, [MaybeNullWhen(false)] out TProperty? property);
     }
 }

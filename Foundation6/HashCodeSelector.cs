@@ -4,7 +4,7 @@ namespace Foundation;
 
 public class HashCodeSelector
 {
-    public static HashCodeSelector<T> Create<T, TSelector>([DisallowNull] T? obj, params Func<T, TSelector>[] selectors)
+    public static HashCodeSelector<T> Create<T, TSelector>(T? obj, params Func<T, TSelector>[] selectors)
     {
         return new HashCodeSelector<T, TSelector>(obj, selectors);
     }
@@ -12,7 +12,7 @@ public class HashCodeSelector
 
 public abstract class HashCodeSelector<T>
 {
-    public HashCodeSelector([DisallowNull] T? obj)
+    public HashCodeSelector(T? obj)
     {
         Object = obj.ThrowIfNull();
     }
@@ -24,7 +24,7 @@ public abstract class HashCodeSelector<T>
 
 public class HashCodeSelector<T, TSelector> : HashCodeSelector<T>
 {
-    public HashCodeSelector([DisallowNull] T? obj, params Func<T, TSelector>[] selectors) : base(obj)
+    public HashCodeSelector(T? obj, params Func<T, TSelector>[] selectors) : base(obj)
     {
         if (0 == selectors.Length)
             throw new ArgumentOutOfRangeException(nameof(selectors), "selectors must have at least one selector");

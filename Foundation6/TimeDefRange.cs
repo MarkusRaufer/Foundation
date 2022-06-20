@@ -6,7 +6,7 @@ public class TimeDefRange : TimeDefVisitor
 {
     public Opt<TimeDef> Greatest { get; private set; }
 
-    protected bool SetGreatest([DisallowNull] TimeDef? td)
+    protected bool SetGreatest(TimeDef? td)
     {
         ArgumentNullException.ThrowIfNull(td);
 

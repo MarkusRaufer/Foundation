@@ -26,7 +26,7 @@ public class Property<TValue>
     private int _hashCode;
     private TValue? _value;
 
-    public Property([DisallowNull] string name, TValue? value = default)
+    public Property(string name, TValue? value = default)
     {
         Name = name.ThrowIfNullOrEmpty(nameof(name));
         _value = value;

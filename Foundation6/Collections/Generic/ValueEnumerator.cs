@@ -7,7 +7,7 @@ public struct ValueEnumerator<T> : IEnumerator<T?>
 {
     private readonly IEnumerator<T> _enumerator;
 
-    public ValueEnumerator([DisallowNull] IEnumerator<T> enumerator)
+    public ValueEnumerator(IEnumerator<T> enumerator)
     {
         _enumerator = enumerator.ThrowIfNull();
     }

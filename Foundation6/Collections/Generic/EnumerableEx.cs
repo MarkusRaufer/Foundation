@@ -11,7 +11,7 @@ public static class EnumerableEx
     /// <param name="factory">Factory of elements of type T.</param>
     /// <param name="seed">This is the seed value which is the first element.</param>
     /// <returns></returns>
-    public static IEnumerable<T> Generator<T>([DisallowNull] Func<T, T> factory, T seed)
+    public static IEnumerable<T> Generator<T>(Func<T, T> factory, T seed)
     {
         factory.ThrowIfNull();
 

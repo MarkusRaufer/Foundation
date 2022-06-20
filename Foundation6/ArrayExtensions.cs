@@ -6,7 +6,7 @@ using System.Runtime.CompilerServices;
 
 public static class ArrayExtensions
 {
-    public static bool EqualsArray<T>(this T[] lhs, [DisallowNull] T[] rhs)
+    public static bool EqualsArray<T>(this T[] lhs, T[] rhs)
     {
         if (lhs is null) return rhs is null;
 

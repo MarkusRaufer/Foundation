@@ -6,7 +6,7 @@ using System.Diagnostics.CodeAnalysis;
 
 public static class EnumerableExtensions
 {
-    public static IEnumerable AfterEveryObject([DisallowNull] this IEnumerable items, [DisallowNull] Action action)
+    public static IEnumerable AfterEveryObject(this IEnumerable items, Action action)
     {
         items.ThrowIfNull();
         action.ThrowIfNull();
@@ -22,14 +22,14 @@ public static class EnumerableExtensions
         }
     }
 
-    public static bool AnyObject([DisallowNull] this IEnumerable items)
+    public static bool AnyObject(this IEnumerable items)
     {
         items.ThrowIfNull();
 
         return items.GetEnumerator().MoveNext();
     }
 
-    public static bool AnyObject([DisallowNull] this IEnumerable items, [DisallowNull] Func<object, bool> predicate)
+    public static bool AnyObject(this IEnumerable items, Func<object, bool> predicate)
     {
         items.ThrowIfNull();
         predicate.ThrowIfNull();
@@ -68,7 +68,7 @@ public static class EnumerableExtensions
         return item.Value!;
     }
 
-    private static Opt<object> FirstOrDefaultObject([DisallowNull] this IEnumerable items)
+    private static Opt<object> FirstOrDefaultObject(this IEnumerable items)
     {
         items.ThrowIfNull();
 
@@ -81,7 +81,7 @@ public static class EnumerableExtensions
         return Opt.None<object>();
     }
 
-    public static void ForEachObject([DisallowNull] this IEnumerable items, [DisallowNull] Action<object> action)
+    public static void ForEachObject(this IEnumerable items, Action<object> action)
     {
         items.ThrowIfNull();
         action.ThrowIfNull();
@@ -97,7 +97,7 @@ public static class EnumerableExtensions
     /// <param name="items"></param>
     /// <param name="predicate"></param>
     /// <returns></returns>
-    public static IEnumerable<T> Ignore<T>([DisallowNull] this IEnumerable<T> items, [DisallowNull] Func<T, bool> predicate)
+    public static IEnumerable<T> Ignore<T>(this IEnumerable<T> items, Func<T, bool> predicate)
     {
         items.ThrowIfNull();
         predicate.ThrowIfNull();
@@ -118,7 +118,7 @@ public static class EnumerableExtensions
     /// <param name="items"></param>
     /// <param name="indices"></param>
     /// <returns></returns>
-    public static IEnumerable<T> Ignore<T>([DisallowNull] this IEnumerable<T> items, params int[] indices)
+    public static IEnumerable<T> Ignore<T>(this IEnumerable<T> items, params int[] indices)
     {
         items.ThrowIfNull();
         if (0 == indices.Length) yield break;
@@ -140,7 +140,7 @@ public static class EnumerableExtensions
         return !items.GetEnumerator().MoveNext();
     }
 
-    public static IEnumerable<T> OfType<T>([DisallowNull] this IEnumerable items)
+    public static IEnumerable<T> OfType<T>(this IEnumerable items)
     {
         foreach (var item in items.ThrowIfNull())
         {
@@ -148,7 +148,7 @@ public static class EnumerableExtensions
         }
     }
 
-    public static IEnumerable<object> OfTypes([DisallowNull] this IEnumerable items, params Type[] types)
+    public static IEnumerable<object> OfTypes(this IEnumerable items, params Type[] types)
     {
         items = items.ThrowIfNull();
         Type? type = default;
@@ -159,7 +159,7 @@ public static class EnumerableExtensions
         }
     }
 
-    public static IEnumerable<T> OfTypes<T>([DisallowNull] this IEnumerable items, params Type[] types)
+    public static IEnumerable<T> OfTypes<T>(this IEnumerable items, params Type[] types)
     {
         items.ThrowIfNull();
         foreach (var item in items.OfTypes(types))
@@ -175,7 +175,7 @@ public static class EnumerableExtensions
     /// <param name="items"></param>
     /// <param name="action"></param>
     /// <returns></returns>
-    public static IEnumerable OnFirstObject([DisallowNull] this IEnumerable items, [DisallowNull] Action action)
+    public static IEnumerable OnFirstObject(this IEnumerable items, Action action)
     {
         items.ThrowIfNull();
         action.ThrowIfNull();
@@ -199,7 +199,7 @@ public static class EnumerableExtensions
     /// <param name="items"></param>
     /// <param name="action"></param>
     /// <returns></returns>
-    public static IEnumerable OnFirstObject([DisallowNull] this IEnumerable items, [DisallowNull] Action<object> action)
+    public static IEnumerable OnFirstObject(this IEnumerable items, Action<object> action)
     {
         items.ThrowIfNull();
         action.ThrowIfNull();
@@ -216,7 +216,7 @@ public static class EnumerableExtensions
         }
     }
 
-    public static IEnumerable SelectNotNull([DisallowNull] this IEnumerable items)
+    public static IEnumerable SelectNotNull(this IEnumerable items)
     {
         if(items is null) yield break;
 
@@ -226,7 +226,7 @@ public static class EnumerableExtensions
         }
     }
 
-    public static IEnumerable SelectObject([DisallowNull] this IEnumerable items, [DisallowNull] Func<object, object> selector)
+    public static IEnumerable SelectObject(this IEnumerable items, Func<object, object> selector)
     {
         items.ThrowIfNull();
         selector.ThrowIfNull();
@@ -235,7 +235,7 @@ public static class EnumerableExtensions
             yield return selector(item);
     }
 
-    public static IEnumerable<T> SelectObject<T>([DisallowNull] this IEnumerable items, [DisallowNull] Func<object, T> selector)
+    public static IEnumerable<T> SelectObject<T>(this IEnumerable items, Func<object, T> selector)
     {
         items.ThrowIfNull();
         selector.ThrowIfNull();
@@ -244,7 +244,7 @@ public static class EnumerableExtensions
             yield return selector(item);
     }
 
-    public static IEnumerable SelectObjectByIndex([DisallowNull] this IEnumerable items, [DisallowNull] Func<long, bool> selector)
+    public static IEnumerable SelectObjectByIndex(this IEnumerable items, Func<long, bool> selector)
     {
         items.ThrowIfNull();
         selector.ThrowIfNull();
@@ -253,7 +253,7 @@ public static class EnumerableExtensions
         return items.WhereObject(item => selector(i++));
     }
 
-    public static object SingleObject([DisallowNull] this IEnumerable items)
+    public static object SingleObject(this IEnumerable items)
     {
         items.ThrowIfNull();
 
@@ -269,7 +269,7 @@ public static class EnumerableExtensions
         throw new InvalidOperationException("no element");
     }
 
-    public static IEnumerable<T> ToEnumerable<T>([DisallowNull] this IEnumerable items) => items.CastTo<T>();
+    public static IEnumerable<T> ToEnumerable<T>(this IEnumerable items) => items.CastTo<T>();
 
     public static IList<T> ToList<T>(this IEnumerable items)
     {
@@ -299,7 +299,7 @@ public static class EnumerableExtensions
         return ReadOnlyCollection.New(items);
     }
 
-    public static IEnumerable WhereObject(this IEnumerable items, [DisallowNull] Func<object, bool> selector)
+    public static IEnumerable WhereObject(this IEnumerable items, Func<object, bool> selector)
     {
         selector.ThrowIfNull();
 

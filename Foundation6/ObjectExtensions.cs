@@ -7,7 +7,7 @@ using System.Text;
 
 public static class ObjectExtensions
 {
-    public static T AssignIfNull<T>(this object? obj, [DisallowNull] Func<T> creator)
+    public static T AssignIfNull<T>(this object? obj, Func<T> creator)
     {
         if (obj is T t) return t;
 
@@ -48,7 +48,7 @@ public static class ObjectExtensions
         return default;
     }
 
-    public static object? ConvertTo(this object? obj, [DisallowNull] Type targetType)
+    public static object? ConvertTo(this object? obj, Type targetType)
     {
         targetType.ThrowIfNull();
 
@@ -126,7 +126,7 @@ public static class ObjectExtensions
     /// <param name="obj"></param>
     /// <param name="type">e.g. IList<> (without definded generic parameter.</param>
     /// <returns></returns>
-    public static bool IsOfGenericType([DisallowNull] this object obj, [DisallowNull] Type type)
+    public static bool IsOfGenericType(this object obj, Type type)
     {
         obj.ThrowIfNull();
         type.ThrowIfNull();
@@ -151,7 +151,7 @@ public static class ObjectExtensions
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static T ThrowIf<T>(
         this T? obj, 
-        [DisallowNull] Func<bool> predicate, 
+        Func<bool> predicate, 
         string? message = null, 
         [CallerArgumentExpression("obj")] string paramName = "")
     {
@@ -191,8 +191,8 @@ public static class ObjectExtensions
     [return: NotNull]
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static T ThrowIfOutOfRange<T>(
-        [DisallowNull] this T obj, 
-        [DisallowNull] Func<bool> outOfRangePredicate, 
+        this T obj, 
+        Func<bool> outOfRangePredicate, 
         [CallerArgumentExpression("obj")] string paramName = "")
     {
         return outOfRangePredicate() ? throw new ArgumentOutOfRangeException(paramName) : obj.ThrowIfNull();
@@ -212,8 +212,8 @@ public static class ObjectExtensions
     [return: NotNull]
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static T ThrowIfOutOfRange<T>(
-        [DisallowNull] this T obj, 
-        [DisallowNull] Func<bool> outOfRangePredicate,
+        this T obj, 
+        Func<bool> outOfRangePredicate,
         T min,
         T max, 
         [CallerArgumentExpression("obj")] string paramName = "")
@@ -226,9 +226,9 @@ public static class ObjectExtensions
     [return: NotNull]
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static T ThrowIfOutOfRange<T>(
-        [DisallowNull] this T obj,
-        [DisallowNull] Func<bool> isOutOfRange,
-        [DisallowNull] string message,
+        this T obj,
+        Func<bool> isOutOfRange,
+        string message,
         [CallerArgumentExpression("obj")] string paramName = "")
     {
         return isOutOfRange() ? throw new ArgumentOutOfRangeException(paramName, message) : obj.ThrowIfNull();

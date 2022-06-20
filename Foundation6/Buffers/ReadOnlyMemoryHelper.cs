@@ -6,7 +6,7 @@ using System.Text;
 
 public static class ReadOnlyMemoryHelper
 {
-    public static string ToString<T>([DisallowNull] IEnumerable<ReadOnlyMemory<T>> items, T separator)
+    public static string ToString<T>(IEnumerable<ReadOnlyMemory<T>> items, T separator)
     {
         var sb = new StringBuilder();
         foreach (var item in items.AfterEach(() => sb.Append(separator)))
@@ -17,7 +17,7 @@ public static class ReadOnlyMemoryHelper
         return sb.ToString();
     }
 
-    public static string ToString<T>([DisallowNull] IEnumerable<ReadOnlyMemory<T>> items, ReadOnlyMemory<T> separator)
+    public static string ToString<T>(IEnumerable<ReadOnlyMemory<T>> items, ReadOnlyMemory<T> separator)
     {
         var sb = new StringBuilder();
         foreach (var item in items.AfterEach(() => sb.Append(separator)))

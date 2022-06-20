@@ -27,7 +27,7 @@ public static class ExceptionExtensions
     /// <param name="exception"></param>
     /// <param name="separator">The separator for each exception message.</param>
     /// <returns></returns>
-    public static string FlattenedMessages(this Exception? exception, [DisallowNull] string separator = ", \n")
+    public static string FlattenedMessages(this Exception? exception, string separator = ", \n")
     {
         return Flatten(exception).Select(e => e.Message)
                                  .ToReadableString(separator);

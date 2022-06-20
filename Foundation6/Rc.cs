@@ -10,7 +10,7 @@ public static class Rc
     /// <typeparam name="T"></typeparam>
     /// <param name="obj"></param>
     /// <returns></returns>
-    public static Rc<T> New<T>([DisallowNull] T obj) where T : notnull, IEquatable<T>
+    public static Rc<T> New<T>(T obj) where T : notnull, IEquatable<T>
     {
         return new Rc<T>(obj);
     }
@@ -25,7 +25,7 @@ public struct Rc<T>
     , IOptionalComparable<Rc<T>>
     where T : notnull, IEquatable<T>
 {
-    public Rc([DisallowNull] T obj) : this(obj, 0)
+    public Rc(T obj) : this(obj, 0)
     {
     }
 

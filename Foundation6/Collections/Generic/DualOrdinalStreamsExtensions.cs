@@ -19,8 +19,8 @@ namespace Foundation.Collections.Generic
         /// <returns></returns>
         public static DualOrdinalStreams<TLeft, TRight> FilterLeft<TLeft, TRight>(
             this DualOrdinalStreams<TLeft, TRight> dualStreams,
-            [DisallowNull] Func<TLeft, bool> predicate,
-            [DisallowNull] Func<TLeft, TRight> project,
+            Func<TLeft, bool> predicate,
+            Func<TLeft, TRight> project,
             bool isExhaustive)
         {
             predicate.ThrowIfNull();
@@ -58,7 +58,7 @@ namespace Foundation.Collections.Generic
         /// <returns></returns>
         public static IEnumerable<TRight> MergeStreams<TLeft, TRight>(
             this DualOrdinalStreams<TLeft, TRight> dualStreams, 
-            [DisallowNull] Func<TLeft, TRight> project)
+            Func<TLeft, TRight> project)
         {
             project.ThrowIfNull();
 

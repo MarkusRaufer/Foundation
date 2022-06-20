@@ -9,7 +9,7 @@ public static class NumberHelper
         return GetDigits(value, n => n);
     }
 
-    public static IEnumerable<TResult> GetDigits<TResult>(int value, [DisallowNull] Func<int, TResult> projection)
+    public static IEnumerable<TResult> GetDigits<TResult>(int value, Func<int, TResult> projection)
     {
         projection.ThrowIfNull();
 
@@ -28,7 +28,7 @@ public static class NumberHelper
             yield return d;
     }
 
-    public static IEnumerable<TResult> GetDigits<TResult>(long value, [DisallowNull] Func<long, TResult> projection)
+    public static IEnumerable<TResult> GetDigits<TResult>(long value, Func<long, TResult> projection)
     {
         projection.ThrowIfNull();
 

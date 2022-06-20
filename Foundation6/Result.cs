@@ -29,14 +29,14 @@ public static class Result
 
     }
 
-    public static Result<TOk, Exception> Ok<TOk>([DisallowNull] TOk value)
+    public static Result<TOk, Exception> Ok<TOk>(TOk value)
     {
         value.ThrowIfNull();
 
         return new Result<TOk, Exception>(Opt.Some(value), Opt.None<Exception>());
     }
 
-    public static Result<TOk, TError> Ok<TOk, TError>([DisallowNull] TOk value)
+    public static Result<TOk, TError> Ok<TOk, TError>(TOk value)
     {
         value.ThrowIfNull();
         return new Result<TOk, TError>(Opt.Some(value), Opt.None<TError>());

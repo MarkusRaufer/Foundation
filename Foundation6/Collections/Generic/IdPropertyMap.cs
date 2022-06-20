@@ -127,7 +127,7 @@ namespace Foundation.Collections.Generic
             }
         }
 
-        public override void HandleEvent([DisallowNull] TEvent @event)
+        public override void HandleEvent(TEvent @event)
         {
             @event.ThrowIfNull();
 

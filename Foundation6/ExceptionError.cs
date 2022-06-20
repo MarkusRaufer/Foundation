@@ -8,7 +8,7 @@ public struct ExceptionError<TError, TException>
 {
     private int _hashCode;
 
-    public ExceptionError([DisallowNull] TError error, [DisallowNull] TException exception)
+    public ExceptionError(TError error, TException exception)
     {
         Error = error.ThrowIfNull();
         Exception = exception.ThrowIfNull();

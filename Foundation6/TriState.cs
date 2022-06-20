@@ -46,7 +46,7 @@ public struct TriState : IEquatable<TriState>
 public struct TriState<TState1, TState2> : IEquatable<TriState<TState1, TState2>>
 {
 
-    public TriState([DisallowNull] TState1 state1)
+    public TriState(TState1 state1)
     {
         state1.ThrowIfNull();
 
@@ -54,7 +54,7 @@ public struct TriState<TState1, TState2> : IEquatable<TriState<TState1, TState2>
         State2 = Opt.None<TState2>();
     }
 
-    public TriState([DisallowNull] TState2 state2)
+    public TriState(TState2 state2)
     {
         state2.ThrowIfNull();
 

@@ -11,7 +11,7 @@ public struct Id
     , IUninitializedComparable
 {
     private readonly int _hashCode;
-    internal Id(Type? entityType, [DisallowNull] IComparable value)
+    internal Id(Type? entityType, IComparable value)
     {
         Value = value.ThrowIfNull();
         EntityType = entityType ?? typeof(object);

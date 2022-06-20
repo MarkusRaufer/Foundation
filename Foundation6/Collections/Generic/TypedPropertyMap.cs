@@ -9,15 +9,15 @@ public class TypedPropertyMap<TObjectType>
     where TObjectType : notnull
 {
     public TypedPropertyMap(
-        [DisallowNull] TObjectType objectType, 
+        TObjectType objectType, 
         char pathSeparator = '/') 
         : base(objectType, pathSeparator)
     {
     }
 
     public TypedPropertyMap(
-        [DisallowNull] TObjectType objectType,
-        [DisallowNull] SortedDictionary<string, object> dictionary, 
+        TObjectType objectType,
+        SortedDictionary<string, object> dictionary, 
         char pathSeparator = '/') 
         : base(objectType, dictionary, pathSeparator)
     {

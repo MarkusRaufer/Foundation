@@ -380,7 +380,7 @@ public static class NumericHelper
     /// <typeparam name="T">Typ der Zahlen</typeparam>
     /// <param name="values"></param>
     /// <returns>Summe aller Zahlen in values.</returns>
-    public static T Sum<T>([DisallowNull] IEnumerable<T> values) where T : struct
+    public static T Sum<T>(IEnumerable<T> values) where T : struct
     {
         T sum = default;
 

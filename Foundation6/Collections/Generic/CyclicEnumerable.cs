@@ -7,7 +7,7 @@ public class CyclicEnumerable<T> : IEnumerable<T>
 {
     private readonly IEnumerable<T> _items;
 
-    public CyclicEnumerable([DisallowNull] IEnumerable<T> items)
+    public CyclicEnumerable(IEnumerable<T> items)
     {
         _items = items.ThrowIfNull();
     }
@@ -59,7 +59,7 @@ public class CyclicEnumerable<T, TCount> : IEnumerable<(TCount, T)>
 {
     private readonly IEnumerable<T> _enumerable;
     private readonly Func<TCount, TCount> _increment;
-    public CyclicEnumerable([DisallowNull] IEnumerable<T> items, TCount min, TCount max, [DisallowNull] Func<TCount, TCount> increment)
+    public CyclicEnumerable(IEnumerable<T> items, TCount min, TCount max, Func<TCount, TCount> increment)
     {
         if (null == increment) throw new ArgumentNullException(nameof(increment));
         _enumerable = items;
@@ -88,7 +88,7 @@ public class CyclicEnumerable<T, TCount> : IEnumerable<(TCount, T)>
         private readonly Func<TCount, TCount> _increment;
         private bool _passed = false;
 
-        public CyclicEnumerator([DisallowNull] IEnumerable<T> items, TCount min, TCount max, [DisallowNull] Func<TCount, TCount> increment)
+        public CyclicEnumerator(IEnumerable<T> items, TCount min, TCount max, Func<TCount, TCount> increment)
         {
             _enumerator = items.GetEnumerator();
             _increment = increment;

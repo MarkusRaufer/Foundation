@@ -4,19 +4,19 @@ namespace Foundation;
 
 public static class FuncHelper
 {
-    public static Func<object, object?> CreateObjectFunc<T, TResult>([DisallowNull] Func<T, TResult>? func)
+    public static Func<object, object?> CreateObjectFunc<T, TResult>(Func<T, TResult> func)
     {
         func.ThrowIfNull();
 
         return x => x is T t ? func(t) : null;
     }
 
-    public static Func<object, bool> CreateObjectPredicate<T>([DisallowNull] Func<T, bool> func)
+    public static Func<object, bool> CreateObjectPredicate<T>(Func<T, bool> func)
     {
         return t => func((T)t);
     }
 
-    public static Func<string, object>? StringToScalarValueConverter([DisallowNull] Type type)
+    public static Func<string, object>? StringToScalarValueConverter(Type type)
     {
         type.ThrowIfNull();
 

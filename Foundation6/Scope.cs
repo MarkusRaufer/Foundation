@@ -13,7 +13,7 @@ namespace Foundation
         /// <typeparam name="T"></typeparam>
         /// <param name="ret"></param>
         /// <returns></returns>
-        public static IEnumerable<T> ReturnsMany<T>([DisallowNull] Func<IEnumerable<T>> ret)
+        public static IEnumerable<T> ReturnsMany<T>(Func<IEnumerable<T>> ret)
         {
             ret.ThrowIfNull();
             return ret();
@@ -25,7 +25,7 @@ namespace Foundation
         /// <typeparam name="T"></typeparam>
         /// <param name="ret"></param>
         /// <returns></returns>
-        public static T Returns<T>([DisallowNull] Func<T> ret)
+        public static T Returns<T>(Func<T> ret)
         {
             ret.ThrowIfNull();
             return ret();

@@ -8,7 +8,7 @@ public class ArrayEnumerator<T> : IEnumerator<T>
     private readonly T[] _array;
     private readonly IEnumerator _enumerator;
 
-    public ArrayEnumerator([DisallowNull] T[] array)
+    public ArrayEnumerator(T[] array)
     {
         _array = array.ThrowIfNull();
         _enumerator = _array.GetEnumerator();

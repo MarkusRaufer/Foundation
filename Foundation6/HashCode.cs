@@ -62,7 +62,7 @@ public static class HashCode
             _hashCodeCreated = true;
         }
 
-        public void AddHashCodes([DisallowNull] IEnumerable<int> hashCodes)
+        public void AddHashCodes(IEnumerable<int> hashCodes)
         {
             if (null == hashCodes) return;
 
@@ -80,7 +80,7 @@ public static class HashCode
             AddObjects(pairs);
         }
 
-        public void AddObjects([DisallowNull] IEnumerable<object> objects)
+        public void AddObjects(IEnumerable<object> objects)
         {
             if (null == objects) return;
 
@@ -92,7 +92,7 @@ public static class HashCode
             }
         }
 
-        public void AddObjects<T>([DisallowNull] IEnumerable<T?> objects)
+        public void AddObjects<T>(IEnumerable<T?> objects)
         {
             if (null == objects) return;
 
@@ -104,7 +104,7 @@ public static class HashCode
             }
         }
 
-        public void AddObjects<TKey, TValue>([DisallowNull] IEnumerable<KeyValuePair<TKey, TValue>> pairs)
+        public void AddObjects<TKey, TValue>(IEnumerable<KeyValuePair<TKey, TValue>> pairs)
         {
             if (null == pairs) return;
 
@@ -192,12 +192,12 @@ public static class HashCode
         return FromHashCode(hashCodes);
     }
 
-    public static int FromHashCodes([DisallowNull] IEnumerable<int> hashCodes)
+    public static int FromHashCodes(IEnumerable<int> hashCodes)
     {
         return FromHashCode(hashCodes.ToArray());
     }
 
-    public static int FromHashCodesOrdered([DisallowNull] IEnumerable<int> hashCodes)
+    public static int FromHashCodesOrdered(IEnumerable<int> hashCodes)
     {
         var arr = hashCodes.ToArray();
         Array.Sort(arr);
@@ -229,7 +229,7 @@ public static class HashCode
         return hcb.GetHashCode();
     }
 
-    public static int FromObjects<T>([DisallowNull] IEnumerable<T> objects)
+    public static int FromObjects<T>(IEnumerable<T> objects)
     {
         var list = objects.ToArray();
         if (0 == list.Length) return 0;
@@ -241,7 +241,7 @@ public static class HashCode
         return hcb.GetHashCode();
     }
 
-    public static int FromObjects<TKey, TValue>([DisallowNull] IEnumerable<KeyValuePair<TKey, TValue>> pairs)
+    public static int FromObjects<TKey, TValue>(IEnumerable<KeyValuePair<TKey, TValue>> pairs)
     {
         var keyValues = pairs.ToArray();
         if (0 == keyValues.Length) return 0;

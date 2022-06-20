@@ -4,7 +4,7 @@ namespace Foundation.Collections.Generic;
 
 public class RingEnumerator
 {
-    public static RingEnumerator<T> Create<T>([DisallowNull] IEnumerable<T> enumerable, bool infinite = false, int index = 0)
+    public static RingEnumerator<T> Create<T>(IEnumerable<T> enumerable, bool infinite = false, int index = 0)
     {
         return new RingEnumerator<T>(enumerable, infinite, index);
     }
@@ -18,7 +18,7 @@ public class RingEnumerator<T> : IEnumerator<T?>
     private int _pos = 0;
     private readonly int _startIndex;
 
-    public RingEnumerator([DisallowNull] IEnumerable<T> enumerable, bool infinite = false, int index = 0)
+    public RingEnumerator(IEnumerable<T> enumerable, bool infinite = false, int index = 0)
     {
         if (null == enumerable) throw new ArgumentNullException(nameof(enumerable));
         _enumerator = enumerable.GetEnumerator();

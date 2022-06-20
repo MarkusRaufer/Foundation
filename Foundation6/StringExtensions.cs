@@ -75,7 +75,7 @@ public static class StringExtensions
     /// <param name="value"></param>
     /// <param name="stopAfterNumberOfHits"></param>
     /// <returns></returns>
-    public static IEnumerable<int> IndicesOf(this string str, [DisallowNull] string value, int stopAfterNumberOfHits = -1)
+    public static IEnumerable<int> IndicesOf(this string str, string value, int stopAfterNumberOfHits = -1)
     {
         var numberOfHits = 0;
         var index = str.IndexOf(value);
@@ -183,7 +183,7 @@ public static class StringExtensions
         return false;
     }
 
-    public static Opt<object> ParseScalarType(this string str, [DisallowNull] Type type)
+    public static Opt<object> ParseScalarType(this string str, Type type)
     {
         type.ThrowIfNull();
 
@@ -424,7 +424,7 @@ public static class StringExtensions
         return Opt.None<double>();
     }
 
-    public static T? ToNullableIfNullOrEmpty<T>(this string str, [DisallowNull] Func<string, T> projection)
+    public static T? ToNullableIfNullOrEmpty<T>(this string str, Func<string, T> projection)
        where T : struct
     {
         projection.ThrowIfNull();
@@ -434,7 +434,7 @@ public static class StringExtensions
         return projection(str);
     }
 
-    public static T? ToNullableIfNullOrWhiteSpace<T>(this string str, [DisallowNull] Func<string, T> projection)
+    public static T? ToNullableIfNullOrWhiteSpace<T>(this string str, Func<string, T> projection)
         where T : struct
     {
         projection.ThrowIfNull();
@@ -470,7 +470,7 @@ public static class StringExtensions
         return string.IsNullOrEmpty(str) ? Opt.None<string>() : Opt.Some(str);
     }
 
-    public static Opt<T> ToOptIfNullOrEmpty<T>(this string str, [DisallowNull] Func<string, T> projection)
+    public static Opt<T> ToOptIfNullOrEmpty<T>(this string str, Func<string, T> projection)
     {
         projection.ThrowIfNull();
 
@@ -482,7 +482,7 @@ public static class StringExtensions
         return string.IsNullOrWhiteSpace(str) ? Opt.None<string>() : Opt.Some(str);
     }
 
-    public static Opt<T> ToOptIfNullOrWhiteSpace<T>(this string str, [DisallowNull] Func<string, T> projection)
+    public static Opt<T> ToOptIfNullOrWhiteSpace<T>(this string str, Func<string, T> projection)
     {
         projection.ThrowIfNull();
 

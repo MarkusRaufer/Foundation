@@ -53,7 +53,7 @@ public static class ArrayExtensions
     /// <param name="array"></param>
     /// <param name="selector"></param>
     /// <returns></returns>
-    public static IEnumerable<int> IndexesOf<T>(this T[] array, [DisallowNull] IEnumerable<T> selectors)
+    public static IEnumerable<int> IndexesOf<T>(this T[] array, IEnumerable<T> selectors)
     {
         var selectorArray = selectors.ToArray();
 

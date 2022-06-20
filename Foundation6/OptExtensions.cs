@@ -61,8 +61,8 @@ public static class OptExtensions
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static TResult MatchReturn<T, TResult>(
         this Opt<T> option, 
-        [DisallowNull] Func<T, TResult> some, 
-        [DisallowNull] Func<TResult> none)
+        Func<T, TResult> some, 
+        Func<TResult> none)
         where TResult : notnull
     {
         some.ThrowIfNull();
@@ -80,7 +80,7 @@ public static class OptExtensions
     /// <returns></returns>
     [return: NotNull]
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static T Or<T>(this Opt<T> option, [DisallowNull] T none)
+    public static T Or<T>(this Opt<T> option, T none)
     {
         return option.IsSome ? option.Value! : none.ThrowIfNull();
     }
@@ -94,7 +94,7 @@ public static class OptExtensions
     /// <returns></returns>
     [return: NotNull]
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static T Or<T>(this Opt<T> option, [DisallowNull] Func<T> none)
+    public static T Or<T>(this Opt<T> option, Func<T> none)
     {
         none.ThrowIfNull();
 
@@ -128,7 +128,7 @@ public static class OptExtensions
     /// <returns></returns>
     [return: NotNull]
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static T OrThrow<T, TException>(this Opt<T> option, [DisallowNull] Func<TException> exception)
+    public static T OrThrow<T, TException>(this Opt<T> option, Func<TException> exception)
         where TException : Exception
     {
         if (option.IsSome) return option.Value!;

@@ -4,7 +4,7 @@ namespace Foundation;
 
 public struct Fused
 {
-    public static FusedValue<T> Value<T>([DisallowNull] T value)
+    public static FusedValue<T> Value<T>(T value)
     {
         return new FusedValue<T>(value);
     }
@@ -12,7 +12,7 @@ public struct Fused
 
 public struct FusedValue<T>
 {
-    internal FusedValue([DisallowNull] T value)
+    internal FusedValue(T value)
     {
         Value = value.ThrowIfNull();
         IsInitialized = true;
@@ -26,7 +26,7 @@ public struct FusedValue<T>
 
 public static class FusedValueExtensions
 {
-    public static Fused<T> BlowIf<T>(this FusedValue<T> value, [DisallowNull] Func<T, bool> predicate)
+    public static Fused<T> BlowIf<T>(this FusedValue<T> value, Func<T, bool> predicate)
     {
         return new Fused<T>(value.Value, predicate);
     }
@@ -77,7 +77,7 @@ public struct Fused<T> : IEquatable<Fused<T>>
     private readonly Func<T, bool> _predicate;
     private T _value;
 
-    public Fused(T? seed, [DisallowNull] Func<T, bool> predicate)
+    public Fused(T? seed, Func<T, bool> predicate)
     {
         _value = seed.ThrowIfNull();
         _predicate = predicate.ThrowIfNull();

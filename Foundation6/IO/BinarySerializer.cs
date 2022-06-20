@@ -11,12 +11,12 @@ namespace Foundation.IO
         private ICollection<MemberInfo>? _memberCache;
         private readonly Type _type;
 
-        public BinarySerializer([DisallowNull] Type type)
+        public BinarySerializer(Type type)
         {
             _type = type.ThrowIfNull();
         }
 
-        public BinarySerializer([DisallowNull] Type type, IEnumerable<string> memberNames) : this(type)
+        public BinarySerializer(Type type, IEnumerable<string> memberNames) : this(type)
         {
             _memberNames = memberNames.ThrowIfEmpty().ToArray();
         }
@@ -54,7 +54,7 @@ namespace Foundation.IO
             return _memberCache;
         }
 
-        public static BinarySerializer New<T>([DisallowNull] Type type, params Expression<Func<T, object>>[] members)
+        public static BinarySerializer New<T>(Type type, params Expression<Func<T, object>>[] members)
         {
             if(0 == members.Length) throw new ArgumentOutOfRangeException(nameof(members));
 

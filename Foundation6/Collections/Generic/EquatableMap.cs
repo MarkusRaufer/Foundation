@@ -27,12 +27,12 @@ public class EquatableMap<TKey, TValue>
     {
     }
 
-    public EquatableMap([DisallowNull] IEnumerable<KeyValuePair<TKey, TValue>> keyValues)
+    public EquatableMap(IEnumerable<KeyValuePair<TKey, TValue>> keyValues)
         : this(keyValues.ToDictionary(kv => kv.Key, kv => kv.Value))
     {
     }
 
-    public EquatableMap([DisallowNull] IDictionary<TKey, TValue> keyValues)
+    public EquatableMap(IDictionary<TKey, TValue> keyValues)
     {
         _keyValues = keyValues.ThrowIfNull();
         CreateHashCode();

@@ -4,7 +4,7 @@ using System.Diagnostics.CodeAnalysis;
 
 public static class MinMax
 {
-    public static MinMax<T> New<T>([DisallowNull] T min, [DisallowNull] T max) where T : notnull => new(min, max);
+    public static MinMax<T> New<T>(T min, T max) where T : notnull => new(min, max);
 
     public static MinMax<int> New(System.Range range)
     {
@@ -15,5 +15,5 @@ public static class MinMax
     }
 }
 
-public record struct MinMax<T>([DisallowNull] T Min, [DisallowNull] T Max) where T : notnull;
+public record struct MinMax<T>(T Min, T Max) where T : notnull;
 

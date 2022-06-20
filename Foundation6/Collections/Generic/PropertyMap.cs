@@ -15,7 +15,7 @@ namespace Foundation.Collections.Generic
         {
         }
 
-        public PropertyMap([DisallowNull] SortedDictionary<string, object> dictionary, char pathSeparator = '/') : base(dictionary, pathSeparator)
+        public PropertyMap(SortedDictionary<string, object> dictionary, char pathSeparator = '/') : base(dictionary, pathSeparator)
         {
         }
 
@@ -49,14 +49,14 @@ namespace Foundation.Collections.Generic
         , IEquatable<IPropertyMap<TObjectType>>
         where TEvent : ITypedObject<TObjectType>
     {
-        public PropertyMap([DisallowNull]TObjectType objectType, char pathSeparator = '/')
+        public PropertyMap(TObjectType objectType, char pathSeparator = '/')
             : this(objectType, new SortedDictionary<string, object>(), pathSeparator)
         {
         }
 
         public PropertyMap(
-            [DisallowNull] TObjectType objectType,
-            [DisallowNull] SortedDictionary<string, object> dictionary, 
+            TObjectType objectType,
+            SortedDictionary<string, object> dictionary, 
             char pathSeparator = '/')
             : base(dictionary, pathSeparator)
         {
@@ -95,7 +95,7 @@ namespace Foundation.Collections.Generic
         {
         }
 
-        protected PropertyMap([DisallowNull] SortedDictionary<string, object> dictionary, char pathSeparator = '/')
+        protected PropertyMap(SortedDictionary<string, object> dictionary, char pathSeparator = '/')
         {
             _dictionary = dictionary.ThrowIfNull();
             PathSeparator = pathSeparator;

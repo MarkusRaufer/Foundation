@@ -7,7 +7,7 @@ public class TypedEnumerator<T> : IEnumerator<T>
 {
     private readonly IEnumerator _enumerator;
 
-    public TypedEnumerator([DisallowNull] IEnumerator enumerator)
+    public TypedEnumerator(IEnumerator enumerator)
     {
         _enumerator = enumerator.ThrowIfNull();
     }

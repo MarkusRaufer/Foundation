@@ -15,9 +15,9 @@ public class TypedIdPropertyMap<TId> : TypedIdPropertyMap<string, TId>
     }
 
     public TypedIdPropertyMap(
-        [DisallowNull] string objectType, 
+        string objectType, 
         KeyValue<string, TId> identifier, 
-        [DisallowNull] SortedDictionary<string, object> dictionary, 
+        SortedDictionary<string, object> dictionary, 
         char pathSeparator = '/') 
         : base(objectType, identifier, dictionary, pathSeparator)
     {
@@ -38,9 +38,9 @@ public class TypedIdPropertyMap<TObjectType, TId>
     }
 
     public TypedIdPropertyMap(
-        [DisallowNull] TObjectType objectType, 
+        TObjectType objectType, 
         KeyValue<string, TId> identifier,
-        [DisallowNull] SortedDictionary<string, object> dictionary, 
+        SortedDictionary<string, object> dictionary, 
         char pathSeparator = '/') 
         : base(objectType, identifier, dictionary, pathSeparator)
     {

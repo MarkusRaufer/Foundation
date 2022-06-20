@@ -6,12 +6,12 @@ using System.Text;
 
 public static class TypeExtensions
 {
-    public static int Compare(this Type type, [DisallowNull] Type other, [DisallowNull] Func<Type, IComparable> selector)
+    public static int Compare(this Type type, Type other, Func<Type, IComparable> selector)
     {
         return selector(type).CompareTo(selector(other));
     }
 
-    public static int Compare<T>(this Type type, [DisallowNull] Type other, [DisallowNull] Func<Type, T> selector)
+    public static int Compare<T>(this Type type, Type other, Func<Type, T> selector)
         where T : IComparable<T>
     {
         return selector(type).CompareTo(selector(other));
@@ -34,7 +34,7 @@ public static class TypeExtensions
         return GetAssignableInterface(self, interfaceType);
     }
 
-    public static Type? GetAssignableInterface(this Type self, [DisallowNull] Type interfaceType)
+    public static Type? GetAssignableInterface(this Type self, Type interfaceType)
     {
         foreach (var type in self.GetInterfaces())
         {
@@ -53,7 +53,7 @@ public static class TypeExtensions
         return null;
     }
 
-    public static IEnumerable<Type> GetGenericInterfaceTypeArguments(this Type self, [DisallowNull] Type interfaceType)
+    public static IEnumerable<Type> GetGenericInterfaceTypeArguments(this Type self, Type interfaceType)
     {
         foreach (var type in self.GetInterfaces())
         {

@@ -20,7 +20,7 @@ namespace Foundation.Collections.Generic
         private readonly int _hashCode;
         private readonly T[] _values;
 
-        public EquatableArray([DisallowNull] T[] values)
+        public EquatableArray(T[] values)
         {
             _values = values.ThrowIfNull();
             _hashCode = HashCode.FromObjects(_values);
