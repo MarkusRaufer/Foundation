@@ -20,7 +20,7 @@ public static class ArrayExtensions
 
     public static IEnumerator<T> GetEnumerator<T>(this T[] array)
     {
-        return new ArrayEnumerator<T>(array);
+        return array.AsEnumerable().GetEnumerator();
     }
 
     public static T[] ThrowIfNullOrEmpty<T>(this T[] array, [CallerArgumentExpression("array")] string name = "")
