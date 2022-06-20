@@ -1,4 +1,5 @@
 ﻿using BenchmarkDotNet.Running;
+using Foundation.Benchmark;
 
 namespace Foundation.Benchmarks
 {
@@ -7,7 +8,9 @@ namespace Foundation.Benchmarks
     {
         public static void Main(string[] args)
         {
-            BenchmarkRunner.Run<ReadOnlySpanAndMemoryExtensionsBenchmarks>();
+            //BenchmarkRunner.Run<ReadOnlySpanAndMemoryExtensionsBenchmarks>();
+            //BenchmarkRunner.Run<CollectionManipulationBenchmarks>();
+            BenchmarkRunner.Run<CollectionIterationBenchmarks>();
         }
     }
 }
