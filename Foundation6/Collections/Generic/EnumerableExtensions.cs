@@ -2,7 +2,7 @@
 
 using Foundation;
 using Foundation.ComponentModel;
-using System.Diagnostics.CodeAnalysis;
+//using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
 using System.Text;
 
@@ -2562,20 +2562,18 @@ public static class EnumerableExtensions
     }
 
     /// <summary>
-    /// Throw an ArgumentNullException when an element is null.
+    /// Throws an ArgumentNullException when an element is null.
+    /// Use this method only for value objects with small collections because the check is done in an eager way.
+    /// Don't use <see cref="ThrowIfElementNull"/> for general collections because of performance reasons and also to keep the collection lazy. 
+    /// Attention: This method runs into an endless loop when using with a generator!
     /// </summary>
     /// <typeparam name="T"></typeparam>
     /// <param name="items"></param>
-    /// <param name="name"></param>
     /// <returns></returns>
     /// <exception cref="ArgumentNullException"></exception>
-    [return: NotNull]
-    public static IEnumerable<T> ThrowIfElementNull<T>(this IEnumerable<T?> items)
+    public static IEnumerable<T> ThrowIfElementNull<T>(this IEnumerable<T> items)
     {
-        foreach(var item in items.ThrowIfNull())
-        {
-            yield return item.ThrowIfNull(); ;
-        }
+        return items.Any(x => null == x) ? throw new ArgumentNullException(nameof(items)) : items;
     }
 
     /// <summary>
@@ -2620,14 +2618,6 @@ public static class EnumerableExtensions
     {
         if (!items.TakeExact(numberOfElements).Any()) 
             throw new ArgumentException($"items does not have exact {numberOfElements} elements");
-
-        return items;
-    }
-
-    public static IEnumerable<T> ThrowIfNullElement<T>(this IEnumerable<T> items)
-    {
-
-        if (items.Any(x => null == x)) throw new ArgumentNullException(nameof(items), $"has null elements");
 
         return items;
     }
