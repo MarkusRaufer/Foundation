@@ -78,8 +78,14 @@ public struct Result<TError>
                                          ? typeof(Result<TError>).GetHashCode()
                                          : System.HashCode.Combine(typeof(Result<TError>), Error);
 
+    /// <summary>
+    /// Is true if Result has an error. If <see cref="IsError"/> is true, <see cref="IsOk"/> is false;
+    /// </summary>
     public bool IsError { get; }
 
+    /// <summary>
+    /// Is true if Result has a value. If <see cref="IsOk"/> is true, <see cref="IsError"/> is false;
+    /// </summary>
     public bool IsOk => !IsError;
 
     public override string ToString() => IsOk ? $"IsOk: {IsOk}" : $"IsOk: {IsOk}, Error: {Error}";

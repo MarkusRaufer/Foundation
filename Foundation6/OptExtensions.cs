@@ -32,18 +32,21 @@ public static class OptExtensions
     /// <returns></returns>
     [return: NotNull]
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static bool Match<T>(
+    public static bool Invoke<T>(
         this Opt<T> option,
-        Action<T>? some = null,
-        Action? none = null)
+        Action<T> some,
+        Action none)
     {
+        some.ThrowIfNull();
+        none.ThrowIfNull();
+
         if (option.IsSome)
         {
-            some?.Invoke(option.Value!);
+            some.Invoke(option.Value!);
             return true;
         }
 
-        none?.Invoke();
+        none.Invoke();
 
         return false;
     }
@@ -59,7 +62,7 @@ public static class OptExtensions
     /// <returns></returns>
     [return: NotNull]
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static TResult MatchReturn<T, TResult>(
+    public static TResult Match<T, TResult>(
         this Opt<T> option, 
         Func<T, TResult> some, 
         Func<TResult> none)
@@ -69,6 +72,24 @@ public static class OptExtensions
         none.ThrowIfNull();
 
         return option.IsSome ? some(option.Value!) : none();
+    }
+
+    [return: NotNull]
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static Unit OnNone<T>(this Opt<T> option, Action action)
+    {
+        if (option.IsNone) action.Invoke();
+
+        return new Unit();
+    }
+
+    [return: NotNull]
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static Unit OnSome<T>(this Opt<T> option, Action<T> action)
+    {
+        if (option.IsSome) action.Invoke(option.Value!);
+
+        return new Unit();
     }
 
     /// <summary>
