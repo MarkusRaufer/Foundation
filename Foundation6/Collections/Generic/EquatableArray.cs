@@ -18,12 +18,14 @@ public struct EquatableArray<T>
     , IEquatable<T[]>
 {
     private readonly int _hashCode;
+    private string _valuesAsString;
     private readonly T[] _values;
 
     public EquatableArray(T[] values)
     {
         _values = values.ThrowIfNull();
         _hashCode = HashCode.FromObjects(_values);
+        _valuesAsString = "";
     }
 
     public static implicit operator EquatableArray<T>(T[] array) => EquatableArray.New(array);
@@ -74,5 +76,13 @@ public struct EquatableArray<T>
 
     public int Length => IsEmpty ? 0 : _values.Length;
 
-    public override string? ToString() => IsEmpty ? "" : _values.ToString();
+    public override string? ToString()
+    {
+        if (IsEmpty || 0 == _values.Length) return "";
+        
+        if(0 == _valuesAsString.Length)
+            _valuesAsString = string.Join(", ", _values);
+
+        return _valuesAsString;
+    }
 }
