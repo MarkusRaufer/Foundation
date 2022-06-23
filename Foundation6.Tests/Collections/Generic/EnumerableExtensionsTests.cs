@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 
 namespace Foundation.Collections.Generic
 {
@@ -1344,7 +1345,7 @@ namespace Foundation.Collections.Generic
         [Test]
         public void Replace_ShouldReturnList_When_ReplaceFizzBuzz()
         {
-            var numbers = EnumerableEx.Generator(n => ++n, 1).Take(20).Select(n => n.ToString());
+            var numbers = Enumerable.Range(1, 20).Select(n => n.ToString());
 
             var fizzBuzz = "FizzBuzz";
             var fizz = "Fizz";
@@ -1763,49 +1764,61 @@ namespace Foundation.Collections.Generic
         }
 
         [Test]
+        public void ToDualStreams_Should_ReturnDualStreams_When_PredicateIsFizzBuzz_And_IsExhaustiveIsTrue()
+        {
+            var numbers = Enumerable.Range(1, 50);
+
+            var re = new Regex("([0-9]+)");
+
+            var all = numbers.ToDualStreams(n => 0 == n % 2, n => n, true)
+                             .SelectLeft(_ => true, n => $"odd({n})")
+                             .SelectRight(_ => true, n => $"even({n})")
+                             .MergeAndSort(x => x, x => int.Parse(re.Match(x).Value))
+                             .ToArray();
+
+            foreach (var (item, counter) in all.Enumerate(seed: 1))
+            {
+                var expected = (0 == counter % 2) ? $"even({counter})" : $"odd({counter})";
+                Assert.AreEqual(expected, item);
+            }
+        }
+
+        [Test]
         public void ToDualOrdinalStreams_Should_ReturnDualOrdinalStreams_When_PredicateIsFizzBuzz_And_IsExhaustiveIsTrue()
         {
-            var numbers = EnumerableEx.Generator(n => ++n, 1).Take(50);
+            var numbers = Enumerable.Range(1, 50);
 
             var fizzBuzz = "FizzBuzz";
             var fizz = "Fizz";
             var buzz = "Buzz";
 
-            var all = numbers.ToDualOrdinalStreams(n => 0 == n % 15, n => fizzBuzz, true)
-                             .FilterLeft(n => 0 == n % 3, n => fizz, true)
-                             .FilterLeft(n => 0 == n % 5, n => buzz, true)
+            var all = numbers.ToDualOrdinalStreams(n => 0 == n % 15, _ => fizzBuzz, true)
+                             .LeftToRight(n => 0 == n % 3, _ => fizz, true)
+                             .LeftToRight(n => 0 == n % 5, _ => buzz, true)
                              .MergeStreams(n => n.ToString())
                              .ToArray();
 
-            foreach (var (item, counter) in all.Enumerate())
+            foreach (var (item, counter) in all.Enumerate(seed: 1))
             {
-                if (0 == counter)
-                {
-                    Assert.AreEqual(item, "1");
-                    continue;
-                }
-                var pos = counter + 1;
-
-                if (0 == pos % 15)
+                if (0 == counter % 15)
                 {
                     Assert.AreEqual(fizzBuzz, item);
                     continue;
                 }
-                if (0 == pos % 3)
+                if (0 == counter % 3)
                 {
                     Assert.AreEqual(fizz, item);
                     continue;
                 }
 
-                if (0 == pos % 5)
+                if (0 == counter % 5)
                 {
                     Assert.AreEqual(buzz, item);
                     continue;
                 }
 
-                Assert.AreEqual(item, pos.ToString());
+                Assert.AreEqual(item, counter.ToString());
             }
-
         }
 
         [Test]

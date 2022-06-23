@@ -12,7 +12,7 @@ public static class DualOrdinalStreamsExtensions
     /// <param name="project">Projection from left to right stream.</param>
     /// <param name="isExhaustive">If isExhaustive is true then matching items are not added to the left stream.</param>
     /// <returns></returns>
-    public static DualOrdinalStreams<TLeft, TRight> FilterLeft<TLeft, TRight>(
+    public static DualOrdinalStreams<TLeft, TRight> LeftToRight<TLeft, TRight>(
         this DualOrdinalStreams<TLeft, TRight> dualStreams,
         Func<TLeft, bool> predicate,
         Func<TLeft, TRight> project,
@@ -21,7 +21,7 @@ public static class DualOrdinalStreamsExtensions
         predicate.ThrowIfNull();
         project.ThrowIfNull();
 
-        var filteredTuple = new DualOrdinalStreams<TLeft, TRight>
+        var streams = new DualOrdinalStreams<TLeft, TRight>
         {
             Right = dualStreams.Right
         };
@@ -32,15 +32,15 @@ public static class DualOrdinalStreamsExtensions
             {
                 var right = new Ordinal<TRight> { Position = left.Position, Value = project(left.Value) };
 
-                filteredTuple.Right = filteredTuple.Right.Append(right);
+                streams.Right = streams.Right.Append(right);
 
                 if (isExhaustive) continue;
             }
 
-            filteredTuple.Left = filteredTuple.Left.Append(left);
+            streams.Left = streams.Left.Append(left);
         }
 
-        return filteredTuple;
+        return streams;
     }
 
     /// <summary>
@@ -67,6 +67,7 @@ public static class DualOrdinalStreamsExtensions
 
         var itLeft = left.GetEnumerator();
         var itRight = right.GetEnumerator();
+
         while (true)
         {
             var hasNextLeft = itLeft.MoveNext();
