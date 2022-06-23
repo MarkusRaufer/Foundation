@@ -22,7 +22,7 @@ public readonly struct Opt<T>
 {
     private readonly T? _value;
 
-    internal Opt(T value)
+    internal Opt(T? value)
     {
         IsSome = value is not null;
         _value = value;
@@ -76,14 +76,9 @@ public readonly struct Opt<T>
 
     public bool TryGet(out T? value)
     {
-        if (IsSome)
-        {
-            value = _value!;
-            return true;
-        }
+        value = _value;
 
-        value = default;
-        return false;
+        return IsSome;
     }
 
     public bool IsNone => !IsSome;
