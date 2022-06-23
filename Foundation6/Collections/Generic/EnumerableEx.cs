@@ -21,28 +21,34 @@ public static class EnumerableEx
             yield return value;
         }
     }
-    public static IEnumerable<int> Range(MinMax<int> minmax)
+    public static IEnumerable<int> Range(int min, int max)
     {
-        for (var i = minmax.Min; i <= minmax.Max; i++)
+        for (var i = min; i <= max; i++)
             yield return i;
     }
 
-    public static IEnumerable<decimal> Range(MinMax<decimal> minmax, decimal increment)
+    public static IEnumerable<long> Range(long min, long max)
     {
-        for (var i = minmax.Min; i <= minmax.Max; i += increment)
+        for (var i = min; i <= max; i++)
             yield return i;
     }
 
-    public static IEnumerable<double> Range(MinMax<double> minmax, double increment)
+    public static IEnumerable<decimal> Range(decimal min, decimal max, decimal increment)
     {
-        for (var i = minmax.Min; i <= minmax.Max; i += increment)
+        for (var i = min; i <= max; i += increment)
             yield return i;
     }
 
-    public static IEnumerable<T> Range<T>(MinMax<T> minmax, Func<T, T> increment)
+    public static IEnumerable<double> Range(double min, double max, double increment)
+    {
+        for (var i = min; i <= max; i += increment)
+            yield return i;
+    }
+
+    public static IEnumerable<T> Range<T>(T min, T max, Func<T, T> increment)
         where T : notnull
     {
-        for (var i = minmax.Min; i.EqualsNullable(minmax.Max); increment(i))
+        for (var i = min; i.EqualsNullable(max); increment(i))
             yield return i;
     }
 }
