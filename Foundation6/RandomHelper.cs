@@ -4,7 +4,7 @@ public static class RandomHelper
 {
     public static double GetRandomOrdinalDouble(int index, double min, double max)
     {
-        if(index < 0) throw new ArgumentOutOfRangeException("negative indices are not allowed", nameof(index));
+        if(index < 0) throw new ArgumentOutOfRangeException(nameof(index), "negative indices are not allowed");
 
         return GetRandomOrdinalDouble(new int[] { index }, min, max).FirstOrDefault();
     }
@@ -55,7 +55,7 @@ public static class RandomHelper
 
     public static long GetRandomOrdinalInt64(int index, long min, long max)
     {
-        if (index < 0) throw new ArgumentOutOfRangeException("negative indices are not allowed", nameof(index));
+        if (index < 0) throw new ArgumentOutOfRangeException(nameof(index), "negative indices are not allowed");
 
         return GetRandomOrdinalInt64(new int[] { index }, min, max).FirstOrDefault();
     }
