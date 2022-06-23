@@ -16,6 +16,12 @@ public static class RandomExtensions
         return 0 != random.Next(0, 1);
     }
 
+    public static DateTime NextDateTime(this Random random, DateTime min, DateTime max)
+    {
+        var ticks = random.NextInt64(min.Ticks, max.Ticks);
+        return new DateTime(ticks);
+    }
+
     public static double NextDouble(this Random random, double max)
     {
         return random.NextDouble() * max;
