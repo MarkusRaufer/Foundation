@@ -27,6 +27,13 @@ public static class RandomExtensions
         return random.NextDouble() * max;
     }
 
+    /// <summary>
+    /// Returns a random floating-point number that is greate than or equal to min, and less than max
+    /// </summary>
+    /// <param name="random"></param>
+    /// <param name="min"></param>
+    /// <param name="max"></param>
+    /// <returns></returns>
     public static double NextDouble(this Random random, double min, double max)
     {
         return random.NextDouble() * (max - min) + min;
