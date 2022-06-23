@@ -441,12 +441,14 @@ namespace Foundation
             var month = Month.Jul;
             var day = 18;
 
+            //2016.07.18
             var sut1 = new TimeDef.And(
                         new TimeDef.And(
                             new TimeDef.Year(new[] { year }),
                             new TimeDef.Month(new[] { month })),
                         new TimeDef.Day(new[] { day }));
 
+            //2016.07.18
             var sut2 = TimeDef.FromDateOnly(new DateOnly(year, (int)month, day));
 
             var result = sut1.GetHashCode().Equals(sut2.GetHashCode());
