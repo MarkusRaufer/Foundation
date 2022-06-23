@@ -5,7 +5,7 @@ namespace Foundation;
 public static class RandomHelper
 {
     /// <summary>
-    /// Returns a Guid at a specific index.
+    /// Returns a Guid at a specific <paramref name="index"/>. Same <paramref name="index"/> returns always the same Guid.
     /// </summary>
     /// <param name="index"></param>
     /// <returns></returns>
@@ -18,7 +18,7 @@ public static class RandomHelper
     }
 
     /// <summary>
-    /// Returns random values at specific indices. The same index returns always the same value.
+    /// Returns random values at specific <paramref name="indices"/>. The same index returns always the same value.
     /// </summary>
     /// <param name="indices">Indices from which the values are returned.</param>
     /// <returns></returns>
@@ -44,7 +44,33 @@ public static class RandomHelper
     }
 
     /// <summary>
-    /// Returns random values at specific indices. The same index returns always the same value.
+    /// Returns random values at specific <paramref name="indices"/>. The same index returns always the same value.
+    /// </summary>
+    /// <param name="indices">Indices from which the values are returned.</param>
+    /// <param name="seed">Seed for the random generator. null returns always different values.</param>
+    /// <returns>Contains only values from valueSet.</returns>
+    public static IEnumerable<DateTime> GetRandomOrdinalValues(int[] indices, DateTime min, DateTime max)
+    {
+        indices.ThrowIfNull();
+        indices.ThrowIf(() => indices.Any(index => index < 0), "negative indices are not allowed");
+
+        if (0 == indices.Length) yield break;
+
+        var random = new Random(0);
+
+        Array.Sort(indices);
+
+        var maxIndex = indices.Last() + 1;
+
+        foreach (var index in Enumerable.Range(0, maxIndex))
+        {
+            var value = random.NextDateTime(min, max);
+            if (indices.Contains(index)) yield return value;
+        }
+    }
+
+    /// <summary>
+    /// Returns random values at specific <paramref name="indices"/>. The same index returns always the same value.
     /// </summary>
     /// <param name="indices">Indices from which the values are returned.</param>
     /// <param name="seed">Seed for the random generator. null returns always different values.</param>
@@ -70,7 +96,7 @@ public static class RandomHelper
     }
 
     /// <summary>
-    /// Returns random values at specific indices. The same index returns always the same value.
+    /// Returns random values at specific <paramref name="indices"/>. The same index returns always the same value.
     /// </summary>
     /// <param name="indices">Indices from which the values are returned.</param>
     /// <param name="seed">Seed for the random generator. null returns always different values.</param>
@@ -96,7 +122,7 @@ public static class RandomHelper
     }
 
     /// <summary>
-    /// Returns random values at specific indices. The same index returns always the same value.
+    /// Returns random values at specific <paramref name="indices"/>. The same index returns always the same value.
     /// </summary>
     /// <param name="indices">Indices from which the values are returned.</param>
     /// <param name="seed">Seed for the random generator. null returns always different values.</param>
