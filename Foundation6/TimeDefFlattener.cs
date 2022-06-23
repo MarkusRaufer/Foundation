@@ -11,6 +11,13 @@ public class TimeDefFlattener : TimeDefVisitor
 
     public void Clear() => _timeDefs.Clear();
 
+    public IEnumerable<TimeDef> Flatten(TimeDef timeDef)
+    {
+        Visit(timeDef);
+
+        return TimeDefs;
+    }
+
     public IEnumerable<TimeDef> TimeDefs => _timeDefs;
 
     public override bool Visit(TimeDef timedef)

@@ -2,6 +2,30 @@
 
 public static class TimeDefExtensions
 {
+    public static IEnumerable<TimeDef> BothSides(this TimeDef.And and)
+    {
+        yield return and.Lhs;
+        yield return and.Rhs;
+    }
+
+    public static IEnumerable<TimeDef> BothSides(this TimeDef.Difference difference)
+    {
+        yield return difference.Lhs;
+        yield return difference.Rhs;
+    }
+
+    public static IEnumerable<TimeDef> BothSides(this TimeDef.Or or)
+    {
+        yield return or.Lhs;
+        yield return or.Rhs;
+    }
+
+    public static IEnumerable<TimeDef> BothSides(this TimeDef.Union union)
+    {
+        yield return union.Lhs;
+        yield return union.Rhs;
+    }
+
     public static bool Equals(this TimeDef lhs, TimeDef rhs)
     {
         static bool equals<T>(IEnumerable<T> lhs, IEnumerable<T> rhs)
