@@ -12,13 +12,23 @@ public static class DoubleExtensions
         return (Math.Abs(left) - Math.Abs(right)) < epsilon;
     }
 
+    public static bool GreaterThan(this double left, double right, double epsilon = double.Epsilon)
+    {
+        return (left - right) > epsilon;
+    }
+
     public static bool GreaterThanOrEqual(this double left, double right, double epsilon = double.Epsilon)
     {
-        return Equal(left, right, epsilon) || (left > right);
+        return Equal(left, right, epsilon) || GreaterThan(left, right, epsilon);
+    }
+
+    public static bool LessThan(this double left, double right, double epsilon = double.Epsilon)
+    {
+        return (left - right) < -epsilon;
     }
 
     public static bool LessThanOrEqual(this double left, double right, double epsilon = double.Epsilon)
     {
-        return Equal(left, right, epsilon) || (left < right);
+        return Equal(left, right, epsilon) || LessThan(left, right, epsilon);
     }
 }
