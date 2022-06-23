@@ -21,7 +21,7 @@ namespace Foundation.Collections.Generic
             {
                 if (i < ordinal.Position)
                 {
-                    foreach (var pos in EnumerableEx.Range(new MinMax<int>(i, ordinal.Position - 1)))
+                    foreach (var pos in EnumerableEx.Range(i, ordinal.Position - 1))
                     {
                         yield return Opt.None<T>();
                         ++i;
