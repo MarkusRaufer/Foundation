@@ -28,6 +28,6 @@ The namespaces are based on Microsoft .NET namespaces. It is easy for a .NET dev
 ## Namespaces
 
 The namespaces correspond to the .NET counterparts.
-### [Foundation](../wiki/foundation.md)
+### [Foundation](../Foundation.Wiki//foundation.md)
 
-### [Foundation.Collections.Generic](../wiki/foundation-collections-generic.md)
+### [Foundation.Collections.Generic](../Foundation.Wiki//foundation-collections-generic.md)
