@@ -2,11 +2,21 @@
 
 public static class BitConverterExt
 {
+    /// <summary>
+    /// Creates a list of bytes from <paramref name="value"/>
+    /// </summary>
+    /// <param name="value"></param>
+    /// <returns></returns>
     public static IEnumerable<byte> GetBytes(decimal value)
     {
         return decimal.GetBits(value).SelectMany(i => BitConverter.GetBytes(i));
     }
 
+    /// <summary>
+    /// Creates a decimal value from a list of <paramref name="bytes"/>.
+    /// </summary>
+    /// <param name="bytes">Size must be exactly 16 bytes.</param>
+    /// <returns></returns>
     public static decimal ToDecimal(byte[]? bytes)
     {
         bytes = bytes.ThrowIfNull();
