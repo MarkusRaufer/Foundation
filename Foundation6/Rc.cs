@@ -1,4 +1,6 @@
-﻿namespace Foundation;
+﻿using System.Diagnostics.CodeAnalysis;
+
+namespace Foundation;
 
 public static class Rc
 {
@@ -15,22 +17,29 @@ public static class Rc
 }
 
 /// <summary>
-/// This is a reference counter;
+/// This is a reference counter.
 /// </summary>
-/// <typeparam name = "T" ></ typeparam >
+/// <typeparam name="T"></ typeparam >
 public struct Rc<T>
     : IEquatable<Rc<T>>
     , IOptionalComparable<Rc<T>>
     where T : notnull, IEquatable<T>
 {
+    private readonly T? _object;
+
     public Rc(T obj) : this(obj, 0)
     {
     }
 
     public Rc(T obj, int counter)
     {
-        Object = obj.ThrowIfNull();
+        _object = obj.ThrowIfNull();
         Counter = counter;
+    }
+
+    public static implicit operator T(Rc<T> rc)
+    {
+        return rc.Get().OrThrow();
     }
 
     public static bool operator ==(Rc<T> left, Rc<T> right)
@@ -61,7 +70,7 @@ public struct Rc<T>
 
         return !other.IsEmpty &&
                Counter == other.Counter &&
-               EqualityComparer<T>.Default.Equals(Object, other.Object);
+               EqualityComparer<T>.Default.Equals(_object, other._object);
     }
 
     /// <summary>
@@ -71,23 +80,23 @@ public struct Rc<T>
     public Opt<T> Get()
     {
         Counter++;
-        return Opt.Maybe(Object);
+        return Opt.Maybe(_object);
     }
 
-    public override int GetHashCode() => System.HashCode.Combine(Counter, Object);
+    public override int GetHashCode() => System.HashCode.Combine(Counter, _object);
 
-    public bool IsEmpty => Object is null;
+    public bool IsEmpty => _object is null;
 
     /// <summary>
-    /// Returns true if obj equals the internal Object.
+    /// Returns true if <paramref name="other"/> equals the internal _object.
     /// </summary>
-    /// <param name="obj"></param>
+    /// <param name="other"></param>
     /// <returns></returns>
-    public bool ObjectEquals(T obj)
+    public bool ObjectEquals(T other)
     {
         if (IsEmpty) return false;
 
-        return EqualityComparer<T>.Default.Equals(Object, obj);
+        return EqualityComparer<T>.Default.Equals(_object, other);
     }
 
     /// <summary>
@@ -99,11 +108,9 @@ public struct Rc<T>
     {
         if (IsEmpty) return other.IsEmpty;
 
-        return EqualityComparer<T>.Default.Equals(Object, other.Object);
+        return !other.IsEmpty
+            && EqualityComparer<T>.Default.Equals(_object, other._object);
     }
-
-
-    private T? Object { get; }
 
     /// <summary>
     /// Compares the counters. The object must be same.
@@ -122,6 +129,20 @@ public struct Rc<T>
         Counter = 0;
     }
 
-    public override string ToString() => $"T: {Object}, Counter: {Counter}";
+    public override string ToString() => $"T: {_object}, Counter: {Counter}";
+
+    public bool TryGet([MaybeNullWhen(false)] out T? obj)
+    {
+        if(IsEmpty)
+        {
+            obj = default;
+            return false;
+        }
+
+        Counter++;
+        obj = _object;
+
+        return true;
+    }
 }
 
