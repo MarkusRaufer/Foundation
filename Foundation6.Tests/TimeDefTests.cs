@@ -8,34 +8,6 @@ namespace Foundation
     public class TimeDefTests
     {
         [Test]
-        public void And()
-        {
-            var year = 2016;
-            var month = 7;
-            var day = 18;
-
-            //2016.07.18
-            var sut = TimeDef.FromDateOnly(new DateOnly(year, month, day));
-
-            var flattened = new TimeDefFlattener().Flatten(sut)
-                                                  .ToArray();
-
-            var tdYear = flattened.OfType<TimeDef.Year>().Single();
-            var tdMonth = flattened.OfType<TimeDef.Month>().Single();
-            var tdDay = flattened.OfType<TimeDef.Day>().Single();
-
-            var ands = flattened.OfType<TimeDef.And>().ToArray();
-            Assert.AreEqual(2, ands.Length);
-
-            var rootAnd = ands.First(a => a.Lhs is TimeDef.And);
-            var and = (TimeDef.And)rootAnd.Lhs;
-            
-            Assert.AreEqual(and.Lhs, tdYear);
-            Assert.AreEqual(and.Rhs, tdMonth);
-            Assert.AreEqual(rootAnd.Rhs, tdDay);
-        }
-
-        [Test]
         public void Equals_Should_Return_When_Compare_Same_And()
         {
             var year = 2016;
@@ -45,16 +17,16 @@ namespace Foundation
             //2016.07.18
             var sut1 = new TimeDef.And(
                         new TimeDef.And(
-                            new TimeDef.Year(new[] { year }),
-                            new TimeDef.Month(new[] { month })),
-                        new TimeDef.Day(new[] { day }));
+                            TimeDef.FromYear(year),
+                            TimeDef.FromMonth(month)),
+                        TimeDef.FromDay(day));
 
             //2016.07.18
             var sut2 = new TimeDef.And(
                         new TimeDef.And(
-                            new TimeDef.Year(new[] { year }),
-                            new TimeDef.Month(new[] { month })),
-                        new TimeDef.Day(new[] { day }));
+                            TimeDef.FromYear(year),
+                            TimeDef.FromMonth(month)),
+                        TimeDef.FromDay(day));
 
             var result = sut1.Equals(sut2);
             Assert.IsTrue(result);
@@ -182,81 +154,53 @@ namespace Foundation
         [Test]
         public void Equals_Should_ReturnTrue_When_Hour_HasSameValue()
         {
-            {
-                //hour: 08:13
-                var sut1 = new TimeDef.Hour(new[] { 8, 13 });
-                var sut2 = new TimeDef.Hour(new[] { 8, 13 });
+            //hour: 08:13
+            var sut1 = new TimeDef.Hour(new[] { 8, 13 });
+            var sut2 = new TimeDef.Hour(new[] { 8, 13 });
 
-                Assert.IsTrue(sut1.Equals(sut2));
-                Assert.IsTrue(sut1 == sut2);
-            }
-            {
-                TimeDef sut1 = new TimeDef.Hour(new[] { 8, 13 });
-                TimeDef sut2 = new TimeDef.Hour(new[] { 8, 13 });
-
-                Assert.IsTrue(sut1.Equals(sut2));
-                Assert.IsTrue(sut1 == sut2);
-            }
+            Assert.IsTrue(sut1.Equals(sut2));
+            Assert.IsTrue(sut2.Equals(sut1));
+            Assert.IsTrue(sut1 == sut2);
+            Assert.IsTrue(sut2 == sut1);
         }
 
         [Test]
         public void Equals_Should_ReturnTrue_When_Hours_HasSameValue()
         {
-            {
-                //8 hours
-                var sut1 = new TimeDef.Hours(8);
-                var sut2 = new TimeDef.Hours(8);
+            //8 hours
+            var sut1 = new TimeDef.Hours(8);
+            var sut2 = new TimeDef.Hours(8);
 
-                Assert.IsTrue(sut1.Equals(sut2));
-                Assert.IsTrue(sut1 == sut2);
-            }
-            {
-                TimeDef sut1 = new TimeDef.Hours(8);
-                TimeDef sut2 = new TimeDef.Hours(8);
-
-                Assert.IsTrue(sut1.Equals(sut2));
-                Assert.IsTrue(sut1 == sut2);
-            }
+            Assert.IsTrue(sut1.Equals(sut2));
+            Assert.IsTrue(sut2.Equals(sut1));
+            Assert.IsTrue(sut1 == sut2);
+            Assert.IsTrue(sut2 == sut1);
         }
 
         [Test]
         public void Equals_Should_ReturnTrue_When_Minute_HasSameValue()
         {
-            {
-                //minute: hour:15, hour:45
-                var sut1 = new TimeDef.Minute(new[] { 15, 45 });
-                var sut2 = new TimeDef.Minute(new[] { 15, 45 });
+            //minute: hour:15, hour:45
+            var sut1 = new TimeDef.Minute(new[] { 15, 45 });
+            var sut2 = new TimeDef.Minute(new[] { 15, 45 });
 
-                Assert.IsTrue(sut1.Equals(sut2));
-                Assert.IsTrue(sut1 == sut2);
-            }
-            {
-                TimeDef sut1 = new TimeDef.Minute(new[] { 15, 45 });
-                TimeDef sut2 = new TimeDef.Minute(new[] { 15, 45 });
-
-                Assert.IsTrue(sut1.Equals(sut2));
-                Assert.IsTrue(sut1 == sut2);
-            }
+            Assert.IsTrue(sut1.Equals(sut2));
+            Assert.IsTrue(sut2.Equals(sut1));
+            Assert.IsTrue(sut1 == sut2);
+            Assert.IsTrue(sut2 == sut1);
         }
 
         [Test]
         public void Equals_Should_ReturnTrue_When_Minutes_HasSameValue()
         {
-            {
-                //30 minutes
-                var sut1 = new TimeDef.Minutes(30);
-                var sut2 = new TimeDef.Minutes(30);
+            //30 minutes
+            var sut1 = new TimeDef.Minutes(30);
+            var sut2 = new TimeDef.Minutes(30);
 
-                Assert.IsTrue(sut1.Equals(sut2));
-                Assert.IsTrue(sut1 == sut2); 
-            }
-            {
-                TimeDef sut1 = new TimeDef.Minutes(30);
-                TimeDef sut2 = new TimeDef.Minutes(30);
-
-                Assert.IsTrue(sut1.Equals(sut2));
-                Assert.IsTrue(sut1 == sut2);
-            }
+            Assert.IsTrue(sut1.Equals(sut2));
+            Assert.IsTrue(sut2.Equals(sut1));
+            Assert.IsTrue(sut1 == sut2);
+            Assert.IsTrue(sut2 == sut1);
         }
 
         [Test]
@@ -426,10 +370,240 @@ namespace Foundation
         }
 
         [Test]
+        public void FromDate_Should_ReturnTimeDef_When_ArgumentIsDateOnly()
+        {
+            {
+                var sut = TimeDef.FromDate(2022, 3, 9);
+                assert(sut);
+            }
+            {
+                var sut = TimeDef.FromDate(2022, Month.Mar, 9);
+                assert(sut);
+            }
+
+            void assert(TimeDef td)
+            {
+                var flattened = new TimeDefFlattener().Flatten(td)
+                                                      .ToArray();
+
+                var tdYear = flattened.OfType<TimeDef.Year>().Single();
+                var tdMonth = flattened.OfType<TimeDef.Month>().Single();
+                var tdDay = flattened.OfType<TimeDef.Day>().Single();
+
+                var ands = flattened.OfType<TimeDef.And>().ToArray();
+                Assert.AreEqual(2, ands.Length);
+
+                {
+                    var and = ands[0];
+                    Assert.AreEqual(and.Lhs, ands[1]);
+                    Assert.AreEqual(and.Rhs, tdDay);
+                }
+                {
+                    var and = ands[1];
+                    Assert.AreEqual(and.Lhs, tdYear);
+                    Assert.AreEqual(and.Rhs, tdMonth);
+                }
+            }
+        }
+
+        [Test]
+        public void FromDateOnly_Should_ReturnTimeDef_When_ArgumentIsDateOnly()
+        {
+            var sut = TimeDef.FromDateOnly(new DateOnly(2022, 3, 9));
+
+            var flattened = new TimeDefFlattener().Flatten(sut)
+                                                  .ToArray();
+
+            var tdYear = flattened.OfType<TimeDef.Year>().Single();
+            var tdMonth = flattened.OfType<TimeDef.Month>().Single();
+            var tdDay = flattened.OfType<TimeDef.Day>().Single();
+
+            var ands = flattened.OfType<TimeDef.And>().ToArray();
+            Assert.AreEqual(2, ands.Length);
+
+            {
+                var and = ands[0];
+                Assert.AreEqual(and.Lhs, ands[1]);
+                Assert.AreEqual(and.Rhs, tdDay);
+            }
+            {
+                var and = ands[1];
+                Assert.AreEqual(and.Lhs, tdYear);
+                Assert.AreEqual(and.Rhs, tdMonth);
+            }
+        }
+
+        [Test]
+        public void FromDateTime_Should_ReturnTimeDef_When_ArgumentIsDateTime()
+        {
+            var sut = TimeDef.FromDateTime(new DateTime(2022, 3, 9, 8, 30, 0));
+
+            var flattened = new TimeDefFlattener().Flatten(sut)
+                                                  .ToArray();
+
+            var tdYear = flattened.OfType<TimeDef.Year>().Single();
+            var tdMonth = flattened.OfType<TimeDef.Month>().Single();
+            var tdDay = flattened.OfType<TimeDef.Day>().Single();
+            var tdHour = flattened.OfType<TimeDef.Hour>().Single();
+            var tdMinute = flattened.OfType<TimeDef.Minute>().Single();
+
+            var ands = flattened.OfType<TimeDef.And>().ToArray();
+            Assert.AreEqual(4, ands.Length);
+
+            {
+                var and = ands[0];
+                Assert.AreEqual(and.Lhs, ands[1]);
+                Assert.AreEqual(and.Rhs, tdMinute);
+            }
+            {
+                var and = ands[1];
+                Assert.AreEqual(and.Lhs, ands[2]);
+                Assert.AreEqual(and.Rhs, tdHour);
+            }
+            {
+                var and = ands[2];
+                Assert.AreEqual(and.Lhs, ands[3]);
+                Assert.AreEqual(and.Rhs, tdDay);
+            }
+            {
+                var and = ands[3];
+                Assert.AreEqual(and.Lhs, tdYear);
+                Assert.AreEqual(and.Rhs, tdMonth);
+            }
+        }
+
+        [Test]
+        public void FromDay_Should_ReturnTimeDef_When_ArgumentIsFromFromDay()
+        {
+            var days = new[] { 1, 15 };
+            var sut = TimeDef.FromDay(days);
+
+            var tdDay = (TimeDef.Day)sut;
+
+            Assert.AreEqual(new TimeDef.Day(days), tdDay);
+        }
+
+        [Test]
+        public void FromHour_Should_ReturnTimeDef_When_ArgumentIsFromFromDay()
+        {
+            var hours = new[] { 8, 12 };
+            var sut = TimeDef.FromHour(hours);
+
+            var tdHour = (TimeDef.Hour)sut;
+
+            Assert.AreEqual(new TimeDef.Hour(hours), tdHour);
+        }
+
+        [Test]
+        public void FromMinute_Should_ReturnTimeDef_When_ArgumentIsFromFromDay()
+        {
+            var minutes = new[] { 15, 30, 45 };
+            var sut = TimeDef.FromMinute(minutes);
+
+            var tdMinute = (TimeDef.Minute)sut;
+
+            Assert.AreEqual(new TimeDef.Minute(minutes), tdMinute);
+        }
+
+        [Test]
+        public void FromMonth_Should_ReturnTimeDef_When_ArgumentIsFromFromDay()
+        {
+            var months = new[] { Month.Feb, Month.Jul, Month.Sep };
+            var sut = TimeDef.FromMonth(months);
+
+            var tdMonth = (TimeDef.Month)sut;
+
+            Assert.AreEqual(new TimeDef.Month(months), tdMonth);
+        }
+
+        [Test]
+        public void FromTime_Should_ReturnTimeDef_When_ArgumentIsFromTimeOnly()
+        {
+            var hour = 8;
+            var minute = 30;
+            var sut = TimeDef.FromTime(hour, minute);
+
+            var and = (TimeDef.And)sut;
+
+            if (and.Lhs is not TimeDef.Hour tdHour)
+            {
+                Assert.Fail();
+                return;
+            }
+            Assert.AreEqual(new TimeDef.Hour(new[] { hour }), tdHour);
+
+
+            if (and.Rhs is not TimeDef.Minute tdMinute)
+            {
+                Assert.Fail();
+                return;
+            }
+            Assert.AreEqual(new TimeDef.Minute(new[] { minute }), tdMinute);
+        }
+
+        [Test]
+        public void FromTimeOnly_Should_ReturnTimeDef_When_ArgumentIsFromTimeOnly()
+        {
+            var hour = 8;
+            var minute = 30;
+            var sut = TimeDef.FromTimeOnly(new TimeOnly(hour, minute));
+
+            var and = (TimeDef.And)sut;
+
+            if (and.Lhs is not TimeDef.Hour tdHour)
+            {
+                Assert.Fail();
+                return;
+            }
+            Assert.AreEqual(new TimeDef.Hour(new[] { hour }), tdHour);
+
+
+            if (and.Rhs is not TimeDef.Minute tdMinute)
+            {
+                Assert.Fail();
+                return;
+            }
+            Assert.AreEqual(new TimeDef.Minute(new[] { minute }), tdMinute);
+        }
+
+        [Test]
+        public void FromWeekday_Should_ReturnTimeDef_When_ArgumentIsFromFromDay()
+        {
+            var weekdays = new[] { DayOfWeek.Monday, DayOfWeek.Wednesday };
+            var sut = TimeDef.FromWeekday(weekdays);
+
+            var tdWeekday = (TimeDef.Weekday)sut;
+
+            Assert.AreEqual(new TimeDef.Weekday(weekdays), tdWeekday);
+        }
+
+        [Test]
+        public void FromWeekOfMonth_Should_ReturnTimeDef_When_ArgumentIsFromFromDay()
+        {
+            var weeksOfMonth = new[] { 1, 3 };
+            var sut = TimeDef.FromWeekOfMonth(DayOfWeek.Monday, weeksOfMonth);
+
+            var tdWeekday = (TimeDef.WeekOfMonth)sut;
+
+            Assert.AreEqual(new TimeDef.WeekOfMonth(DayOfWeek.Monday, weeksOfMonth), tdWeekday);
+        }
+
+        [Test]
+        public void FromYear_Should_ReturnTimeDef_When_ArgumentIsFromFromDay()
+        {
+            var years = new[] { 1972, 2022 };
+            var sut = TimeDef.FromYear(years);
+
+            var tdHour = (TimeDef.Year)sut;
+
+            Assert.AreEqual(new TimeDef.Year(years), tdHour);
+        }
+
+        [Test]
         public void GetHashCode_Should_ReturnSameHashCode_When_And_HasSameValue()
         {
-            var sut1 = new TimeDef.And(new TimeDef.Day(new[] { 2 }), new TimeDef.Day(new[] { 3 }));
-            var sut2 = new TimeDef.And(new TimeDef.Day(new[] { 2 }), new TimeDef.Day(new[] { 3 }));
+            var sut1 = new TimeDef.And(new TimeDef.Month(new[] { Month.Apr }), new TimeDef.Day(new[] { 3 }));
+            var sut2 = new TimeDef.And(new TimeDef.Month(new[] { Month.Apr }), new TimeDef.Day(new[] { 3 }));
 
             Assert.AreEqual(sut1.GetHashCode(), sut2.GetHashCode());
         }
