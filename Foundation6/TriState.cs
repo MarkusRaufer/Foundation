@@ -1,14 +1,13 @@
 ﻿namespace Foundation;
 
 /// <summary>
-/// can be IsTrue, IsFalse or IsNone. IsNone means that it is neither true nor false.
+/// Can have three states: <see cref="State"/> can be IsNone or<typeparamref name="TState1"/> and <typeparamref name="TState2"/>.
 /// </summary>
 public struct TriState : IEquatable<TriState>
 {
     public TriState(bool isTrue)
     {
-        IsTrue = isTrue;
-        IsFalse = !isTrue;
+        State = Opt.Some(isTrue);
     }
 
     public static bool operator ==(TriState left, TriState right)
@@ -25,22 +24,29 @@ public struct TriState : IEquatable<TriState>
 
     public bool Equals(TriState other)
     {
-        if (IsNone) return other.IsNone;
-        return IsTrue && other.IsTrue || IsFalse && other.IsFalse;
+        if (State.IsNone) return other.State.IsNone;
+
+        return other.State.IsSome && State.Equals(other.State);
     }
 
-    public override int GetHashCode() => IsNone ? 0 : IsFalse ? 1 : 2;
+    public override int GetHashCode()
+    {
+        if(State.IsNone) return 0;
+        
+        return State.OrThrow() ? 2 : 1;
+    }
+        
 
-    public bool IsFalse { get; }
+    public Opt<bool> State { get; }
 
-    public bool IsNone => !IsFalse && !IsTrue;
-
-    public bool IsTrue { get; }
-
-    public override string ToString() => IsNone ? $"{nameof(IsNone)}" 
-                                       : IsTrue ? $"{nameof(IsTrue)}" : $"{nameof(IsFalse)}";
+    public override string ToString() => $"{State}";
 }
 
+/// <summary>
+/// Can have three states: <see cref="NoState"/>, <typeparamref name="TState1"/> and <typeparamref name="TState2"/>.
+/// </summary>
+/// <typeparam name="TState1"></typeparam>
+/// <typeparam name="TState2"></typeparam>
 public struct TriState<TState1, TState2> : IEquatable<TriState<TState1, TState2>>
 {
 
@@ -74,17 +80,22 @@ public struct TriState<TState1, TState2> : IEquatable<TriState<TState1, TState2>
 
     public bool Equals(TriState<TState1, TState2> other)
     {
-        if (IsNone) return other.IsNone;
+        if (NoState) return other.NoState;
         return State1.IsSome && other.State1.IsSome || State2.IsSome && other.State2.IsSome;
     }
 
-    public override int GetHashCode() => IsNone ? 0 : 
+    public override int GetHashCode() => NoState ? 0 : 
                                          State1.IsSome ? State1.GetHashCode() : State2.GetHashCode();
 
-    public bool IsNone => State1.IsNone && State2.IsNone;
+    public bool NoState => State1.IsNone && State2.IsNone;
 
     public Opt<TState1> State1 { get; }
     public Opt<TState2> State2 { get; }
 
-    public override string ToString() => IsNone ? $"{nameof(IsNone)}" : State1.IsSome ? $"{State1}" : $"{State2}";
+    public override string ToString()
+    {
+        if (NoState) return $"{nameof(NoState)}";
+
+        return State1.IsSome ? $"{State1}" : $"{State2}";
+    }
 }

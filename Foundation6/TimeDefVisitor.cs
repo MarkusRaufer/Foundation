@@ -6,7 +6,7 @@ public abstract class TimeDefVisitor
 
     public virtual bool Visit(TimeDef timedef)
     {
-        if (_result.IsFalse) return false;
+        if (_result.State.TryGet(out bool state) && !state) return false;
 
         var result = timedef switch
         {
