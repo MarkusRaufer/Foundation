@@ -59,21 +59,19 @@ public struct TriState : IEquatable<TriState>
 /// <typeparam name="TState2"></typeparam>
 public struct TriState<TState1, TState2> : IEquatable<TriState<TState1, TState2>>
 {
-
     public TriState(TState1 state1)
     {
         state1.ThrowIfNull();
 
-        State1 = Opt.Some(state1);
-        State2 = Opt.None<TState2>();
+        State = Opt.Some(new OneOf<TState1, TState2>(state1));
     }
 
     public TriState(TState2 state2)
     {
         state2.ThrowIfNull();
 
-        State1 = Opt.None<TState1>(); 
-        State2 = Opt.Some(state2);
+        State = Opt.Some(new OneOf<TState1, TState2>(state2));
+
     }
 
     public static bool operator ==(TriState<TState1, TState2> left, TriState<TState1, TState2> right)
@@ -90,15 +88,30 @@ public struct TriState<TState1, TState2> : IEquatable<TriState<TState1, TState2>
 
     public bool Equals(TriState<TState1, TState2> other)
     {
-        if (NoState) return other.NoState;
-        return State1.IsSome && other.State1.IsSome || State2.IsSome && other.State2.IsSome;
+        return State.Equals(other.State);
     }
 
     public override int GetHashCode()
     {
-        if (NoState) return 0;
+        if (State.IsNone) return 0;
 
-        return State1.IsSome? State1.GetHashCode() : State2.GetHashCode();
+        return State.OrThrow().GetHashCode();
+    }
+
+    public void Invoke(
+        Action<TState1>? state1 = null, 
+        Action<TState2>? state2 = null, 
+        Action? none = null)
+    {
+        if (State.IsNone)
+        {
+            none?.Invoke();
+            return;
+        }
+        var oneOf = State.OrThrow();
+
+        oneOf.Invoke(s1 => state1?.Invoke(s1));
+        oneOf.Invoke(s2 => state2?.Invoke(s2));
     }
 
     public TResult Match<TResult>(
@@ -106,43 +119,22 @@ public struct TriState<TState1, TState2> : IEquatable<TriState<TState1, TState2>
         Func<TState2, TResult> fromState2,
         Func<TResult> fromNoState)
     {
-        if (State1.IsSome) return fromState1(State1.OrThrow());
-        if (State2.IsSome) return fromState2(State2.OrThrow());
+        if(State.IsNone) return fromNoState();
 
-        return fromNoState();
+        return State.OrThrow().Match(fromState1, fromState2);
     }
 
-    public bool NoState => State1.IsNone && State2.IsNone;
-
-    public Opt<TState1> State1 { get; }
-    public Opt<TState2> State2 { get; }
+    public Opt<OneOf<TState1, TState2>> State { get; }
 
     public override string ToString()
     {
-        if (NoState) return $"{nameof(NoState)}";
+        if (State.IsNone) return $"{State}";
 
-        return State1.IsSome ? $"{State1}" : $"{State2}";
+        return State.OrThrow()
+                    .Match(state1 => $"{state1}", state2 => $"{state2}");
     }
 
-    public bool TryGet(out TState1? state)
-    {
-        if (State1.IsSome)
-        {
-            state = State1.OrThrow();
-            return true;
-        }
-        state = default;
-        return false;
-    }
+    public bool TryGet(out TState1? state) => State.OrThrow().TryGet(out state);
 
-    public bool TryGet(out TState2? state)
-    {
-        if (State2.IsSome)
-        {
-            state = State2.OrThrow();
-            return true;
-        }
-        state = default;
-        return false;
-    }
+    public bool TryGet(out TState2? state) => State.OrThrow().TryGet(out state);
 }
