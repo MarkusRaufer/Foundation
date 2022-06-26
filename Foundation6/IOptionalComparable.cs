@@ -1,13 +1,13 @@
 ﻿namespace Foundation;
 
 /// <summary>
-/// The optional comparison only compares compatible types.
+/// The compares compatible types only. If types are incompatible it returns None.
 /// </summary>
 /// <typeparam name="T"></typeparam>
 public interface IOptionalComparable<T>
 {
     /// <summary>
-    /// The optional comparison can be used to check if values can be compared.
+    /// The compares compatible types only. If types are incompatible it returns None.
     /// </summary>
     /// <param name="other"></param>
     /// <returns>None, other is incompatible and can't be compared.</returns>
