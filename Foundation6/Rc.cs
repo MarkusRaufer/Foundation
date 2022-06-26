@@ -25,15 +25,15 @@ public struct Rc<T>
     , IOptionalComparable<Rc<T>>
     where T : notnull, IEquatable<T>
 {
-    private readonly T? _object;
+    private readonly T? _value;
 
-    public Rc(T obj) : this(obj, 0)
+    public Rc(T value) : this(value, 0)
     {
     }
 
-    public Rc(T obj, int counter)
+    public Rc(T value, int counter)
     {
-        _object = obj.ThrowIfNull();
+        _value = value.ThrowIfNull();
         Counter = counter;
     }
 
@@ -70,7 +70,7 @@ public struct Rc<T>
 
         return !other.IsEmpty &&
                Counter == other.Counter &&
-               EqualityComparer<T>.Default.Equals(_object, other._object);
+               EqualityComparer<T>.Default.Equals(_value, other._value);
     }
 
     /// <summary>
@@ -80,23 +80,23 @@ public struct Rc<T>
     public Opt<T> Get()
     {
         Counter++;
-        return Opt.Maybe(_object);
+        return Opt.Maybe(_value);
     }
 
-    public override int GetHashCode() => System.HashCode.Combine(Counter, _object);
+    public override int GetHashCode() => IsEmpty ? 0 : System.HashCode.Combine(Counter, _value);
 
-    public bool IsEmpty => _object is null;
+    public bool IsEmpty => _value is null;
 
     /// <summary>
     /// Returns true if <paramref name="other"/> equals the internal _object.
     /// </summary>
     /// <param name="other"></param>
     /// <returns></returns>
-    public bool ObjectEquals(T other)
+    public bool ValueEquals(T other)
     {
         if (IsEmpty) return false;
 
-        return EqualityComparer<T>.Default.Equals(_object, other);
+        return EqualityComparer<T>.Default.Equals(_value, other);
     }
 
     /// <summary>
@@ -104,22 +104,22 @@ public struct Rc<T>
     /// </summary>
     /// <param name="other"></param>
     /// <returns></returns>
-    public bool ObjectEquals(Rc<T> other)
+    public bool ValueEquals(Rc<T> other)
     {
         if (IsEmpty) return other.IsEmpty;
 
         return !other.IsEmpty
-            && EqualityComparer<T>.Default.Equals(_object, other._object);
+            && EqualityComparer<T>.Default.Equals(_value, other._value);
     }
 
     /// <summary>
-    /// Compares the counters. The object must be same.
+    /// Compares the counters. The values must be same. If the values are different None is returned.
     /// </summary>
     /// <param name="other"></param>
-    /// <returns></returns>
+    /// <returns>Returns Some(int) if values are same otherwise None.</returns>
     public Opt<int> OptionalCompareTo(Rc<T> other)
     {
-        if (!ObjectEquals(other)) return Opt.None<int>();
+        if (!ValueEquals(other)) return Opt.None<int>();
 
         return Counter.CompareTo(other.Counter);
     }
@@ -129,18 +129,18 @@ public struct Rc<T>
         Counter = 0;
     }
 
-    public override string ToString() => $"T: {_object}, Counter: {Counter}";
+    public override string ToString() => $"{nameof(T)}: {_value}, {nameof(Counter)}: {Counter}";
 
-    public bool TryGet([MaybeNullWhen(false)] out T? obj)
+    public bool TryGet([MaybeNullWhen(false)] out T? value)
     {
         if(IsEmpty)
         {
-            obj = default;
+            value = default;
             return false;
         }
 
         Counter++;
-        obj = _object;
+        value = _value;
 
         return true;
     }
