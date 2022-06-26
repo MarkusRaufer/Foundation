@@ -63,6 +63,18 @@ public static class DateTimeExtensions
         return new DateTime(dt.Year + 1, 1, 1, 0, 0, 0, dt.Kind);
     }
 
+    /// <summary>
+    /// Compares values and <see cref="DateTime.Kind"/>.
+    /// </summary>
+    /// <param name="lhs"></param>
+    /// <param name="rhs"></param>
+    /// <returns></returns>
+    public static bool ValueObjectEquals(this DateTime lhs, DateTime rhs)
+    {
+        if (lhs.Kind != rhs.Kind) return false;
+        return lhs.Equals(rhs);
+    }
+
     public static DateTime FirstDayOfWeek(this DateTime dateTime)
     {
         var culture = Thread.CurrentThread.CurrentCulture;

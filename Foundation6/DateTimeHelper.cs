@@ -65,6 +65,20 @@ public class DateTimeHelper
         return (lhs < rhs) ? lhs : rhs;
     }
 
+    /// <summary>
+    /// Returns the current time dependend on kind.
+    /// </summary>
+    /// <param name="kind"></param>
+    /// <returns>If kind is <see cref="DateTimeKind.Unspecified"/> it returns <see cref="DateTime.UtcNow">.</returns>
+    public static DateTime Now(DateTimeKind kind)
+    {
+        return kind switch
+        {
+            DateTimeKind.Local => DateTime.Now,
+            _ => DateTime.UtcNow
+        };
+    }
+
     public static bool TryParseFromIso8601(string str, out DateTime dt)
     {
         return DateTime.TryParseExact(
