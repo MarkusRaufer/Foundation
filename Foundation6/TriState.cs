@@ -115,13 +115,13 @@ public struct TriState<TState1, TState2> : IEquatable<TriState<TState1, TState2>
     }
 
     public TResult Match<TResult>(
-        Func<TState1, TResult> fromState1, 
-        Func<TState2, TResult> fromState2,
-        Func<TResult> fromNoState)
+        Func<TState1, TResult> state1, 
+        Func<TState2, TResult> state2,
+        Func<TResult> noState)
     {
-        if(State.IsNone) return fromNoState();
+        if(State.IsNone) return noState();
 
-        return State.OrThrow().Match(fromState1, fromState2);
+        return State.OrThrow().Match(state1, state2);
     }
 
     public Opt<OneOf<TState1, TState2>> State { get; }
