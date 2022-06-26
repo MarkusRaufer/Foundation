@@ -102,7 +102,37 @@ namespace Foundation.Collections.Generic
             _sut.Add(key2, dos);
             Assert.AreEqual(2, _sut.Count);
 
-            var items = _sut.GetFlattenedKeyValues().ToArray();
+            var items = _sut.GetFlattenedKeyValues(key1).OrderBy(x => x.Key).ToArray();
+            Assert.AreEqual(2, items.Length);
+            {
+                var item = items[0];
+                Assert.AreEqual(key1, item.Key);
+                Assert.AreEqual(one, item.Value);
+            }
+            {
+                var item = items[1];
+                Assert.AreEqual(key1, item.Key);
+                Assert.AreEqual(uno, item.Value);
+            }
+        }
+
+        [Test]
+        public void Iterate()
+        {
+            const string key1 = "1";
+            const string one = "one";
+            const string uno = "uno";
+            const string key2 = "2";
+            const string two = "two";
+            const string dos = "dos";
+
+            _sut.Add(key1, one);
+            _sut.Add(key1, uno);
+            _sut.Add(key2, two);
+            _sut.Add(key2, dos);
+            Assert.AreEqual(2, _sut.Count);
+
+            var items = _sut.ToArray();
             {
                 var item = items.First(kvp => kvp.Key == key1 && kvp.Value == one);
                 Assert.AreEqual(key1, item.Key);

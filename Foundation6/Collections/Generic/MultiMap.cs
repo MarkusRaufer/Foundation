@@ -4,7 +4,7 @@ using System.Collections;
 using System.Diagnostics.CodeAnalysis;
 
 /// <summary>
-/// This dictionary supports multiple values for one key.
+/// Dictionary that supports multiple values for one key.
 /// It is used for 1 to many relations.
 /// </summary>
 /// <typeparam name="TKey"></typeparam>
@@ -71,6 +71,11 @@ public class MultiMap<TKey, TValue> : IMultiMap<TKey, TValue>
         AddSingle(item.Key, item.Value);
     }
 
+    /// <summary>
+    /// Has only one value for a key.
+    /// </summary>
+    /// <param name="key"></param>
+    /// <param name="value"></param>
     public void AddSingle(TKey key, TValue value)
     {
         if (!_dictionary.TryGetValue(key, out ICollection<TValue>? values))
@@ -138,6 +143,9 @@ public class MultiMap<TKey, TValue> : IMultiMap<TKey, TValue>
         return false;
     }
 
+    /// <summary>
+    /// returns number of keys.
+    /// </summary>
     public int Count => _dictionary.Count;
 
     public void CopyTo(KeyValuePair<TKey, TValue>[] array, int arrayIndex)
@@ -156,7 +164,7 @@ public class MultiMap<TKey, TValue> : IMultiMap<TKey, TValue>
     }
 
     /// <summary>
-    /// Returns key values in a flat list. If keys is empty it returns all key values.
+    /// Returns key values as flat list. If keys is empty it returns all key values.
     /// </summary>
     /// <param name="keys"></param>
     /// <returns></returns>
@@ -252,6 +260,23 @@ public class MultiMap<TKey, TValue> : IMultiMap<TKey, TValue>
             return values.Count;
 
         return 0;
+    }
+
+    /// <summary>
+    /// Count of all key values.
+    /// </summary>
+    public int KeyValueCount
+    {
+        get
+        {
+            var count = 0;
+            foreach(var kv in _dictionary)
+            {
+                count += kv.Value.Count;
+            }
+
+            return count;
+        }
     }
 
     public bool IsReadOnly
