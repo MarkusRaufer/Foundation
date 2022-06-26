@@ -68,6 +68,11 @@ public static class TypeExtensions
         }
     }
 
+    /// <summary>
+    /// Returns the name of the type without generics.
+    /// </summary>
+    /// <param name="type"></param>
+    /// <returns></returns>
     public static string GetNameWithoutGenericArity(this Type type)
     {
         var sb = new StringBuilder();
