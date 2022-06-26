@@ -57,13 +57,13 @@ public class OneOf<T1, T2> : IEquatable<OneOf<T1, T2>>
     public Opt<T2> Item2 { get; }
 
     public TResult Match<TResult>(
-        Func<T1, TResult> t1Projection,
-        Func<T2, TResult> t2Projection)
+        Func<T1, TResult> onT1,
+        Func<T2, TResult> onT2)
     {
         return Value switch
         {
-            T1 t1 => t1Projection(t1),
-            T2 t2 => t2Projection(t2),
+            T1 t1 => onT1(t1),
+            T2 t2 => onT2(t2),
             _ => throw new NotSupportedException()
         };
     }
@@ -129,15 +129,15 @@ public class OneOf<T1, T2, T3> : OneOf<T1, T2>
     public Opt<T3> Item3 { get; }
 
     public TResult Match<TResult>(
-        Func<T1, TResult> t1Projection,
-        Func<T2, TResult> t2Projection,
-        Func<T3, TResult> t3Projection)
+        Func<T1, TResult> onT1,
+        Func<T2, TResult> onT2,
+        Func<T3, TResult> onT3)
     {
         return Value switch
         {
-            T1 t1 => t1Projection(t1),
-            T2 t2 => t2Projection(t2),
-            T3 t3 => t3Projection(t3),
+            T1 t1 => onT1(t1),
+            T2 t2 => onT2(t2),
+            T3 t3 => onT3(t3),
             _ => throw new NotSupportedException()
         };
     }
@@ -195,17 +195,17 @@ public class OneOf<T1, T2, T3, T4> : OneOf<T1, T2, T3>
     public Opt<T4> Item4 { get; }
 
     public TResult Match<TResult>(
-        Func<T1, TResult> t1Projection,
-        Func<T2, TResult> t2Projection,
-        Func<T3, TResult> t3Projection,
-        Func<T4, TResult> t4Projection)
+        Func<T1, TResult> onT1,
+        Func<T2, TResult> onT2,
+        Func<T3, TResult> onT3,
+        Func<T4, TResult> onT4)
     {
         return Value switch
         {
-            T1 t1 => t1Projection(t1),
-            T2 t2 => t2Projection(t2),
-            T3 t3 => t3Projection(t3),
-            T4 t4 => t4Projection(t4),
+            T1 t1 => onT1(t1),
+            T2 t2 => onT2(t2),
+            T3 t3 => onT3(t3),
+            T4 t4 => onT4(t4),
             _ => throw new NotSupportedException()
         };
     }
@@ -248,19 +248,19 @@ public class OneOf<T1, T2, T3, T4, T5> : OneOf<T1, T2, T3, T4>
     public Opt<T5> Item5 { get; }
 
     public TResult Match<TResult>(
-        Func<T1, TResult> t1Projection,
-        Func<T2, TResult> t2Projection,
-        Func<T3, TResult> t3Projection,
-        Func<T4, TResult> t4Projection,
-        Func<T5, TResult> t5Projection)
+        Func<T1, TResult> onT1,
+        Func<T2, TResult> onT2,
+        Func<T3, TResult> onT3,
+        Func<T4, TResult> onT4,
+        Func<T5, TResult> onT5)
     {
         return Value switch
         {
-            T1 t1 => t1Projection(t1),
-            T2 t2 => t2Projection(t2),
-            T3 t3 => t3Projection(t3),
-            T4 t4 => t4Projection(t4),
-            T5 t5 => t5Projection(t5),
+            T1 t1 => onT1(t1),
+            T2 t2 => onT2(t2),
+            T3 t3 => onT3(t3),
+            T4 t4 => onT4(t4),
+            T5 t5 => onT5(t5),
             _ => throw new NotSupportedException()
         };
     }
