@@ -2521,6 +2521,7 @@ public static class EnumerableExtensions
     /// <typeparam name="T"></typeparam>
     /// <param name="items"></param>
     /// <param name="predicate"></param>
+    /// <param name="inclusive">if true the matching item is included.</param>
     /// <returns></returns>
     public static IEnumerable<T> TakeUntil<T>(
         this IEnumerable<T> items, 
@@ -2539,13 +2540,13 @@ public static class EnumerableExtensions
     }
 
     /// <summary>
-    /// Searches items until all predicates matched exactly one time.
+    /// Returns items until all predicates match exactly one time.
     /// </summary>
     /// <typeparam name="T"></typeparam>
     /// <param name="items"></param>
     /// <param name="predicates"></param>
     /// <returns></returns>
-    public static IEnumerable<T> TakeUntilAllHitOnce<T>(this IEnumerable<T> items, params Func<T, bool>[] predicates)
+    public static IEnumerable<T> TakeUntilSatisfied<T>(this IEnumerable<T> items, params Func<T, bool>[] predicates)
     {
         items.ThrowIfNull();
 

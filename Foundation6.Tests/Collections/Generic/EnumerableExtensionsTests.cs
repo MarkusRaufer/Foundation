@@ -318,9 +318,9 @@ public class EnumerableExtensionsTests
     {
         var items = new List<int> { 1, 2, 3, 4, 5, 2, 4, 2 };
 
-        var result = items.Duplicates().ToList();
+        var result = items.Duplicates().ToArray();
 
-        Assert.AreEqual(3, result.Count);
+        Assert.AreEqual(3, result.Length);
         Assert.AreEqual(2, result[0]);
         Assert.AreEqual(2, result[1]);
         Assert.AreEqual(4, result[2]);
@@ -1616,13 +1616,13 @@ public class EnumerableExtensionsTests
     }
 
     [Test]
-    public void TakeUntilAllHitOnce_Should_ReturnOneValueForEachMach_When_ListHasDuplicateValues()
+    public void TakeUntilSatisfied_Should_ReturnOneValueForEachMach_When_ListHasDuplicateValues()
     {
         var numbers = new[] { 1, 2, 3, 2, 4, 4, 5, 6, 7 };
         var predicates = new Func<int, bool>[] { n => n == 2, n => n == 4, n => n == 6 };
 
         // if a predicate is fulfilled it is no longer used
-        var foundNumbers = numbers.TakeUntilAllHitOnce(predicates).ToArray();
+        var foundNumbers = numbers.TakeUntilSatisfied(predicates).ToArray();
 
         Assert.AreEqual(3, foundNumbers.Length);
         Assert.AreEqual(2, foundNumbers[0]);
@@ -1631,7 +1631,7 @@ public class EnumerableExtensionsTests
     }
 
     [Test]
-    public void TakeUntilAllHitOnce_Should_StopIteration_When_AllPredicatesMatched()
+    public void TakeUntilSatisfied_Should_StopIteration_When_AllPredicatesMatched()
     {
         var numbers = new TestEnumerable<int>(Enumerable.Range(1, 10));
 
@@ -1642,7 +1642,7 @@ public class EnumerableExtensionsTests
 
         var predicates = new Func<int, bool>[] { n => n == 2, n => n == 5 };
 
-        var foundNumbers = numbers.TakeUntilAllHitOnce(predicates).ToArray();
+        var foundNumbers = numbers.TakeUntilSatisfied(predicates).ToArray();
         Assert.AreEqual(6, calledMoveNext);
         Assert.AreEqual(2, foundNumbers.Length);
         Assert.AreEqual(2, foundNumbers[0]);
