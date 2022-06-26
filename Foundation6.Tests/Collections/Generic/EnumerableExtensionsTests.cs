@@ -257,11 +257,11 @@ public class EnumerableExtensionsTests
         var items = new List<string> { "A", "B", "C", "D", "E" };
 
         var enumerated = items.CycleEnumerate(1, 2).Take(5).ToArray();
-        Assert.AreEqual((1, "A"), enumerated[0]);
-        Assert.AreEqual((2, "B"), enumerated[1]);
-        Assert.AreEqual((1, "C"), enumerated[2]);
-        Assert.AreEqual((2, "D"), enumerated[3]);
-        Assert.AreEqual((1, "E"), enumerated[4]);
+        Assert.AreEqual(("A", 1), enumerated[0]);
+        Assert.AreEqual(("B", 2), enumerated[1]);
+        Assert.AreEqual(("C", 1), enumerated[2]);
+        Assert.AreEqual(("D", 2), enumerated[3]);
+        Assert.AreEqual(("E", 1), enumerated[4]);
     }
 
     [Test]

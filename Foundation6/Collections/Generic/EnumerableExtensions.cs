@@ -325,8 +325,8 @@ public static class EnumerableExtensions
     /// <param name="items"></param>
     /// <param name="min"></param>
     /// <param name="max"></param>
-    /// <returns>A tuple containing a counter and the item.</returns>
-    public static IEnumerable<(int, T)> CycleEnumerate<T>(this IEnumerable<T> items, int min, int max)
+    /// <returns>A tuple containing the item and a counter.</returns>
+    public static IEnumerable<(T, int)> CycleEnumerate<T>(this IEnumerable<T> items, int min, int max)
     {
         return new CyclicEnumerable<T, int>(items, min, max, idx => idx + 1);
     }
@@ -341,7 +341,7 @@ public static class EnumerableExtensions
     /// <param name="max"></param>
     /// <param name="increment">The counter will be increased by this function.</param>
     /// <returns></returns>
-    public static IEnumerable<(TCount, T)> CycleEnumerate<T, TCount>(
+    public static IEnumerable<(T, TCount)> CycleEnumerate<T, TCount>(
         this IEnumerable<T> items
         , TCount min
         , TCount max

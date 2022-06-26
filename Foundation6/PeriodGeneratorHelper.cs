@@ -62,8 +62,8 @@ public class PeriodGeneratorHelper
         {
             return period.Days()
                          .CycleEnumerate(0, int.MaxValue, count => count + 1)
-                         .Where(tuple => 0 == (tuple.Item1 % days))
-                         .Select(tuple => tuple.Item2);
+                         .Where(tuple => 0 == (tuple.Item2 % days))
+                         .Select(tuple => tuple.Item1);
         });
     }
 
@@ -90,8 +90,8 @@ public class PeriodGeneratorHelper
         {
             return period.Hours()
                          .CycleEnumerate(0, int.MaxValue, count => count + 1)
-                         .Where(tuple => 0 == (tuple.Item1 % hours))
-                         .Select(tuple => tuple.Item2);
+                         .Where(tuple => 0 == (tuple.Item2 % hours))
+                         .Select(tuple => tuple.Item1);
         });
     }
 
@@ -118,8 +118,8 @@ public class PeriodGeneratorHelper
         {
             return period.Minutes()
                          .CycleEnumerate(0, int.MaxValue, count => count + 1)
-                         .Where(tuple => 0 == (tuple.Item1 % minutes))
-                         .Select(tuple => tuple.Item2);
+                         .Where(tuple => 0 == (tuple.Item2 % minutes))
+                         .Select(tuple => tuple.Item1);
         });
     }
 
@@ -147,8 +147,8 @@ public class PeriodGeneratorHelper
         {
             return period.Months()
                          .CycleEnumerate(0, int.MaxValue, count => count + 1)
-                         .Where(tuple => 0 == (tuple.Item1 % months))
-                         .Select(tuple => tuple.Item2);
+                         .Where(tuple => 0 == (tuple.Item2 % months))
+                         .Select(tuple => tuple.Item1);
         });
     }
 
@@ -226,8 +226,8 @@ public class PeriodGeneratorHelper
                              var max = month.Weeks(start).Count();
                              return month.Weeks(start)
                                      .CycleEnumerate(1, max)
-                                     .Where(tuple => week.Contains(tuple.Item1))
-                                     .Select(t => t.Item2);
+                                     .Where(tuple => week.Contains(tuple.Item2))
+                                     .Select(t => t.Item1);
                          });
         });
     }
@@ -258,8 +258,8 @@ public class PeriodGeneratorHelper
                              return month.Weeks(start)
                                          .CycleEnumerate(0, int.MaxValue, count => count + 1);
                          })
-                         .Where(tuple => 0 == (tuple.Item1 % weeks))
-                         .Select(t => t.Item2); ;
+                         .Where(tuple => 0 == (tuple.Item2 % weeks))
+                         .Select(t => t.Item1);
         });
     }
 
@@ -287,8 +287,8 @@ public class PeriodGeneratorHelper
         {
             return period.Years()
                          .CycleEnumerate(0, int.MaxValue)
-                         .Where(tuple => 0 == (tuple.Item1 % years))
-                         .Select(tuple => tuple.Item2);
+                         .Where(tuple => 0 == (tuple.Item2 % years))
+                         .Select(tuple => tuple.Item1);
         });
     }
 
