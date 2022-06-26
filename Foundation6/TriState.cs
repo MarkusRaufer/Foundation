@@ -36,10 +36,20 @@ public struct TriState : IEquatable<TriState>
         return State.OrThrow() ? 2 : 1;
     }
         
-
     public Opt<bool> State { get; }
 
     public override string ToString() => $"{State}";
+
+    public bool TryGet(out bool state)
+    {
+        if(State.IsNone)
+        {
+            state = default;
+            return false;
+        }
+        state = State.OrThrow();
+        return true;
+    }
 }
 
 /// <summary>
@@ -84,8 +94,23 @@ public struct TriState<TState1, TState2> : IEquatable<TriState<TState1, TState2>
         return State1.IsSome && other.State1.IsSome || State2.IsSome && other.State2.IsSome;
     }
 
-    public override int GetHashCode() => NoState ? 0 : 
-                                         State1.IsSome ? State1.GetHashCode() : State2.GetHashCode();
+    public override int GetHashCode()
+    {
+        if (NoState) return 0;
+
+        return State1.IsSome? State1.GetHashCode() : State2.GetHashCode();
+    }
+
+    public TResult Match<TResult>(
+        Func<TState1, TResult> fromState1, 
+        Func<TState2, TResult> fromState2,
+        Func<TResult> fromNoState)
+    {
+        if (State1.IsSome) return fromState1(State1.OrThrow());
+        if (State2.IsSome) return fromState2(State2.OrThrow());
+
+        return fromNoState();
+    }
 
     public bool NoState => State1.IsNone && State2.IsNone;
 
@@ -97,5 +122,27 @@ public struct TriState<TState1, TState2> : IEquatable<TriState<TState1, TState2>
         if (NoState) return $"{nameof(NoState)}";
 
         return State1.IsSome ? $"{State1}" : $"{State2}";
+    }
+
+    public bool TryGet(out TState1? state)
+    {
+        if (State1.IsSome)
+        {
+            state = State1.OrThrow();
+            return true;
+        }
+        state = default;
+        return false;
+    }
+
+    public bool TryGet(out TState2? state)
+    {
+        if (State2.IsSome)
+        {
+            state = State2.OrThrow();
+            return true;
+        }
+        state = default;
+        return false;
     }
 }
