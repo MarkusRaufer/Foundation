@@ -120,31 +120,6 @@ namespace Foundation
         }
 
         [Test]
-        public void OrdinalIndex_Should_ReturnTheOrdinalPosition_When_Created()
-        {
-            {
-                var expected = 12;
-                var sut = new OneOf<int, double>(expected);
-                Assert.AreEqual(1, sut.OrdinalIndex);
-            }
-            {
-                var expected = 12.3;
-                var sut = new OneOf<int, double>(expected);
-                Assert.AreEqual(2, sut.OrdinalIndex);
-            }
-            {
-                var expected = "myValue";
-                var sut = new OneOf<int, string, double>(expected);
-                Assert.AreEqual(2, sut.OrdinalIndex);
-            }
-            {
-                var expected = "myValue";
-                var sut = new OneOf<int, double, string>(expected);
-                Assert.AreEqual(3, sut.OrdinalIndex);
-            }
-        }
-
-        [Test]
         public void SelectedType_Should_ReturnInt32Type_When_Using2TypeArguments_And_Item1Type_IsInt32()
         {
             var expected = 12;

@@ -18,7 +18,6 @@ public class OneOf<T1, T2> : IEquatable<OneOf<T1, T2>>
         t1.ThrowIfNull();
         Item1 = Opt.Some(t1);
 
-        OrdinalIndex = 1;
         SelectedType = typeof(T1);
         Value = t1!;
     }
@@ -28,7 +27,6 @@ public class OneOf<T1, T2> : IEquatable<OneOf<T1, T2>>
         t2.ThrowIfNull();
         Item2 = Opt.Some(t2);
         
-        OrdinalIndex = 2;
         SelectedType = typeof(T2);
         Value = t2!;
     }
@@ -70,30 +68,21 @@ public class OneOf<T1, T2> : IEquatable<OneOf<T1, T2>>
         };
     }
 
-    public int OrdinalIndex { get; protected set; }
-
-    public virtual bool TryGet<T>([MaybeNullWhen(false)] out T? value)
+    public virtual bool TryGet<T>(out T? value)
     {
-        if (0 == OrdinalIndex)
+        if(Item1.TryGet(out T1? t1) && t1 is T t1Value)
         {
-            value = default;
-            return false;
+            value = t1Value;
+            return true;
+        }
+        if(Item2.TryGet(out T2? t2) && t2 is T t2Value)
+        {
+            value = t2Value;
+            return true;
         }
 
-        static Opt<T> setValue<TItem>(TItem item)
-        {
-            return item is T t ? Opt.Some(t) : Opt.None<T>();
-        }
-
-        var foundValue = OrdinalIndex switch
-        {
-            1 => setValue(Item1.OrThrow()),
-            2 => setValue(Item2.OrThrow()),
-            _ => Opt.None<T>()
-        };
-
-        value = foundValue.IsSome ? foundValue.OrThrow() : default;
-        return foundValue.IsSome;
+        value = default;
+        return false;
     }
 
     public Type? SelectedType { get; protected set; }
@@ -128,7 +117,6 @@ public class OneOf<T1, T2, T3> : OneOf<T1, T2>
         t3.ThrowIfNull();
         Item3 = Opt.Some(t3);
 
-        OrdinalIndex = 3;
         SelectedType = typeof(T3);
         Value = t3!;
     }
@@ -154,17 +142,12 @@ public class OneOf<T1, T2, T3> : OneOf<T1, T2>
         };
     }
 
-    public override bool TryGet<T>([MaybeNullWhen(false)] out T value)
+    public override bool TryGet<T>(out T? value) where T : default
     {
-        if (3 == OrdinalIndex)
+        if (Item3.TryGet(out T3? t3) && t3 is T t)
         {
-            if (Item3.OrThrow() is T t)
-            {
-                value = t;
-                return true;
-            }
-            value = default;
-            return false;
+            value = t;
+            return true;
         }
         return base.TryGet(out value);
     }
@@ -200,7 +183,6 @@ public class OneOf<T1, T2, T3, T4> : OneOf<T1, T2, T3>
         t4.ThrowIfNull();
         Item4 = Opt.Some(t4);
 
-        OrdinalIndex = 4;
         SelectedType = typeof(T4);
         Value = t4!;
     }
@@ -228,17 +210,12 @@ public class OneOf<T1, T2, T3, T4> : OneOf<T1, T2, T3>
         };
     }
 
-    public override bool TryGet<T>([MaybeNullWhen(false)] out T value)
+    public override bool TryGet<T>(out T? value) where T : default
     {
-        if (4 == OrdinalIndex)
+        if (Item4.TryGet(out T4? t4) && t4 is T t)
         {
-            if (Item4.OrThrow() is T t)
-            {
-                value = t;
-                return true;
-            }
-            value = default;
-            return false;
+            value = t;
+            return true;
         }
         return base.TryGet(out value);
     }
@@ -259,7 +236,6 @@ public class OneOf<T1, T2, T3, T4, T5> : OneOf<T1, T2, T3, T4>
         t5.ThrowIfNull();
         Item5 = Opt.Some(t5);
 
-        OrdinalIndex = 5;
         SelectedType = typeof(T5);
         Value = t5!;
     }
@@ -289,17 +265,12 @@ public class OneOf<T1, T2, T3, T4, T5> : OneOf<T1, T2, T3, T4>
         };
     }
 
-    public override bool TryGet<T>([MaybeNullWhen(false)] out T value)
+    public override bool TryGet<T>(out T? value) where T : default
     {
-        if (5 == OrdinalIndex)
+        if (Item5.TryGet(out T5? t5) && t5 is T t)
         {
-            if (Item5.OrThrow() is T t)
-            {
-                value = t;
-                return true;
-            }
-            value = default;
-            return false;
+            value = t;
+            return true;
         }
         return base.TryGet(out value);
     }
