@@ -13,20 +13,24 @@ public class CyclicEnumerable<T> : IEnumerable<T>
 
     public IEnumerator<T> GetEnumerator()
     {
-        return new CyclicEnumerator(_items.GetEnumerator());
+        return new CyclicEnumerator(_items);
     }
 
     IEnumerator IEnumerable.GetEnumerator()
     {
-        return new CyclicEnumerator(_items.GetEnumerator());
+        return new CyclicEnumerator(_items);
     }
 
     private class CyclicEnumerator : IEnumerator<T>
     {
-        private readonly IEnumerator<T> _enumerator;
-        public CyclicEnumerator(IEnumerator<T> enumerator)
+        private readonly IEnumerable<T> _enumerable;
+        private IEnumerator<T> _enumerator;
+
+        public CyclicEnumerator(IEnumerable<T> enumerable)
         {
-            _enumerator = enumerator;
+            _enumerable = enumerable.ThrowIfNull();
+
+            _enumerator = _enumerable.GetEnumerator();
         }
 
         public T Current => _enumerator.Current;
@@ -42,13 +46,13 @@ public class CyclicEnumerable<T> : IEnumerable<T>
         {
             if (_enumerator.MoveNext()) return true;
 
-            Reset();
+            _enumerator = _enumerable.GetEnumerator();
+
             return _enumerator.MoveNext();
         }
 
         public void Reset()
         {
-            _enumerator.Reset();
         }
     }
 }
@@ -60,9 +64,9 @@ public class CyclicEnumerable<T, TCount> : IEnumerable<(TCount, T)>
     private readonly Func<TCount, TCount> _increment;
     public CyclicEnumerable(IEnumerable<T> items, TCount min, TCount max, Func<TCount, TCount> increment)
     {
-        if (null == increment) throw new ArgumentNullException(nameof(increment));
-        _enumerable = items;
-        _increment = increment;
+        _enumerable = items.ThrowIfNull();
+        _increment = increment.ThrowIfNull();
+
         Min = min;
         Max = max;
     }
