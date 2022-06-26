@@ -6,19 +6,17 @@ public static class DayOfWeekExtensions
 {
     public static DayOfWeek GetWeekDay(this DayOfWeek dayOfWeek, int days)
     {
-        var weekDays = DayOfWeekHelper.GetAllDaysOfWeek().ToList();
-        var it = RingEnumerable.Create(weekDays, true);
-        var i = 0;
-        var dayFound = false;
-        foreach (DayOfWeek d in it)
-        {
-            if (d == dayOfWeek) dayFound = true;
-            if (!dayFound) continue;
+        if(0 > days) throw new ArgumentOutOfRangeException(nameof(days));
 
-            if (++i == days) return d;
+        var i = 0;
+
+        foreach (DayOfWeek d in DayOfWeekHelper.AllDaysOfWeek().Cycle())
+        {
+            i++;
+            if (i == days) return d;
         }
 
-        throw new ArgumentOutOfRangeException(nameof(dayOfWeek));
+        throw new NotFiniteNumberException();
     }
 
     public static DayOfWeek LastDayOfWeek(this DayOfWeek start)
@@ -29,7 +27,7 @@ public static class DayOfWeekExtensions
         if (DayOfWeek.Sunday == start)
             return DayOfWeek.Saturday;
 
-        throw new ArgumentOutOfRangeException("begin can be sunday or monday");
+        throw new ArgumentException($"start can be {DayOfWeek.Sunday} or {DayOfWeek.Monday}");
     }
 }
 
