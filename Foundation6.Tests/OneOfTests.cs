@@ -11,6 +11,7 @@ namespace Foundation
         {
             {
                 var expected = 12;
+
                 var sut = new OneOf<int, double>(expected);
                 var value = 0;
 
@@ -21,6 +22,7 @@ namespace Foundation
             }
             {
                 var expected = 12.3;
+
                 var sut = new OneOf<int, double>(expected);
                 var value = 0D;
 
@@ -31,6 +33,7 @@ namespace Foundation
             }
             {
                 var expected = "myValue";
+
                 var sut = new OneOf<int, string, double>(expected);
                 var value = "";
 
@@ -49,6 +52,7 @@ namespace Foundation
         {
             {
                 var expected = 12;
+
                 var sut = new OneOf<int, string>(expected);
 
                 Assert.IsTrue(sut.Item1.IsSome);
@@ -58,6 +62,7 @@ namespace Foundation
             }
             {
                 var expected = "12";
+
                 var sut = new OneOf<int, string>(expected);
 
                 Assert.IsFalse(sut.Item1.IsSome);
@@ -72,6 +77,7 @@ namespace Foundation
         {
             {
                 var expected = 12;
+
                 var sut = new OneOf<int, string>(expected);
 
                 Assert.IsTrue(sut.Item1.IsSome);
@@ -81,6 +87,7 @@ namespace Foundation
             }
             {
                 var expected = "12";
+
                 var sut = new OneOf<int, string>(expected);
 
                 Assert.IsFalse(sut.Item1.IsSome);
@@ -95,6 +102,7 @@ namespace Foundation
         {
             {
                 var expected = 12;
+
                 var sut = new OneOf<int, double>(expected);
 
                 var result = sut.Match((int i) => i, (double _) => 20);
@@ -103,6 +111,7 @@ namespace Foundation
             }
             {
                 var expected = 12.3;
+
                 var sut = new OneOf<int, double>(expected);
 
                 var result = sut.Match(_ => 20.0, (double d) => d);
@@ -111,6 +120,7 @@ namespace Foundation
             }
             {
                 var expected = "myValue";
+
                 var sut = new OneOf<int, string, double>(expected);
 
                 var result = sut.Match((int _) => "int", (string s) => s, (double _) => "double");
@@ -123,8 +133,9 @@ namespace Foundation
         public void SelectedType_Should_ReturnInt32Type_When_Using2TypeArguments_And_Item1Type_IsInt32()
         {
             var expected = 12;
-            var sut = new OneOf<int, string>(expected);
 
+            var sut = new OneOf<int, string>(expected);
+            
             Assert.AreEqual(expected.GetType(), sut.SelectedType);
         }
 
@@ -132,6 +143,7 @@ namespace Foundation
         public void SelectedType_Should_ReturnStringType_When_Using2TypeArguments_And_Item2Type_IsString()
         {
             var expected = "12";
+
             var sut = new OneOf<int, string>(expected);
 
             Assert.AreEqual(expected.GetType(), sut.SelectedType);
@@ -141,6 +153,7 @@ namespace Foundation
         public void SelectedType_Should_ReturnStringType_When_Using4TypeArguments_And_Item1Type_IsString()
         {
             var expected = "12";
+
             var sut = new OneOf<int, string, DateTime, double>(expected);
 
             Assert.AreEqual(expected.GetType(), sut.SelectedType);
@@ -150,7 +163,9 @@ namespace Foundation
         public void TryGet_Should_ReturnFalse_When_TypeIsNotTheMatchingType()
         {
             var expected = 12;
+
             var sut = new OneOf<int, double>(expected);
+
             Assert.IsFalse(sut.TryGet(out double _));
             Assert.IsFalse(sut.TryGet(out string _));
         }
@@ -160,26 +175,34 @@ namespace Foundation
         {
             {
                 var expected = 12;
+
                 var sut = new OneOf<int, double>(expected);
+
                 Assert.IsTrue(sut.TryGet(out int intValue));
                 Assert.AreEqual(expected, intValue);
             }
             {
                 var expected = 12.3;
+
                 var sut = new OneOf<int, double>(expected);
+
                 Assert.IsTrue(sut.TryGet(out double doubleValue));
                 Assert.AreEqual(expected, doubleValue);
 
             }
             {
                 var expected = "myValue";
+
                 var sut = new OneOf<int, string, double>(expected);
+
                 Assert.IsTrue(sut.TryGet(out string? stringValue));
                 Assert.AreEqual(expected, stringValue);
             }
             {
                 var expected = "myValue";
+
                 var sut = new OneOf<int, string, DateTime, double>(expected);
+
                 Assert.IsTrue(sut.TryGet(out string? stringValue));
                 Assert.AreEqual(expected, stringValue);
             }
