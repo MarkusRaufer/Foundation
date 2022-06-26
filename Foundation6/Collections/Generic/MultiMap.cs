@@ -148,9 +148,25 @@ public class MultiMap<TKey, TValue> : IMultiMap<TKey, TValue>
     /// </summary>
     public int Count => _dictionary.Count;
 
+    /// <summary>
+    /// Copies only first value of each key.
+    /// </summary>
+    /// <param name="array"></param>
+    /// <param name="arrayIndex"></param>
     public void CopyTo(KeyValuePair<TKey, TValue>[] array, int arrayIndex)
     {
-        GetFlattenedKeyValues().ToArray().CopyTo(array, arrayIndex);
+        var i = 0;
+        foreach(var kv in GetKeyValues())
+        {
+            if (i < arrayIndex)
+            {
+                i++;
+                continue;
+            }
+
+            array[i] = Pair.New(kv.Key, kv.Value.First());
+            i++;
+        }
     }
 
     public IEnumerator<KeyValuePair<TKey, TValue>> GetEnumerator()
