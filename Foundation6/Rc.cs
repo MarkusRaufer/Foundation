@@ -21,8 +21,8 @@ public static class Rc
 /// </summary>
 /// <typeparam name="T"></ typeparam >
 public struct Rc<T>
-    : IEquatable<Rc<T>>
-    , IOptionalComparable<Rc<T>>
+    : IComparable<Rc<T>>
+    , IEquatable<Rc<T>>
     where T : notnull, IEquatable<T>
 {
     private readonly T? _value;
@@ -50,6 +50,15 @@ public struct Rc<T>
     public static bool operator !=(Rc<T> left, Rc<T> right)
     {
         return !(left == right);
+    }
+
+    public int CompareTo(Rc<T> other)
+    {
+        if (IsEmpty) return other.IsEmpty ? 0 : -1;
+
+        if (!ValueEquals(other)) return -1;
+
+        return Counter.CompareTo(other.Counter);
     }
 
     /// <summary>
@@ -87,6 +96,27 @@ public struct Rc<T>
 
     public bool IsEmpty => _value is null;
 
+    public void Reset()
+    {
+        Counter = 0;
+    }
+
+    public override string ToString() => $"{nameof(T)}: {_value}, {nameof(Counter)}: {Counter}";
+
+    public bool TryGet([MaybeNullWhen(false)] out T? value)
+    {
+        if(IsEmpty)
+        {
+            value = default;
+            return false;
+        }
+
+        Counter++;
+        value = _value;
+
+        return true;
+    }
+
     /// <summary>
     /// Returns true if <paramref name="other"/> equals the internal _object.
     /// </summary>
@@ -110,39 +140,6 @@ public struct Rc<T>
 
         return !other.IsEmpty
             && EqualityComparer<T>.Default.Equals(_value, other._value);
-    }
-
-    /// <summary>
-    /// Compares the counters. The values must be same. If the values are different None is returned.
-    /// </summary>
-    /// <param name="other"></param>
-    /// <returns>Returns Some(int) if values are same otherwise None.</returns>
-    public Opt<int> OptionalCompareTo(Rc<T> other)
-    {
-        if (!ValueEquals(other)) return Opt.None<int>();
-
-        return Counter.CompareTo(other.Counter);
-    }
-
-    public void Reset()
-    {
-        Counter = 0;
-    }
-
-    public override string ToString() => $"{nameof(T)}: {_value}, {nameof(Counter)}: {Counter}";
-
-    public bool TryGet([MaybeNullWhen(false)] out T? value)
-    {
-        if(IsEmpty)
-        {
-            value = default;
-            return false;
-        }
-
-        Counter++;
-        value = _value;
-
-        return true;
     }
 }
 

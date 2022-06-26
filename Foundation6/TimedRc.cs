@@ -3,7 +3,7 @@
 public static class TimedRc
 {
     /// <summary>
-    /// Creates a timed reference counter object.
+    /// Creates a timed reference counter. The timestamp is <see cref="DateTimeKind.Utc"./>
     /// </summary>
     /// <typeparam name="T"></typeparam>
     /// <param name="rc"></param>
@@ -12,23 +12,41 @@ public static class TimedRc
     {
         return new TimedRc<T>(rc);
     }
+
+    /// <summary>
+    /// Creates a timed reference counter.
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <param name="rc"></param>
+    /// <param name="timestamp"></param>
+    /// <returns></returns>
+    public static TimedRc<T> New<T>(Rc<T> rc, DateTime timestamp) where T : notnull, IEquatable<T>
+    {
+        return new TimedRc<T>(rc, timestamp);
+    }
 }
 
+/// <summary>
+/// A timed reference counter.
+/// </summary>
+/// <typeparam name="T"></typeparam>
 public struct TimedRc<T>
     : IEquatable<TimedRc<T>>
-    , IOptionalComparable<TimedRc<T>>
+    , IComparable<TimedRc<T>>
     where T : notnull, IEquatable<T>
 {
     private readonly Rc<T> _rc;
 
-    public TimedRc(Rc<T> rc) : this(rc, DateTime.Now)
-    {
-    }
-
-    public TimedRc(Rc<T> rc, DateTime dt)
+    public TimedRc(Rc<T> rc, DateTimeKind kind = DateTimeKind.Utc)
     {
         _rc = rc.IsEmpty ? throw new ArgumentNullException(nameof(rc)) : rc;
-        TimeStamp = dt;
+        Timestamp = DateTimeHelper.Now(kind);
+    }
+
+    public TimedRc(Rc<T> rc, DateTime timestamp)
+    {
+        _rc = rc.IsEmpty ? throw new ArgumentNullException(nameof(rc)) : rc;
+        Timestamp = timestamp;
     }
 
     public static bool operator ==(TimedRc<T> left, TimedRc<T> right)
@@ -49,41 +67,47 @@ public struct TimedRc<T>
     {
         if (!_rc.Equals(other._rc)) return false;
 
-        return TimeStamp.Equals(other.TimeStamp);
+        return Timestamp.ValueObjectEquals(other.Timestamp);
     }
 
+    /// <summary>
+    /// Timestamp is changed on call.
+    /// </summary>
+    /// <returns></returns>
     public Opt<T> Get()
     {
-        TimeStamp = DateTime.Now;
+        if (IsEmpty) return Opt.None<T>();
+
+        Timestamp = DateTimeHelper.Now(Timestamp.Kind);
 
         return _rc.Get();
     }
 
-    public override int GetHashCode() => System.HashCode.Combine(_rc, TimeStamp);
+    public override int GetHashCode() => System.HashCode.Combine(_rc, Timestamp);
 
     public bool IsEmpty => _rc.IsEmpty;
 
-    public Opt<int> OptionalCompareTo(TimedRc<T> other)
+    public int CompareTo(TimedRc<T> other)
     {
-        if (IsEmpty) return Opt.None<int>();
+        var timeComparision = Timestamp.CompareTo(other.Timestamp);
+        if (0 != timeComparision) return timeComparision;
 
-        var result = _rc.OptionalCompareTo(other._rc);
-        if (result.IsNone || 0 != result.OrThrow()) return result;
-
-        return TimeStamp.CompareTo(other.TimeStamp);
+        return _rc.CompareTo(other._rc);
     }
 
     public void Reset()
     {
-        TimeStamp = DateTime.Now;
+        if (IsEmpty) return;
+
+        Timestamp = DateTimeHelper.Now(Timestamp.Kind);
         _rc.Reset();
     }
 
-    public DateTime TimeStamp { get; private set; }
+    public DateTime Timestamp { get; private set; }
 
     public override string ToString()
     {
-        return $"{_rc}, TimeStamp: {TimeStamp}";
+        return $"{_rc}, TimeStamp: {Timestamp}";
     }
 }
 
