@@ -114,11 +114,22 @@ public class MultiMap<TKey, TValue> : IMultiMap<TKey, TValue>
         _dictionary.Clear();
     }
 
+    /// <summary>
+    /// Checks if key value pair exists.
+    /// </summary>
+    /// <param name="item"></param>
+    /// <returns></returns>
     public bool Contains(KeyValuePair<TKey, TValue> item)
     {
         return Contains(item.Key, item.Value);
     }
 
+    /// <summary>
+    /// Checks if key value pair exists.
+    /// </summary>
+    /// <param name="key"></param>
+    /// <param name="value"></param>
+    /// <returns></returns>
     public bool Contains(TKey key, TValue value)
     {
         if (_dictionary.TryGetValue(key, out ICollection<TValue>? values))
@@ -208,8 +219,18 @@ public class MultiMap<TKey, TValue> : IMultiMap<TKey, TValue>
         }
     }
 
-    public IEnumerable<TValue> GetFlattenedValues() => _dictionary.Values.SelectMany(c => c);
-
+    /// <summary>
+    /// Returns a flat list of values. If keys is empty all values are returned.
+    /// </summary>
+    /// <param name="keys"></param>
+    /// <returns></returns>
+    public IEnumerable<TValue> GetFlattenedValues(params TKey[] keys)
+    {
+        return 0 == keys.Length
+            ? _dictionary.Keys.SelectMany(key => GetValues(key))
+            : keys.SelectMany(key => GetValues(key));
+    }
+    
     /// <summary>
     /// Returns the keys containing the value.
     /// </summary>
@@ -233,7 +254,7 @@ public class MultiMap<TKey, TValue> : IMultiMap<TKey, TValue>
     }
 
     /// <summary>
-    /// Gets all keys with their values.
+    /// Returns all keys with their values.
     /// </summary>
     /// <param name="keys"></param>
     /// <returns></returns>
@@ -256,6 +277,11 @@ public class MultiMap<TKey, TValue> : IMultiMap<TKey, TValue>
         }
     }
 
+    /// <summary>
+    /// Returns the values of the keys.
+    /// </summary>
+    /// <param name="keys"></param>
+    /// <returns></returns>
     public IEnumerable<TValue> GetValues(params TKey[] keys)
     {
         IEnumerable<TValue> getValues(TKey key)
@@ -270,6 +296,11 @@ public class MultiMap<TKey, TValue> : IMultiMap<TKey, TValue>
         return keys.SelectMany(getValues);
     }
 
+    /// <summary>
+    /// Returns the number of values of the key.
+    /// </summary>
+    /// <param name="key"></param>
+    /// <returns></returns>
     public int GetValuesCount(TKey key)
     {
         if (_dictionary.TryGetValue(key, out ICollection<TValue>? values))
@@ -279,7 +310,7 @@ public class MultiMap<TKey, TValue> : IMultiMap<TKey, TValue>
     }
 
     /// <summary>
-    /// Count of all key values.
+    /// Returns the number of all key values.
     /// </summary>
     public int KeyValueCount
     {
@@ -381,6 +412,12 @@ public class MultiMap<TKey, TValue> : IMultiMap<TKey, TValue>
     }
 #pragma warning restore
 
+    /// <summary>
+    /// Returns values of key if true otherwise an empty list.
+    /// </summary>
+    /// <param name="key"></param>
+    /// <param name="values"></param>
+    /// <returns></returns>
     public bool TryGetValues(TKey key, out IEnumerable<TValue> values)
     {
         if (_dictionary.TryGetValue(key, out ICollection<TValue>? vals))

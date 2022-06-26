@@ -18,7 +18,7 @@ public interface IReadOnlyMultiMap<TKey, TValue> : IEnumerable<KeyValuePair<TKey
     /// Flattens all values of all keys.
     /// </summary>
     /// <returns></returns>
-    IEnumerable<TValue> GetFlattenedValues();
+    IEnumerable<TValue> GetFlattenedValues(params TKey[] keys);
 
     /// <summary>
     /// Returns the keys containing the value. If values is empty all keys are returned.
