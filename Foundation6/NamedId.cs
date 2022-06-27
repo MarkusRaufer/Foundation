@@ -4,7 +4,7 @@ using System.Globalization;
 using System.Runtime.Serialization;
 
 /// <summary>
-/// This identifier is ideal for rapid prototyping, if you do not want to commit to a specific type yet.
+/// This is a named identifier. The name and value are used for equality and comparison.
 /// </summary>
 [Serializable]
 public readonly struct NamedId
@@ -98,11 +98,10 @@ public readonly struct NamedId
 
     public bool IsEmpty => !_isInitialized;
 
-    public static NamedId New<T>(string name, T value)
-        where T : IComparable
-    {
-        return new NamedId(name, value);
-    }
+    public static NamedId New(string name, IComparable value) => new NamedId(name, value);
+
+    public static NamedId<T> New<T>(string name, T value) where T : struct, IComparable<T>, IEquatable<T>
+        => new(name, value);
 
     public override string ToString() => $"{_value}";
 
@@ -114,10 +113,13 @@ public readonly struct NamedId
     }
 }
 
+/// <summary>
+/// This is a named identifier. The name and value are used for equality and comparison.
+/// </summary>
+/// <typeparam name="T"></typeparam>
 [Serializable]
 public struct NamedId<T>
-    : IIdentifier<T>
-    , IComparable<NamedId<T>>
+    : IComparable<NamedId<T>>
     , IEquatable<NamedId<T>>
     , ISerializable
     where T : struct, IComparable<T>, IEquatable<T>
@@ -205,8 +207,6 @@ public struct NamedId<T>
     }
 
     public bool IsEmpty => !_isInitialized;
-
-    public static NamedId<T> New(string name, T value) => new(name, value);
 
     public override string ToString() => $"{_name}: {_value}";
 

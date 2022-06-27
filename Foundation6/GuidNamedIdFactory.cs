@@ -10,7 +10,6 @@ public class GuidNamedIdFactory : IIdFactory<NamedId>
 
     public NamedId CreateId()
     {
-        return NamedId.New(_name, Guid.NewGuid());
+        return NamedId.New(_name, (IComparable)Guid.NewGuid());
     }
 }
-
