@@ -15,19 +15,25 @@ public class MultiMap<TKey, TValue> : IMultiMap<TKey, TValue>
     private readonly IDictionary<TKey, ICollection<TValue>> _dictionary;
     private readonly Func<ICollection<TValue>> _valueCollectionFactory;
 
-    public MultiMap() :
-        this(new Dictionary<TKey, ICollection<TValue>>(),
-            () => new List<TValue>())
+    public MultiMap() : this(new Dictionary<TKey, ICollection<TValue>>(), () => new List<TValue>())
     {
     }
 
-    public MultiMap(int capacity)
-        : this(new Dictionary<TKey, ICollection<TValue>>(capacity), () => new List<TValue>())
+    public MultiMap(int capacity) : this(capacity, () => new List<TValue>())
     {
     }
 
-    public MultiMap(IEqualityComparer<TKey> comparer)
-        : this(new Dictionary<TKey, ICollection<TValue>>(comparer), () => new List<TValue>())
+    public MultiMap(int capacity, Func<ICollection<TValue>> valueCollectionFactory)
+        : this(new Dictionary<TKey, ICollection<TValue>>(capacity), valueCollectionFactory)
+    {
+    }
+
+    public MultiMap(IEqualityComparer<TKey> comparer) : this(comparer, () => new List<TValue>())
+    {
+    }
+
+    public MultiMap(IEqualityComparer<TKey> comparer, Func<ICollection<TValue>> valueCollectionFactory)
+        : this(new Dictionary<TKey, ICollection<TValue>>(comparer), valueCollectionFactory)
     {
     }
 
