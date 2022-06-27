@@ -60,7 +60,7 @@ namespace Foundation
         private readonly Func<T, T> _generator;
         private readonly Func<T> _seed;
 
-        public ForEnumerableWithSeed(Func<T> seed, Func<T,T> generator)
+        public ForEnumerableWithSeed(Func<T> seed, Func<T, T> generator)
         {
             _seed = seed.ThrowIfNull();
             _generator = generator.ThrowIfNull();
@@ -102,6 +102,7 @@ namespace Foundation
     {
         private T? _current;
         private readonly Func<T, T> _generator;
+        private bool _passed;
         private readonly Func<T> _seed;
 
         public ForEnumeratorWithSeed(Func<T> seed, Func<T, T> generator)
@@ -110,16 +111,7 @@ namespace Foundation
             _generator = generator.ThrowIfNull();
         }
 
-        public T Current
-        {
-            get
-            {
-                if(_current is null)
-                    _current = _seed();
-
-                return _current;
-            }
-        }
+        public T Current => _current ?? throw new InvalidOperationException("Current should not be used in the current state");
 
         object IEnumerator.Current => Current;
 
@@ -129,12 +121,17 @@ namespace Foundation
 
         public bool MoveNext()
         {
-            _current = _generator(Current);
+            _current = !_passed ? _seed() : _generator(Current);
+
+            _passed = true;
+
             return true;
         }
 
         public void Reset()
         {
+            _current = default;
+            _passed = false;
         }
     }
 }

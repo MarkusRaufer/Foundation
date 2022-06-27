@@ -24,11 +24,11 @@ namespace Foundation
         [Test]
         public void StartAt_Should_Return5Elements_When_TakeUntilEqualsInclusive5()
         {
-            var values = For.StartAt(() => 1).Returns(value => ++value) 
+            var values = For.StartAt(() => 3).Returns(value => ++value) 
                                              .TakeUntil(x => x == 5, inclusive: true)
                                              .ToArray();
 
-            var expected = Enumerable.Range(1, 5);
+            var expected = Enumerable.Range(3, 3);
             Assert.IsTrue(expected.SequenceEqual(values));
         }
     }
