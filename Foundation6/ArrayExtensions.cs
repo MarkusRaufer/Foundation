@@ -23,6 +23,19 @@ public static class ArrayExtensions
         return true;
     }
 
+    public static bool EqualsArray(this byte[] lhs, byte[] rhs)
+    {
+        if (lhs is null) return rhs is null;
+
+        if (rhs is null || lhs.Length != rhs.Length) return false;
+        for (var i = 0; i < lhs.Length; i++)
+        {
+            if (lhs[i] != rhs[i]) return false;
+        }
+
+        return true;
+    }
+
     public static IEnumerator<T> GetEnumerator<T>(this T[] array)
     {
         return array.AsEnumerable().GetEnumerator();
