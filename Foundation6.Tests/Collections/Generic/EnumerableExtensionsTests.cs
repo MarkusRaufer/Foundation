@@ -279,9 +279,9 @@ public class EnumerableExtensionsTests
         var items2 = Enumerable.Range(10, 10);
 
         // return all items because lists are completely different
-        var diff = items1.Difference(items2).ToList();
+        var diff = items1.Difference(items2).ToArray();
 
-        Assert.AreEqual(20, diff.Count);
+        Assert.AreEqual(20, diff.Length);
     }
 
     [Test]
@@ -290,9 +290,9 @@ public class EnumerableExtensionsTests
         var items1 = Enumerable.Range(0, 10);
         var items2 = Enumerable.Range(0, 10);
 
-        var diff = items1.Difference(items2).ToList();
+        var diff = items1.Difference(items2).ToArray();
 
-        Assert.AreEqual(0, diff.Count);
+        Assert.AreEqual(0, diff.Length);
     }
 
     [Test]
@@ -302,9 +302,9 @@ public class EnumerableExtensionsTests
         var items2 = new List<int> { 2, 4, 6 };
 
         // return items of both lists that don't match
-        var diff = items1.Difference(items2).ToList();
+        var diff = items1.Difference(items2).ToArray();
 
-        Assert.AreEqual(4, diff.Count);
+        Assert.AreEqual(4, diff.Length);
         CollectionAssert.AreEqual(new[] { 1, 3, 5, 6 }, diff);
     }
 
@@ -395,7 +395,7 @@ public class EnumerableExtensionsTests
     }
 
     [Test]
-    public void Enumerate_WithMinMax()
+    public void Enumerate_ShouldReturn10Tuples_When_UsingMinMax_On10Items()
     {
         var items = Enumerable.Range(1, 10).Select(x => x.ToString());
 
@@ -414,7 +414,7 @@ public class EnumerableExtensionsTests
     }
 
     [Test]
-    public void Enumerate_WithRange()
+    public void Enumerate_ShouldReturn10Tuples_When_UsingRange_On10Items()
     {
         var items = Enumerable.Range(1, 10).Select(x => x.ToString());
 
@@ -435,11 +435,11 @@ public class EnumerableExtensionsTests
     }
 
     [Test]
-    public void Enumerate_WithSeed()
+    public void Enumerate_ShouldReturn3Tuples_When_UsingWithSeed_On3Items()
     {
         var items = new[] { "1", "2", "3" };
 
-        var enumerated = items.Enumerate(5).ToList();
+        var enumerated = items.Enumerate(5).ToArray();
 
         Assert.AreEqual(("1", 5), enumerated[0]);
         Assert.AreEqual(("2", 6), enumerated[1]);
@@ -447,7 +447,7 @@ public class EnumerableExtensionsTests
     }
     
     [Test]
-    public void Except()
+    public void ExceptBy()
     
     {
         var items1 = new[] 
@@ -464,7 +464,7 @@ public class EnumerableExtensionsTests
             new C("3") { NickName = "1" },
         };
 
-        var different = items1.Except(items2, i1 => i1.Name, i2 => i2.NickName, i1 => i1).ToArray();
+        var different = items1.ExceptBy(items2, i1 => i1.Name, i2 => i2.NickName, i1 => i1).ToArray();
 
         Assert.AreEqual(1, different.Length);
         Assert.AreEqual("2", different[0].Name);
@@ -497,9 +497,9 @@ public class EnumerableExtensionsTests
     public void FromIndex()
     {
         var items = new List<string> { "0", "1", "2", "3", "4", "5", "6", "7", "8", "9" };
-        var selected = items.FromIndex(index => (index % 2) == 0).ToList();
+        var selected = items.FromIndex(index => (index % 2) == 0).ToArray();
 
-        Assert.AreEqual(items.Count / 2, selected.Count);
+        Assert.AreEqual(items.Count / 2, selected.Length);
         Assert.AreEqual("0", selected[0]);
         Assert.AreEqual("2", selected[1]);
         Assert.AreEqual("4", selected[2]);
@@ -513,9 +513,10 @@ public class EnumerableExtensionsTests
         {
             var items = Enumerable.Range(1, 6);
             var ifItems = new List<int>();
+
             var elseItems = items.If(item => item < 4, ifItems.Add)
                                  .Else()
-                                 .ToList();
+                                 .ToArray();
 
             CollectionAssert.AreEqual(Enumerable.Range(1, 3), ifItems);
             CollectionAssert.AreEqual(Enumerable.Range(4, 3), elseItems);
@@ -523,11 +524,12 @@ public class EnumerableExtensionsTests
         {
             var items = Enumerable.Range(1, 6);
             var ifItems = new List<int>();
+
             var elseIfItems = new List<int>();
             var elseItems = items.If(item => item < 3, ifItems.Add)
                                  .ElseIf(item => item < 5, elseIfItems.Add)
                                  .Else()
-                                 .ToList();
+                                 .ToArray();
 
             CollectionAssert.AreEqual(Enumerable.Range(1, 2), ifItems);
             CollectionAssert.AreEqual(Enumerable.Range(3, 2), elseIfItems);
@@ -626,7 +628,7 @@ public class EnumerableExtensionsTests
         var items = new List<int>();
         var item = 4;
 
-        var newItems = items.Insert(item, n => n > 3).ToList();
+        var newItems = items.Insert(item, n => n > 3).ToArray();
 
         Assert.Contains(item, newItems);
     }
@@ -637,7 +639,7 @@ public class EnumerableExtensionsTests
         var items = new List<int>();
         var item = 4;
 
-        var newItems = items.Insert(item, Comparer<int>.Default).ToList();
+        var newItems = items.Insert(item, Comparer<int>.Default).ToArray();
 
         Assert.Contains(item, newItems);
     }
@@ -1321,20 +1323,20 @@ public class EnumerableExtensionsTests
     [Test]
     public void RandomSubset()
     {
-        var numbers = Enumerable.Range(1, 5).ToList();
+        var numbers = Enumerable.Range(1, 5).ToArray();
         {
-            var subset = numbers.RandomSubset(3).ToList();
+            var subset = numbers.RandomSubset(3).ToArray();
 
-            Assert.AreEqual(3, subset.Count);
+            Assert.AreEqual(3, subset.Length);
             foreach (var randomSelected in subset)
             {
                 CollectionAssert.Contains(numbers, randomSelected);
             }
         }
         {
-            var subset = numbers.RandomSubset(6).ToList();
+            var subset = numbers.RandomSubset(6).ToArray();
 
-            Assert.AreEqual(5, subset.Count);
+            Assert.AreEqual(5, subset.Length);
             Assert.IsTrue(subset.IsEqualTo(numbers));
         }
     }
@@ -1467,7 +1469,7 @@ public class EnumerableExtensionsTests
     {
         var items = new List<string> { "0", "1", "2", "3", "4", "5", "6", "7", "8", "9" };
 
-        var shuffled = items.ToList().Shuffle().ToList();
+        var shuffled = items.Shuffle().ToArray();
 
         Assert.IsFalse(shuffled.IsSameAs(items));
         Assert.IsTrue(EnumerableExtensions.IsEqualTo(items, shuffled));
@@ -1854,9 +1856,9 @@ public class EnumerableExtensionsTests
         var items1 = new List<A> { new A("1"), new A("2"), new A("3") };
         var items2 = new List<A> { new A("a"), new A("b"), new A("c"), new A("1"), new A("3") };
 
-        var mapping = items1.Zip(items2, (f, s) => f.Name == s.Name, (f, s) => (f, s)).ToList();
+        var mapping = items1.Zip(items2, (f, s) => f.Name == s.Name, (f, s) => (f, s)).ToArray();
 
-        Assert.AreEqual(2, mapping.Count);
+        Assert.AreEqual(2, mapping.Length);
         foreach (var (f, s) in mapping)
         {
             Assert.AreNotEqual(f.Id, s.Id);
@@ -1870,9 +1872,9 @@ public class EnumerableExtensionsTests
         var items1 = new List<A> { new A("1"), new A("2"), new A("3") };
         var items2 = new List<A> { new A("a"), new A("b"), new A("c"), new A("1"), new A("3"), new A("1") };
 
-        var mapping = items1.Zip(items2, (f, s) => f.Name == s.Name, (f, s) => (f, s)).ToList();
+        var mapping = items1.Zip(items2, (f, s) => f.Name == s.Name, (f, s) => (f, s)).ToArray();
 
-        Assert.AreEqual(3, mapping.Count);
+        Assert.AreEqual(3, mapping.Length);
         foreach (var (f, s) in mapping)
         {
             Assert.AreNotEqual(f.Id, s.Id);
@@ -1886,9 +1888,9 @@ public class EnumerableExtensionsTests
         var items1 = new List<A> { new A("1"), new A("2"), new A("3") };
         var items2 = new List<A> { new A("a"), new A("b"), new A("c") };
 
-        var mapping = items1.Zip(items2, (f, s) => f.Name == s.Name, (f, s) => (f, s)).ToList();
+        var mapping = items1.Zip(items2, (f, s) => f.Name == s.Name, (f, s) => (f, s)).ToArray();
 
-        Assert.AreEqual(0, mapping.Count);
+        Assert.AreEqual(0, mapping.Length);
     }
 }
 
