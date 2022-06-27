@@ -785,17 +785,17 @@ public class EnumerableExtensionsTests
     {
         var dates1 = new List<DateTime>
         {
-            new DateTime(2017, 4, 1),
-            new DateTime(2017, 5, 2),
-            new DateTime(2017, 9, 3),
-            new DateTime(2018, 7, 1)
+            new (2017, 4, 1),
+            new (2017, 5, 2),
+            new (2017, 9, 3),
+            new (2018, 7, 1)
         };
 
         var dates2 = new List<DateTime>
         {
-            new DateTime(2019, 2, 5),
-            new DateTime(2019, 6, 1),
-            new DateTime(2020, 4, 1)
+            new (2019, 2, 5),
+            new (2019, 6, 1),
+            new (2020, 4, 1)
         };
 
         var (lhs, rhs) = dates1.Match(dates2, dt => dt.Day);
@@ -817,17 +817,17 @@ public class EnumerableExtensionsTests
     {
         var dates1 = new List<DateTime>
         {
-            new DateTime(2017, 4, 1),
-            new DateTime(2017, 5, 2),
-            new DateTime(2017, 9, 3),
-            new DateTime(2018, 7, 1)
+            new (2017, 4, 1),
+            new (2017, 5, 2),
+            new (2017, 9, 3),
+            new (2018, 7, 1)
         };
 
         var dates2 = new List<DateTime>
         {
-            new DateTime(2019, 2, 5),
-            new DateTime(2019, 6, 1),
-            new DateTime(2020, 4, 1)
+            new (2019, 2, 5),
+            new (2019, 6, 1),
+            new (2020, 4, 1)
         };
 
         var (lhs, rhs) = dates1.Match(dates2, dt => new { dt.Day, dt.Month });
@@ -1466,6 +1466,24 @@ public class EnumerableExtensionsTests
     }
 
     [Test]
+    public void SkipUntilSatisfied_Should_ReturnOneValueForEachMach_When_ListHasDuplicateValues()
+    {
+        var numbers = new[] { 1, 2, 3, 2, 4, 4, 5, 6, 7 };
+        var predicates = new Func<int, bool>[] { n => n == 2, n => n == 4 };
+
+        // if a predicate is fulfilled it is no longer used
+        var foundNumbers = numbers.SkipUntilSatisfied(predicates).ToArray();
+
+        Assert.AreEqual(4, foundNumbers.Length);
+
+        Assert.AreEqual(4, foundNumbers[0]);
+        Assert.AreEqual(5, foundNumbers[1]);
+        Assert.AreEqual(6, foundNumbers[2]);
+        Assert.AreEqual(7, foundNumbers[3]);
+    }
+
+
+    [Test]
     public void Slice_ShouldReturn2Lists_When_2_PredicatesAreUsed()
     {
         //{0, 1, 2, 3, 4, 5}
@@ -1643,6 +1661,7 @@ public class EnumerableExtensionsTests
         var predicates = new Func<int, bool>[] { n => n == 2, n => n == 5 };
 
         var foundNumbers = numbers.TakeUntilSatisfied(predicates).ToArray();
+
         Assert.AreEqual(6, calledMoveNext);
         Assert.AreEqual(2, foundNumbers.Length);
         Assert.AreEqual(2, foundNumbers[0]);

@@ -2311,6 +2311,30 @@ public static class EnumerableExtensions
     }
 
     /// <summary>
+    /// Skips items until all predicates match exactly one time, and then returns the remaining elements.
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <param name="items"></param>
+    /// <param name="predicates"></param>
+    /// <returns></returns>
+    public static IEnumerable<T> SkipUntilSatisfied<T>(this IEnumerable<T> items, params Func<T, bool>[] predicates)
+    {
+        items.ThrowIfNull();
+
+        var invasivePredicates = new InvasiveVerification<T>(predicates);
+        var isNone = new TriState();
+        var isTrue = new TriState(true);
+
+        foreach (var item in items)
+        {
+            var triState = invasivePredicates.Verify(item);
+            if (isNone != triState) continue;
+
+            yield return item;
+        }
+    }
+
+    /// <summary>
     /// Creates a list of enumerables of size length.
     /// </summary>
     /// <typeparam name="T"></typeparam>
