@@ -1,25 +1,27 @@
 ﻿namespace Foundation;
 
-using System.Diagnostics.CodeAnalysis;
+using Foundation.Collections.Generic;
+using System.Globalization;
+using System.Runtime.Serialization;
 using System.Text;
 
+/// <summary>
+/// Typed identifier.
+/// </summary>
 public struct Id
     : IComparable
     , IComparable<Id>
     , IEquatable<Id>
-    , IIncompatibleComparable
-    , IUninitializedComparable
 {
     private readonly int _hashCode;
-    internal Id(Type? entityType, IComparable value)
+    private readonly IComparable _value;
+
+    internal Id(Type entityType, IComparable value)
     {
-        Value = value.ThrowIfNull();
-        EntityType = entityType ?? typeof(object);
+        _value = value.ThrowIfNull();
+        EntityType = entityType.ThrowIfNull();
 
-        CompareValueIfEmpty = -1;
-        CompareValueIfIncompatible = 1;
-
-        _hashCode = HashCode.FromObject(EntityType, Value);
+        _hashCode = System.HashCode.Combine(EntityType, _value);
     }
 
     public static bool operator ==(Id lhs, Id rhs) => lhs.Equals(rhs);
@@ -36,68 +38,43 @@ public struct Id
 
     public int CompareTo(Id other)
     {
-        if (IsEmpty) return other.IsEmpty ? 0 : CompareValueIfEmpty;
-        if (!EntityType.Equals(other.EntityType)) return CompareValueIfIncompatible;
+        if (IsEmpty) return other.IsEmpty ? 0 : -1;
+        if (other.IsEmpty) return 1;
 
-        if (other.IsEmpty) return CompareValueIfEmpty * -1;
+        if (!EntityType.Equals(other.EntityType)) return 1;
 
-        return Value.CompareTo(other.Value);
+        return _value.CompareTo(other._value);
     }
 
     public int CompareTo(object? obj)
     {
         if (obj is Id other) return CompareTo(other);
 
-        return CompareValueIfIncompatible;
+        return 1;
     }
-
-    /// <summary>
-    /// With this value you can decide if empty Ids are smaller or greater. The value can be -1 or 1. 
-    /// Means that in a sorted list empty Ids appear at the beginning or at the end of the list. 
-    /// </summary>
-    public int CompareValueIfEmpty { get; set; }
-
-    /// <summary>
-    /// With this value you can decide if incompatible Ids are smaller or greater. The value can be -1 or 1. 
-    /// Means that in a sorted list incompatible Ids appear at the beginning or at the end of the list.
-    /// </summary>
-    public int CompareValueIfIncompatible { get; set; }
 
     public Type EntityType { get; }
 
     public override bool Equals(object? obj) => obj is Id other && Equals(other);
 
-    public bool Equals(Id other) => CompareTo(other) == 0;
+    public bool Equals(Id other)
+    {
+        return _hashCode == other._hashCode && 0 == CompareTo(other);
+    }
 
     public override int GetHashCode() => _hashCode;
 
     public bool IsEmpty => EntityType is null;
 
-    public static Id New(ByteString value) => New(typeof(object), value);
-    public static Id New(byte[] value) => New(typeof(object), value);
-    public static Id New(Guid value) => New(typeof(object), value);
-    public static Id New(string value) => New(typeof(object), value, Encoding.Unicode);
-    public static Id New(string value, Encoding encoding) => New(typeof(object), value, encoding);
-
-    public static Id New(Type entityType, ByteString value) => new Id(entityType, value);
-    public static Id New(Type entityType, byte[] value) => new Id(entityType, ByteString.CopyFrom(value));
-    public static Id New(Type entityType, Guid value) => New(entityType, value.ToByteArray());
-    public static Id New(Type entityType, string value) => New(entityType, value, Encoding.Unicode);
-    public static Id New(Type entityType, string value, Encoding encoding) => new(entityType, ByteString.FromString(value, encoding));
-
     public static Id New<TValue>(TValue value)
-         where TValue : struct, IComparable, IComparable<TValue>, IConvertible, IEquatable<TValue>, IFormattable
+         where TValue : struct, IComparable, IComparable<TValue>, IEquatable<TValue>, IFormattable
         => New(typeof(object), value);
 
-    public static Id New<TValue>(Type? entityType, TValue value)
-         where TValue : struct, IComparable, IComparable<TValue>, IConvertible, IEquatable<TValue>, IFormattable
+    public static Id New<TValue>(Type entityType, TValue value)
+         where TValue : struct, IComparable, IComparable<TValue>, IEquatable<TValue>, IFormattable
         => new(entityType, value);
 
-    public static Id<TEntity> New<TEntity>(ByteString value) => new(value);
     public static Id<TEntity> New<TEntity>(byte[] value) => new(ByteString.CopyFrom(value));
-    public static Id<TEntity> New<TEntity>(Guid value) => New<TEntity>(value.ToByteArray());
-    public static Id<TEntity> New<TEntity>(string value) => New<TEntity>(value, Encoding.Unicode);
-    public static Id<TEntity> New<TEntity>(string value, Encoding encoding) => new(ByteString.FromString(value, encoding));
 
     /// <summary>
     /// Attention boxing happens with value.
@@ -117,31 +94,28 @@ public struct Id
     public static Id<TEntity> New<TEntity, TValue>(TValue value)
          where TValue : struct, IComparable, IComparable<TValue>, IConvertible, IEquatable<TValue>, IFormattable => new(value);
 
-    public override string ToString() => IsEmpty ? "" : $"{Value}";
-
-    public IComparable Value { get; }
+    public override string ToString() => IsEmpty ? "" : $"{_value}";
 }
 
 /// <summary>
-/// Boxing happens with value.
+/// Typed identifier. Boxing happens with value.
 /// </summary>
 /// <typeparam name="TEntity"></typeparam>
 public struct Id<TEntity>
     : IComparable
     , IComparable<Id<TEntity>>
     , IEquatable<Id<TEntity>>
-    , IIncompatibleComparable
-    , IUninitializedComparable
 {
     private readonly int _hashCode;
+    private readonly IComparable _value;
 
     internal Id(IComparable value)
     {
-        Value = value.ThrowIfNull();
-        CompareValueIfEmpty = -1;
-        CompareValueIfIncompatible = 1;
+        _value = value.ThrowIfNull();
 
-        _hashCode = HashCode.FromObject(typeof(TEntity), Value);
+        EntityType = typeof(TEntity);
+
+        _hashCode = System.HashCode.Combine(EntityType, _value);
     }
 
     public static bool operator ==(Id<TEntity> left, Id<TEntity> right) => left.Equals(right);
@@ -160,34 +134,31 @@ public struct Id<TEntity>
     {
         if (obj is Id<TEntity> other) return CompareTo(other);
 
-        return CompareValueIfIncompatible;
+        return 1;
     }
 
     public int CompareTo(Id<TEntity> other)
     {
-        if (IsEmpty) return other.IsEmpty ? 0 : CompareValueIfEmpty;
-        if (!EntityType.Equals(other.EntityType)) return CompareValueIfIncompatible;
+        if (IsEmpty) return other.IsEmpty ? 0 : -1;
+        if (other.IsEmpty) return 1;
 
-        if (other.IsEmpty) return CompareValueIfEmpty * -1;
-        return Value.CompareTo(other.Value);
+        if (!EntityType.Equals(other.EntityType)) return 1;
+
+        return _value.CompareTo(other._value);
     }
 
     public override bool Equals(object? obj) => obj is Id<TEntity> other && Equals(other);
 
-    public bool Equals(Id<TEntity> other) => 0 == CompareTo(other);
-
-    public int CompareValueIfEmpty { get; set; }
-
-    public int CompareValueIfIncompatible { get; set; }
+    public bool Equals(Id<TEntity> other)
+    {
+        return _hashCode == other._hashCode &&  0 == CompareTo(other);
+    }
 
     public override int GetHashCode() => _hashCode;
 
-    public Type EntityType => typeof(TEntity);
+    public Type EntityType { get; }
 
     public bool IsEmpty => EntityType is null;
 
-    public override string ToString() => IsEmpty ? "" : $"{Value}";
-
-    public IComparable Value { get; }
+    public override string ToString() => IsEmpty ? "" : $"{_value}";
 }
-
