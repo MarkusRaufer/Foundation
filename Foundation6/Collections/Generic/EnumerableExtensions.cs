@@ -195,7 +195,7 @@ public static class EnumerableExtensions
 
         if (!items.FirstAsOpt().TryGet(out T? item)) return Opt.None<TAccumulate>();
 
-        return Opt.Some(items.Aggregate(seed(item!), func));
+        return Opt.Some(items.Skip(1).Aggregate(seed(item!), func));
     }
 
     /// <summary>

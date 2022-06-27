@@ -101,18 +101,26 @@ public class EnumerableExtensionsTests
     {
         var numbers = Enumerable.Range(1, 3);
 
-        var minmax = numbers.Aggregate(number => (min: number, max: number), (acc, number) =>
         {
-            if (number < acc.min) acc.min = number;
-            if (number > acc.max) acc.max = number;
-            return (acc.min, acc.max);
-        });
+            var sum = numbers.Aggregate(number => number, (prev, curr) => prev + curr);
 
-        Assert.IsTrue(minmax.IsSome);
+            Assert.IsTrue(sum.IsSome);
+            Assert.AreEqual(6, sum.OrThrow());
+        }
+        {
+            var minmax = numbers.Aggregate(number => (min: number, max: number), (acc, number) =>
+            {
+                if (number < acc.min) acc.min = number;
+                if (number > acc.max) acc.max = number;
+                return (acc.min, acc.max);
+            });
 
-        var (min, max) = minmax.OrThrow();
-        Assert.AreEqual(1, min);
-        Assert.AreEqual(3, max);
+            Assert.IsTrue(minmax.IsSome);
+
+            var (min, max) = minmax.OrThrow();
+            Assert.AreEqual(1, min);
+            Assert.AreEqual(3, max);
+        }
     }
 
     [Test]
