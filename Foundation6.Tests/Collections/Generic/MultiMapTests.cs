@@ -247,7 +247,7 @@ namespace Foundation.Collections.Generic
             _sut.Add(key2, two);
             _sut.Add(key2, dos);
 
-            Assert.AreEqual(4, _sut.KeyValueCount);
+            Assert.AreEqual(4, _sut.ValuesCount);
         }
 
         [Test]

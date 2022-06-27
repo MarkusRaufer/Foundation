@@ -309,23 +309,6 @@ public class MultiMap<TKey, TValue> : IMultiMap<TKey, TValue>
         return 0;
     }
 
-    /// <summary>
-    /// Returns the number of all key values.
-    /// </summary>
-    public int KeyValueCount
-    {
-        get
-        {
-            var count = 0;
-            foreach(var kv in _dictionary)
-            {
-                count += kv.Value.Count;
-            }
-
-            return count;
-        }
-    }
-
     public bool IsReadOnly
     {
         get { return _dictionary.IsReadOnly; }
@@ -437,16 +420,16 @@ public class MultiMap<TKey, TValue> : IMultiMap<TKey, TValue>
     }
 
     /// <summary>
+    /// Returns the number of all values.
+    /// </summary>
+    public int ValuesCount => _dictionary.Aggregate(0, (sum, elem) => sum + elem.Value.Count);
+
+    /// <summary>
     /// Gets all values from all keys.
     /// </summary>
     public ICollection<TValue> Values
     {
         get { return GetFlattenedValues().ToList(); }
     }
-
-    /// <summary>
-    /// Returns the number of all values.
-    /// </summary>
-    public int ValuesCount => _dictionary.Aggregate(0, (sum, elem) => sum + elem.Value.Count);
 }
 

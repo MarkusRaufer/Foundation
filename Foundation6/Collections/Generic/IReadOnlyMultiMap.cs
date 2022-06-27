@@ -8,14 +8,14 @@ public interface IReadOnlyMultiMap<TKey, TValue> : IEnumerable<KeyValuePair<TKey
     bool ContainsValue(TValue value);
 
     /// <summary>
-    /// Returns key values as flat list. If keys is empty it returns all key values.
+    /// Returns key values as flat list of the specified keys. If keys is empty it returns all key values.
     /// </summary>
     /// <param name="keys"></param>
     /// <returns></returns>
-    //IEnumerable<KeyValuePair<TKey, TValue>> GetFlattenedKeyValues(params TKey[] keys);
+    IEnumerable<KeyValuePair<TKey, TValue>> GetFlattenedKeyValues(params TKey[] keys);
 
     /// <summary>
-    /// Flattens all values of all keys.
+    /// Returns values as flat lit of the specified keys.
     /// </summary>
     /// <returns></returns>
     IEnumerable<TValue> GetFlattenedValues(params TKey[] keys);
@@ -33,14 +33,23 @@ public interface IReadOnlyMultiMap<TKey, TValue> : IEnumerable<KeyValuePair<TKey
     /// <param name="keys"></param>
     /// <returns></returns>
     IEnumerable<KeyValuePair<TKey, IEnumerable<TValue>>> GetKeyValues(params TKey[] keys);
-    IEnumerable<TValue> GetValues(params TKey[] keys);
-    int GetValuesCount(TKey key);
 
     /// <summary>
-    /// Counts all key values.
+    /// Returns the values of the specified key.
     /// </summary>
-    int KeyValueCount { get; }
+    /// <param name="keys"></param>
+    /// <returns></returns>
+    IEnumerable<TValue> GetValues(params TKey[] keys);
+
+    /// <summary>
+    /// Returns the number of values of the specified key.
+    /// </summary>
+    /// <param name="key"></param>
+    /// <returns></returns>
+    int GetValuesCount(TKey key);
+
     bool TryGetValue(TKey key, [MaybeNullWhen(false)] out TValue? value);
+
     bool TryGetValues(TKey key, out IEnumerable<TValue> values);
 
     /// <summary>

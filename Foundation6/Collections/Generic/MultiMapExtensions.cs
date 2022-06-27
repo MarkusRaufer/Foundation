@@ -11,7 +11,7 @@ namespace Foundation.Collections.Generic
         public static KeyValuePair<TKey, TValue>[] ToArray<TKey, TValue>(this IReadOnlyMultiMap<TKey, TValue> map)
             where TKey : notnull
         {
-            var array = new KeyValuePair<TKey, TValue>[map.KeyValueCount];
+            var array = new KeyValuePair<TKey, TValue>[map.ValuesCount];
 
             var i = 0;
             foreach(var kv in map)
