@@ -65,11 +65,13 @@ public struct Id
          where TValue : struct, IComparable, IComparable<TValue>, IEquatable<TValue>, IFormattable
         => New(typeof(object), value);
 
+    public static Id New<TEntity>(byte[] value) => new (typeof(object), ByteString.CopyFrom(value));
+
     public static Id New<TValue>(Type entityType, TValue value)
          where TValue : struct, IComparable, IComparable<TValue>, IEquatable<TValue>, IFormattable
         => new(entityType, value);
 
-    public static Id<TEntity> New<TEntity>(byte[] value) => new(ByteString.CopyFrom(value));
+    //public static Id<TEntity> New<TEntity>(byte[] value) => new (ByteString.CopyFrom(value));
 
     /// <summary>
     /// Attention boxing happens with value.
@@ -77,7 +79,8 @@ public struct Id
     /// <typeparam name="TEntity"></typeparam>
     /// <param name="value"></param>
     /// <returns></returns>
-    public static Id<TEntity> New<TEntity>(IComparable value) => new(value);
+    public static Id<TEntity> New<TEntity>(IComparable value) where TEntity : notnull
+         => new(value);
 
     /// <summary>
     /// No boxing happens.
@@ -87,7 +90,9 @@ public struct Id
     /// <param name="value"></param>
     /// <returns></returns>
     public static Id<TEntity> New<TEntity, TValue>(TValue value)
-         where TValue : struct, IComparable, IComparable<TValue>, IConvertible, IEquatable<TValue>, IFormattable => new(value);
+        where TValue : struct, IComparable, IComparable<TValue>, IEquatable<TValue>, IFormattable
+        where TEntity : notnull
+        => new(value);
 
     public override string ToString() => IsEmpty ? "" : $"{_value}";
 }
@@ -100,6 +105,7 @@ public struct Id<TEntity>
     : IComparable
     , IComparable<Id<TEntity>>
     , IEquatable<Id<TEntity>>
+    where TEntity : notnull
 {
     private readonly int _hashCode;
     private readonly IComparable _value;
