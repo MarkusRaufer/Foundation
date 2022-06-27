@@ -1,10 +1,5 @@
 ﻿namespace Foundation;
 
-using Foundation.Collections.Generic;
-using System.Globalization;
-using System.Runtime.Serialization;
-using System.Text;
-
 /// <summary>
 /// Typed identifier.
 /// </summary>
