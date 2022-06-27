@@ -594,7 +594,7 @@ public static class EnumerableExtensions
     /// <param name="keySelector"></param>
     /// <param name="resultSelector"></param>
     /// <returns></returns>
-    public static IEnumerable<TResult> Except<T, TKey, TResult>(
+    public static IEnumerable<TResult> ExceptBy<T, TKey, TResult>(
         this IEnumerable<T> lhs,
         IEnumerable<T> rhs,
         Func<T, TKey> keySelector,
@@ -631,7 +631,7 @@ public static class EnumerableExtensions
     /// <param name="rhsKeySelector">Compare value of the elements of the second list. Must be of type TKey.</param>
     /// <param name="resultSelector">Rückgabe-Wert. Hier kann auch ein neuer Typ erzeugt werden.</param>
     /// <returns></returns>
-    public static IEnumerable<TResult> Except<T1, T2, TKey, TResult>(
+    public static IEnumerable<TResult> ExceptBy<T1, T2, TKey, TResult>(
         this IEnumerable<T1> lhs,
         IEnumerable<T2> rhs,
         Func<T1, TKey> lhsKeySelector,
