@@ -17,6 +17,7 @@ public readonly struct NamedId
     private readonly bool _isInitialized;
     private readonly string _name;
     private readonly IComparable _value;
+
     #region ctors
 
     internal NamedId(string name, IComparable value)
