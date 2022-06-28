@@ -399,7 +399,7 @@ public class EnumerableExtensionsTests
     {
         var items = Enumerable.Range(1, 10).Select(x => x.ToString());
 
-        var enumerated = items.Enumerate(MinMax.New(-1, 1)).ToArray();
+        var enumerated = items.Enumerate(min: -1, max: 1).ToArray();
 
         Assert.AreEqual(("1",  -1), enumerated[0]);
         Assert.AreEqual(("2",   0), enumerated[1]);
@@ -854,10 +854,13 @@ public class EnumerableExtensionsTests
     {
         var numbers = Enumerable.Range(1, 10);
 
-        var actual = numbers.MinMax();
+        var optional = numbers.MinMax();
 
-        var expected = MinMax.New(1, 10);
-        Assert.AreEqual(expected, actual);
+        Assert.IsTrue(optional.TryGet(out (int min, int max) tuple));
+
+        var expected = (1, 10);
+        
+        Assert.AreEqual(expected, tuple);
     }
 
     [Test]
@@ -865,10 +868,12 @@ public class EnumerableExtensionsTests
     {
         var numbers = new[] { 1, 2, 2, 2, 5, 3, 3, 3, 3, 4 };
 
-        var actual = numbers.MinMax();
+        var optional = numbers.MinMax();
 
-        var expected = MinMax.New(1, 5);
-        Assert.AreEqual(expected, actual);
+        Assert.IsTrue(optional.TryGet(out (int min, int max) tuple));
+
+        var expected = (1, 5);
+        Assert.AreEqual(expected, tuple);
     }
 
     [Test]

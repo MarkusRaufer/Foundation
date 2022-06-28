@@ -509,12 +509,12 @@ public static class EnumerableExtensions
     /// <param name="items"></param>
     /// <param name="minMax">Allows also negative numbers.</param>
     /// <returns></returns>
-    public static IEnumerable<(T item, int counter)> Enumerate<T>(this IEnumerable<T> items, MinMax<int> minMax)
+    public static IEnumerable<(T item, int counter)> Enumerate<T>(this IEnumerable<T> items, int min, int max)
     {
-        var i = minMax.Min;
+        var i = min;
         foreach (var item in items)
         {
-            if (i > minMax.Max) i = minMax.Min;
+            if (i > max) i = min;
 
             yield return (item, i);
             i++;
@@ -1524,17 +1524,20 @@ public static class EnumerableExtensions
     /// <typeparam name="T">T must implement IComparable<T></typeparam>
     /// <param name="items"></param>
     /// <returns></returns>
-    public static MinMax<T>? MinMax<T>(this IEnumerable<T> items)
+    public static Opt<(T min, T max)> MinMax<T>(this IEnumerable<T> items)
         where T : IComparable<T>
     {
         items.ThrowIfNull();
         T? min = default;
         T? max = default;
 
+        var hasValue = false;
+
         foreach (var item in items.OnFirstTakeOne(i =>
         {
             min = i;
             max = i;
+            hasValue = true;
         }))
         {
             if (-1 == item.CompareTo(min))
@@ -1547,53 +1550,52 @@ public static class EnumerableExtensions
                 max = item;
         }
 
-        if (null == min || null == max) return null;
-
-        return new MinMax<T>(min, max);
-
+        return (hasValue && null != min && null != max)
+            ? Opt.Some((min, max)) 
+            : Opt.None<(T, T)>() ;
     }
 
     /// <summary>
-    /// Returns the min and max item selected by the selector.
+    /// Returns the min and max selected by the selector.
     /// </summary>
     /// <typeparam name="T"></typeparam>
     /// <typeparam name="TSelector"></typeparam>
     /// <param name="items"></param>
     /// <param name="selector"></param>
     /// <returns></returns>
-    public static MinMax<T>? MinMax<T, TSelector>(
+    public static Opt<(T min, T max)> MinMax<T, TSelector>(
         this IEnumerable<T> items,
         Func<T, TSelector> selector)
-        where T : notnull
         where TSelector : IComparable
     {
         KeyValuePair<TSelector, T> min = default;
         KeyValuePair<TSelector, T> max = default;
 
-        foreach (var item in items.ThrowIfNull())
+        var hasValue = false;
+
+        foreach (var item in items.OnFirstTakeOne(i =>
+        {
+            min = Pair.New(selector(i), i);
+            max = Pair.New(selector(i), i);
+            hasValue = true;
+        }))
         {
             var selectorValue = selector(item);
             if (null == selectorValue) continue;
 
-            if (min.Key is null)
-            {
-                min = Pair.New(selectorValue, item);
-                max = min;
-
-                continue;
-            }
-
             if (-1 == selectorValue.CompareTo(min.Key))
             {
-                min = new KeyValuePair<TSelector, T>(selectorValue, item);
+                min = Pair.New(selectorValue, item);
                 continue;
             }
 
-            if (max.Key is null || 1 == selectorValue.CompareTo(max.Key))
-                max = new KeyValuePair<TSelector, T>(selectorValue, item);
+            if (1 == selectorValue.CompareTo(max.Key))
+                Pair.New(selectorValue, item);
         }
 
-        return min.Value is T minValue && max.Value is T maxValue ? new MinMax<T>(minValue, maxValue) : null;
+        return hasValue && null != min.Value && null != max.Value
+            ? Opt.Some((min.Value, max.Value))
+            : Opt.None<(T, T)>();
     }
 
     /// <summary>
