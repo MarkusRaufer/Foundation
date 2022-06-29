@@ -852,15 +852,22 @@ public class EnumerableExtensionsTests
     [Test]
     public void MinMax_Should_ReturnMinMax_When_UsingSelectorWithDifferentValues()
     {
-        var numbers = Enumerable.Range(1, 10);
+        var dates = new DateOnly[]
+        {
+            new (2015, 2, 10),
+            new (2016, 7, 11),
+            new (2017, 3,  5),
+            new (2018, 1,  1),
+            new (2019, 5, 26),
+            new (2020, 4, 13),
+       };
 
-        var optional = numbers.MinMax();
+        var (min, max) = dates.MinMax(dt => dt.Month).OrThrow();
 
-        Assert.IsTrue(optional.TryGet(out (int min, int max) tuple));
-
-        var expected = (1, 10);
+        var expectedMin = new DateOnly(2018, 1, 1);
+        var expectedMax = new DateOnly(2016, 7, 11);
         
-        Assert.AreEqual(expected, tuple);
+        Assert.AreEqual((expectedMin, expectedMax), (min, max));
     }
 
     [Test]
@@ -868,12 +875,10 @@ public class EnumerableExtensionsTests
     {
         var numbers = new[] { 1, 2, 2, 2, 5, 3, 3, 3, 3, 4 };
 
-        var optional = numbers.MinMax();
-
-        Assert.IsTrue(optional.TryGet(out (int min, int max) tuple));
+        var (min, max) = numbers.MinMax().OrThrow();
 
         var expected = (1, 5);
-        Assert.AreEqual(expected, tuple);
+        Assert.AreEqual(expected, (min, max));
     }
 
     [Test]
@@ -904,6 +909,21 @@ public class EnumerableExtensionsTests
     }
 
     [Test]
+    public void NotOfType_Should_ReturnRightValue_When_SingleMaxValue()
+    {
+        var values = new object[] { 1, "2", new DateOnly(2022, 3, 5), 4, "5", 6.6 };
+
+        var noString = values.NotOfType(typeof(string)).ToArray();
+
+        Assert.AreEqual(4, noString.Length);
+
+        Assert.AreEqual(1, noString[0]);
+        Assert.AreEqual(new DateOnly(2022, 3, 5), noString[1]);
+        Assert.AreEqual(4, noString[2]);
+        Assert.AreEqual(6.6, noString[3]);
+    }
+
+    [Test]
     public void Nth_Should_ReturnItemAtIndex_When_UsingValidIndex()
     {
         var items = new List<int> { 1, 2, 3, 4, 5 };
@@ -923,6 +943,18 @@ public class EnumerableExtensionsTests
 
         Assert.AreEqual(none, items.Nth(-1));
         Assert.AreEqual(none, items.Nth(10));
+    }
+
+    [Test]
+    public void Nth_Should_ReturnNone_When_ListOfIntegersIsEmpty()
+    {
+        var items = Enumerable.Empty<int>();
+
+        //items.FirstOrDefault() would return 0.
+
+        var first = items.Nth(0);
+
+        Assert.IsTrue(first.IsNone);
     }
 
     [Test]

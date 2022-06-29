@@ -1590,7 +1590,7 @@ public static class EnumerableExtensions
             }
 
             if (1 == selectorValue.CompareTo(max.Key))
-                Pair.New(selectorValue, item);
+                max = Pair.New(selectorValue, item);
         }
 
         return hasValue && null != min.Value && null != max.Value
@@ -1645,8 +1645,22 @@ public static class EnumerableExtensions
     /// <param name="selector"></param>
     /// <param name="types"></param>
     /// <returns></returns>
+    public static IEnumerable<T> NotOfType<T>(this IEnumerable<T> items, params Type[] types)
+    {
+        return items.NotOfType(x => x, types);
+    }
+
+    /// <summary>
+    /// Returns all items not of type <paramref name="types"/>.
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <typeparam name="TResult"></typeparam>
+    /// <param name="items"></param>
+    /// <param name="selector"></param>
+    /// <param name="types"></param>
+    /// <returns></returns>
     public static IEnumerable<TResult> NotOfType<T, TResult>(
-        this IEnumerable<T> items, 
+        this IEnumerable<T> items,
         Func<T, TResult> selector,
         params Type[] types)
     {
@@ -1655,7 +1669,7 @@ public static class EnumerableExtensions
             if (null == item) continue;
 
             var itemType = item.GetType();
-            
+
             if (types.Any(t => t.Equals(itemType) || t.IsAssignableFrom(itemType))) continue;
 
             yield return selector(item);
@@ -1663,7 +1677,7 @@ public static class EnumerableExtensions
     }
 
     /// <summary>
-    /// gets the item on a certain index.
+    /// Returns the item on a specific index.
     /// </summary>
     /// <typeparam name="T"></typeparam>
     /// <param name="items"></param>
@@ -1722,6 +1736,19 @@ public static class EnumerableExtensions
 
             pos++;
         }
+    }
+
+    /// <summary>
+    /// Returns all items whose type matches with a list of types.
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <typeparam name="TResult"></typeparam>
+    /// <param name="items"></param>
+    /// <param name="types"></param>
+    /// <returns></returns>
+    public static IEnumerable<T> OfTypes<T, TResult>(this IEnumerable<T> items, params Type[] types)
+    {
+        return items.OfTypes(x => x, types);
     }
 
     /// <summary>
