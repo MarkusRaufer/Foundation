@@ -14,10 +14,12 @@ namespace Foundation.IO
                 case byte[] bytes: writer.Write(bytes); break;
                 case char ch: writer.Write(ch); break;
                 case char[] chars: writer.Write(chars); break;
+                case DateOnly dateOnly: writer.Write(dateOnly); break;
                 case DateTime dt: writer.Write(dt); break;
                 case decimal decimalValue: writer.Write(decimalValue); break;
                 case double doubleValue: writer.Write(doubleValue); break;
                 case float floatValue: writer.Write(floatValue); break;
+                case Guid guid: writer.Write(guid); break;
                 case int i32: writer.Write(i32); break;
                 case long i64: writer.Write(i64); break;
                 case sbyte sbyteValue: writer.Write(sbyteValue); break;
@@ -32,9 +34,25 @@ namespace Foundation.IO
             return Result.Ok<bool, NotImplementedException>(true);
         }
 
+        public static void Write(this BinaryWriter writer, DateOnly date)
+        {
+            writer.Write(date.ToDateTime().Ticks);
+        }
+
+
         public static void Write(this BinaryWriter writer, DateTime dt)
         {
             writer.Write(dt.Ticks);
+        }
+
+        public static void Write(this BinaryWriter writer, Guid guid)
+        {
+            writer.Write(guid.ToByteArray());
+        }
+
+        public static void Write(this BinaryWriter writer, TimeOnly time)
+        {
+            writer.Write(time.Ticks);
         }
 
         public static Result<bool, NotImplementedException> WriteObject(this BinaryWriter writer, object obj)
