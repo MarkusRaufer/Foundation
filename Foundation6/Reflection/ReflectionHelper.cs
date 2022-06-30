@@ -66,15 +66,9 @@ namespace Foundation.Reflection
 
         public static object SetValue(object obj, string memberName, object value)
         {
-            if (null == obj) throw new ArgumentNullException(nameof(obj));
+            memberName.ThrowIfNullOrWhiteSpace();
 
-            return SetValue(obj.GetType(), obj, memberName, value);
-        }
-
-        public static object SetValue(Type type, object obj, string memberName, object value)
-        {
-            return SetValue(type, 
-                            obj, 
+            return SetValue(obj.ThrowIfNull(), 
                             memberName, 
                             BindingFlags.Public
                           | BindingFlags.NonPublic
@@ -82,37 +76,29 @@ namespace Foundation.Reflection
                           | BindingFlags.FlattenHierarchy, value);
         }
 
-        public static object SetValue(Type type, object obj, string memberName, BindingFlags bindingFlags, object value)
+        public static object SetValue(object obj, string memberName, BindingFlags bindingFlags, object value)
         {
             obj.ThrowIfNull();
             memberName.ThrowIfNullOrWhiteSpace();
 
-            var members = type.GetMember(memberName, bindingFlags);
+            var members = obj.GetType().GetMember(memberName, bindingFlags);
 
             members.ThrowIfOutOfRange(() => 1 != memberName.Length);
 
             if (1 != members.Length) throw new ArgumentOutOfRangeException(nameof(memberName));
 
-            return SetValue(type, obj, members[0], value);
+            return SetValue(obj, members[0], value);
         }
 
         public static object SetValue(object obj, MemberInfo memberInfo, object value)
         {
-            if (null == obj) throw new ArgumentNullException(nameof(obj));
-
-            return SetValue(obj.GetType(), obj, memberInfo, value);
-        }
-
-        public static object SetValue(Type type, object obj, MemberInfo memberInfo, object value)
-        {
-            if (null == type) throw new ArgumentNullException(nameof(type));
             if (null == obj) throw new ArgumentNullException(nameof(obj));
             if (null == memberInfo) throw new ArgumentNullException(nameof(memberInfo));
 
             switch (memberInfo)
             {
                 case FieldInfo fi:
-                    fi.SetValue(obj, value);
+                    if(!fi.IsInitOnly) fi.SetValue(obj, value);
                     break;
                 case PropertyInfo pi:
                     if (pi.CanWrite)
@@ -121,7 +107,7 @@ namespace Foundation.Reflection
                         break;
                     }
                         
-                    var backingField = GetBackingField(type, pi.Name);
+                    var backingField = GetBackingField(obj.GetType(), pi.Name);
                     backingField?.SetValue(obj, value);
                     break;
             }
