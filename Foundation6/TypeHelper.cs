@@ -78,9 +78,12 @@ public static class TypeHelper
 
         return shortTypeName switch
         {
-            "DateTime" => typeof(DateTime).FullName,
-            "decimal" => typeof(Decimal).FullName,
+            nameof(DateOnly) => typeof(DateOnly).FullName,
+            nameof(DateTime) => typeof(DateTime).FullName,
+            "decimal"  => typeof(Decimal).FullName,
+            nameof(Guid) => typeof(Guid).FullName,
             "string" => typeof(String).FullName,
+            nameof(TimeOnly) => typeof(TimeOnly).FullName,
             _ => null,
         };
     }
@@ -90,9 +93,12 @@ public static class TypeHelper
         foreach(var typeName in GetPrimitiveTypeShortNames())
             yield return typeName;
 
-        yield return "DateTime";
+        yield return nameof(DateOnly);
+        yield return nameof(DateTime);
         yield return "decimal";
+        yield return nameof(Guid);
         yield return "string";
+        yield return nameof(TimeOnly);
     }
 
     public static IEnumerable<Type> PrimitiveArrayTypes()
@@ -149,9 +155,12 @@ public static class TypeHelper
         {
             yield return primitive;
         }
+        yield return typeof(DateOnly[]);
         yield return typeof(DateTime[]);
         yield return typeof(decimal[]);
+        yield return typeof(Guid[]);
         yield return typeof(string[]);
+        yield return typeof(TimeOnly[]);
     }
 
     public static IEnumerable<Type> ScalarEnumerableTypes()
@@ -160,9 +169,12 @@ public static class TypeHelper
         {
             yield return primitive;
         }
+        yield return typeof(IEnumerable<DateOnly>);
         yield return typeof(IEnumerable<DateTime>);
         yield return typeof(IEnumerable<decimal>);
+        yield return typeof(IEnumerable<Guid>);
         yield return typeof(IEnumerable<string>);
+        yield return typeof(IEnumerable<TimeOnly>);
     }
 
     public static IEnumerable<Type> ScalarTypes()
@@ -172,9 +184,12 @@ public static class TypeHelper
             yield return primitive;
         }
 
+        yield return typeof(DateOnly);
         yield return typeof(DateTime);
         yield return typeof(decimal);
+        yield return typeof(Guid);
         yield return typeof(string);
+        yield return typeof(TimeOnly);
     }
 }
 

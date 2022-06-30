@@ -182,7 +182,12 @@ public static class TypeExtensions
     {
         ArgumentNullException.ThrowIfNull(type);
 
-        return type.IsPrimitive || type == typeof(string) || type == typeof(DateTime);
+        return type.IsPrimitive 
+            || type == typeof(string)
+            || type == typeof(DateOnly)
+            || type == typeof(DateTime)
+            || type == typeof(Guid)
+            || type == typeof(TimeOnly);
     }
 
     public static bool IsScalarArrayType(this Type? type)
