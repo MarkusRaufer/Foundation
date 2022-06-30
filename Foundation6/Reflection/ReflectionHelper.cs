@@ -1,6 +1,4 @@
 ﻿using Foundation.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
-using System.Linq;
 using System.Reflection;
 
 namespace Foundation.Reflection
@@ -47,6 +45,7 @@ namespace Foundation.Reflection
 
         public static object? GetValue(object obj, MemberInfo memberInfo)
         {
+            obj.ThrowIfNull();
             return memberInfo switch
             {
                 FieldInfo fi => fi.GetValue(obj),
@@ -66,6 +65,7 @@ namespace Foundation.Reflection
 
         public static object SetValue(object obj, string memberName, object value)
         {
+            obj.ThrowIfNull();
             memberName.ThrowIfNullOrWhiteSpace();
 
             return SetValue(obj.ThrowIfNull(), 
@@ -90,10 +90,10 @@ namespace Foundation.Reflection
             return SetValue(obj, members[0], value);
         }
 
-        public static object SetValue(object obj, MemberInfo memberInfo, object value)
+        public static object SetValue(object? obj, MemberInfo memberInfo, object value)
         {
-            if (null == obj) throw new ArgumentNullException(nameof(obj));
-            if (null == memberInfo) throw new ArgumentNullException(nameof(memberInfo));
+            obj.ThrowIfNull();
+            memberInfo.ThrowIfNull();
 
             switch (memberInfo)
             {
@@ -107,12 +107,12 @@ namespace Foundation.Reflection
                         break;
                     }
                         
-                    var backingField = GetBackingField(obj.GetType(), pi.Name);
+                    var backingField = GetBackingField(obj!.GetType(), pi.Name);
                     backingField?.SetValue(obj, value);
                     break;
             }
 
-            return obj;
+            return obj!;
         }
     }
 }
