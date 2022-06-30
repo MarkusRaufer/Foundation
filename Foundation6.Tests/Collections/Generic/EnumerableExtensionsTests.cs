@@ -1904,6 +1904,22 @@ public class EnumerableExtensionsTests
     }
 
     [Test]
+    public void Zip_ItemsInDifferentOrder()
+    {
+        var items1 = new List<A> { new A("1"), new A("2"), new A("3") };
+        var items2 = new List<A> { new A("a"), new A("b"), new A("c"), new A("3"), new A("1") };
+
+        var mapping = items1.Zip(items2, (f, s) => f.Name == s.Name, (f, s) => (f, s)).ToArray();
+
+        Assert.AreEqual(2, mapping.Length);
+        foreach (var (f, s) in mapping)
+        {
+            Assert.AreNotEqual(f.Id, s.Id);
+            Assert.AreEqual(f.Name, s.Name);
+        }
+    }
+
+    [Test]
     public void Zip_ListIncludesSameValues()
     {
         var items1 = new List<A> { new A("1"), new A("2"), new A("3") };

@@ -676,12 +676,34 @@ public static class EnumerableExtensions
     /// <returns></returns>
     public static Opt<T> FirstAsOpt<T>(this IEnumerable<T> items)
     {
-        if (null == items) return Opt.None<T>();
+        return items.FirstAsOpt(x => true);
+    }
 
-        foreach (var item in items)
-            return Opt.Some(item);
+    /// <summary>
+    /// Returns first item exists and is of type TResult Some(TResult) is return otherwise None. 
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <typeparam name="TResult"></typeparam>
+    /// <param name="items"></param>
+    /// <returns></returns>
+    public static Opt<TResult> FirstAsOpt<T, TResult>(this IEnumerable<T> items)
+    {
+        return items.FirstAsOpt(x => true)
+                    .Match(x => x is TResult result ? Opt.Some(result) : Opt.None<TResult>(),
+                          () => Opt.None<TResult>());
+    }
 
-        return Opt.None<T>();
+    /// <summary>
+    /// Returns the first item as <typeparamref name="TResult"/> optional.
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <typeparam name="TResult"></typeparam>
+    /// <param name="items"></param>
+    /// <param name="onSome"></param>
+    /// <returns></returns>
+    public static Opt<TResult> FirstAsOpt<T, TResult>(this IEnumerable<T> items, Func<T, TResult> onSome)
+    {
+        return items.FirstAsOpt(x => true, onSome);
     }
 
     /// <summary>
@@ -691,17 +713,24 @@ public static class EnumerableExtensions
     /// <param name="items"></param>
     /// <param name="predicate"></param>
     /// <returns></returns>
-    public static Opt<T> FirstAsOpt<T>(
-        this IEnumerable<T> items, 
-        Func<T, bool> predicate)
+    public static Opt<T> FirstAsOpt<T>(this IEnumerable<T> items, Func<T, bool> predicate)
     {
-        if (null == items) return Opt.None<T>();
+        return items.FirstAsOpt(predicate, x => x);
+    }
+
+    public static Opt<TResult> FirstAsOpt<T, TResult>(
+        this IEnumerable<T> items,
+        Func<T, bool> predicate,
+        Func<T, TResult> onSome)
+    {
+        if (null == items) return Opt.None<TResult>();
         predicate.ThrowIfNull();
+        onSome.ThrowIfNull();
 
         foreach (var item in items.Where(predicate))
-            return Opt.Some(item);
+            return Opt.Some(onSome(item));
 
-        return Opt.None<T>();
+        return Opt.None<TResult>();
     }
 
     /// <summary>
