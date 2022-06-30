@@ -3,15 +3,14 @@
 using System.Reflection;
 public static class MemberInfoExtensions
 {
-    public static Type? GetMemberType(this MemberInfo memberInfo)
+    public static Type GetMemberType(this MemberInfo memberInfo)
     {
         return memberInfo switch
         {
-            EventInfo ei => ei.EventHandlerType,
             FieldInfo fi => fi.FieldType,
             MethodInfo mi => mi.ReturnType,
             PropertyInfo pi => pi.PropertyType,
-            _ => null
+            _ => throw new NotSupportedException()
         };
     }
 
@@ -33,22 +32,11 @@ public static class MemberInfoExtensions
 
     public static void SetValue(this MemberInfo memberInfo, object obj, object value)
     {
-        if (memberInfo is PropertyInfo pi)
+        switch(memberInfo)
         {
-            pi.SetValue(obj, value);
-            return;
-        }
-
-        if (memberInfo is FieldInfo fi)
-        {
-            fi.SetValue(obj, value);
-            return;
-        }
-
-        if (memberInfo is MethodInfo mi)
-        {
-            mi.SetValue(obj, value);
-            return;
+            case FieldInfo fi: fi.SetValue(obj, value); break;
+            case MethodInfo mi: mi.SetValue(obj, value); break;
+            case PropertyInfo pi: pi.SetValue(obj, value); break;
         }
     }
 }
