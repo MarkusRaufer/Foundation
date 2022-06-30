@@ -313,9 +313,15 @@ public static class ObjectExtensions
         };
     }
 
-    public static Opt<T> ToOpt<T>(this object? obj) => (obj is T value) ? Opt.Some(value) : Opt.None<T>();
+    /// <summary>
+    /// Returns Some(T) if <paramref name="obj"/> <typeparamref name="T"/> otherwise None.
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <param name="obj"></param>
+    /// <returns></returns>
+    public static Opt<T> To<T>(this object? obj) => obj is T t ? Opt.Some(t) : Opt.None<T>();
 
-    public static Opt<T> ToOpt<T>(this T? obj) => null == obj ? Opt.None<T>() : Opt.Some(obj);
+    public static Opt<T> To<T>(this T? obj) => null == obj ? Opt.None<T>() : Opt.Some(obj);
 
     public static string ToStringOrEmpty(this object? obj)
     {
