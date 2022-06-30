@@ -1,7 +1,5 @@
 ﻿namespace Foundation;
 
-using System.Diagnostics.CodeAnalysis;
-
 /// <summary>
 /// This class represent disjunct alternatives of types. Types are mutually exclusive. Just one of the types is set.
 /// </summary>
@@ -89,7 +87,7 @@ public class OneOf<T1, T2> : IEquatable<OneOf<T1, T2>>
 
     public override string ToString() => SelectedType!.ToString();
 
-    public object? Value { get; protected set; }
+    protected object? Value { get; set; }
 }
 
 /// <summary>
