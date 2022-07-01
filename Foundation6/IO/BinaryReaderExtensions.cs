@@ -18,12 +18,9 @@ namespace Foundation.IO
             return new DateTime(ticks);
         }
 
-        public static float ReadFloat(this BinaryReader reader)
-        {
-            return BitConverter.ToSingle(reader.ReadBytes(sizeof(float)), 0);
-        }
-
-        public static IEnumerable<(MemberInfo member, object value)> ReadFromMembers(this BinaryReader reader, IEnumerable<MemberInfo> members)
+        public static IEnumerable<(MemberInfo member, object value)> ReadFromMembers(
+            this BinaryReader reader,
+            IEnumerable<MemberInfo> members)
         {
             foreach (var member in members)
             {
@@ -42,26 +39,30 @@ namespace Foundation.IO
                 Type _ when type == typeof(bool) =>  reader.ReadBoolean(),
                 Type _ when type == typeof(byte) => reader.ReadByte(),
                 Type _ when type == typeof(char) => reader.ReadChar(),
-                Type _ when type == typeof(DateOnly) => reader.ReadDateOnly(),
-                Type _ when type == typeof(DateTime) => reader.ReadDateTime(),
                 Type _ when type == typeof(decimal) => reader.ReadDecimal(),
                 Type _ when type == typeof(double) => reader.ReadDouble(),
-                Type _ when type == typeof(float) => reader.ReadFloat(),
-                Type _ when type == typeof(Guid) => reader.ReadGuid(),
+                Type _ when type == typeof(float) => reader.ReadSingle(),
                 Type _ when type == typeof(int) => reader.ReadInt32(),
                 Type _ when type == typeof(long) => reader.ReadInt64(),
                 Type _ when type == typeof(sbyte) => reader.ReadSByte(),
                 Type _ when type == typeof(short) => reader.ReadInt16(),
                 Type _ when type == typeof(string) => reader.ReadString(),
-                Type _ when type == typeof(TimeOnly) => reader.ReadTimeOnly(),
                 Type _ when type == typeof(uint) => reader.ReadUInt32(),
                 Type _ when type == typeof(ulong) => reader.ReadUInt64(),
                 Type _ when type == typeof(ushort) => reader.ReadUInt16(),
+                // --> custom types
+                Type _ when type == typeof(DateOnly) => reader.ReadDateOnly(),
+                Type _ when type == typeof(DateTime) => reader.ReadDateTime(),
+                Type _ when type == typeof(Guid) => reader.ReadGuid(),
+                Type _ when type == typeof(TimeOnly) => reader.ReadTimeOnly(),
+                // <-- custom types
                 Type _ => throw new NotImplementedException($"{type}")
             };
         }
 
-        public static IEnumerable<(Type type, object value)> ReadFromTypes(this BinaryReader reader, IEnumerable<Type> types)
+        public static IEnumerable<(Type type, object value)> ReadFromTypes(
+            this BinaryReader reader,
+            IEnumerable<Type> types)
         {
             foreach (var type in types)
             {
@@ -97,7 +98,7 @@ namespace Foundation.IO
             ReadToObject(reader, obj, members);
         }
 
-        public static void ReadToObject<T>(this BinaryReader reader, T obj, IEnumerable<MemberInfo> members)
+        public static void ReadToObject<T>(this BinaryReader reader, T? obj, IEnumerable<MemberInfo> members)
         {
             obj.ThrowIfNull();
 
