@@ -164,6 +164,19 @@ public static class ObjectExtensions
         return predicate() ? throw exception() : obj.ThrowIfNull();
     }
 
+    [return: NotNull]
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static T ThrowIf<T>(
+        this T? obj,
+        Func<bool> predicate,
+        Func<Exception> exception)
+    {
+        predicate.ThrowIfNull();
+        exception.ThrowIfNull();
+
+        return predicate() ? throw exception() : obj.ThrowIfNull();
+    }
+
     /// <summary>
     /// Throws ArgumentNullException if obj is null.
     /// </summary>
