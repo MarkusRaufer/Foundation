@@ -1,6 +1,5 @@
 ﻿namespace Foundation;
 
-using Foundation.Collections;
 using System.Runtime.CompilerServices;
 
 public static class ArrayExtensions
@@ -39,6 +38,25 @@ public static class ArrayExtensions
     public static IEnumerator<T> GetEnumerator<T>(this T[] array)
     {
         return array.AsEnumerable().GetEnumerator();
+    }
+
+    /// <summary>
+    /// Creates a new array and prepends <paramref name="elem"/> to the new array.
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <param name="array"></param>
+    /// <param name="elem"></param>
+    /// <returns></returns>
+    public static T[] Prepend<T>(this T[] array, T elem)
+    {
+        array.ThrowIfNull();
+
+        var newValues = new T[array.Length + 1];
+        newValues[0] = elem;
+
+        Array.Copy(array, 0, newValues, 1, array.Length);
+
+        return newValues;
     }
 
     public static T[] ThrowIfNullOrEmpty<T>(this T[] array, [CallerArgumentExpression("array")] string name = "")

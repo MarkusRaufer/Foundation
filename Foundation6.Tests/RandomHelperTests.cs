@@ -70,10 +70,10 @@ public class RandomHelperTests
     [Test]
     public void GetRandomValues_ShouldReturnDifferntDoubleValues_When_UsingDefaultSeed()
     {
-        var epsilon = .1;
+        var deviation = .1;
 
-        var number1 = RandomHelper.GetRandomValues(new double[] { .5, 1.0, 1.5 }, epsilon).Take(10).ToArray();
-        var number2 = RandomHelper.GetRandomValues(new double[] { .5, 1.0, 1.5 }, epsilon).Take(10).ToArray();
+        var number1 = RandomHelper.GetRandomValues(new double[] { .5, 1.0, 1.5 }, deviation).Take(10).ToArray();
+        var number2 = RandomHelper.GetRandomValues(new double[] { .5, 1.0, 1.5 }, deviation).Take(10).ToArray();
 
         CollectionAssert.AreNotEqual(number1, number2);
     }
@@ -82,10 +82,10 @@ public class RandomHelperTests
     public void GetRandomValues_ShouldReturnSameDoubleValues_When_UsingSameSeed()
     {
         var seed = 1;
-        var epsilon = .1;
+        var deviation = .1;
 
-        var number1 = RandomHelper.GetRandomValues(new double[] { .5, 1.0, 1.5 }, epsilon, seed).Take(10).ToArray();
-        var number2 = RandomHelper.GetRandomValues(new double[] { .5, 1.0, 1.5 }, epsilon, seed).Take(10).ToArray();
+        var number1 = RandomHelper.GetRandomValues(new double[] { .5, 1.0, 1.5 }, deviation, seed).Take(10).ToArray();
+        var number2 = RandomHelper.GetRandomValues(new double[] { .5, 1.0, 1.5 }, deviation, seed).Take(10).ToArray();
 
         CollectionAssert.AreEqual(number1, number2);
     }

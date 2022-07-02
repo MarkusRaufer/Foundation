@@ -285,7 +285,7 @@ public static class EnumerableExtensions
     /// <param name="rhs"></param>
     /// <returns></returns>
     public static IEnumerable<TResult> CartesianProduct<T, TResult>(
-        this IEnumerable<T> lhs, 
+        this IEnumerable<T> lhs,
         IEnumerable<T> rhs,
         Func<T, T, TResult> selector)
     {
@@ -359,43 +359,46 @@ public static class EnumerableExtensions
     /// <param name="lhs"></param>
     /// <param name="rhs"></param>
     /// <returns></returns>
-    public static IEnumerable<T> SymmetricDifference<T>(
-        this IEnumerable<T> lhs, 
-        IEnumerable<T> rhs,
-        bool ignoreDuplicates = false)
+    public static IEnumerable<T> SymmetricDifference2<T>(
+            this IEnumerable<T> lhs,
+            IEnumerable<T> rhs,
+            bool considerDuplicates = false)
     {
-        if(ignoreDuplicates)
+        if (!considerDuplicates) return lhs.Except(rhs).Union(rhs.Except(lhs));
+
+        var intersected = lhs.Intersect(rhs);
+        var predicates = Enumerable.Empty<Func<T, bool>>();
+
+        foreach (var i in intersected)
         {
-            var diff = new HashSet<T>(lhs);
-            diff.SymmetricExceptWith(rhs);
+            if (null == i) continue;
 
-            foreach(var item in diff)
-            {
-                yield return item;
-            }
-
-            yield break;
+            bool predicate(T x) => i.Equals(x);
+            predicates = predicates.Append(predicate);
         }
+        var predicateArr = predicates.ToArray();
+
+        var lhsDuplicates = lhs.Duplicates();
+        var rhsDuplicates = rhs.Duplicates();
+        var lhsSkipped = lhsDuplicates.SkipUntilSatisfied(predicateArr);
+        var rhsSkipped = rhsDuplicates.SkipUntilSatisfied(predicateArr);
+
+        return lhsSkipped.Concat(rhsSkipped);
+    }
+
+    public static IEnumerable<T> SymmetricDifference<T>(
+                this IEnumerable<T> lhs,
+                IEnumerable<T> rhs,
+                bool considerDuplicates = false)
+    {
+        if (!considerDuplicates)
         {
-            var lhsGrouped = lhs.GroupBy(x => x).Select(grp => (key: grp.Key, count: grp.Count()));
-            var rhsGrouped = rhs.GroupBy(x => x).Select(grp => (key: grp.Key, count:grp.Count()));
-
-            var diff = new HashSet<(T, int)>(lhsGrouped);
-            diff.SymmetricExceptWith(rhsGrouped);
-
-            foreach (var grouped in diff.GroupBy(x => x.Item1).ToArray())
-            {
-                var tuples = grouped.ToArray();
-                var count = 1 == tuples.Length 
-                    ? tuples.First().Item2 
-                    : Math.Abs(tuples[0].Item2 - tuples[1].Item2);
-
-                for (var i = 0; i < count; i++)
-                {
-                    yield return grouped.Key;
-                }
-            }
+            var set = new HashSet<T>(lhs);
+            set.SymmetricExceptWith(rhs);
+            return set;
         }
+
+        return lhs.ExceptWithDuplicates(rhs).Concat(rhs.ExceptWithDuplicates(lhs));
     }
 
     /// <summary>
@@ -447,19 +450,20 @@ public static class EnumerableExtensions
     }
 
     /// <summary>
-    /// returns the duplicate items of a list. If there are e.g. three of an item, 2 will returned.
-    /// If distinct is true, only one example of every duplicate item is returned. 
+    /// returns doublets of a list. If there are e.g. three of an item, 2 will returned.
     /// </summary>
     /// <typeparam name="T"></typeparam>
     /// <param name="items"></param>
-    /// <param name="distinct">If true, only one example of every duplicate item is returned.</param>
     /// <returns></returns>
-    public static IEnumerable<T> Duplicates<T>(this IEnumerable<T> items, bool distinct = false)
+    public static IEnumerable<T> Duplicates<T>(this IEnumerable<T> items)
     {
         if (null == items) throw new ArgumentNullException(nameof(items));
 
-        var duplicates = items.GroupBy(x => x).SelectMany(x => x.Skip(1));
-        return distinct ? duplicates.Distinct() : duplicates;
+        var set = new HashSet<T>();
+        foreach(var item in items)
+        {
+            if (!set.Add(item)) yield return item;
+        }
     }
 
     /// <summary>
@@ -580,6 +584,27 @@ public static class EnumerableExtensions
             if (equals(elem)) continue;
 
             yield return elem;
+        }
+    }
+
+    public static IEnumerable<T> ExceptWithDuplicates<T>(this IEnumerable<T> lhs, IEnumerable<T> rhs)
+    {
+        var rhsMap = new MultiMap<NullableKey<T>, T>();
+
+        foreach (var r in rhs)
+            rhsMap.Add(NullableKey.New(r), r);
+
+        foreach (var l in lhs)
+        {
+            var key = NullableKey.New(l);
+
+            if(rhsMap.TryGetValue(key, out T? rhsValue))
+            {
+                rhsMap.Remove(key, rhsValue!);
+                continue;
+            }
+
+            yield return l;
         }
     }
 
@@ -1204,55 +1229,13 @@ public static class EnumerableExtensions
     /// </summary>
     /// <param name="lhs"></param>
     /// <param name="rhs"></param>
-    /// <param name="ignoreDuplicates">If true duplicates are ignored which is faster.</param>
     /// <typeparam name="T"></typeparam>
-    public static bool IsEqualTo<T>(
-        this IEnumerable<T> lhs,
-        IEnumerable<T> rhs, 
-        bool ignoreDuplicates = false)
+    public static bool IsEqualToSet<T>(this IEnumerable<T> lhs, IEnumerable<T> rhs)
     {
         if (null == lhs) return null == rhs;
         if (null == rhs) return false;
 
-        return !lhs.SymmetricDifference(rhs, ignoreDuplicates).Any();
-    }
-
-    /// <summary>
-    /// Checks the equality of all elements of two lists and their positions.
-    /// </summary>
-    /// <typeparam name="TKey"></typeparam>
-    /// <typeparam name="TValue"></typeparam>
-    /// <param name="lhs"></param>
-    /// <param name="rhs"></param>
-    /// <returns></returns>
-    public static bool IsEqualToSet<TKey, TValue>(
-        this IEnumerable<KeyValuePair<TKey, TValue>> lhs,
-        IEnumerable<KeyValuePair<TKey, TValue>> rhs)
-    {
-        if (null == lhs) return null == rhs;
-        if (null == rhs) return false;
-
-        var itRhs = rhs.GetEnumerator();
-
-        foreach (var left in lhs)
-        {
-            if (!itRhs.MoveNext()) return false;
-
-            var right = itRhs.Current;
-
-            if (null == left.Key)
-            {
-                if (null != right.Value) return false;
-            }
-            else
-            {
-                if (!left.Key.Equals(right.Key)) return false;
-            }
-
-            if (!left.Value.EqualsNullable(right.Value)) return false;
-        }
-
-        return !itRhs.MoveNext();
+        return !lhs.SymmetricDifference(rhs, considerDuplicates: true).Any();
     }
 
     /// <summary>
@@ -1666,6 +1649,24 @@ public static class EnumerableExtensions
     }
 
     /// <summary>
+    /// Filters null items. 
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <param name="items"></param>
+    /// <returns></returns>
+    public static IEnumerable<T> NotNull<T>(this IEnumerable<T?>? items)
+    {
+        if (null == items) yield break;
+
+        foreach(var item in items)
+        {
+            if (null == item) continue;
+
+            yield return item;
+        }
+    }
+
+    /// <summary>
     /// Returns all items not of type <paramref name="types"/>.
     /// </summary>
     /// <typeparam name="T"></typeparam>
@@ -2000,6 +2001,22 @@ public static class EnumerableExtensions
 
             yield return item;
             counter++;
+        }
+    }
+
+    public static IEnumerable<Opt<T>> OptIfEmpty<T>(this IEnumerable<T> items)
+    {
+        var it = items.ThrowIfNull().GetEnumerator();
+        if(!it.MoveNext())
+        {
+            yield return Opt.None<T>();
+            yield break;
+        }
+        yield return Opt.Some(it.Current);
+
+        while(it.MoveNext())
+        {
+            yield return Opt.Some(it.Current);
         }
     }
 

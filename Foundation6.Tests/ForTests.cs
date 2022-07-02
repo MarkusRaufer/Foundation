@@ -13,7 +13,7 @@ namespace Foundation
         {
             var value = 1;
 
-            var values = For.Returns(() => value++)
+            var values = For.Collect(() => value++)
                             .Take(5)
                             .ToArray();
 
@@ -24,7 +24,7 @@ namespace Foundation
         [Test]
         public void StartAt_Should_Return5Elements_When_TakeUntilEqualsInclusive5()
         {
-            var values = For.StartAt(() => 3).Returns(value => ++value) 
+            var values = For.StartAt(() => 3).Collect(value => ++value) 
                                              .TakeUntil(x => x == 5, inclusive: true)
                                              .ToArray();
 

@@ -11,7 +11,7 @@ namespace Foundation
     public class DoubleExtensionsTests
     {
         [Test]
-        public void Equal_Should_ReturnTrue_When_ValuesAreDifferent_And_EpsilonIsUsed()
+        public void Equal_Should_ReturnTrue_When_ValuesAreDifferent_And_DeviationIsUsed()
         {
             var lhs = 1.253D;
             var rhs = 1.258D;
@@ -20,7 +20,7 @@ namespace Foundation
         }
 
         [Test]
-        public void Equal_Should_ReturnTrue_When_ValuesAreEqual_And_DefaultEpsilonIsUsed()
+        public void Equal_Should_ReturnTrue_When_ValuesAreEqual_And_DefaultDeviationIsUsed()
         {
             var lhs = 1.25D;
             var rhs = 1.25D;
@@ -29,7 +29,7 @@ namespace Foundation
         }
 
         [Test]
-        public void GreaterThan_Should_ReturnFalse_When_Difference_IsSmaller_ThanEpsilon()
+        public void GreaterThan_Should_ReturnFalse_When_Difference_IsSmaller_ThanDeviation()
         {
             var lhs = 2.123D;
             var rhs = 2.122D;
@@ -39,7 +39,7 @@ namespace Foundation
         }
 
         [Test]
-        public void GreaterThanOrEqual_Should_ReturnTrue_When_Difference_IsSmaller_ThanEpsilon()
+        public void GreaterThanOrEqual_Should_ReturnTrue_When_Difference_IsSmaller_ThanDeviation()
         {
             var lhs = 2.123D;
             var rhs = 2.122D;
@@ -49,7 +49,7 @@ namespace Foundation
         }
 
         [Test]
-        public void GreaterThan_Should_ReturnTrue_When_LhsIsGreaterThanRhs_And_DefaultEpsilonIsUsed()
+        public void GreaterThan_Should_ReturnTrue_When_LhsIsGreaterThanRhs_And_DefaultDeviationIsUsed()
         {
             var lhs = 2.0D;
             var rhs = 1.0D;
@@ -59,7 +59,7 @@ namespace Foundation
         }
 
         [Test]
-        public void LessThan_Should_ReturnFalse_When_Difference_IsSmaller_ThanEpsilon()
+        public void LessThan_Should_ReturnFalse_When_Difference_IsSmaller_ThanDeviation()
         {
             var lhs = 2.122D;
             var rhs = 2.123D;
@@ -69,7 +69,7 @@ namespace Foundation
         }
 
         [Test]
-        public void LessThan_Should_ReturnTrue_When_LhsIsGreaterThanRhs_And_DefaultEpsilonIsUsed()
+        public void LessThan_Should_ReturnTrue_When_LhsIsGreaterThanRhs_And_DefaultDeviationIsUsed()
         {
             var lhs = 1.0D;
             var rhs = 2.0D;
@@ -79,7 +79,7 @@ namespace Foundation
         }
 
         [Test]
-        public void LessThanOrEqual_Should_ReturnTrue_When_Difference_IsSmaller_ThanEpsilon()
+        public void LessThanOrEqual_Should_ReturnTrue_When_Difference_IsSmaller_ThanDeviation()
         {
             var lhs = 2.122D;
             var rhs = 2.123D;

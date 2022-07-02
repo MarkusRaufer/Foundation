@@ -124,7 +124,8 @@ public class EquatableHashSet<T>
         if (null == other) return false;
         if (_hashCode != other._hashCode) return false;
 
-        return this.IsEqualTo(other, ignoreDuplicates: true);
+        //return this.IsEqualTo(other, ignoreDuplicates: true);
+        return SetEquals(other);
     }
 
     /// <summary>

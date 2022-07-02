@@ -110,7 +110,7 @@ public class EquatableCollection<T>
         if (other is null) return false;
         if (_hashCode != other._hashCode) return false;
 
-        return _collection.IsEqualTo(other._collection);
+        return _collection.IsEqualToSet(other._collection);
     }
 
     IEnumerator IEnumerable.GetEnumerator() => _collection.GetEnumerator();
