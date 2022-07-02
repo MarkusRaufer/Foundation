@@ -132,7 +132,7 @@ public class EquatableMap<TKey, TValue>
 
     protected void CreateHashCode()
     {
-        var builder = HashCode.CreateBuilder();
+        var builder = HashCode.CreateFactory();
 
         builder.AddHashCode(DefaultHashCode);
         builder.AddHashCodes(_keyValues.Select(kv => System.HashCode.Combine(kv.Key, kv.Value))

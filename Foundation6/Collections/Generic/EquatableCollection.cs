@@ -82,7 +82,7 @@ public class EquatableCollection<T>
 
     protected int CreateHashCode()
     {
-        var builder = HashCode.CreateBuilder();
+        var builder = HashCode.CreateFactory();
 
         builder.AddHashCode(DefaultHashCode);
         builder.AddHashCodes(_collection.Select(x => x.GetNullableHashCode())

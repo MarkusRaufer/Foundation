@@ -101,7 +101,7 @@ public class EquatableHashSet<T>
 
     protected void CreateHashCode()
     {
-        var builder = HashCode.CreateBuilder();
+        var builder = HashCode.CreateFactory();
 
         builder.AddHashCode(DefaultHashCode);
         builder.AddHashCodes(this.Select(x => x.GetNullableHashCode())

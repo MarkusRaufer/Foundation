@@ -65,7 +65,7 @@ namespace Foundation.Collections.Generic
         {
             base.Add(item);
 
-            var builder = HashCode.CreateBuilder();
+            var builder = HashCode.CreateFactory();
 
             builder.AddHashCode(_hashCode);
             builder.AddObject(item);
@@ -75,7 +75,7 @@ namespace Foundation.Collections.Generic
 
         protected void CreateHashCode()
         {
-            var builder = HashCode.CreateBuilder();
+            var builder = HashCode.CreateFactory();
 
             builder.AddObject(DefaultHashCode);
             builder.AddObjects(this);
