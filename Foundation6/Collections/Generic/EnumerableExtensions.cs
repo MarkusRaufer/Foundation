@@ -98,8 +98,7 @@ public static class EnumerableExtensions
     /// <param name="items"></param>
     /// <param name="selector">First T is lhs item and second T is the rhs item and so on.</param>
     /// <returns></returns>
-    public static IEnumerable<(T lhs, T rhs)> Adjacent<T>(
-        this IEnumerable<T> items)
+    public static IEnumerable<(T lhs, T rhs)> Adjacent<T>(this IEnumerable<T> items)
     {
         var it = items.ThrowIfNull()
                       .GetEnumerator();
@@ -122,9 +121,7 @@ public static class EnumerableExtensions
     /// <param name="items"></param>
     /// <param name="action">Contains the previous and the current item.</param>
     /// <returns></returns>
-    public static IEnumerable<(T lhs, T rhs)> Adjacent<T>(
-        this IEnumerable<T> items,
-        Action<T, T> action)
+    public static IEnumerable<(T lhs, T rhs)> Adjacent<T>(this IEnumerable<T> items, Action<T, T> action)
     {
         action.ThrowIfNull();
 
@@ -142,9 +139,7 @@ public static class EnumerableExtensions
     /// <param name="items"></param>
     /// <param name="action">Contains the previous and the current item.</param>
     /// <returns></returns>
-    public static IEnumerable<TReturn> Adjacent<T, TReturn>(
-        this IEnumerable<T> items,
-        Func<T, T, TReturn> selector)
+    public static IEnumerable<TReturn> Adjacent<T, TReturn>(this IEnumerable<T> items, Func<T, T, TReturn> selector)
     {
         selector.ThrowIfNull();
 
@@ -178,6 +173,24 @@ public static class EnumerableExtensions
     /// <summary>
     /// Aggregates the elements like the standard LINQ with the difference that this method does not require a seed value.
     /// The first element is taken as seed.
+    ///</summary>
+    /// <typeparam name="T"></typeparam>
+    /// <param name="items"></param>
+    /// <param name="func"></param>
+    /// <returns></returns>
+    //public static Opt<T> Aggregate<T>(this IEnumerable<T> items, Func<T, T, T> func)
+    //{
+    //    items.ThrowIfNull();
+    //    func.ThrowIfNull();
+
+    //    T? seed = default;
+
+    //    return items.OnFirstTakeOne(x => seed = x).Aggregate(seed!, func);
+    //}
+
+    /// <summary>
+    /// Aggregates the elements like the standard LINQ with the difference that this method does not require a seed value.
+    /// The first element is taken as seed.
     /// </summary>
     /// <typeparam name="T"></typeparam>
     /// <typeparam name="TAccumulate"></typeparam>
@@ -193,9 +206,14 @@ public static class EnumerableExtensions
         seed.ThrowIfNull();
         func.ThrowIfNull();
 
-        if (!items.FirstAsOpt().TryGet(out T? item)) return Opt.None<TAccumulate>();
+        TAccumulate? acc = default;
 
-        return Opt.Some(items.Skip(1).Aggregate(seed(item!), func));
+        foreach (var item in items.OnFirstTakeOne(x => acc = seed(x)))
+        {
+            acc = func(acc!, item);
+        }
+
+        return Opt.Maybe(acc);
     }
 
     /// <summary>
@@ -1520,14 +1538,16 @@ public static class EnumerableExtensions
         items.ThrowIfNull();
         comparer.ThrowIfNull();
 
-        T? min = default;
+        //T? min = default;
 
-        foreach (var item in items.OnFirstTakeOne(x => min = x))
-        {
-            if (-1 == comparer(item, min!))
-                min = item;
-        }
-        return min;
+        //foreach (var item in items.OnFirstTakeOne(x => min = x))
+        //{
+        //    if (-1 == comparer(item, min!))
+        //        min = item;
+        //}
+        //return min;
+        return items.Aggregate((a, b) => comparer(a, b) == -1 ? a : b);
+
     }
 
     /// <summary>
@@ -1782,7 +1802,7 @@ public static class EnumerableExtensions
     }
 
     /// <summary>
-    /// Returns all items of type T.
+    /// Returns all items of type <paramref name="types"/>.
     /// </summary>
     /// <typeparam name="T"></typeparam>
     /// <typeparam name="TResult"></typeparam>
@@ -1799,10 +1819,9 @@ public static class EnumerableExtensions
         {
             if (null == item) continue;
 
-            var itemType = item.GetType();
-            if (!types.Any(t => t.Equals(itemType) || t.IsAssignableFrom(itemType))) continue;
-
-            yield return selector(item);
+            var type = item.GetType();
+            if (types.Any(t => t.Equals(type) || t.IsAssignableFrom(type)))
+                yield return selector(item);
         }
     }
 
@@ -2001,22 +2020,6 @@ public static class EnumerableExtensions
 
             yield return item;
             counter++;
-        }
-    }
-
-    public static IEnumerable<Opt<T>> OptIfEmpty<T>(this IEnumerable<T> items)
-    {
-        var it = items.ThrowIfNull().GetEnumerator();
-        if(!it.MoveNext())
-        {
-            yield return Opt.None<T>();
-            yield break;
-        }
-        yield return Opt.Some(it.Current);
-
-        while(it.MoveNext())
-        {
-            yield return Opt.Some(it.Current);
         }
     }
 

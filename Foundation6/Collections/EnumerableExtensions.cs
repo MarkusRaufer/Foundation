@@ -150,11 +150,14 @@ public static class EnumerableExtensions
     public static IEnumerable<object> OfTypes(this IEnumerable items, params Type[] types)
     {
         items = items.ThrowIfNull();
-        Type? type = default;
-        foreach (var item in items.OnFirstObject(i => type = i.GetType()))
+        types.ThrowIfOutOfRange(() => types.Length == 0);
+
+        foreach (var item in items)
         {
-            if (types.Any(t => t.Equals(type) || t.IsAssignableFrom(type))) continue;
-            yield return item;
+            var type = item.GetType();
+            if (types.Any(t => t.Equals(type) || t.IsAssignableFrom(type)))
+                yield return item;
+            
         }
     }
 

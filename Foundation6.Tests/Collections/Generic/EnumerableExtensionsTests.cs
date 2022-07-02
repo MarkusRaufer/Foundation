@@ -101,26 +101,19 @@ public class EnumerableExtensionsTests
     {
         var numbers = Enumerable.Range(1, 3);
 
+        var minmax = numbers.Aggregate(number => (min: number, max: number), (acc, number) =>
         {
-            var sum = numbers.Aggregate(number => number, (prev, curr) => prev + curr);
+            if (number < acc.min) acc.min = number;
+            if (number > acc.max) acc.max = number;
+            return (acc.min, acc.max);
+        });
 
-            Assert.IsTrue(sum.IsSome);
-            Assert.AreEqual(6, sum.OrThrow());
-        }
-        {
-            var minmax = numbers.Aggregate(number => (min: number, max: number), (acc, number) =>
-            {
-                if (number < acc.min) acc.min = number;
-                if (number > acc.max) acc.max = number;
-                return (acc.min, acc.max);
-            });
+        Assert.IsTrue(minmax.IsSome);
 
-            Assert.IsTrue(minmax.IsSome);
+        var (min, max) = minmax.OrThrow();
+        Assert.AreEqual(1, min);
+        Assert.AreEqual(3, max);
 
-            var (min, max) = minmax.OrThrow();
-            Assert.AreEqual(1, min);
-            Assert.AreEqual(3, max);
-        }
     }
 
     [Test]
@@ -1104,6 +1097,19 @@ public class EnumerableExtensionsTests
         var items = list.AsEnumerable();
 
         Assert.Throws<ArgumentOutOfRangeException>(() => items.Nths(-5..9).ToArray());
+    }
+
+    [Test]
+    public void OfTypes_ShouldJumpIntoAction_When_UsedAction()
+    {
+        var items = new object[] { "1", 2, 3.3, "4", 5, 6.6 };
+
+        var selected = items.OfTypes(typeof(string), typeof(double)).ToArray();
+
+        Assert.AreEqual(4, selected.Length);
+
+        var expected = new object[] { "1", 3.3, "4", 6.6 };
+        Assert.IsTrue(expected.IsEqualToSet(selected));
     }
 
     [Test]
