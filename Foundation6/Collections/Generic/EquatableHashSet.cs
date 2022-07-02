@@ -17,10 +17,8 @@ public class EquatableHashSet<T>
 {
     private int _hashCode;
 
-    public EquatableHashSet(bool exceptionOnDuplicates = false) : base()
+    public EquatableHashSet() : base()
     {
-        ExceptionOnDuplicates = exceptionOnDuplicates;
-
         _hashCode = 0;
         CollectionChanged = new Event<Action<CollectionEvent<T>>>();
     }
@@ -30,31 +28,20 @@ public class EquatableHashSet<T>
     /// </summary>
     /// <param name="collection">EnumerableCounter is needed to detect wether the collection contains duplicates.
     /// Use T[], Collection<typeparamref name="T"/> or List<typeparamref name="T"/></param>
-    /// <param name="exceptionOnDuplicates"></param>
-    /// <exception cref="ArgumentException"></exception>
-    public EquatableHashSet(EnumerableCounter<T> collection, bool exceptionOnDuplicates = false) : base(collection)
-    {
-        ExceptionOnDuplicates = exceptionOnDuplicates;
-
-        if (ExceptionOnDuplicates && collection.Count != Count)
-            throw new ArgumentException($"contains duplicates", nameof(collection));
-
+    public EquatableHashSet(IEnumerable<T> collection) : base(collection)
+    {        
         CreateHashCode();
         CollectionChanged = new Event<Action<CollectionEvent<T>>>();
     }
 
-    public EquatableHashSet(IEqualityComparer<T>? comparer, bool exceptionOnDuplicates = false) : base(comparer)
+    public EquatableHashSet(IEqualityComparer<T>? comparer) : base(comparer)
     {
-        ExceptionOnDuplicates = exceptionOnDuplicates;
-
         CreateHashCode();
         CollectionChanged = new Event<Action<CollectionEvent<T>>>();
     }
 
-    public EquatableHashSet(int capacity, bool exceptionOnDuplicates = false) : base(capacity)
+    public EquatableHashSet(int capacity) : base(capacity)
     {
-        ExceptionOnDuplicates = exceptionOnDuplicates;
-
         CreateHashCode();
         CollectionChanged = new Event<Action<CollectionEvent<T>>>();
     }
@@ -65,38 +52,21 @@ public class EquatableHashSet<T>
     /// <param name="collection">EnumerableCounter is needed to detect wether the collection contains duplicates.
     /// Use T[], Collection<typeparamref name="T"/> or List<typeparamref name="T"/></param>
     /// <param name="comparer"></param>
-    /// <param name="exceptionOnDuplicates"></param>
-    /// <exception cref="ArgumentException"></exception>
-    public EquatableHashSet(
-        EnumerableCounter<T> collection, 
-        IEqualityComparer<T>? comparer,
-        bool exceptionOnDuplicates = false) : base(collection, comparer)
+    public EquatableHashSet(IEnumerable<T> collection, IEqualityComparer<T>? comparer) : base(collection, comparer)
     {
-        ExceptionOnDuplicates = exceptionOnDuplicates;
-
-        if (ExceptionOnDuplicates && collection.Count != Count)
-            throw new ArgumentException($"contains duplicates", nameof(collection));
-
         CreateHashCode();
         CollectionChanged = new Event<Action<CollectionEvent<T>>>();
     }
 
-    public EquatableHashSet(int capacity, IEqualityComparer<T>? comparer, bool exceptionOnDuplicates = false)
+    public EquatableHashSet(int capacity, IEqualityComparer<T>? comparer)
         : base(capacity, comparer)
     {
-        ExceptionOnDuplicates = exceptionOnDuplicates;
-
         CreateHashCode();
         CollectionChanged = new Event<Action<CollectionEvent<T>>>();
     }
 
     public EquatableHashSet(SerializationInfo info, StreamingContext context) : base(info, context)
-    {
-        if (info.GetValue(nameof(ExceptionOnDuplicates), typeof(bool)) is bool exceptionOnDuplicates)
-        {
-            ExceptionOnDuplicates = exceptionOnDuplicates;
-        }
-        
+    {        
         CreateHashCode();
         CollectionChanged = new Event<Action<CollectionEvent<T>>>();
     }
@@ -105,18 +75,18 @@ public class EquatableHashSet<T>
     /// Adds an item to the hashset.
     /// </summary>
     /// <param name="item"></param>
-    /// <exception cref="ArgumentException">If ExceptionOnDuplicates is true an exception is thrown if the item exists.</exception>
-    public new void Add(T item)
+    public new bool Add(T item)
     {
         var added = base.Add(item.ThrowIfNull());
         if (added)
         {
             CreateHashCode();
 
-            CollectionChanged.Publish(new { State = CollectionChangedState.ElementAdded, Element = item });
-            return;
+            CollectionChanged?.Publish(new { State = CollectionChangedState.ElementAdded, Element = item });
+            return true;
         }
-        if (ExceptionOnDuplicates) throw new ArgumentException($"{nameof(item)} exists", nameof(item));
+
+        return false;
     }
 
     public new void Clear()
@@ -124,7 +94,7 @@ public class EquatableHashSet<T>
         base.Clear();
         CreateHashCode();
 
-        CollectionChanged.Publish(new { State = CollectionChangedState.CollectionCleared });
+        CollectionChanged?.Publish(new { State = CollectionChangedState.CollectionCleared });
     }
 
     public Event<Action<CollectionEvent<T>>> CollectionChanged { get; private set; }
@@ -142,7 +112,7 @@ public class EquatableHashSet<T>
 
     protected static int DefaultHashCode { get; } = typeof(EquatableHashSet<T>).GetHashCode();
 
-    public override bool Equals(object? obj) => obj is EquatableHashSet<T> other && Equals(other);
+    public override bool Equals(object? obj) => Equals(obj as EquatableHashSet<T>);
 
     /// <summary>
     /// Checks the equality of all elements. The position of the elements are ignored.
@@ -158,11 +128,6 @@ public class EquatableHashSet<T>
     }
 
     /// <summary>
-    /// If true an exception is thrown, if same value is added twice.
-    /// </summary>
-    protected bool ExceptionOnDuplicates { get; }
-
-    /// <summary>
     /// Considers values only. Position of the values are ignored.
     /// </summary>
     /// <returns></returns>
@@ -170,7 +135,6 @@ public class EquatableHashSet<T>
 
     public override void GetObjectData(SerializationInfo info, StreamingContext context)
     {
-        info.AddValue(nameof(ExceptionOnDuplicates), ExceptionOnDuplicates);
         base.GetObjectData(info, context);
     }
 
@@ -181,7 +145,7 @@ public class EquatableHashSet<T>
         if (base.Remove(item))
         {
             CreateHashCode();
-            CollectionChanged.Publish(new { State = CollectionChangedState.ElementRemoved, Element = item });
+            CollectionChanged?.Publish(new { State = CollectionChangedState.ElementRemoved, Element = item });
             return true;
         }
         return false;

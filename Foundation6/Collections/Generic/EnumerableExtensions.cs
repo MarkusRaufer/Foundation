@@ -359,7 +359,7 @@ public static class EnumerableExtensions
     /// <param name="lhs"></param>
     /// <param name="rhs"></param>
     /// <returns></returns>
-    public static IEnumerable<T> Difference<T>(
+    public static IEnumerable<T> SymmetricDifference<T>(
         this IEnumerable<T> lhs, 
         IEnumerable<T> rhs,
         bool ignoreDuplicates = false)
@@ -1214,7 +1214,7 @@ public static class EnumerableExtensions
         if (null == lhs) return null == rhs;
         if (null == rhs) return false;
 
-        return !lhs.Difference(rhs, ignoreDuplicates).Any();
+        return !lhs.SymmetricDifference(rhs, ignoreDuplicates).Any();
     }
 
     /// <summary>
@@ -1225,7 +1225,7 @@ public static class EnumerableExtensions
     /// <param name="lhs"></param>
     /// <param name="rhs"></param>
     /// <returns></returns>
-    public static bool IsEqualTo<TKey, TValue>(
+    public static bool IsEqualToSet<TKey, TValue>(
         this IEnumerable<KeyValuePair<TKey, TValue>> lhs,
         IEnumerable<KeyValuePair<TKey, TValue>> rhs)
     {

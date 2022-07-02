@@ -1,4 +1,6 @@
-﻿namespace Foundation.Collections.Generic;
+﻿using System.Runtime.CompilerServices;
+
+namespace Foundation.Collections.Generic;
 
 public static class ArrayExtensions
 {
@@ -82,5 +84,8 @@ public static class ArrayExtensions
 
         return array;
     }
+
+    public static T[] ThrowIfEmpty<T>(this T[] arr, [CallerArgumentExpression("arr")] string paramName = "")
+        => 0 == arr.Length ? throw new ArgumentException($"{paramName} must not be empty") : arr;
 }
 

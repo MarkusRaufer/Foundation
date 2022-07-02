@@ -279,7 +279,7 @@ public class EnumerableExtensionsTests
         var items2 = Enumerable.Range(10, 10);
 
         // return all items because lists are completely different
-        var diff = items1.Difference(items2).ToArray();
+        var diff = items1.SymmetricDifference(items2).ToArray();
 
         Assert.AreEqual(20, diff.Length);
     }
@@ -290,7 +290,7 @@ public class EnumerableExtensionsTests
         var items1 = Enumerable.Range(0, 10);
         var items2 = Enumerable.Range(0, 10);
 
-        var diff = items1.Difference(items2).ToArray();
+        var diff = items1.SymmetricDifference(items2).ToArray();
 
         Assert.AreEqual(0, diff.Length);
     }
@@ -302,7 +302,7 @@ public class EnumerableExtensionsTests
         var items2 = new List<int> { 2, 4, 6 };
 
         // return items of both lists that don't match
-        var diff = items1.Difference(items2).ToArray();
+        var diff = items1.SymmetricDifference(items2).ToArray();
 
         Assert.AreEqual(4, diff.Length);
         CollectionAssert.AreEqual(new[] { 1, 3, 5, 6 }, diff);
@@ -315,7 +315,7 @@ public class EnumerableExtensionsTests
         var items2 = new List<int> { 1, 1, 2, 2, 3 };
 
         // return items of both lists that don't match
-        var diff = items1.Difference(items2).ToArray();
+        var diff = items1.SymmetricDifference(items2).ToArray();
 
         Assert.AreEqual(5, diff.Length);
         CollectionAssert.AreEqual(new[] { 1, 1, 2, 2, 3 }, diff);
@@ -1859,8 +1859,8 @@ public class EnumerableExtensionsTests
         var buzz = "Buzz";
 
         var all = numbers.ToDualOrdinalStreams(n => 0 == n % 15, _ => fizzBuzz, true)
-                         .LeftToRight(n => 0 == n % 3, _ => fizz, true)
-                         .LeftToRight(n => 0 == n % 5, _ => buzz, true)
+                         .AddToRight(n => 0 == n % 3, _ => fizz, true)
+                         .AddToRight(n => 0 == n % 5, _ => buzz, true)
                          .MergeStreams(n => n.ToString())
                          .ToArray();
 

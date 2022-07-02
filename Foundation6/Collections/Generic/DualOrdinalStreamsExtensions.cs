@@ -12,7 +12,7 @@ public static class DualOrdinalStreamsExtensions
     /// <param name="project">Projection from left to right stream.</param>
     /// <param name="isExhaustive">If isExhaustive is true then matching items are not added to the left stream.</param>
     /// <returns></returns>
-    public static DualOrdinalStreams<TLeft, TRight> LeftToRight<TLeft, TRight>(
+    public static DualOrdinalStreams<TLeft, TRight> AddToRight<TLeft, TRight>(
         this DualOrdinalStreams<TLeft, TRight> dualStreams,
         Func<TLeft, bool> predicate,
         Func<TLeft, TRight> project,
