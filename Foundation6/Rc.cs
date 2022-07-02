@@ -1,6 +1,4 @@
-﻿using System.Diagnostics.CodeAnalysis;
-
-namespace Foundation;
+﻿namespace Foundation;
 
 public static class Rc
 {
@@ -10,7 +8,7 @@ public static class Rc
     /// <typeparam name="T"></typeparam>
     /// <param name="obj"></param>
     /// <returns></returns>
-    public static Rc<T> New<T>(T obj) where T : notnull, IEquatable<T>
+    public static Rc<T> New<T>(T obj)
     {
         return new Rc<T>(obj);
     }
@@ -20,12 +18,11 @@ public static class Rc
 /// This is a reference counter.
 /// </summary>
 /// <typeparam name="T"></ typeparam >
-public struct Rc<T>
+public class Rc<T>
     : IComparable<Rc<T>>
     , IEquatable<Rc<T>>
-    where T : notnull, IEquatable<T>
 {
-    private readonly T? _value;
+    private readonly T _value;
 
     public Rc(T value) : this(value, 0)
     {
@@ -39,11 +36,13 @@ public struct Rc<T>
 
     public static implicit operator T(Rc<T> rc)
     {
-        return rc.Get().OrThrow();
+        return rc.Get();
     }
 
     public static bool operator ==(Rc<T> left, Rc<T> right)
     {
+        if(left is null) return right is null;
+
         return left.Equals(right);
     }
 
@@ -52,9 +51,9 @@ public struct Rc<T>
         return !(left == right);
     }
 
-    public int CompareTo(Rc<T> other)
+    public int CompareTo(Rc<T>? other)
     {
-        if (IsEmpty) return other.IsEmpty ? 0 : -1;
+        if (other is null) return 1;
 
         if (!ValueEquals(other)) return -1;
 
@@ -66,66 +65,48 @@ public struct Rc<T>
     /// </summary>
     public int Counter { get; private set; }
 
-    public override bool Equals(object? obj) => obj is Rc<T> other && Equals(other);
+    public override bool Equals(object? obj) => Equals(obj as Rc<T>);
 
     /// <summary>
     /// Is true if Object and Counter are equal.
     /// </summary>
     /// <param name="other"></param>
     /// <returns></returns>
-    public bool Equals(Rc<T> other)
+    public bool Equals(Rc<T>? other)
     {
-        if (IsEmpty) return other.IsEmpty;
-
-        return !other.IsEmpty &&
-               Counter == other.Counter &&
-               EqualityComparer<T>.Default.Equals(_value, other._value);
+        return other is not null
+            && Counter == other.Counter
+            && EqualityComparer<T>.Default.Equals(_value, other._value);
     }
 
     /// <summary>
     /// On every call the counter will be incremented.
     /// </summary>
     /// <returns></returns>
-    public Opt<T> Get()
+    public T Get()
     {
         Counter++;
-        return Opt.Maybe(_value);
+        return _value;
     }
 
-    public override int GetHashCode() => IsEmpty ? 0 : System.HashCode.Combine(Counter, _value);
+    public override int GetHashCode() => System.HashCode.Combine(Counter, _value);
 
-    public bool IsEmpty => _value is null;
+    public int GeValueHashCode() => _value!.GetHashCode();
 
     public void Reset()
     {
         Counter = 0;
     }
 
-    public override string ToString() => $"{nameof(T)}: {_value}, {nameof(Counter)}: {Counter}";
-
-    public bool TryGet([MaybeNullWhen(false)] out T? value)
-    {
-        if(IsEmpty)
-        {
-            value = default;
-            return false;
-        }
-
-        Counter++;
-        value = _value;
-
-        return true;
-    }
+    public override string ToString() => $"Value: {_value}, {nameof(Counter)}: {Counter}";
 
     /// <summary>
     /// Returns true if <paramref name="other"/> equals the internal _object.
     /// </summary>
     /// <param name="other"></param>
     /// <returns></returns>
-    public bool ValueEquals(T other)
+    public bool ValueEquals(T? other)
     {
-        if (IsEmpty) return false;
-
         return EqualityComparer<T>.Default.Equals(_value, other);
     }
 
@@ -134,11 +115,9 @@ public struct Rc<T>
     /// </summary>
     /// <param name="other"></param>
     /// <returns></returns>
-    public bool ValueEquals(Rc<T> other)
+    public bool ValueEquals(Rc<T>? other)
     {
-        if (IsEmpty) return other.IsEmpty;
-
-        return !other.IsEmpty
+        return other is not null
             && EqualityComparer<T>.Default.Equals(_value, other._value);
     }
 }

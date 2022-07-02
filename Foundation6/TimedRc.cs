@@ -30,27 +30,28 @@ public static class TimedRc
 /// A timed reference counter.
 /// </summary>
 /// <typeparam name="T"></typeparam>
-public struct TimedRc<T>
+public class TimedRc<T>
     : IEquatable<TimedRc<T>>
     , IComparable<TimedRc<T>>
-    where T : notnull, IEquatable<T>
 {
     private readonly Rc<T> _rc;
 
     public TimedRc(Rc<T> rc, DateTimeKind kind = DateTimeKind.Utc)
     {
-        _rc = rc.IsEmpty ? throw new ArgumentNullException(nameof(rc)) : rc;
+        _rc = rc.ThrowIfNull();
         Timestamp = DateTimeHelper.Now(kind);
     }
 
     public TimedRc(Rc<T> rc, DateTime timestamp)
     {
-        _rc = rc.IsEmpty ? throw new ArgumentNullException(nameof(rc)) : rc;
+        _rc = rc.ThrowIfNull();
         Timestamp = timestamp;
     }
 
     public static bool operator ==(TimedRc<T> left, TimedRc<T> right)
     {
+        if (left is null) return right is null;
+
         return left.Equals(right);
     }
 
@@ -63,8 +64,10 @@ public struct TimedRc<T>
 
     public override bool Equals(object? obj) => obj is TimedRc<T> other && Equals(other);
 
-    public bool Equals(TimedRc<T> other)
+    public bool Equals(TimedRc<T>? other)
     {
+        if (other is null) return false;
+
         if (!_rc.Equals(other._rc)) return false;
 
         return Timestamp.ValueObjectEquals(other.Timestamp);
@@ -74,10 +77,8 @@ public struct TimedRc<T>
     /// Timestamp is changed on call.
     /// </summary>
     /// <returns></returns>
-    public Opt<T> Get()
+    public T Get()
     {
-        if (IsEmpty) return Opt.None<T>();
-
         Timestamp = DateTimeHelper.Now(Timestamp.Kind);
 
         return _rc.Get();
@@ -85,10 +86,10 @@ public struct TimedRc<T>
 
     public override int GetHashCode() => System.HashCode.Combine(_rc, Timestamp);
 
-    public bool IsEmpty => _rc.IsEmpty;
-
-    public int CompareTo(TimedRc<T> other)
+    public int CompareTo(TimedRc<T>? other)
     {
+        if (other is null) return 1;
+
         var timeComparision = Timestamp.CompareTo(other.Timestamp);
         if (0 != timeComparision) return timeComparision;
 
@@ -97,8 +98,6 @@ public struct TimedRc<T>
 
     public void Reset()
     {
-        if (IsEmpty) return;
-
         Timestamp = DateTimeHelper.Now(Timestamp.Kind);
         _rc.Reset();
     }
