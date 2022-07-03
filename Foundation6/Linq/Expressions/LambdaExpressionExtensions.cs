@@ -10,7 +10,7 @@ namespace Foundation.Linq.Expressions
             {
                 MemberExpression me => me,
                 UnaryExpression ue => ue.Operand as MemberExpression,
-                _ => throw new NotImplementedException(),
+                _ => null,
             };
         }
     }
