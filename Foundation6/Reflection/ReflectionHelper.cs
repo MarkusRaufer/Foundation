@@ -41,7 +41,24 @@ namespace Foundation.Reflection
             return memberNames.FilterMap(name => type.GetMember(name).FirstAsOpt());
         }
 
+        public static IEnumerable<FieldInfo> GetMutableFields(this Type type)
+        {
+            type.ThrowIfNull();
 
+            return type.GetFields().Where(f => f.IsInitOnly);
+        }
+
+        public static IEnumerable<PropertyInfo> GetMutableProperties(this Type type)
+        {
+            type.ThrowIfNull();
+
+            return type.GetProperties().Where(p => p.CanWrite);
+        }
+
+        public static IEnumerable<MemberInfo> GetMutableProperties<T>()
+        {
+            return GetMutableProperties(typeof(T));
+        }
 
         public static object? GetValue(object obj, MemberInfo memberInfo)
         {

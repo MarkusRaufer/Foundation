@@ -1,64 +1,38 @@
-﻿using Foundation.Collections.Generic;
+﻿using Foundation.Linq.Expressions;
 using System.Linq.Expressions;
 using System.Reflection;
 
 namespace Foundation.Reflection;
 
-public class MemberInfoCash<T>
+public class MemberInfoCash<T> : MemberCash<T, MemberInfo>
 {
-    private readonly string[]? _memberNames;
-    private MemberInfo[]? _members;
-
-    public MemberInfoCash()
+    public MemberInfoCash() : base()
     {
     }
 
-    public MemberInfoCash(IEnumerable<MemberInfo> members)
+    public MemberInfoCash(MemberInfo[] members) : base(members)
     {
-        _members = members.ToArray().ThrowIfEmpty();
     }
 
-    public MemberInfoCash(params string[] memberNames)
+    public MemberInfoCash(string[] memberNames) : base(memberNames)
     {
-        _memberNames = memberNames.ThrowIfEmpty();
     }
 
-    public MemberInfoCash(params Expression<Func<T, object>>[] members)
+    public MemberInfoCash(params Expression<Func<T, object>>[] members) : base(members)
     {
-        if (0 == members.Length) throw new ArgumentOutOfRangeException(nameof(members));
-
-        _members = members.Cast<LambdaExpression>()
-                          .Select(GetMemberFromLambda)
-                          .ToArray();
     }
 
-    private static MemberInfo GetMemberFromLambda(LambdaExpression lambda)
+    protected override MemberInfo GetMemberFromLambda(LambdaExpression lambda)
     {
-        var member = lambda.Body switch
-        {
-            MemberExpression me => me,
-            UnaryExpression ue => (MemberExpression)ue.Operand,
-            _ => throw new InvalidArgumentException($"{lambda.Body}")
-        };
+        var member = lambda.GetMember();
+        if(null == member) throw new InvalidArgumentException($"{lambda}");
 
-        return member.Member switch
-        {
-            FieldInfo => member.Member,
-            PropertyInfo => member.Member,
-            _ => throw new InvalidArgumentException($"{member.Member}")
-        };
+        return member.Member;
     }
 
-    public IEnumerable<MemberInfo> GetMembers()
+    protected override IEnumerable<MemberInfo> GetTypeMembers()
     {
-        if (null != _members) return _members;
-
-        var members = typeof(T).GetMembers();
-
-        _members = null == _memberNames
-            ? members
-            : members.Where(member => _memberNames.Contains(member.Name)).ToArray();
-
-        return _members;
+        return typeof(T).GetMembers();
     }
 }
+
