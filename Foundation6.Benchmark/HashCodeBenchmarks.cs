@@ -7,32 +7,41 @@ namespace Foundation.Benchmark
     [MemoryDiagnoser]
     public class HashCodeBenchMarks
     {
-        private static int _numberOfObjects = 10;
-        private int _hashCode = 123456;
-        private string _object = "alöskdfjöalskdfjölaskdfjlöasdjflj";
-        private int[] _hashCodes = Enumerable.Range(1, _numberOfObjects).ToArray();
-        private string[] _objects = Enumerable.Range(1, _numberOfObjects).Select(x => $"{x}").ToArray();
+        //[Params(10, 100, 10000)]
+        //public int NumberOfObjects;
+
+        private readonly int _hashCode = 123456;
+        private readonly string _object = "alöskdfjöalskdfjölaskdfjlöasdjflj";
+
+        public IEnumerable<object[]> Inputs()
+        {
+            yield return new object[] { Enumerable.Range(1, 10).ToArray(), Enumerable.Range(1, 10).Select(x => $"{x}").ToArray() };
+            yield return new object[] { Enumerable.Range(1, 100).ToArray(), Enumerable.Range(1, 100).Select(x => $"{x}").ToArray() };
+            yield return new object[] { Enumerable.Range(1, 10000).ToArray(), Enumerable.Range(1, 10000).Select(x => $"{x}").ToArray() };
+        }
 
         [Benchmark]
-        public int HashCodeFactory()
+        [ArgumentsSource(nameof(Inputs))]
+        public int HashCodeFactory(int[] hashCodes, string[] objects)
         {
             var builder = HashCode.CreateFactory();
 
-            builder.AddObjects(_objects);
+            builder.AddObjects(objects);
             builder.AddHashCode(_hashCode);
-            builder.AddHashCodes(_hashCodes);
+            builder.AddHashCodes(hashCodes);
             builder.AddObject(_object);
 
             return builder.GetHashCode();
         }
 
         [Benchmark]
-        public int HashCodeBuilder()
+        [ArgumentsSource(nameof(Inputs))]
+        public int HashCodeBuilder(int[] hashCodes, string[] objects)
         {
             return HashCode.CreateBuilder()
-                           .AddObjects(_objects)
+                           .AddObjects(objects)
                            .AddHashCode(_hashCode)
-                           .AddHashCodes(_hashCodes)
+                           .AddHashCodes(hashCodes)
                            .AddObject(_object)
                            .GetHashCode();
         }
