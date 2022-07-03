@@ -11,14 +11,19 @@ using System.Runtime.Serialization;
 [Serializable]
 public class UniqueOnlyHashSet<T> : EquatableHashSet<T>
 {
+    private readonly Func<EnumerableCounter<T>>? _counter;
+
     public UniqueOnlyHashSet() : base()
     {
     }
 
-    public UniqueOnlyHashSet(IEnumerable<T> collection)
+    public UniqueOnlyHashSet(IEnumerable<T> collection) 
+        : base(new EnumerableCounter<T>(collection, out Func<EnumerableCounter<T>> _counter))
     {
-        foreach(var item in collection)
-            Add(item);
+        _counter.ThrowIfNull();
+
+        var counter = _counter();
+        if (counter.Count != Count) throw new ArgumentException(" values are not unique", nameof(collection));
     }
 
     public UniqueOnlyHashSet(IEqualityComparer<T>? comparer) : base(comparer)
@@ -29,11 +34,14 @@ public class UniqueOnlyHashSet<T> : EquatableHashSet<T>
     {
     }
 
-    public UniqueOnlyHashSet(IEnumerable<T> collection, IEqualityComparer<T>? comparer): base(comparer)
+    public UniqueOnlyHashSet(IEnumerable<T> collection, IEqualityComparer<T>? comparer)
+        : base(new EnumerableCounter<T>(collection, out Func<EnumerableCounter<T>> _counter), comparer)
     {
-        foreach (var item in collection)
-            Add(item);
-    }
+        _counter.ThrowIfNull();
+
+        var counter = _counter();
+        if (counter.Count != Count) throw new ArgumentException(" values are not unique", nameof(collection));
+     }
 
     public UniqueOnlyHashSet(int capacity, IEqualityComparer<T>? comparer)
         : base(capacity, comparer)
@@ -47,7 +55,7 @@ public class UniqueOnlyHashSet<T> : EquatableHashSet<T>
 
     public new bool Add(T item)
     {
-        if (base.Add(item)) throw new ArgumentException($"{item} exists");
+        if (!base.Add(item)) throw new ArgumentException($"{item} exists");
 
         return true;
     }
