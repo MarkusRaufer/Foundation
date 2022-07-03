@@ -115,7 +115,7 @@ namespace Foundation.Collections.ObjectModel
 
         public override bool Equals(object? obj) => Equals(obj as PropertyCollection);
 
-        public bool Equals(PropertyCollection? other)  => null != other && _properties.IsSameAs(other._properties);
+        public bool Equals(PropertyCollection? other)  => null != other && _properties.SequenceEqual(other._properties);
 
         public IEnumerator<Property> GetEnumerator() => _properties.Values.GetEnumerator();
 
