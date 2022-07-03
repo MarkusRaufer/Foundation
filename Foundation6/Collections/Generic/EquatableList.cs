@@ -102,7 +102,7 @@ namespace Foundation.Collections.Generic
             if (other is null) return false;
             if (_hashCode != other._hashCode) return false;
 
-            return this.IsSameAs(other);
+            return this.SequenceEqual(other);
         }
 
         /// <summary>

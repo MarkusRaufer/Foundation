@@ -11,10 +11,13 @@ using System.Runtime.Serialization;
 [Serializable]
 public class UniqueOnlyHashSet<T> : EquatableHashSet<T>
 {
+#pragma warning disable CS0414
     private readonly Func<EnumerableCounter<T>>? _counter;
+#pragma warning restore CS0414 
 
     public UniqueOnlyHashSet() : base()
     {
+        _counter = null;
     }
 
     public UniqueOnlyHashSet(IEnumerable<T> collection) 

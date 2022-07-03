@@ -24,14 +24,18 @@ public struct UniqueOnlyArray<T>
     public UniqueOnlyArray(T[] values)
     {
         values.ThrowIfNull();
-        
-        _values = new HashSet<T>();
-        foreach (var value in values)
-        {
-            if (!_values.Add(value)) throw new ArgumentNullException($"{value} exists");
-        }
 
-        _hashCode = HashCode.FromObjects(_values);
+        var enumerable = new EnumerableCounter<T>(values);
+        _values = new HashSet<T>(enumerable);
+
+        if(enumerable.Count != _values.Count) throw new ArgumentNullException($"duplicate values", nameof(values));
+
+        //foreach (var value in values)
+        //{
+        //    if (!_values.Add(value)) throw new ArgumentNullException($"{value} exists");
+        //}
+
+        _hashCode = HashCode.FromObjects(_values.ToArray());
         _valuesAsString = "";
     }
 
@@ -65,13 +69,13 @@ public struct UniqueOnlyArray<T>
     {
         if (IsEmpty) return null == other || 0 == other.Length;
 
-        return null != other && _values!.SequenceEqual(other);
+        return null != other && _values!.SetEquals(other);
     }
 
     public bool Equals(UniqueOnlyArray<T> other)
     {
         if (IsEmpty) return other.IsEmpty;
-        return !other.IsEmpty && _values!.SequenceEqual(other._values!);
+        return !other.IsEmpty && _values!.SetEquals(other._values!);
     }
 
     public IEnumerator<T> GetEnumerator() => IsEmpty 

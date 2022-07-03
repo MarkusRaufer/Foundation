@@ -171,32 +171,14 @@ public static class EnumerableExtensions
     }
 
     /// <summary>
-    /// Aggregates the elements like the standard LINQ with the difference that this method does not require a seed value.
-    /// The first element is taken as seed.
-    ///</summary>
-    /// <typeparam name="T"></typeparam>
-    /// <param name="items"></param>
-    /// <param name="func"></param>
-    /// <returns></returns>
-    //public static Opt<T> Aggregate<T>(this IEnumerable<T> items, Func<T, T, T> func)
-    //{
-    //    items.ThrowIfNull();
-    //    func.ThrowIfNull();
-
-    //    T? seed = default;
-
-    //    return items.OnFirstTakeOne(x => seed = x).Aggregate(seed!, func);
-    //}
-
-    /// <summary>
-    /// Aggregates the elements like the standard LINQ with the difference that this method does not require a seed value.
-    /// The first element is taken as seed.
+    /// Aggregates elements like standard LINQ.
+    /// The first element is taken as seed and can be transformed.
     /// </summary>
-    /// <typeparam name="T"></typeparam>
-    /// <typeparam name="TAccumulate"></typeparam>
-    /// <param name="items"></param>
-    /// <param name="seed"></param>
-    /// <param name="func"></param>
+    /// <typeparam name="T">Type of the elements</typeparam>
+    /// <typeparam name="TAccumulate">The transformation format</typeparam>
+    /// <param name="items">Elements</param>
+    /// <param name="seed">A functor transforms the first element in the list.</param>
+    /// <param name="func">The aggregation function.</param>
     /// <returns></returns>
     public static Opt<TAccumulate> Aggregate<T, TAccumulate>(
         this IEnumerable<T> items,
@@ -404,6 +386,14 @@ public static class EnumerableExtensions
         return lhsSkipped.Concat(rhsSkipped);
     }
 
+    /// <summary>
+    /// Returns the symmetric difference of two lists.
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <param name="lhs"></param>
+    /// <param name="rhs"></param>
+    /// <param name="considerDuplicates">If true then duplicates are taken into account.</param>
+    /// <returns></returns>
     public static IEnumerable<T> SymmetricDifference<T>(
                 this IEnumerable<T> lhs,
                 IEnumerable<T> rhs,
@@ -605,6 +595,13 @@ public static class EnumerableExtensions
         }
     }
 
+    /// <summary>
+    /// Returns all elements from <paramref name="lhs"/> which are not in <paramref name="rhs"/> including duplicates.
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <param name="lhs"></param>
+    /// <param name="rhs"></param>
+    /// <returns></returns>
     public static IEnumerable<T> ExceptWithDuplicates<T>(this IEnumerable<T> lhs, IEnumerable<T> rhs)
     {
         var rhsMap = new MultiMap<NullableKey<T>, T>();
@@ -794,17 +791,6 @@ public static class EnumerableExtensions
     }
 
     /// <summary>
-    /// Returns a flat list of items.
-    /// </summary>
-    /// <typeparam name="T"></typeparam>
-    /// <param name="collections"></param>
-    /// <returns></returns>
-    public static IEnumerable<T> Flatten<T>(this IEnumerable<IEnumerable<T>> collections)
-    {
-        return collections.SelectMany(x => x);
-    }
-
-    /// <summary>
     /// Executes action for every item.
     /// </summary>
     /// <typeparam name="T"></typeparam>
@@ -822,7 +808,7 @@ public static class EnumerableExtensions
     }
 
     /// <summary>
-    /// Executes action vor every item. If the list is empty
+    /// Calls <paramref name="action"/> for every item. If the list is empty <paramref name="emptyAction"/> is called.
     /// </summary>
     /// <typeparam name="T">Type of the item.</typeparam>
     /// <param name="source"></param>
@@ -1139,13 +1125,10 @@ public static class EnumerableExtensions
     /// <param name="item"></param>
     /// <param name="predicate"></param>
     /// <returns></returns>
-    public static IEnumerable<T> Insert<T>(
-        this IEnumerable<T> items,
-        T item,
-        Func<T, bool> predicate)
+    public static IEnumerable<T> Insert<T>(this IEnumerable<T> items, T item, Func<T, bool> predicate)
     {
         predicate.ThrowIfNull();
-        items.Prepend(item);
+
         var inserted = false;
         foreach (var i in items.ThrowIfNull())
         {
@@ -1215,7 +1198,34 @@ public static class EnumerableExtensions
     }
 
     /// <summary>
-    /// return true if all items are in an ascending order.
+    /// Returns true if all items are in an ascending order.
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <param name="items"></param>
+    /// <returns></returns>
+    public static bool IsInAscendingOrder<T>(this IEnumerable<T> items)
+        where T : IComparable<T>
+    {
+        items.ThrowIfNull();
+
+        var it = items.GetEnumerator();
+
+        if (!it.MoveNext()) return true;
+
+        var prev = it.Current;
+        while (it.MoveNext())
+        {
+            if (1 == prev.CompareTo(it.Current))
+                return false;
+
+            prev = it.Current;
+        }
+
+        return true;
+    }
+
+    /// <summary>
+    /// Returns true if all items are in an ascending order.
     /// </summary>
     /// <typeparam name="T"></typeparam>
     /// <param name="items"></param>
@@ -1269,41 +1279,18 @@ public static class EnumerableExtensions
     }
 
     /// <summary>
-    /// Returns true, if all elements of lhs appear in same order and number as in rhs.
+    /// Checks if <paramref name="rhs"/> is a subset of <paramref name="lhs"/>.
     /// </summary>
     /// <typeparam name="T"></typeparam>
     /// <param name="lhs"></param>
     /// <param name="rhs"></param>
     /// <returns></returns>
-    public static bool IsSameAs<T>(this IEnumerable<T> lhs, IEnumerable<T> rhs)
+    public static bool IsSubsetOf<T>(this IEnumerable<T> lhs, IEnumerable<T> rhs)
     {
         rhs.ThrowIfNull();
 
-        var itRhs = rhs.GetEnumerator();
-        foreach(var left in lhs)
-        {
-            if (!itRhs.MoveNext()) return false;
-
-            if (!left.EqualsNullable(itRhs.Current)) return false;
-
-        }
-
-        return !itRhs.MoveNext();
-    }
-
-    /// <summary>
-    /// Checks if second is a subset of first.
-    /// </summary>
-    /// <typeparam name="T"></typeparam>
-    /// <param name="first"></param>
-    /// <param name="second"></param>
-    /// <returns></returns>
-    public static bool IsSubsetOf<T>(this IEnumerable<T> first, IEnumerable<T> second)
-    {
-        second.ThrowIfNull();
-
-        var search = new HashSet<T>(first);
-        return search.IsSubsetOf(second);
+        var search = new HashSet<T>(lhs);
+        return search.IsSubsetOf(rhs);
 
     }
 
@@ -1363,15 +1350,21 @@ public static class EnumerableExtensions
     /// <summary>
     /// Returns the last item of source if not empty.
     /// </summary>
-    /// <typeparam name="TSource"></typeparam>
+    /// <typeparam name="T"></typeparam>
     /// <param name="source"></param>
     /// <returns></returns>
-    public static Opt<TSource> LastAsOpt<TSource>(this IEnumerable<TSource> source)
+    public static Opt<T> LastAsOpt<T>(this IEnumerable<T> source)
     {
-        var last = source.ThrowIfNull()
-                         .LastOrDefault();
+        var it = source.ThrowIfNull().GetEnumerator();
 
-        return last is TSource src ? Opt.Some(src) : Opt.None<TSource>();
+        var last = Opt.None<T>();
+
+        while (it.MoveNext())
+        {
+            last = Opt.Some(it.Current);
+        }
+
+        return last;
     }
 
     /// <summary>
@@ -1511,7 +1504,7 @@ public static class EnumerableExtensions
     }
 
     /// <summary>
-    /// Returns the greatest item.
+    /// Returns the greatest item selected by the selector.
     /// </summary>
     /// <typeparam name="T"></typeparam>
     /// <param name="items"></param>
@@ -1521,7 +1514,7 @@ public static class EnumerableExtensions
     {
         items.ThrowIfNull();
         comparer.ThrowIfNull();
-
+        
         return items.Aggregate((a, b) => comparer(a, b) == 1 ? a : b);
     }
 
@@ -1538,14 +1531,6 @@ public static class EnumerableExtensions
         items.ThrowIfNull();
         comparer.ThrowIfNull();
 
-        //T? min = default;
-
-        //foreach (var item in items.OnFirstTakeOne(x => min = x))
-        //{
-        //    if (-1 == comparer(item, min!))
-        //        min = item;
-        //}
-        //return min;
         return items.Aggregate((a, b) => comparer(a, b) == -1 ? a : b);
 
     }
@@ -1844,7 +1829,7 @@ public static class EnumerableExtensions
     }
 
     /// <summary>
-    /// Calls action if items is empty;
+    /// Calls action if items is empty.
     /// </summary>
     /// <typeparam name="T"></typeparam>
     /// <param name="items"></param>
@@ -1860,6 +1845,33 @@ public static class EnumerableExtensions
         if (!it.MoveNext())
         {
             action();
+            yield break;
+        }
+        yield return it.Current;
+
+        while (it.MoveNext())
+        {
+            yield return it.Current;
+        }
+    }
+
+    /// <summary>
+    /// Returns a value if list is empty.
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <param name="items"></param>
+    /// <param name="onEmpty"></param>
+    /// <returns></returns>
+    public static IEnumerable<T> OnEmpty<T>(this IEnumerable<T> items, Func<T> onEmpty)
+    {
+        onEmpty.ThrowIfNull();
+
+        var it = items.ThrowIfNull()
+                      .GetEnumerator();
+
+        if (!it.MoveNext())
+        {
+            yield return onEmpty();
             yield break;
         }
         yield return it.Current;
@@ -2191,6 +2203,22 @@ public static class EnumerableExtensions
     }
 
     /// <summary>
+    /// Replaces an item at a specified index.
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <param name="items"></param>
+    /// <param name="item"></param>
+    /// <param name="index"></param>
+    /// <returns></returns>
+    public static IEnumerable<T> Replace<T>(this IEnumerable<T> items, T item, int index)
+    {
+        items.ThrowIfNull();
+        item.ThrowIfNull();
+
+        return Replace(items, new[] {(item, index)}, item => item);
+    }
+
+    /// <summary>
     /// Replaces the items from a list at specified indexes with the specified values of replaceTuples.
     /// </summary>
     /// <typeparam name="T"></typeparam>
@@ -2229,7 +2257,7 @@ public static class EnumerableExtensions
     }
 
     /// <summary>
-    /// Replaces the items from a list at specified indexes with the specified values of replaceTuples.
+    /// Replaces the items from a list with specified <paramref name="replaceTuples"/> including values with their indices.
     /// </summary>
     /// <typeparam name="T"></typeparam>
     /// <typeparam name="TResult"></typeparam>
@@ -2619,6 +2647,7 @@ public static class EnumerableExtensions
 
     /// <summary>
     /// Returns elements from a sequence as long as a specified condition is false, and then skips the remaining elements.
+    /// This is the counterpart to TakeWhile.
     /// </summary>
     /// <typeparam name="T"></typeparam>
     /// <param name="items"></param>

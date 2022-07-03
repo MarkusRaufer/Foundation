@@ -254,7 +254,7 @@ public class MultiMap<TKey, TValue> : IMultiMap<TKey, TValue>
 
         foreach (var kvp in _dictionary)
         {
-            if (values.Contains(kvp.Value))
+            if (Array.Exists(values, value => kvp.Value.EqualsNullable(value)))
                 yield return kvp.Key;
         }
     }
