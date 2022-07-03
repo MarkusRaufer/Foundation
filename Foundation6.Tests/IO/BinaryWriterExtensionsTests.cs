@@ -157,7 +157,7 @@ namespace Foundation.IO
             Assert.AreEqual(person1, readPerson());
         }
 
-        public void WriteObject_Should_WriteNameAndCreated_When_ObjectIsPerson()
+        public void WriteObject_Should_WritePropertiesNameAndCreated_When_ObjectIsPerson()
         {
             using var stream = new MemoryStream();
             using var writer = new BinaryWriter(stream);
