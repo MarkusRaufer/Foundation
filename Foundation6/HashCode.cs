@@ -86,7 +86,7 @@ public static class HashCode
             }
         }
 
-        public void AddObjects<T>(IEnumerable<T?> objects)
+        public void AddObjects<T>(IEnumerable<T> objects)
         {
             if (null == objects) return;
 
@@ -233,6 +233,7 @@ public static class HashCode
             if (null == objects) return this;
 
             var hash = _hash;
+
             foreach (var value in objects)
             {
                 if (null == value) continue;
@@ -248,6 +249,7 @@ public static class HashCode
             if (null == objects) return this;
 
             var hash = _hash;
+
             foreach (var value in objects)
             {
                 if (null == value) continue;
@@ -263,6 +265,7 @@ public static class HashCode
             if (null == pairs) return this;
 
             var hash = _hash;
+
             foreach (var pair in pairs)
             {
                 if (null == pair.Key) continue;
@@ -318,78 +321,47 @@ public static class HashCode
         return HashCodeBuilder.Create();
     }
 
-    public static int From(int hashCode, params object[] objects)
-    {
-        if (0 == hashCode && 0 == objects.Length) return 0;
-        objects.ThrowIfNull();
-
-        var hcb = HashCodeFactory.Create();
-        hcb.AddHashCode(hashCode);
-        hcb.AddObjects(objects);
-        return hcb.GetHashCode();
-    }
-
     public static int FromHashCode(params int[] hashCodes)
     {
         if (0 == hashCodes.Length) return 0;
 
+        return FromHashCodes(hashCodes);
+    }
+
+    public static int FromHashCodes(IEnumerable<int> hashCodes)
+    {
         var hcb = HashCodeFactory.Create();
         hcb.AddHashCodes(hashCodes);
 
         return hcb.GetHashCode();
     }
 
-    public static int FromHashCodeOrdered(params int[] hashCodes)
+    public static int FromOrderedHashCode(params int[] hashCodes)
     {
         if (0 == hashCodes.Length) return 0;
 
         Array.Sort(hashCodes);
 
-        return FromHashCode(hashCodes);
+        return FromHashCodes(hashCodes);
     }
 
-    public static int FromHashCodes(IEnumerable<int> hashCodes)
+    public static int FromOrderedHashCodes(IEnumerable<int> hashCodes)
     {
-        return FromHashCode(hashCodes.ToArray());
+        return FromOrderedHashCodes(hashCodes.ToArray());
     }
 
-    public static int FromHashCodesOrdered(IEnumerable<int> hashCodes)
+    public static int FromObject(params object[] objects)
     {
-        var arr = hashCodes.ToArray();
-        Array.Sort(arr);
-
-        return FromHashCode(arr);
+        return FromObjects(objects);
     }
 
-    public static int FromObject(params object?[] objects)
+    public static int FromObject<TKey, TValue>(params KeyValuePair<TKey, TValue>[] pairs)
     {
-        if (0 == objects.Length) return 0;
-
-        var hcb = HashCodeFactory.Create();
-
-        foreach (var obj in objects)
-            hcb.AddObject(obj);
-
-        return hcb.GetHashCode();
-    }
-
-    public static int FromObject<TKey, TValue>(params KeyValuePair<TKey, TValue>?[] pairs)
-    {
-        if (0 == pairs.Length) return 0;
-
-        var hcb = HashCodeFactory.Create();
-
-        foreach (var pair in pairs)
-            hcb.AddObject(pair);
-
-        return hcb.GetHashCode();
+        return FromObjects(pairs);
     }
 
     public static int FromObjects<T>(IEnumerable<T> objects)
     {
-        var list = objects.ToArray();
-        if (0 == list.Length) return 0;
-
         var hcb = HashCodeFactory.Create();
 
         hcb.AddObjects(objects);
