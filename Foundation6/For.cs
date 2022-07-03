@@ -2,9 +2,9 @@
 
 namespace Foundation
 {
-    public interface IForReturns<T>
+    public interface IForCollect<T>
     {
-        IEnumerable<T> Returns(Func<T, T> generator);
+        IEnumerable<T> Collect(Func<T, T> generator);
     }
 
     /// <summary>
@@ -13,28 +13,28 @@ namespace Foundation
     /// </summary>
     public static class For
     {
-        public static IEnumerable<T> Returns<T>(Func<T> generator)
+        public static IEnumerable<T> Collect<T>(Func<T> generator)
         {
             return new ForEnumerable<T>(generator);
         }
 
-        public static IForReturns<T> StartAt<T>(Func<T> seed) where T : notnull
+        public static IForCollect<T> StartAt<T>(Func<T> seed) where T : notnull
         {
-            return new ForReturns<T>(seed);
+            return new ForCollect<T>(seed);
         }
     }
 
-    class ForReturns<T> : IForReturns<T>
+    class ForCollect<T> : IForCollect<T>
         where T : notnull
     {
         private readonly Func<T> _seed;
 
-        public ForReturns(Func<T> seed)
+        public ForCollect(Func<T> seed)
         {
             _seed = seed.ThrowIfNull();
         }
 
-        public IEnumerable<T> Returns(Func<T, T> generator)
+        public IEnumerable<T> Collect(Func<T, T> generator)
         {
             return new ForEnumerableWithSeed<T>(_seed, generator);
         }

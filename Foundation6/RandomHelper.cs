@@ -151,10 +151,10 @@ public static class RandomHelper
     /// Generates random values from a set of values.
     /// </summary>
     /// <param name="valueSet">set of values.</param>
-    /// <param name="epsilon">The deviation of the result values.</param>
+    /// <param name="deviation">The deviation of the result values.</param>
     /// <param name="seed">Seed for the random generator. null returns always different values.</param>
     /// <returns>Contains only values from valueSet.</returns>
-    public static IEnumerable<double> GetRandomValues(double[] valueSet, double epsilon = double.Epsilon, int? seed = null)
+    public static IEnumerable<double> GetRandomValues(double[] valueSet, double deviation = double.Epsilon, int? seed = null)
     {
         valueSet.ThrowIfNull();
 
@@ -174,7 +174,7 @@ public static class RandomHelper
             var value = random.NextDouble(min, max);
             foreach (var setValue in valueSet)
             {
-                if (setValue.Equal(value, epsilon))
+                if (setValue.Equal(value, deviation))
                 {
                     yield return value;
                     break;
