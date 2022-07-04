@@ -6,16 +6,42 @@ namespace Foundation
     public class TriStateTests
     {
         [Test]
-        public void Ctor_Should_HasStateFalse_When_CtorArgument_IsFalse()
+        public void Ctor_Should_ReturnStateFalse_When_CtorArgument_IsFalse()
         {
             var sut = new TriState(false);
             Assert.IsFalse(sut.State.OrThrow());
         }
 
         [Test]
-        public void Ctor_Should_HasStateIsNone_When_NoCtorArgumentIsUsed()
+        public void Ctor_Should_ReturnState2_When_GenericVersion_And_CtorArgument_Is2()
+        {
+            var sut = new TriState<int, string>(2);
+
+            Assert.IsTrue(sut.TryGet(out int state));
+            Assert.AreEqual(2, state);
+        }
+
+        [Test]
+        public void Ctor_Should_ReturnStateString_When_GenericVersion_And_CtorArgument_IsString()
+        {
+            var expectedState = "test";
+            var sut = new TriState<int, string>(expectedState);
+
+            Assert.IsTrue(sut.TryGet(out string? state));
+            Assert.AreEqual(expectedState, state);
+        }
+
+        [Test]
+        public void Ctor_Should_HasStateIsNone_When_DefaultIsUsed()
         {
             var sut = new TriState();
+            Assert.IsTrue(sut.State.IsNone);
+        }
+
+        [Test]
+        public void Ctor_Should_HasStateIsNone_When_GenericVersion_And_DefaultIsUsed()
+        {
+            var sut = new TriState<int, string>();
             Assert.IsTrue(sut.State.IsNone);
         }
 
@@ -62,6 +88,51 @@ namespace Foundation
         }
 
         [Test]
+        public void Equals_Should_ReturnFalse_When_GenericVersion_And_BothAreDifferent()
+        {
+            {
+                var sut1 = new TriState<int, string>();
+                var sut2 = new TriState<int, string>(2);
+
+                Assert.IsFalse(sut1.Equals(sut2));
+                Assert.IsFalse(sut2.Equals(sut1));
+
+                Assert.IsTrue(sut1 != sut2);
+                Assert.IsTrue(sut2 != sut1);
+            }
+            {
+                var sut1 = new TriState<int, string>();
+                var sut2 = new TriState<int, string>("test");
+
+                Assert.IsFalse(sut1.Equals(sut2));
+                Assert.IsFalse(sut2.Equals(sut1));
+
+                Assert.IsTrue(sut1 != sut2);
+                Assert.IsTrue(sut2 != sut1);
+            }
+            {
+                var sut1 = new TriState<int, string>(2);
+                var sut2 = new TriState<int, string>("test");
+
+                Assert.IsFalse(sut1.Equals(sut2));
+                Assert.IsFalse(sut2.Equals(sut1));
+
+                Assert.IsTrue(sut1 != sut2);
+                Assert.IsTrue(sut2 != sut1);
+            }
+            {
+                var sut1 = new TriState<int, string>(2);
+                var sut2 = new TriState<int, string>(3);
+
+                Assert.IsFalse(sut1.Equals(sut2));
+                Assert.IsFalse(sut2.Equals(sut1));
+
+                Assert.IsTrue(sut1 != sut2);
+                Assert.IsTrue(sut2 != sut1);
+            }
+        }
+
+        [Test]
         public void Equals_Should_ReturnTrue_When_Both_State_IsFalse()
         {
             var sut1 = new TriState(false); 
@@ -92,6 +163,32 @@ namespace Foundation
         {
             var sut1 = new TriState(true);
             var sut2 = new TriState(true);
+
+            Assert.IsTrue(sut1.Equals(sut2));
+            Assert.IsTrue(sut2.Equals(sut1));
+
+            Assert.IsTrue(sut1 == sut2);
+            Assert.IsTrue(sut2 == sut1);
+        }
+
+        [Test]
+        public void Equals_Should_ReturnInt32_When_GenericVersion_And_BothStatesAreSameInt32()
+        {
+            var sut1 = new TriState<int, string>(2);
+            var sut2 = new TriState<int, string>(2);
+
+            Assert.IsTrue(sut1.Equals(sut2));
+            Assert.IsTrue(sut2.Equals(sut1));
+
+            Assert.IsTrue(sut1 == sut2);
+            Assert.IsTrue(sut2 == sut1);
+        }
+
+        [Test]
+        public void Equals_Should_ReturnString_When_GenericVersion_And_BothStatesAreSameString()
+        {
+            var sut1 = new TriState<int, string>("test");
+            var sut2 = new TriState<int, string>("test");
 
             Assert.IsTrue(sut1.Equals(sut2));
             Assert.IsTrue(sut2.Equals(sut1));

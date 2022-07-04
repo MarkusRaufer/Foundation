@@ -42,6 +42,10 @@ public static class Result
     }
 }
 
+/// <summary>
+/// This is a result that can be either Ok or Error.
+/// </summary>
+/// <typeparam name="TError"></typeparam>
 public struct Result<TError>
     : IResult<TError>
     , IEquatable<Result<TError>>

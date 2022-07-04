@@ -50,6 +50,21 @@ public struct TriState : IEquatable<TriState>
         state = State.OrThrow();
         return true;
     }
+
+    public static TriState ToState(bool state)
+    {
+        return new TriState(state);
+    }
+
+    public static TriState<TState1, TState2> ToState<TState1, TState2>(TState1 state)
+    {
+        return new TriState<TState1, TState2>(state);
+    }
+
+    public static TriState<TState1, TState2> ToState<TState1, TState2>(TState2 state)
+    {
+        return new TriState<TState1, TState2>(state);
+    }
 }
 
 /// <summary>
