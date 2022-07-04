@@ -11,6 +11,11 @@ public static class EquatableArray
     }
 }
 
+/// <summary>
+/// This is an immutable array that compares each element on <see cref="Equals(EquatableArray{T})"/>.
+/// That enables the comparison of two arrays.
+/// </summary>
+/// <typeparam name="T"></typeparam>
 public struct EquatableArray<T>
     : ICloneable
     , IEnumerable<T>

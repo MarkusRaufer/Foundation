@@ -4,7 +4,7 @@ using System.Collections;
 using System.Diagnostics.CodeAnalysis;
 
 /// <summary>
-/// Dictionary that supports multiple values for one key.
+/// Dictionary that supports multiple values per key.
 /// It is used for 1 to many relations.
 /// </summary>
 /// <typeparam name="TKey"></typeparam>

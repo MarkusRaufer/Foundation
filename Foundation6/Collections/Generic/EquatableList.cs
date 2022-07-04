@@ -1,130 +1,137 @@
 ﻿using System.Runtime.Serialization;
 
-namespace Foundation.Collections.Generic
+namespace Foundation.Collections.Generic;
+
+public static class EquatableList
 {
-    /// <summary>
-    /// This list checks the equality of all elements and their positions.
-    /// </summary>
-    /// <typeparam name="T"></typeparam>
-    [Serializable]
-    public class EquatableList<T>
-        : List<T>
-        , IEquatable<EquatableList<T>>
-        , ISerializable
+    public static EquatableList<T> New<T>(params T[] values)
     {
-        private const string SerializationKey = "items";
+        return new EquatableList<T>(values);
+    }
+}
 
-        private int _hashCode;
+/// <summary>
+/// This list checks the equality of all elements and their positions.
+/// </summary>
+/// <typeparam name="T"></typeparam>
+[Serializable]
+public class EquatableList<T>
+    : List<T>
+    , IEquatable<EquatableList<T>>
+    , ISerializable
+{
+    private const string SerializationKey = "items";
 
-        public EquatableList()
-        {
-            CreateHashCode();
-        }
+    private int _hashCode;
 
-        public EquatableList(IEnumerable<T> collection)
-        {
-            foreach (T item in collection)
-                base.Add(item);
+    public EquatableList()
+    {
+        CreateHashCode();
+    }
 
-            CreateHashCode();
-        }
-
-        public EquatableList(int capacity) : base(capacity)
-        {
-            CreateHashCode();
-        }
-
-        public EquatableList(SerializationInfo info, StreamingContext context)
-        {
-            if (info.GetValue(SerializationKey, typeof(List<T>)) is List<T> collection)
-            {
-                foreach (var item in collection)
-                    base.Add(item);
-            }
-
-            CreateHashCode();
-        }
-
-        public new T this[int index]
-        {
-            get => base[index];
-            set
-            {
-
-                var existingValue = base[index];
-
-                if (EqualityComparer<T>.Default.Equals(existingValue, value)) return;
-
-                base[index] = value;
-
-                CreateHashCode();
-            }
-        }
-
-        public new void Add(T item)
-        {
+    public EquatableList(IEnumerable<T> collection)
+    {
+        foreach (T item in collection)
             base.Add(item);
 
-            var builder = HashCode.CreateFactory();
+        CreateHashCode();
+    }
 
-            builder.AddHashCode(_hashCode);
-            builder.AddObject(item);
+    public EquatableList(int capacity) : base(capacity)
+    {
+        CreateHashCode();
+    }
 
-            _hashCode = builder.GetHashCode();
-        }
-
-        protected void CreateHashCode()
+    public EquatableList(SerializationInfo info, StreamingContext context)
+    {
+        if (info.GetValue(SerializationKey, typeof(List<T>)) is List<T> collection)
         {
-            var builder = HashCode.CreateFactory();
-
-            builder.AddObject(DefaultHashCode);
-            builder.AddObjects(this);
-
-            _hashCode = builder.GetHashCode();
+            foreach (var item in collection)
+                base.Add(item);
         }
 
-        protected static int DefaultHashCode { get; } = typeof(EquatableList<T>).GetHashCode();
+        CreateHashCode();
+    }
 
-        /// <summary>
-        /// Checks the equality of all elements and their position.
-        /// </summary>
-        /// <param name="obj"></param>
-        /// <returns></returns>
-        public override bool Equals(object? obj) => Equals(obj as EquatableList<T>);
-
-        /// <summary>
-        /// Checks the equality of all elements and their position.
-        /// </summary>
-        /// <param name="other"></param>
-        /// <returns></returns>
-        public bool Equals(EquatableList<T>? other)
+    public new T this[int index]
+    {
+        get => base[index];
+        set
         {
-            if (other is null) return false;
-            if (_hashCode != other._hashCode) return false;
 
-            return this.SequenceEqual(other);
+            var existingValue = base[index];
+
+            if (EqualityComparer<T>.Default.Equals(existingValue, value)) return;
+
+            base[index] = value;
+
+            CreateHashCode();
         }
+    }
 
-        /// <summary>
-        /// Considers values and their position.
-        /// </summary>
-        /// <returns></returns>
-        public override int GetHashCode() => _hashCode;
+    public new void Add(T item)
+    {
+        base.Add(item);
 
-        public void GetObjectData(SerializationInfo info, StreamingContext context)
+        var builder = HashCode.CreateFactory();
+
+        builder.AddHashCode(_hashCode);
+        builder.AddObject(item);
+
+        _hashCode = builder.GetHashCode();
+    }
+
+    protected void CreateHashCode()
+    {
+        var builder = HashCode.CreateFactory();
+
+        builder.AddObject(DefaultHashCode);
+        builder.AddObjects(this);
+
+        _hashCode = builder.GetHashCode();
+    }
+
+    protected static int DefaultHashCode { get; } = typeof(EquatableList<T>).GetHashCode();
+
+    /// <summary>
+    /// Checks the equality of all elements and their position.
+    /// </summary>
+    /// <param name="obj"></param>
+    /// <returns></returns>
+    public override bool Equals(object? obj) => Equals(obj as EquatableList<T>);
+
+    /// <summary>
+    /// Checks the equality of all elements and their position.
+    /// </summary>
+    /// <param name="other"></param>
+    /// <returns></returns>
+    public bool Equals(EquatableList<T>? other)
+    {
+        if (other is null) return false;
+        if (_hashCode != other._hashCode) return false;
+
+        return this.SequenceEqual(other);
+    }
+
+    /// <summary>
+    /// Considers values and their position.
+    /// </summary>
+    /// <returns></returns>
+    public override int GetHashCode() => _hashCode;
+
+    public void GetObjectData(SerializationInfo info, StreamingContext context)
+    {
+        info.AddValue(SerializationKey, this);
+    }
+
+    public new bool Remove(T item)
+    {
+        if (base.Remove(item))
         {
-            info.AddValue(SerializationKey, this);
+            CreateHashCode();
+            return true;
         }
 
-        public new bool Remove(T item)
-        {
-            if (base.Remove(item))
-            {
-                CreateHashCode();
-                return true;
-            }
-
-            return false;
-        }
+        return false;
     }
 }

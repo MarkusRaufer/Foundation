@@ -11,6 +11,11 @@ public static class UniqueOnlyArray
     }
 }
 
+/// <summary>
+/// This is an immutable array that enshures the uniqueness of all elements.
+/// All elements are compared by using Equals.
+/// </summary>
+/// <typeparam name="T"></typeparam>
 public struct UniqueOnlyArray<T>
     : ICloneable
     , IEnumerable<T>
@@ -28,12 +33,7 @@ public struct UniqueOnlyArray<T>
         var enumerable = new EnumerableCounter<T>(values);
         _values = new HashSet<T>(enumerable);
 
-        if(enumerable.Count != _values.Count) throw new ArgumentNullException($"duplicate values", nameof(values));
-
-        //foreach (var value in values)
-        //{
-        //    if (!_values.Add(value)) throw new ArgumentNullException($"{value} exists");
-        //}
+        if(enumerable.Count != _values.Count) throw new ArgumentException($"duplicate values", nameof(values));
 
         _hashCode = HashCode.FromObjects(_values.ToArray());
         _valuesAsString = "";
