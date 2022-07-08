@@ -4,159 +4,7 @@ public static class HashCode
 {
     public const int DefaultPrime = -1521134295;
 
-    public struct HashCodeFactory
-    : IEquatable<HashCodeFactory>
-    , IClearable
-    {
-        private int _hash;
-        private readonly int _multiplier;
-        private readonly int _seed;
-
-        public HashCodeFactory(HashCodeFactory builder)
-        {
-            _hash = builder._hash;
-            _multiplier = builder._multiplier;
-            _seed = builder._seed;
-
-            IsInitialized = true;
-        }
-
-        public HashCodeFactory(int seed, int multiplier)
-        {
-            if (0 == seed)
-                throw new ArgumentOutOfRangeException(nameof(seed), "seed must not be zero");
-
-            if (0 == multiplier)
-                throw new ArgumentOutOfRangeException(nameof(multiplier), "multiplier must not be zero");
-
-            if (multiplier % 2 == 0)
-                throw new ArgumentOutOfRangeException(nameof(multiplier), "multiplier must be an odd value");
-
-            _hash = seed;
-            _multiplier = multiplier;
-            _seed = seed;
-
-            IsInitialized = true;
-        }
-
-        public static bool operator ==(HashCodeFactory lhs, HashCodeFactory rhs)
-        {
-            return lhs.Equals(rhs);
-        }
-
-        public static bool operator !=(HashCodeFactory lhs, HashCodeFactory rhs)
-        {
-            return !(lhs == rhs);
-        }
-
-        public void AddHashCode(int hashCode)
-        {
-            if (0 == hashCode) return;
-
-            _hash = _hash * _multiplier + hashCode;
-        }
-
-        public void AddHashCodes(IEnumerable<int> hashCodes)
-        {
-            if (null == hashCodes) return;
-
-            foreach (var hashCode in hashCodes)
-                AddHashCode(hashCode);
-        }
-
-        public void AddObject<T>(params T?[] objects)
-        {
-            AddObjects(objects);
-        }
-
-        public void AddObject<TKey, TValue>(params KeyValuePair<TKey, TValue>[] pairs)
-        {
-            AddObjects(pairs);
-        }
-
-        public void AddObjects(IEnumerable<object> objects)
-        {
-            if (null == objects) return;
-
-            foreach (var value in objects)
-            {
-                if (null == value) continue;
-
-                AddHashCode(value.GetHashCode());
-            }
-        }
-
-        public void AddObjects<T>(IEnumerable<T> objects)
-        {
-            if (null == objects) return;
-
-            foreach (var value in objects)
-            {
-                if (null == value) continue;
-
-                AddHashCode(value.GetHashCode());
-            }
-        }
-
-        public void AddObjects<TKey, TValue>(IEnumerable<KeyValuePair<TKey, TValue>> pairs)
-        {
-            if (null == pairs) return;
-
-            foreach (var pair in pairs)
-            {
-                if (null == pair.Key) continue;
-
-                AddHashCode(pair.Key.GetHashCode());
-
-                if (null == pair.Value) continue;
-
-                AddHashCode(pair.Value.GetHashCode());
-            }
-        }
-
-        public void Clear()
-        {
-            _hash = _seed;
-        }
-
-        public static HashCodeFactory Create(int seed = 1502878410, int multiplier = DefaultPrime)
-        {
-            return new HashCodeFactory(seed, multiplier);
-        }
-
-        public static HashCodeFactory Empty => new();
-
-        public override bool Equals(object? obj)
-        {
-            return obj is HashCodeFactory other && Equals(other);
-        }
-
-        public bool Equals(HashCodeFactory other)
-        {
-            if (!IsInitialized) return !other.IsInitialized;
-
-            if (!other.IsInitialized) return false;
-
-            return _hash == other._hash
-                && _multiplier == other._multiplier
-                && _seed == other._seed;
-        }
-
-        public override int GetHashCode()
-        {
-            return (IsInitialized) ? _hash : 0;
-        }
-
-        public bool IsInitialized { get; }
-    }
-
-    public static HashCodeFactory CreateFactory()
-    {
-        return HashCodeFactory.Create();
-    }
-
-    public readonly struct HashCodeBuilder
-    : IEquatable<HashCodeBuilder>
+    public readonly struct HashCodeBuilder : IEquatable<HashCodeBuilder>
     {
         private readonly int _hash;
         private readonly int _multiplier;
@@ -280,6 +128,33 @@ public static class HashCode
             return new HashCodeBuilder(hash, _multiplier);
         }
 
+        public HashCodeBuilder AddOrderedHashCode(params int[] hashCodes)
+        {
+            if (0 == hashCodes.Length) return this;
+
+            Array.Sort(hashCodes);
+
+            return new HashCodeBuilder(_hash, _multiplier).AddHashCodes(hashCodes);
+        }
+
+        public HashCodeBuilder AddOrderedHashCodes(IEnumerable<int> hashCodes)
+        {
+            return AddOrderedHashCode(hashCodes.ToArray());
+        }
+
+        public HashCodeBuilder AddOrderedObject<T>(params T[] objects)
+        {
+            if (0 == objects.Length) return this;
+            
+            return AddOrderedHashCode(objects.Select(o => o.GetNullableHashCode()).ToArray());
+        }
+
+        public HashCodeBuilder AddOrderedObjects<T>(IEnumerable<T> objects)
+        {
+            return AddOrderedObject(objects.ToArray());
+        }
+
+
         public static HashCodeBuilder Create(int seed = 1502878410, int multiplier = DefaultPrime)
         {
             return new HashCodeBuilder(seed, multiplier);
@@ -330,10 +205,9 @@ public static class HashCode
 
     public static int FromHashCodes(IEnumerable<int> hashCodes)
     {
-        var hcb = HashCodeFactory.Create();
-        hcb.AddHashCodes(hashCodes);
-
-        return hcb.GetHashCode();
+        return HashCodeBuilder.Create()
+                              .AddHashCodes(hashCodes)
+                              .GetHashCode();
     }
 
     public static int FromOrderedHashCode(params int[] hashCodes)
@@ -347,8 +221,21 @@ public static class HashCode
 
     public static int FromOrderedHashCodes(IEnumerable<int> hashCodes)
     {
-        return FromOrderedHashCodes(hashCodes.ToArray());
+        return FromOrderedHashCode(hashCodes.ToArray());
     }
+
+    public static int FromOrderedObject<T>(params T[] objects)
+    {
+        if (0 == objects.Length) return 0;
+
+        return FromOrderedHashCodes(objects.Select(o => o.GetNullableHashCode()));
+    }
+
+    public static int FromOrderedObjects<T>(IEnumerable<T> objects)
+    {
+        return FromOrderedObject(objects.ToArray());
+    }
+
 
     public static int FromObject(params object[] objects)
     {
@@ -362,11 +249,9 @@ public static class HashCode
 
     public static int FromObjects<T>(IEnumerable<T> objects)
     {
-        var hcb = HashCodeFactory.Create();
-
-        hcb.AddObjects(objects);
-
-        return hcb.GetHashCode();
+        return HashCodeBuilder.Create()
+                              .AddObjects(objects)
+                              .GetHashCode();
     }
 
     public static int FromObjects<TKey, TValue>(IEnumerable<KeyValuePair<TKey, TValue>> pairs)
@@ -374,11 +259,9 @@ public static class HashCode
         var keyValues = pairs.ToArray();
         if (0 == keyValues.Length) return 0;
 
-        var hcb = HashCodeFactory.Create();
-
-        hcb.AddObjects(keyValues);
-
-        return hcb.GetHashCode();
+        return HashCodeBuilder.Create()
+                              .AddObjects(keyValues)
+                              .GetHashCode();
     }
 }
 
