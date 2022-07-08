@@ -25,7 +25,7 @@ namespace Foundation.Benchmark
             foreach(var i in Enumerable.Range(1, NumberOfItems))
                 _lhs.Add(i);
 
-            foreach (var i in Enumerable.Range(1, NumberOfItems))
+            foreach (var i in Enumerable.Range(NumberOfItems / 2, NumberOfItems))
                 _rhs.Add(i);
         }
 
@@ -37,16 +37,16 @@ namespace Foundation.Benchmark
             _rhs.Clear();
         }
 
+        //[Benchmark]
+        //public int[] ExceptWithDuplicates()
+        //{
+        //    return _lhs.ExceptWithDuplicates(_rhs).ToArray();
+        //}
+
         [Benchmark]
         public int[] SymmetricDifference()
         {
             return _lhs.SymmetricDifference(_rhs).ToArray();
-        }
-
-        [Benchmark]
-        public int[] SymmetricDifference2()
-        {
-            return _lhs.SymmetricDifference2(_rhs).ToArray();
         }
     }
 }

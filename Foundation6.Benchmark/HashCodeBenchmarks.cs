@@ -20,19 +20,19 @@ namespace Foundation.Benchmark
             yield return new object[] { Enumerable.Range(1, 10000).ToArray(), Enumerable.Range(1, 10000).Select(x => $"{x}").ToArray() };
         }
 
-        [Benchmark]
-        [ArgumentsSource(nameof(Inputs))]
-        public int HashCodeFactory(int[] hashCodes, string[] objects)
-        {
-            var builder = HashCode.CreateFactory();
+        //[Benchmark]
+        //[ArgumentsSource(nameof(Inputs))]
+        //public int HashCodeFactory(int[] hashCodes, string[] objects)
+        //{
+        //    var builder = HashCode.CreateFactory();
 
-            builder.AddObjects(objects);
-            builder.AddHashCode(_hashCode);
-            builder.AddHashCodes(hashCodes);
-            builder.AddObject(_object);
+        //    builder.AddObjects(objects);
+        //    builder.AddHashCode(_hashCode);
+        //    builder.AddHashCodes(hashCodes);
+        //    builder.AddObject(_object);
 
-            return builder.GetHashCode();
-        }
+        //    return builder.GetHashCode();
+        //}
 
         [Benchmark]
         [ArgumentsSource(nameof(Inputs))]
