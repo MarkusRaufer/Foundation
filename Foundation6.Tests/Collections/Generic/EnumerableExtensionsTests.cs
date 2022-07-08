@@ -270,6 +270,9 @@ public class EnumerableExtensionsTests
         var diff = items1.SymmetricDifference(items2).ToArray();
 
         Assert.AreEqual(20, diff.Length);
+
+        Array.Sort(diff);
+        CollectionAssert.AreEqual(Enumerable.Range(0, 20).ToArray(), diff);
     }
 
     [Test]
@@ -293,6 +296,8 @@ public class EnumerableExtensionsTests
         var diff = items1.SymmetricDifference(items2).ToArray();
 
         Assert.AreEqual(4, diff.Length);
+
+        Array.Sort(diff);
         CollectionAssert.AreEqual(new[] { 1, 3, 5, 6 }, diff);
     }
 
@@ -478,7 +483,7 @@ public class EnumerableExtensionsTests
         
         var result = items1.ExceptWithDuplicates(items2).ToArray();
 
-        var expected = new[] { 1, 1, 2, 1 };
+        var expected = new[] { 1, 1, 1, 2 };
         Assert.IsTrue(expected.SequenceEqual(result));
     }
 
@@ -490,7 +495,7 @@ public class EnumerableExtensionsTests
 
         var result = items1.ExceptWithDuplicates(items2).ToArray();
 
-        var expected = new[] { 1, 2, 1 };
+        var expected = new[] { 1, 1, 2 };
         Assert.IsTrue(expected.SequenceEqual(result));
     }
 
@@ -1130,7 +1135,7 @@ public class EnumerableExtensionsTests
         Assert.AreEqual(4, selected.Length);
 
         var expected = new object[] { "1", 3.3, "4", 6.6 };
-        Assert.IsTrue(expected.IsEqualToSet(selected));
+        CollectionAssert.AreEqual(expected, selected);
     }
 
     [Test]

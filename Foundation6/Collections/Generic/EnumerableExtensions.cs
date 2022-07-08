@@ -351,41 +351,6 @@ public static class EnumerableExtensions
         return new CyclicEnumerable<T, TCount>(items, min, max, increment);
     }
 
-
-    /// <summary>
-    /// returns the symmetric difference of two lists.
-    /// </summary>
-    /// <typeparam name="T"></typeparam>
-    /// <param name="lhs"></param>
-    /// <param name="rhs"></param>
-    /// <returns></returns>
-    public static IEnumerable<T> SymmetricDifference2<T>(
-            this IEnumerable<T> lhs,
-            IEnumerable<T> rhs,
-            bool considerDuplicates = false)
-    {
-        if (!considerDuplicates) return lhs.Except(rhs).Union(rhs.Except(lhs));
-
-        var intersected = lhs.Intersect(rhs);
-        var predicates = Enumerable.Empty<Func<T, bool>>();
-
-        foreach (var i in intersected)
-        {
-            if (null == i) continue;
-
-            bool predicate(T x) => i.Equals(x);
-            predicates = predicates.Append(predicate);
-        }
-        var predicateArr = predicates.ToArray();
-
-        var lhsDuplicates = lhs.Duplicates();
-        var rhsDuplicates = rhs.Duplicates();
-        var lhsSkipped = lhsDuplicates.SkipUntilSatisfied(predicateArr);
-        var rhsSkipped = rhsDuplicates.SkipUntilSatisfied(predicateArr);
-
-        return lhsSkipped.Concat(rhsSkipped);
-    }
-
     /// <summary>
     /// Returns the symmetric difference of two lists.
     /// </summary>
@@ -404,7 +369,7 @@ public static class EnumerableExtensions
             var set = new HashSet<T>(lhs);
             set.SymmetricExceptWith(rhs);
             return set;
-        }
+        }        
 
         return lhs.ExceptWithDuplicates(rhs).Concat(rhs.ExceptWithDuplicates(lhs));
     }
@@ -597,6 +562,7 @@ public static class EnumerableExtensions
 
     /// <summary>
     /// Returns all elements from <paramref name="lhs"/> which are not in <paramref name="rhs"/> including duplicates.
+    /// If the size of both lists are known, then the smaller list should be rhs.
     /// </summary>
     /// <typeparam name="T"></typeparam>
     /// <param name="lhs"></param>
@@ -604,22 +570,40 @@ public static class EnumerableExtensions
     /// <returns></returns>
     public static IEnumerable<T> ExceptWithDuplicates<T>(this IEnumerable<T> lhs, IEnumerable<T> rhs)
     {
-        var rhsMap = new MultiMap<NullableKey<T>, T>();
+        var lhsList = lhs.ToArray();
+        var rhsList = rhs.ToArray();
+        Array.Sort(lhsList);
+        Array.Sort(rhsList);
 
-        foreach (var r in rhs)
-            rhsMap.Add(NullableKey.New(r), r);
+        var index = 0;
+        var length = rhsList.Length;
+        var notInRhs = false;
+        T? prev = default;
 
-        foreach (var l in lhs)
+        foreach (var left in lhsList.OnFirst(x => prev = x))
         {
-            var key = NullableKey.New(l);
-
-            if(rhsMap.TryGetValue(key, out T? rhsValue))
+            if (!prev.EqualsNullable(left))
             {
-                rhsMap.Remove(key, rhsValue!);
-                continue;
+                notInRhs = false;
+                index = 0;
+                length = rhsList.Length;
             }
 
-            yield return l;
+            if (!notInRhs)
+            {
+                var foundIndex = Array.BinarySearch(rhsList, index, length, left);
+                if (-1 < foundIndex)
+                {
+                    index = foundIndex + 1;
+                    length = rhsList.Length - index;
+
+                    prev = left;
+                    continue;
+                }
+                notInRhs = true;
+            }
+            prev = left;
+            yield return left;
         }
     }
 
@@ -1033,6 +1017,21 @@ public static class EnumerableExtensions
         }
         return -1;
     }
+
+    public static int IndexOf<T>(this IEnumerable<T> items, int start, Func<T, bool> predicate)
+    {
+        predicate.ThrowIfNull();
+
+        var i = start;
+        foreach (var item in items.Skip(start))
+        {
+            if (predicate(item)) return i;
+
+            i++;
+        }
+        return -1;
+    }
+
 
     /// <summary>
     /// returns a list of tuples including the item and its ordinal index.
