@@ -1,5 +1,8 @@
 ﻿namespace Foundation;
 
+/// <summary>
+/// Acts like a semiconductor fuse. If blown it won't change the value any longer.
+/// </summary>
 public struct Fused
 {
     public static FusedValue<T> Value<T>(T value)
@@ -24,11 +27,24 @@ public struct FusedValue<T>
 
 public static class FusedValueExtensions
 {
+    /// <summary>
+    /// Blows on condition.
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <param name="value"></param>
+    /// <param name="predicate"></param>
+    /// <returns></returns>
     public static Fused<T> BlowIf<T>(this FusedValue<T> value, Func<T, bool> predicate)
     {
         return new Fused<T>(value.Value, predicate);
     }
 
+    /// <summary>
+    /// Blows on value change.
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <param name="value"></param>
+    /// <returns></returns>
     public static Fused<T> BlowIfChanged<T>(this FusedValue<T> value)
         where T : IComparable<T>
     {

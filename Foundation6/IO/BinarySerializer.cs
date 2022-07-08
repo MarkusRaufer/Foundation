@@ -50,7 +50,8 @@ public class BinarySerializer<T>
     }
 
     /// <summary>
-    /// Deserializes an object using values from <paramref name="stream"/>. If stream does not contain values an exception is thrown.
+    /// Deserializes an object using values from <paramref name="stream"/>.
+    /// If stream does not contain values an exception is thrown.
     /// </summary>
     /// <param name="stream"></param>
     /// <returns></returns>
