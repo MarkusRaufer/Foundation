@@ -196,5 +196,98 @@ namespace Foundation
             Assert.IsTrue(sut1 == sut2);
             Assert.IsTrue(sut2 == sut1);
         }
+
+        [Test]
+        public void Invoke_Should_InvoceState1_When_GenericVersion_And_State1Used()
+        {
+            var expectedState = 2;
+            var sut = new TriState<int, string>(expectedState);
+
+            var value = 0;
+            sut.Invoke(state1: state => value = state);
+
+            Assert.AreEqual(expectedState, value);
+        }
+
+        [Test]
+        public void Invoke_Should_InvoceNoneState_When_GenericVersion_And_NoState()
+        {
+            var sut = new TriState<int, string>();
+
+            var value = false;
+            sut.Invoke(none: () => value = true);
+
+            Assert.AreEqual(true, value);
+        }
+
+        [Test]
+        public void Invoke_Should_InvoceState2_When_GenericVersion_And_State2Used()
+        {
+            var expectedState = "test";
+            var sut = new TriState<int, string>(expectedState);
+
+            var value = "";
+            sut.Invoke(state2: state => value = state);
+
+            Assert.AreEqual(expectedState, value);
+        }
+
+        [Test]
+        public void Match_Should_ReturnsValue_When_GenericVersion_And_NoneUsed()
+        {
+            var sut = new TriState<int, string>();
+
+            var value = sut.Match(state1: state => state,
+                                  state2: state => int.Parse(state),
+                                  none: () => -1);
+
+            Assert.AreEqual(-1, value);
+        }
+
+        [Test]
+        public void Match_Should_ReturnsValue_When_GenericVersion_And_State1IsUsed()
+        {
+            var expectedState = 2;
+            var sut = new TriState<int, string>(expectedState);
+
+            var value = sut.Match(state1: state => state,
+                                  state2: state => int.Parse(state),
+                                  none: () => -1);
+
+            Assert.AreEqual(expectedState, value);
+        }
+
+        [Test]
+        public void Match_Should_ReturnsValue_When_GenericVersion_And_State2IsUsed()
+        {
+            var sut = new TriState<int, string>("5");
+
+            var value = sut.Match(state1: state => state,
+                                  state2: state => int.Parse(state),
+                                  none: () => -1);
+
+            Assert.AreEqual(5, value);
+        }
+
+        [Test]
+        public void OnState1_Should_ReturnsState1_When_GenericVersion_And_State1IsUsed()
+        {
+            var expectedState = 2;
+            var sut = new TriState<int, string>(expectedState);
+
+            var value = sut.OnState1(state => state + 10).OrThrow();
+
+            Assert.AreEqual(12, value);
+        }
+
+        [Test]
+        public void OnState2_Should_ReturnsState2_When_GenericVersion_And_State2IsUsed()
+        {
+            var sut = new TriState<int, string>("hello");
+
+            var value = sut.OnState2(state => state + " world").OrThrow();
+
+            Assert.AreEqual("hello world", value);
+        }
     }
 }
