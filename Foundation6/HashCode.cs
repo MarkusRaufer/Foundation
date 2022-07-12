@@ -3,20 +3,23 @@
 public static class HashCode
 {
     public const int DefaultPrime = -1521134295;
+    public const int DefaultSeed = 1502878410;
 
     public readonly struct HashCodeBuilder : IEquatable<HashCodeBuilder>
     {
         private readonly int _hash;
         private readonly int _multiplier;
-        private readonly int _seed;
+
+        public HashCodeBuilder()
+        {
+            _hash = DefaultSeed;
+            _multiplier = DefaultPrime;
+        }
 
         public HashCodeBuilder(HashCodeBuilder builder)
         {
             _hash = builder._hash;
             _multiplier = builder._multiplier;
-            _seed = builder._seed;
-
-            IsInitialized = true;
         }
 
         public HashCodeBuilder(int seed, int multiplier)
@@ -32,9 +35,6 @@ public static class HashCode
 
             _hash = seed;
             _multiplier = multiplier;
-            _seed = seed;
-
-            IsInitialized = true;
         }
 
         public static bool operator ==(HashCodeBuilder lhs, HashCodeBuilder rhs)
@@ -155,7 +155,7 @@ public static class HashCode
         }
 
 
-        public static HashCodeBuilder Create(int seed = 1502878410, int multiplier = DefaultPrime)
+        public static HashCodeBuilder Create(int seed = DefaultSeed, int multiplier = DefaultPrime)
         {
             return new HashCodeBuilder(seed, multiplier);
         }
@@ -165,8 +165,6 @@ public static class HashCode
             return prevHashCode * _multiplier + hashCode;
         }
 
-        public static HashCodeBuilder Empty => new();
-
         public override bool Equals(object? obj)
         {
             return obj is HashCodeBuilder other && Equals(other);
@@ -174,21 +172,11 @@ public static class HashCode
 
         public bool Equals(HashCodeBuilder other)
         {
-            if (!IsInitialized) return !other.IsInitialized;
-
-            if (!other.IsInitialized) return false;
-
             return _hash == other._hash
-                && _multiplier == other._multiplier
-                && _seed == other._seed;
+                && _multiplier == other._multiplier;
         }
 
-        public override int GetHashCode()
-        {
-            return (IsInitialized) ? _hash : 0;
-        }
-
-        public bool IsInitialized { get; }
+        public override int GetHashCode() => _hash;
     }
 
     public static HashCodeBuilder CreateBuilder()
