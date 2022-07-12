@@ -73,22 +73,18 @@ public class EquatableList<T>
     {
         base.Add(item);
 
-        var builder = HashCode.CreateFactory();
-
-        builder.AddHashCode(_hashCode);
-        builder.AddObject(item);
-
-        _hashCode = builder.GetHashCode();
+        _hashCode = HashCode.CreateBuilder()
+                            .AddHashCode(_hashCode)
+                            .AddObject(item)
+                            .GetHashCode();
     }
 
     protected void CreateHashCode()
     {
-        var builder = HashCode.CreateFactory();
-
-        builder.AddObject(DefaultHashCode);
-        builder.AddObjects(this);
-
-        _hashCode = builder.GetHashCode();
+        _hashCode = HashCode.CreateBuilder()
+                                    .AddObject(DefaultHashCode)
+                                    .AddObjects(this)
+                                    .GetHashCode();
     }
 
     protected static int DefaultHashCode { get; } = typeof(EquatableList<T>).GetHashCode();

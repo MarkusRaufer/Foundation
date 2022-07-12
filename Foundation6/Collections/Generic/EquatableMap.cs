@@ -35,7 +35,7 @@ public class EquatableMap<TKey, TValue>
     public EquatableMap(IDictionary<TKey, TValue> keyValues)
     {
         _keyValues = keyValues.ThrowIfNull();
-        CreateHashCode();
+        _hashCode = CreateHashCode();
 
         CollectionChanged = new Event<Action<CollectionEvent<KeyValuePair<TKey, TValue>>>>();
     }
@@ -51,7 +51,7 @@ public class EquatableMap<TKey, TValue>
             _keyValues = new Dictionary<TKey, TValue>();
         }
 
-        CreateHashCode();
+        _hashCode = CreateHashCode();
 
         CollectionChanged = new Event<Action<CollectionEvent<KeyValuePair<TKey, TValue>>>>();
     }
@@ -70,7 +70,7 @@ public class EquatableMap<TKey, TValue>
 
             _keyValues[key] = value;
 
-            CreateHashCode();
+            _hashCode = CreateHashCode();
 
             var changeEvent = keyExists
                 ? new { State = CollectionChangedState.ElementReplaced, Element = Pair.New(key, value) }
@@ -93,7 +93,7 @@ public class EquatableMap<TKey, TValue>
 
         _keyValues.Add(keyValue);
 
-        CreateHashCode();
+        _hashCode = CreateHashCode();
 
         CollectionChanged.Publish(new { State = CollectionChangedState.ElementAdded, Element = keyValue });
     }
@@ -108,14 +108,14 @@ public class EquatableMap<TKey, TValue>
             CollectionChanged.Publish(new { State = CollectionChangedState.ElementAdded, Element = keyValue });
         }
 
-        CreateHashCode();
+        _hashCode = CreateHashCode();
 
     }
 
     public void Clear()
     {
         _keyValues.Clear();
-        CreateHashCode();
+        _hashCode = CreateHashCode();
 
         CollectionChanged.Publish(new { State = CollectionChangedState.CollectionCleared });
     }
@@ -130,15 +130,12 @@ public class EquatableMap<TKey, TValue>
 
     public int Count => _keyValues.Count;
 
-    protected void CreateHashCode()
+    protected int CreateHashCode()
     {
-        var builder = HashCode.CreateFactory();
-
-        builder.AddHashCode(DefaultHashCode);
-        builder.AddHashCodes(_keyValues.Select(kv => System.HashCode.Combine(kv.Key, kv.Value))
-                                       .OrderBy(x => x));
-
-        _hashCode = builder.GetHashCode();
+        return HashCode.CreateBuilder()
+                       .AddHashCode(DefaultHashCode)
+                       .AddObjects(_keyValues)
+                       .GetHashCode();
     }
 
     protected static int DefaultHashCode { get; } = typeof(EquatableMap<TKey, TValue>).GetHashCode();
@@ -160,7 +157,7 @@ public class EquatableMap<TKey, TValue>
         if (other is null) return false;
         if (_hashCode != other._hashCode) return false;
 
-        return _keyValues.IsEqualTo(other);
+        return _keyValues.IsEqualToSet(other);
     }
 
     IEnumerator IEnumerable.GetEnumerator() => _keyValues.GetEnumerator();
@@ -186,7 +183,7 @@ public class EquatableMap<TKey, TValue>
     {
         if (_keyValues.Remove(key))
         {
-            CreateHashCode();
+            _hashCode = CreateHashCode();
             var element = Pair.New<TKey, TValue?>(key, default);
 
             CollectionChanged.Publish(new { State = CollectionChangedState.ElementRemoved, Element = element });
@@ -200,7 +197,7 @@ public class EquatableMap<TKey, TValue>
     {
         if (_keyValues.Remove(item))
         {
-            CreateHashCode();
+            _hashCode = CreateHashCode();
             CollectionChanged.Publish(new { State = CollectionChangedState.ElementRemoved, Element = item });
             return true;
         }

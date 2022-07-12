@@ -357,14 +357,14 @@ public static class EnumerableExtensions
     /// <typeparam name="T"></typeparam>
     /// <param name="lhs"></param>
     /// <param name="rhs"></param>
-    /// <param name="considerDuplicates">If true then duplicates are taken into account.</param>
+    /// <param name="retainDuplicates">If true then duplicates are taken into account.</param>
     /// <returns></returns>
     public static IEnumerable<T> SymmetricDifference<T>(
                 this IEnumerable<T> lhs,
                 IEnumerable<T> rhs,
-                bool considerDuplicates = false)
+                bool retainDuplicates = false)
     {
-        if (!considerDuplicates)
+        if (!retainDuplicates)
         {
             var set = new HashSet<T>(lhs);
             set.SymmetricExceptWith(rhs);
@@ -579,7 +579,7 @@ public static class EnumerableExtensions
         var length = rhsList.Length;
         var notInRhs = false;
         T? prev = default;
-
+        
         foreach (var left in lhsList.OnFirst(x => prev = x))
         {
             if (!prev.EqualsNullable(left))
@@ -1262,7 +1262,7 @@ public static class EnumerableExtensions
         if (null == lhs) return null == rhs;
         if (null == rhs) return false;
 
-        return !lhs.SymmetricDifference(rhs, considerDuplicates: true).Any();
+        return !lhs.SymmetricDifference(rhs, retainDuplicates: true).Any();
     }
 
     /// <summary>
@@ -3016,14 +3016,6 @@ public static class EnumerableExtensions
             yield return item;
         }
     }
-
-    /// <summary>
-    /// Returns all elements which are not null.
-    /// </summary>
-    /// <typeparam name="T"></typeparam>
-    /// <param name="items"></param>
-    /// <returns></returns>
-    public static IEnumerable<T> WhereNotNull<T>(this IEnumerable<T> items) => items.Where(item => null != item);
 
     /// <summary>
     /// Returns all optional values that are some.

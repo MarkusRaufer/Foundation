@@ -31,19 +31,19 @@ public class EquatableHashSet<T>
     /// Use T[], Collection<typeparamref name="T"/> or List<typeparamref name="T"/></param>
     public EquatableHashSet(IEnumerable<T> collection) : base(collection)
     {        
-        CreateHashCode();
+        _hashCode = CreateHashCode();
         CollectionChanged = new Event<Action<CollectionEvent<T>>>();
     }
 
     public EquatableHashSet(IEqualityComparer<T>? comparer) : base(comparer)
     {
-        CreateHashCode();
+        _hashCode = CreateHashCode();
         CollectionChanged = new Event<Action<CollectionEvent<T>>>();
     }
 
     public EquatableHashSet(int capacity) : base(capacity)
     {
-        CreateHashCode();
+        _hashCode = CreateHashCode();
         CollectionChanged = new Event<Action<CollectionEvent<T>>>();
     }
 
@@ -55,20 +55,20 @@ public class EquatableHashSet<T>
     /// <param name="comparer"></param>
     public EquatableHashSet(IEnumerable<T> collection, IEqualityComparer<T>? comparer) : base(collection, comparer)
     {
-        CreateHashCode();
+        _hashCode = CreateHashCode();
         CollectionChanged = new Event<Action<CollectionEvent<T>>>();
     }
 
     public EquatableHashSet(int capacity, IEqualityComparer<T>? comparer)
         : base(capacity, comparer)
     {
-        CreateHashCode();
+        _hashCode = CreateHashCode();
         CollectionChanged = new Event<Action<CollectionEvent<T>>>();
     }
 
     public EquatableHashSet(SerializationInfo info, StreamingContext context) : base(info, context)
-    {        
-        CreateHashCode();
+    {
+        _hashCode = CreateHashCode();
         CollectionChanged = new Event<Action<CollectionEvent<T>>>();
     }
 
@@ -81,7 +81,7 @@ public class EquatableHashSet<T>
         var added = base.Add(item.ThrowIfNull());
         if (added)
         {
-            CreateHashCode();
+            _hashCode = CreateHashCode();
 
             CollectionChanged?.Publish(new { State = CollectionChangedState.ElementAdded, Element = item });
             return true;
@@ -93,22 +93,20 @@ public class EquatableHashSet<T>
     public new void Clear()
     {
         base.Clear();
-        CreateHashCode();
+
+        _hashCode = CreateHashCode();
 
         CollectionChanged?.Publish(new { State = CollectionChangedState.CollectionCleared });
     }
 
     public Event<Action<CollectionEvent<T>>> CollectionChanged { get; private set; }
 
-    protected void CreateHashCode()
+    protected int CreateHashCode()
     {
-        var builder = HashCode.CreateFactory();
-
-        builder.AddHashCode(DefaultHashCode);
-        builder.AddHashCodes(this.Select(x => x.GetNullableHashCode())
-                                 .OrderBy(x => x));
-
-        _hashCode = builder.GetHashCode();
+        return  HashCode.CreateBuilder()
+                        .AddHashCode(DefaultHashCode)
+                        .AddOrderedObjects(this)
+                        .GetHashCode();
     }
 
     protected static int DefaultHashCode { get; } = typeof(EquatableHashSet<T>).GetHashCode();
@@ -152,7 +150,7 @@ public class EquatableHashSet<T>
 
         if (base.Remove(item))
         {
-            CreateHashCode();
+            _hashCode = CreateHashCode();
             CollectionChanged?.Publish(new { State = CollectionChangedState.ElementRemoved, Element = item });
             return true;
         }

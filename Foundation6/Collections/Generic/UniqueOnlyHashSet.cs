@@ -3,6 +3,14 @@
 using System.Collections.Generic;
 using System.Runtime.Serialization;
 
+public static class UniqueOnlyHashSet
+{
+    public static UniqueOnlyHashSet<T> New<T>(params T[] values)
+    {
+        return new UniqueOnlyHashSet<T>(values);
+    }
+}
+
 /// <summary>
 /// This hashset considers the equality of all elements <see cref="Equals"/>. The position of the elements are ignored.
 /// Throws exception on duplicates.

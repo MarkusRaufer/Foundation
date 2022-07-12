@@ -307,7 +307,7 @@ public class EnumerableExtensionsTests
         var items1 = new int[] { 1, 1, 1, 1 };
         var items2 = new int[] { 1, 1, 2, 2, 3 };
 
-        var diff = items1.SymmetricDifference(items2, considerDuplicates: false).ToArray();
+        var diff = items1.SymmetricDifference(items2, retainDuplicates: false).ToArray();
 
         Assert.AreEqual(2, diff.Length);
         CollectionAssert.AreEqual(new[] { 2, 3 }, diff);
@@ -319,7 +319,7 @@ public class EnumerableExtensionsTests
         var items1 = new int[] { 1, 1, 1, 1 };
         var items2 = new int[] { 1, 1, 2, 2, 3 };
 
-        var diff = items1.SymmetricDifference(items2, considerDuplicates: true).ToArray();
+        var diff = items1.SymmetricDifference(items2, retainDuplicates: true).ToArray();
 
         Assert.AreEqual(5, diff.Length);
         CollectionAssert.AreEqual(new[] { 1, 1, 2, 2, 3 }, diff);

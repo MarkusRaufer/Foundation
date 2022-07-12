@@ -82,13 +82,10 @@ public class EquatableCollection<T>
 
     protected int CreateHashCode()
     {
-        var builder = HashCode.CreateFactory();
-
-        builder.AddHashCode(DefaultHashCode);
-        builder.AddHashCodes(_collection.Select(x => x.GetNullableHashCode())
-                                        .OrderBy(x => x));
-
-        return builder.GetHashCode();
+        return HashCode.CreateBuilder()
+                       .AddHashCode(DefaultHashCode)
+                       .AddOrderedObjects(_collection)
+                       .GetHashCode();
     }
 
     protected static int DefaultHashCode { get; } = typeof(EquatableCollection<T>).GetHashCode();

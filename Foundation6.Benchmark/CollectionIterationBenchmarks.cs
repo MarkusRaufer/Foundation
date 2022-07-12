@@ -9,25 +9,26 @@ namespace Foundation.Benchmark
     {
         private readonly Bag<int> _bag = new();
         private readonly Collection<int> _collection = new();
-        private readonly List<int> _list = new();
+        //private readonly List<int> _list = new();
 
-        [Params(10000)]
-        public int NumberOfIterations;
+        public const int NumberOfIterations = 10000;
 
-        [Params(5000)]
-        public int Search;
+        [Params(10, 5000, 9000)]
+        public int Search { get; set; }
+
+        public static IEnumerable<int> Values => Enumerable.Range(1, NumberOfIterations);
 
         [GlobalSetup]
         public void Setup()
         {
-            foreach (var i in Enumerable.Range(1, NumberOfIterations))
+            foreach (var i in Values)
                 _bag.Add(i);
 
-            foreach (var i in Enumerable.Range(1, NumberOfIterations))
+            foreach (var i in Values)
                 _collection.Add(i);
 
-            foreach (var i in Enumerable.Range(1, NumberOfIterations))
-                _list.Add(i);
+            //foreach (var i in Enumerable.Range(1, NumberOfIterations))
+            //    _list.Add(i);
         }
 
         [GlobalCleanup]
@@ -35,7 +36,7 @@ namespace Foundation.Benchmark
         {
             _bag.Clear();
             _collection.Clear();
-            _list.Clear();
+            //_list.Clear();
         }
 
         [Benchmark]
@@ -50,10 +51,10 @@ namespace Foundation.Benchmark
             return _collection.Contains(Search);
         }
 
-        [Benchmark]
-        public bool ListContains()
-        {
-            return _list.Contains(Search);
-        }
+        //[Benchmark]
+        //public bool ListContains()
+        //{
+        //    return _list.Contains(Search);
+        //}
     }
 }

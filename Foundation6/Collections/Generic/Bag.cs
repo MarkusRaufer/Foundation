@@ -3,7 +3,7 @@
 namespace Foundation.Collections.Generic
 {
     /// <summary>
-    /// Same as Collection<typeparamref name="T"/> but faster.
+    /// Same as Collection<typeparamref name="T"/> but faster on adding items.
     /// </summary>
     /// <typeparam name="T"></typeparam>
     public class Bag<T> : ICollection<T>

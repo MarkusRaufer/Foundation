@@ -9,9 +9,9 @@ namespace Foundation.Benchmark
     {
         private readonly Bag<int> _bag = new();
         private readonly Collection<int> _collection = new();
-        private readonly List<int> _list = new();
+        //private readonly List<int> _list = new();
 
-        [Params(1000, 10000)]
+        [Params(1000, 100000)]
         public int NumberOfIterations;
 
         [IterationCleanup]
@@ -19,11 +19,11 @@ namespace Foundation.Benchmark
         {
             _bag.Clear();
             _collection?.Clear();
-            _list.Clear();
+            //_list.Clear();
         }
 
         [Benchmark]
-        public int BagAdd()
+        public int Bag_Add()
         {
             foreach (var i in Enumerable.Range(1, NumberOfIterations))
                 _bag.Add(i);
@@ -32,7 +32,7 @@ namespace Foundation.Benchmark
         }
 
         [Benchmark]
-        public int CollectionAdd()
+        public int Collection_Add()
         {
             foreach(var i in Enumerable.Range(1, NumberOfIterations))
                 _collection.Add(i);
@@ -40,13 +40,13 @@ namespace Foundation.Benchmark
             return _collection.Count;
         }
 
-        [Benchmark]
-        public int ListAdd()
-        {
-            foreach (var i in Enumerable.Range(1, NumberOfIterations))
-                _list.Add(i);
+        //[Benchmark]
+        //public int List_Add()
+        //{
+        //    foreach (var i in Enumerable.Range(1, NumberOfIterations))
+        //        _list.Add(i);
 
-            return _list.Count;
-        }
+        //    return _list.Count;
+        //}
     }
 }
