@@ -29,6 +29,9 @@ public class Event<TDelegate> : IDisposable
         GC.SuppressFinalize(this);
     }
 
+    public Action<TDelegate>? OnSubscribe { get; set; }
+    public Action<TDelegate>? OnUnsubscribe { get; set; }
+
     public void Publish(params object?[] args)
     {
         foreach (var subscribtion in _subscribtions.Value)
@@ -44,6 +47,9 @@ public class Event<TDelegate> : IDisposable
         if (Contains(@delegate)) return disposable;
 
         _subscribtions.Value.Add(@delegate);
+
+        OnSubscribe?.Invoke(@delegate);
+
         return disposable;
     }
 
@@ -51,7 +57,11 @@ public class Event<TDelegate> : IDisposable
 
     public bool Unsubscribe(TDelegate @delegate)
     {
-        return _subscribtions.Value.Remove(@delegate);
+        var removed = _subscribtions.Value.Remove(@delegate);
+
+        OnUnsubscribe?.Invoke(@delegate);
+
+        return removed;
     }
 
     public void UnsubscribeAll() => _subscribtions.Value.Clear();
