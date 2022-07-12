@@ -26,6 +26,14 @@ public interface IMultiMap<TKey, TValue>
     /// <param name="replaceExisting">If true an existing value is replaced by value, if false no value is added.</param>
     bool AddUnique(TKey key, TValue value, bool replaceExisting = false);
 
+    /// <summary>
+    /// Checks if key value pair exists.
+    /// </summary>
+    /// <param name="key"></param>
+    /// <param name="value"></param>
+    /// <returns></returns>
+    bool Contains(TKey key, TValue value);
+
     bool Remove(TKey key, TValue value);
 
     /// <summary>
