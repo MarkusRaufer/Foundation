@@ -5,6 +5,19 @@ using System.Diagnostics.CodeAnalysis;
 public interface IReadOnlyMultiMap<TKey, TValue> : IEnumerable<KeyValuePair<TKey, TValue>>
     where TKey : notnull
 {
+    /// <summary>
+    /// Checks if key value pair exists.
+    /// </summary>
+    /// <param name="key"></param>
+    /// <param name="value"></param>
+    /// <returns></returns>
+    bool Contains(TKey key, TValue value);
+
+    /// <summary>
+    /// Checks if value exists in a value list.
+    /// </summary>
+    /// <param name="value"></param>
+    /// <returns></returns>
     bool ContainsValue(TValue value);
 
     /// <summary>
