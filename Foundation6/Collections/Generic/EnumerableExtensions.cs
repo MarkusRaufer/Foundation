@@ -352,73 +352,6 @@ public static class EnumerableExtensions
     }
 
     /// <summary>
-    /// Returns the symmetric difference of two lists.
-    /// </summary>
-    /// <typeparam name="T"></typeparam>
-    /// <param name="lhs"></param>
-    /// <param name="rhs"></param>
-    /// <param name="retainDuplicates">If true then duplicates are taken into account.</param>
-    /// <returns></returns>
-    public static IEnumerable<T> SymmetricDifference<T>(
-        this IEnumerable<T> lhs,
-        IEnumerable<T> rhs,
-        bool retainDuplicates = false)
-    {
-        if (!retainDuplicates)
-        {
-            var set = new HashSet<T>(lhs);
-            set.SymmetricExceptWith(rhs);
-            return set;
-        }
-
-        return lhs.ExceptWithDuplicates(rhs).Concat(rhs.ExceptWithDuplicates(lhs));
-    }
-
-    /// <summary>
-    /// Returns the symmetric difference of two lists.
-    /// </summary>
-    /// <typeparam name="T"></typeparam>
-    /// <param name="lhs"></param>
-    /// <param name="rhs"></param>
-    /// <param name="comparer"></param>
-    /// <param name="retainDuplicates">If true then duplicates are taken into account.</param>
-    /// <returns></returns>
-    public static IEnumerable<T> SymmetricDifference<T>(
-        this IEnumerable<T> lhs,
-        IEnumerable<T> rhs,
-        IComparer<T> comparer,
-        bool retainDuplicates = false)
-    {
-        lhs.ThrowIfNull();
-        rhs.ThrowIfNull();
-        comparer.ThrowIfNull();
-
-        if (!retainDuplicates)
-        {
-            var set = new HashSet<T>(lhs);
-            set.SymmetricExceptWith(rhs);
-            return set;
-        }
-
-        return lhs.ExceptWithDuplicatesSorted(rhs, comparer).Concat(rhs.ExceptWithDuplicatesSorted(lhs, comparer));
-    }
-
-    public static IEnumerable<T> SymmetricDifferenceSorted<T>(
-        this IEnumerable<T> lhs,
-        IEnumerable<T> rhs,
-        bool retainDuplicates = false)
-    {
-        if (!retainDuplicates)
-        {
-            var set = new HashSet<T>(lhs);
-            set.SymmetricExceptWith(rhs);
-            return set;
-        }
-
-        return lhs.ExceptWithDuplicates(rhs).Concat(rhs.ExceptWithDuplicates(lhs));
-    }
-
-    /// <summary>
     /// Removes all duplicates from a list.
     /// </summary>
     /// <typeparam name="T"></typeparam>
@@ -2664,6 +2597,75 @@ public static class EnumerableExtensions
         return items.ThrowIfEmpty()
                     .ToArray()
                     .Shuffle(random);
+    }
+
+    /// <summary>
+    /// Returns the symmetric difference of two lists.
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <param name="lhs"></param>
+    /// <param name="rhs"></param>
+    /// <param name="retainDuplicates">If true then duplicates are taken into account.</param>
+    /// <returns></returns>
+    public static IEnumerable<T> SymmetricDifference<T>(
+        this IEnumerable<T> lhs,
+        IEnumerable<T> rhs,
+        bool retainDuplicates = false)
+    {
+        if (!retainDuplicates)
+        {
+            var set = new HashSet<T>(lhs);
+            set.SymmetricExceptWith(rhs);
+            return set;
+        }
+
+        return lhs.ExceptWithDuplicates(rhs).Concat(rhs.ExceptWithDuplicates(lhs));
+    }
+
+    public static IEnumerable<T> SymmetricDifferenceSorted<T>(
+        this IEnumerable<T> lhs,
+        IEnumerable<T> rhs,
+        bool retainDuplicates = false)
+        where T : IComparable<T>
+
+    {
+        if (!retainDuplicates)
+        {
+            var set = new HashSet<T>(lhs);
+            set.SymmetricExceptWith(rhs);
+            return set;
+        }
+
+        return lhs.ExceptWithDuplicatesSorted(rhs).Concat(rhs.ExceptWithDuplicatesSorted(lhs));
+    }
+
+    /// <summary>
+    /// Returns the symmetric difference of two lists.
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <param name="lhs"></param>
+    /// <param name="rhs"></param>
+    /// <param name="comparer"></param>
+    /// <param name="retainDuplicates">If true then duplicates are taken into account.</param>
+    /// <returns></returns>
+    public static IEnumerable<T> SymmetricDifferenceSorted<T>(
+        this IEnumerable<T> lhs,
+        IEnumerable<T> rhs,
+        IComparer<T> comparer,
+        bool retainDuplicates = false)
+    {
+        lhs.ThrowIfNull();
+        rhs.ThrowIfNull();
+        comparer.ThrowIfNull();
+
+        if (!retainDuplicates)
+        {
+            var set = new HashSet<T>(lhs);
+            set.SymmetricExceptWith(rhs);
+            return set;
+        }
+
+        return lhs.ExceptWithDuplicatesSorted(rhs, comparer).Concat(rhs.ExceptWithDuplicatesSorted(lhs, comparer));
     }
 
     /// <summary>

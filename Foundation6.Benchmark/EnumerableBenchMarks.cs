@@ -9,6 +9,7 @@ namespace Foundation.Benchmark
         //private readonly List<int> _list = new();
         private readonly List<int> _lhs = new();
         private readonly List<int> _rhs = new();
+        private IComparer<int> _comparer = Comparer<int>.Default;
 
         [Params(100000)]
         public int NumberOfItems;
@@ -44,9 +45,15 @@ namespace Foundation.Benchmark
         }
 
         [Benchmark]
-        public int[] ExceptOrderedWithDuplicates()
+        public int[] ExceptWithDuplicatesSorted()
         {
             return _lhs.ExceptWithDuplicatesSorted(_rhs).ToArray();
+        }
+
+        [Benchmark]
+        public int[] ExceptWithDuplicatesSorted_WithComparer()
+        {
+            return _lhs.ExceptWithDuplicatesSorted(_rhs, _comparer).ToArray();
         }
 
         //[Benchmark]
