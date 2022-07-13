@@ -37,16 +37,22 @@ namespace Foundation.Benchmark
             _rhs.Clear();
         }
 
-        //[Benchmark]
-        //public int[] ExceptWithDuplicates()
-        //{
-        //    return _lhs.ExceptWithDuplicates(_rhs).ToArray();
-        //}
+        [Benchmark]
+        public int[] ExceptWithDuplicates()
+        {
+            return _lhs.ExceptWithDuplicates(_rhs).ToArray();
+        }
 
         [Benchmark]
-        public int[] SymmetricDifference()
+        public int[] ExceptOrderedWithDuplicates()
         {
-            return _lhs.SymmetricDifference(_rhs).ToArray();
+            return _lhs.ExceptWithDuplicatesSorted(_rhs).ToArray();
         }
+
+        //[Benchmark]
+        //public int[] SymmetricDifference()
+        //{
+        //    return _lhs.SymmetricDifference(_rhs).ToArray();
+        //}
     }
 }

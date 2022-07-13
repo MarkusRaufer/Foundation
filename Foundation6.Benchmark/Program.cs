@@ -10,10 +10,10 @@ namespace Foundation.Benchmarks
         {
             //BenchmarkRunner.Run<ReadOnlySpanAndMemoryExtensionsBenchmarks>();
             //BenchmarkRunner.Run<CollectionManipulationBenchmarks>();
-            BenchmarkRunner.Run<CollectionIterationBenchmarks>();
+            //BenchmarkRunner.Run<CollectionIterationBenchmarks>();
             //BenchmarkRunner.Run<CollectionsBenchMarks>();
             //BenchmarkRunner.Run<HashCodeBenchMarks>();
-            //BenchmarkRunner.Run<EnumerableBenchMarks>();
+            BenchmarkRunner.Run<EnumerableBenchMarks>();
         }
     }
 }

@@ -478,10 +478,10 @@ public class EnumerableExtensionsTests
     [Test]
     public void ExceptWithDuplicates_Should_Return4Doublets_When_LhsHasDuplicates()
     {
-        var items1 = new [] { 1, 1, 1, 2, 3, 2, 1 };
-        var items2 = new [] { 1, 2, 3, 4 };
-        
-        var result = items1.ExceptWithDuplicates(items2).ToArray();
+        var items1 = new[] { 1, 1, 1, 2, 3, 2, 1 };
+        var items2 = new[] { 1, 2, 3, 4 };
+
+        var result = items1.ExceptWithDuplicates(items2).OrderBy(x => x).ToArray();
 
         var expected = new[] { 1, 1, 1, 2 };
         Assert.IsTrue(expected.SequenceEqual(result));
@@ -493,7 +493,7 @@ public class EnumerableExtensionsTests
         var items1 = new[] { 1, 1, 1, 2, 3, 2, 1 };
         var items2 = new[] { 1, 2, 3, 1, 4 };
 
-        var result = items1.ExceptWithDuplicates(items2).ToArray();
+        var result = items1.ExceptWithDuplicates(items2).OrderBy(x => x).ToArray();
 
         var expected = new[] { 1, 1, 2 };
         Assert.IsTrue(expected.SequenceEqual(result));
@@ -505,9 +505,45 @@ public class EnumerableExtensionsTests
         var items1 = new[] { 1, 2, 3, 4 };
         var items2 = new[] { 2, 4 };
 
-        var result = items1.ExceptWithDuplicates(items2).ToArray();
+        var result = items1.ExceptWithDuplicates(items2).OrderBy(x => x).ToArray();
 
         var expected = new[] { 1, 3 };
+        Assert.IsTrue(expected.SequenceEqual(result));
+    }
+
+    [Test]
+    public void ExceptWithDuplicatesSorted_Should_ReturnDoublets_When_LhsHasDuplicates()
+    {
+        var items1 = new[] { 1, 1, 1, 2, 3, 2, 1 };
+        var items2 = new[] { 1, 2, 3, 1, 4 };
+
+        var result = items1.ExceptWithDuplicatesSorted(items2).OrderBy(x => x).ToArray();
+
+        var expected = new[] { 1, 1, 2 };
+        Assert.IsTrue(expected.SequenceEqual(result));
+    }
+
+    [Test]
+    public void ExceptWithDuplicatesSorted_Should_NoDoublets_When_LhsHasNoDuplicates()
+    {
+        var items1 = new[] { 1, 2, 3, 4 };
+        var items2 = new[] { 2, 4 };
+
+        var result = items1.ExceptWithDuplicatesSorted(items2).OrderBy(x => x).ToArray();
+
+        var expected = new[] { 1, 3 };
+        Assert.IsTrue(expected.SequenceEqual(result));
+    }
+
+    [Test]
+    public void ExceptWithDuplicatesSorted_Should_Return4Doublets_When_LhsHasDuplicates()
+    {
+        var items1 = new [] { 1, 1, 1, 2, 3, 2, 1 };
+        var items2 = new [] { 1, 2, 3, 4 };
+        
+        var result = items1.ExceptWithDuplicatesSorted(items2).OrderBy(x => x).ToArray();
+
+        var expected = new[] { 1, 1, 1, 2 };
         Assert.IsTrue(expected.SequenceEqual(result));
     }
 

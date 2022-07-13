@@ -11,7 +11,9 @@ namespace Foundation
     /// Can be used as key for dictionaries. This allows null keys.
     /// </summary>
     /// <typeparam name="T"></typeparam>
-    public struct NullableKey<T> : IEquatable<NullableKey<T>>
+    public struct NullableKey<T> 
+        : IComparable<NullableKey<T>>
+        , IEquatable<NullableKey<T>>
     {
         public NullableKey(T? value)
         {
@@ -28,6 +30,18 @@ namespace Foundation
             return !(left == right);
         }
 
+        public int CompareTo(NullableKey<T> other)
+        {
+            if (IsNull) return other.IsNull ? 0 : -1;
+            if (other.IsNull) return 1;
+
+            if (Value is IComparable<T> left) return left.CompareTo(other.Value);
+
+            if (other.Value is IComparable<T> right) return right.CompareTo(Value) * -1;
+
+            throw new InvalidOperationException("values are not comparable");
+
+        }
         public override bool Equals([NotNullWhen(true)] object? obj)
         {
             if(obj is NullableKey<T> key) return Equals(key);
@@ -47,5 +61,25 @@ namespace Foundation
         public T? Value { get; }
 
         public override string ToString() => $"{Value}";
+
+        public static bool operator <(NullableKey<T> left, NullableKey<T> right)
+        {
+            return left.CompareTo(right) < 0;
+        }
+
+        public static bool operator <=(NullableKey<T> left, NullableKey<T> right)
+        {
+            return left.CompareTo(right) <= 0;
+        }
+
+        public static bool operator >(NullableKey<T> left, NullableKey<T> right)
+        {
+            return left.CompareTo(right) > 0;
+        }
+
+        public static bool operator >=(NullableKey<T> left, NullableKey<T> right)
+        {
+            return left.CompareTo(right) >= 0;
+        }
     }
 }
