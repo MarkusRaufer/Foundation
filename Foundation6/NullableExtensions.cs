@@ -1,10 +1,10 @@
-﻿namespace Foundation;
+﻿using System.Runtime.CompilerServices;
+
+namespace Foundation;
 
 public static class NullableExtensions
 {
-    public static Opt<T> ToOpt<T>(this T? obj)
-    {
-        return Opt.Maybe(obj);
-    }
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static Option<T> ToOption<T>(this T? obj) => Option.Maybe(obj);
 }
 

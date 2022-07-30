@@ -14,7 +14,7 @@ public class OneOf<T1, T2> : IEquatable<OneOf<T1, T2>>
     public OneOf(T1 t1)
     {
         t1.ThrowIfNull();
-        Item1 = Opt.Some(t1);
+        Item1 = Option.Some(t1);
 
         SelectedType = typeof(T1);
         Value = t1!;
@@ -23,7 +23,7 @@ public class OneOf<T1, T2> : IEquatable<OneOf<T1, T2>>
     public OneOf(T2 t2)
     {
         t2.ThrowIfNull();
-        Item2 = Opt.Some(t2);
+        Item2 = Option.Some(t2);
         
         SelectedType = typeof(T2);
         Value = t2!;
@@ -50,9 +50,9 @@ public class OneOf<T1, T2> : IEquatable<OneOf<T1, T2>>
         if (Value is T2 value) action(value);
     }
 
-    public Opt<T1> Item1 { get; }
+    public Option<T1> Item1 { get; }
 
-    public Opt<T2> Item2 { get; }
+    public Option<T2> Item2 { get; }
 
     public TResult Match<TResult>(
         Func<T1, TResult> onT1,
@@ -113,7 +113,7 @@ public class OneOf<T1, T2, T3> : OneOf<T1, T2>
     public OneOf(T3 t3)
     {
         t3.ThrowIfNull();
-        Item3 = Opt.Some(t3);
+        Item3 = Option.Some(t3);
 
         SelectedType = typeof(T3);
         Value = t3!;
@@ -124,7 +124,7 @@ public class OneOf<T1, T2, T3> : OneOf<T1, T2>
         if (Value is T3 value) action(value);
     }
 
-    public Opt<T3> Item3 { get; }
+    public Option<T3> Item3 { get; }
 
     public TResult Match<TResult>(
         Func<T1, TResult> onT1,
@@ -179,7 +179,7 @@ public class OneOf<T1, T2, T3, T4> : OneOf<T1, T2, T3>
     public OneOf(T4 t4)
     {
         t4.ThrowIfNull();
-        Item4 = Opt.Some(t4);
+        Item4 = Option.Some(t4);
 
         SelectedType = typeof(T4);
         Value = t4!;
@@ -190,7 +190,7 @@ public class OneOf<T1, T2, T3, T4> : OneOf<T1, T2, T3>
         if (Value is T4 value) action(value);
     }
 
-    public Opt<T4> Item4 { get; }
+    public Option<T4> Item4 { get; }
 
     public TResult Match<TResult>(
         Func<T1, TResult> onT1,
@@ -232,7 +232,7 @@ public class OneOf<T1, T2, T3, T4, T5> : OneOf<T1, T2, T3, T4>
     public OneOf(T5 t5)
     {
         t5.ThrowIfNull();
-        Item5 = Opt.Some(t5);
+        Item5 = Option.Some(t5);
 
         SelectedType = typeof(T5);
         Value = t5!;
@@ -243,7 +243,7 @@ public class OneOf<T1, T2, T3, T4, T5> : OneOf<T1, T2, T3, T4>
         if (Value is T5 value) action(value);
     }
 
-    public Opt<T5> Item5 { get; }
+    public Option<T5> Item5 { get; }
 
     public TResult Match<TResult>(
         Func<T1, TResult> onT1,

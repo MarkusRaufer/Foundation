@@ -13,13 +13,13 @@ public static class Result
     public static Result<TOk, Exception> Error<TOk>(Exception error)
     {
         error.ThrowIfNull();
-        return new Result<TOk, Exception>(Opt.None<TOk>(), Opt.Some(error));
+        return new Result<TOk, Exception>(Option.None<TOk>(), Option.Some(error));
     }
 
     public static Result<TOk, TError> Error<TOk, TError>(TError error)
     {
         error.ThrowIfNull();
-        return new Result<TOk, TError>(Opt.None<TOk>(), Opt.Some(error));
+        return new Result<TOk, TError>(Option.None<TOk>(), Option.Some(error));
     }
 
     public static Result<Exception> Ok()
@@ -32,13 +32,13 @@ public static class Result
     {
         value.ThrowIfNull();
 
-        return new Result<TOk, Exception>(Opt.Some(value), Opt.None<Exception>());
+        return new Result<TOk, Exception>(Option.Some(value), Option.None<Exception>());
     }
 
     public static Result<TOk, TError> Ok<TOk, TError>(TOk value)
     {
         value.ThrowIfNull();
-        return new Result<TOk, TError>(Opt.Some(value), Opt.None<TError>());
+        return new Result<TOk, TError>(Option.Some(value), Option.None<TError>());
     }
 }
 
@@ -102,10 +102,10 @@ public struct Result<TOk, TError>
     , IEquatable<Result<TOk, TError>>
 {
     private readonly int _hashCode;
-    private readonly Opt<TOk> _ok;
-    private readonly Opt<TError> _error;
+    private readonly Option<TOk> _ok;
+    private readonly Option<TError> _error;
 
-    internal Result(Opt<TOk> ok, Opt<TError> error)
+    internal Result(Option<TOk> ok, Option<TError> error)
     {
         if (ok.IsSome ^ error.IsNone)
             throw new ArgumentException($"{nameof(ok)} and {nameof(error)} are disjoint.");

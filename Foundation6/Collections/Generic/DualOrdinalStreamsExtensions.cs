@@ -57,9 +57,9 @@ public static class DualOrdinalStreamsExtensions
     {
         project.ThrowIfNull();
 
-        Opt<TRight> toRightValue(Opt<TLeft> opt)
+        Option<TRight> toRightValue(Option<TLeft> opt)
         {
-            return opt.IsSome ? Opt.Some(project(opt.OrThrow())) : Opt.None<TRight>();
+            return opt.IsSome ? Option.Some(project(opt.OrThrow())) : Option.None<TRight>();
         }
 
         var left = dualStreams.Left.OrdinalFill().Select(toRightValue);

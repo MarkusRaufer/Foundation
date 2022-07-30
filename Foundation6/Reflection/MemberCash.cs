@@ -4,6 +4,53 @@ using System.Reflection;
 
 namespace Foundation.Reflection;
 
+public abstract class MemberCash<TInfo> where TInfo : MemberInfo
+{
+    private readonly string[]? _memberNames;
+    private TInfo[]? _members;
+
+    public MemberCash(Type memberType)
+    {
+        MemberType = memberType.ThrowIfNull();
+    }
+
+    public MemberCash(Type memberType, TInfo[] members) : this(memberType)
+    {
+        _members = members.ThrowIfEmpty();
+    }
+
+    public MemberCash(Type memberType, string[] memberNames) : this(memberType)
+    {
+        _memberNames = memberNames.ThrowIfEmpty();
+    }
+
+    protected abstract TInfo GetMemberFromLambda(LambdaExpression lambda);
+
+    public IEnumerable<TInfo> GetMembers()
+    {
+        if (null != _members) return _members;
+
+        var members = GetTypeMembers();
+        if (null == _memberNames)
+        {
+            _members = null == MemberFilter
+                ? members.ToArray()
+                : members.Where(MemberFilter).ToArray();
+
+            return _members;
+        }
+        _members = members.Where(member => _memberNames.Contains(member.Name)).ToArray();
+
+        return _members;
+    }
+
+    protected abstract IEnumerable<TInfo> GetTypeMembers();
+
+    protected Func<TInfo, bool> MemberFilter { get; set; } = _ => true;
+
+    public Type MemberType { get; }
+}
+
 public abstract class MemberCash<T, TInfo> where TInfo : MemberInfo
 {
     private readonly string[]? _memberNames;
@@ -56,5 +103,4 @@ public abstract class MemberCash<T, TInfo> where TInfo : MemberInfo
     protected abstract IEnumerable<TInfo> GetTypeMembers();
 
     protected Func<TInfo, bool> MemberFilter { get; set; } = _ => true;
-
 }

@@ -55,15 +55,15 @@ public static  class DictionaryExtensions
         return true;
     }
 
-    public static Opt<KeyValuePair<TKey, TValue>> RemovKey<TKey, TValue>(this IDictionary<TKey, TValue> dictionary, TKey key)
+    public static Option<KeyValuePair<TKey, TValue>> RemovKey<TKey, TValue>(this IDictionary<TKey, TValue> dictionary, TKey key)
         where TKey : notnull
     {
         dictionary.ThrowIfNull();
 
-        if (!dictionary.TryGetValue(key, out TValue? value)) return Opt.None<KeyValuePair<TKey, TValue>>();
+        if (!dictionary.TryGetValue(key, out TValue? value)) return Option.None<KeyValuePair<TKey, TValue>>();
         
         dictionary.Remove(key);
-        return Opt.Some(Pair.New(key, value));
+        return Option.Some(Pair.New(key, value));
     }
 
     public static IEnumerable<KeyValue<TKey, TValue>> ToKeyValues<TKey, TValue>(this IDictionary<TKey, TValue> dictionary)

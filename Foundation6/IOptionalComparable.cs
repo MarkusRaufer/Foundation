@@ -11,5 +11,5 @@ public interface IOptionalComparable<T>
     /// </summary>
     /// <param name="other"></param>
     /// <returns>None, other is incompatible and can't be compared.</returns>
-    Opt<int> OptionalCompareTo(T other);
+    Option<int> OptionalCompareTo(T other);
 }

@@ -75,7 +75,7 @@ namespace Foundation.IO
             IEnumerable<string> memberNames)
         {
             var type = obj.GetType();
-            WriteObject(writer, obj, memberNames.FilterMap(name => type.GetMember(name).FirstAsOpt()));
+            WriteObject(writer, obj, memberNames.FilterMap(name => type.GetMember(name).FirstAsOption()));
         }
 
         /// <summary>

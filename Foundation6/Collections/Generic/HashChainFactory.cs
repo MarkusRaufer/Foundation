@@ -6,14 +6,14 @@
             where T : notnull
             where THash : notnull
         {
-            var prevHash = Opt.None<THash>();
+            var prevHash = Option.None<THash>();
             foreach (var element in elements)
             {
                 var hash = getHash(element);
                 if (prevHash.IsNone)
                 {
                     var firstElem = new HashChainElement<T, THash>(element, getHash, prevHash);
-                    prevHash = Opt.Some(firstElem.Hash);
+                    prevHash = Option.Some(firstElem.Hash);
                     yield return firstElem;
                     continue;
                 }
@@ -21,7 +21,7 @@
                 var elem = new HashChainElement<T, THash>(element, getHash, prevHash);
                 yield return elem;
 
-                prevHash = Opt.Some(elem.Hash);
+                prevHash = Option.Some(elem.Hash);
             }
         }
     }

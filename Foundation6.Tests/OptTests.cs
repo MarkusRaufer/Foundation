@@ -11,20 +11,20 @@ namespace Foundation
         {
             {
                 const int expected = 3;
-                Opt<int> sut = expected;
+                Option<int> sut = expected;
 
                 Assert.IsTrue(sut.IsSome);
                 Assert.AreEqual(expected, sut.OrThrow());
             }
             {
                 const string expected = "test";
-                Opt<string> sut = expected;
+                Option<string> sut = expected;
 
                 Assert.IsTrue(sut.IsSome);
                 Assert.AreEqual(expected, sut.OrThrow());
             }
             {
-                var sut = Opt.Maybe<string>(null);
+                var sut = Option.Maybe<string>(null);
                 Assert.IsTrue(sut.IsNone);
             }
         }
@@ -34,14 +34,14 @@ namespace Foundation
         {
             {
                 //value type
-                var sut = new Opt<int>();
+                var sut = new Option<int>();
 
                 Assert.IsTrue(sut.IsNone);
                 Assert.IsFalse(sut.IsSome);
             }
             {
                 //reference type
-                var sut = new Opt<string>();
+                var sut = new Option<string>();
 
                 Assert.IsTrue(sut.IsNone);
                 Assert.IsFalse(sut.IsSome);
@@ -53,8 +53,8 @@ namespace Foundation
         {
             const int expected = 3;
 
-            object optional1 = Opt.Some(expected);
-            object optional2 = Opt.Some(expected);
+            object optional1 = Option.Some(expected);
+            object optional2 = Option.Some(expected);
 
             Assert.IsTrue(optional1.Equals(optional2));
         }
@@ -65,15 +65,15 @@ namespace Foundation
             {
                 const int expected = 3;
 
-                var optional1 = Opt.Some(expected);
-                var optional2 = Opt.Some(expected);
+                var optional1 = Option.Some(expected);
+                var optional2 = Option.Some(expected);
 
                 Assert.IsTrue(optional1 == optional2);
             }
 
             {
-                var optional1 = Opt.Some(3);
-                var optional2 = Opt.Some(4);
+                var optional1 = Option.Some(3);
+                var optional2 = Option.Some(4);
                 Assert.IsTrue(optional1 != optional2);
             }
         }
@@ -82,15 +82,15 @@ namespace Foundation
         public void Equals_Should_Return_True_When_2_Typed_Objects_Are_Equal()
         {
             const int expected = 3;
-            var optional1 = Opt.Some(expected);
-            var optional2 = Opt.Some(expected);
+            var optional1 = Option.Some(expected);
+            var optional2 = Option.Some(expected);
             Assert.IsTrue(optional1.Equals(optional2));
         }
 
         [Test]
         public void None_Should_Be_IsNone_When_CalledNone()
         {
-            var sut = Opt.None<int>();
+            var sut = Option.None<int>();
             Assert.IsTrue(sut.IsNone);
             Assert.IsFalse(sut.IsSome);
         }
@@ -99,7 +99,7 @@ namespace Foundation
         public void OrThrow_Should_Return_A_Value_When_IsSome()
         {
             const int expected = 3;
-            var sut = Opt.Some(expected);
+            var sut = Option.Some(expected);
             Assert.IsTrue(sut.IsSome);
             Assert.AreEqual(expected, sut.OrThrow());
         }
@@ -107,7 +107,7 @@ namespace Foundation
         [Test]
         public void OrThrow_Should_Throw_An_Exception_When_IsNone()
         {
-            var sut = Opt.None<int>();
+            var sut = Option.None<int>();
             Assert.Throws<NullReferenceException>(() => sut.OrThrow());
         }
 
@@ -115,7 +115,7 @@ namespace Foundation
         public void TryGet_Should_Return_Type_When_True()
         {
             var expected = 2;
-            var sut = Opt.Some(expected);
+            var sut = Option.Some(expected);
             Assert.IsTrue(sut.TryGet(out int n));
             Assert.AreEqual(expected, n);
         }

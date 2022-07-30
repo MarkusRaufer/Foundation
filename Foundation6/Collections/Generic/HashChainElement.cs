@@ -5,7 +5,7 @@ public static class HashChainElement
     public static HashChainElement<TPayload, THash> New<TPayload, THash>(
         TPayload payload, 
         Func<TPayload, THash> getHash,
-        Opt<THash> prevElementHash)
+        Option<THash> prevElementHash)
         where TPayload : notnull
         where THash : notnull
     {
@@ -22,7 +22,7 @@ public class HashChainElement<TPayload, THash>
     where TPayload : notnull
     where THash : notnull
 {
-    public HashChainElement(TPayload payload, Func<TPayload, THash> getHash, Opt<THash> previousElementHash)
+    public HashChainElement(TPayload payload, Func<TPayload, THash> getHash, Option<THash> previousElementHash)
     {
         Payload = payload.ThrowIfNull();
 
@@ -48,7 +48,7 @@ public class HashChainElement<TPayload, THash>
     /// <summary>
     /// This hash code must not be 0 except of the first element of a hash chain.
     /// </summary>
-    public Opt<THash> PreviousElementHash { get; }
+    public Option<THash> PreviousElementHash { get; }
 
     public override string ToString()
     {

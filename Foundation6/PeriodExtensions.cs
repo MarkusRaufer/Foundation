@@ -102,7 +102,7 @@ public static class PeriodExtensions
         }
     }
 
-    public static Opt<Period> Intersect(this Period lhs, Period rhs) => lhs.Intersect(rhs.Start, rhs.End);
+    public static Option<Period> Intersect(this Period lhs, Period rhs) => lhs.Intersect(rhs.Start, rhs.End);
 
     public static IEnumerable<Period> Intersect(this Period period, IEnumerable<Period> periods)
     {
@@ -113,24 +113,24 @@ public static class PeriodExtensions
         }
     }
 
-    public static Opt<Period> Intersect(this Period period, DateTime start, DateTime end)
+    public static Option<Period> Intersect(this Period period, DateTime start, DateTime end)
     {
-        if (period.IsEmpty) return Opt.None<Period>();
+        if (period.IsEmpty) return Option.None<Period>();
         if (period.Start < start)
         {
-            if (period.End < start) return Opt.None<Period>();
+            if (period.End < start) return Option.None<Period>();
             if (period.End < end)
                 end = period.End;
 
-            return Opt.Some(Period.New(start, end));
+            return Option.Some(Period.New(start, end));
         }
 
-        if (period.Start > end) return Opt.None<Period>();
+        if (period.Start > end) return Option.None<Period>();
 
         if (period.End < end)
             end = period.End;
 
-        return Opt.Some(Period.New(period.Start, end));
+        return Option.Some(Period.New(period.Start, end));
     }
 
     /// <summary>
@@ -426,9 +426,9 @@ public static class PeriodExtensions
     /// <param name="lhs"></param>
     /// <param name="rhs"></param>
     /// <returns>If the last value of the tuple is true the periods where merged.</returns>
-    public static Opt<Period> Union(this Period lhs, Period rhs)
+    public static Option<Period> Union(this Period lhs, Period rhs)
     {
-        if (rhs.IsEmpty) return Opt.None<Period>();
+        if (rhs.IsEmpty) return Option.None<Period>();
 
         return lhs.Union(rhs.Start, rhs.End);
     }
@@ -441,10 +441,10 @@ public static class PeriodExtensions
     /// <param name="start"></param>
     /// <param name="end"></param>
     /// <returns>If the last value of the tuple is true the periods where merged.</returns>
-    public static Opt<Period> Union(this Period period, DateTime start, DateTime end)
+    public static Option<Period> Union(this Period period, DateTime start, DateTime end)
     {
-        if (period.IsEmpty) return Opt.None<Period>();
-        if (!period.IsOverlapping(start, end)) return Opt.None<Period>();
+        if (period.IsEmpty) return Option.None<Period>();
+        if (!period.IsOverlapping(start, end)) return Option.None<Period>();
 
         var startMin = DateTimeHelper.Min(period.Start, start);
         var endMax = DateTimeHelper.Max(period.End, end);

@@ -73,7 +73,7 @@
         /// <typeparam name="TError"></typeparam>
         /// <param name="result"></param>
         /// <returns></returns>
-        public static Opt<TOk> ToOpt<TOk, TError>(this Result<TOk, TError> result) 
-            => result.IsOk ? Opt.Some(result.Ok) : Opt.None<TOk>();
+        public static Option<TOk> ToOption<TOk, TError>(this Result<TOk, TError> result) 
+            => result.IsOk ? Option.Some(result.Ok) : Option.None<TOk>();
     }
 }

@@ -38,7 +38,7 @@ namespace Foundation.Reflection
         {
             if (null == type) throw new ArgumentNullException(nameof(type));
 
-            return memberNames.FilterMap(name => type.GetMember(name).FirstAsOpt());
+            return memberNames.FilterMap(name => type.GetMember(name).FirstAsOption());
         }
 
         public static IEnumerable<FieldInfo> GetMutableFields(this Type type)

@@ -7,6 +7,7 @@ using System.Text;
 
 public static class ObjectExtensions
 {
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static T AssignIfNull<T>(this object? obj, Func<T> creator)
     {
         if (obj is T t) return t;
@@ -22,6 +23,7 @@ public static class ObjectExtensions
     /// <typeparam name="T"></typeparam>
     /// <param name="obj"></param>
     /// <returns></returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static T? ConvertTo<T>(this object? obj)
     {
         if (null == obj) return default;
@@ -48,6 +50,7 @@ public static class ObjectExtensions
         return default;
     }
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static object? ConvertTo(this object? obj, Type targetType)
     {
         targetType.ThrowIfNull();
@@ -78,6 +81,7 @@ public static class ObjectExtensions
         return null;
     }
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static object? DynamicCastTo(this object? obj, params Type[] typeArgs)
     {
         if (null == obj) return null;
@@ -92,6 +96,7 @@ public static class ObjectExtensions
     /// <param name="lhs"></param>
     /// <param name="rhs"></param>
     /// <returns></returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static bool EqualsNullable(this object? lhs, object? rhs)
     {
         if (ReferenceEquals(lhs, rhs)) return true;
@@ -107,6 +112,7 @@ public static class ObjectExtensions
     /// <param name="obj"></param>
     /// <param name="typeArguments"></param>
     /// <returns></returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static object? GenericDynamicCastTo(this object? obj, params Type[] typeArguments)
     {
         if (null == obj) return null;
@@ -116,8 +122,10 @@ public static class ObjectExtensions
         return DynamicCastTo(obj, genericType);
     }
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static int GetInstanceHashCode(this object? obj) => RuntimeHelpers.GetHashCode(obj);
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static int GetNullableHashCode(this object? obj) => (null == obj) ? 0 : obj.GetHashCode();
 
     /// <summary>
@@ -126,6 +134,7 @@ public static class ObjectExtensions
     /// <param name="obj"></param>
     /// <param name="type">e.g. IList<> (without definded generic parameter.</param>
     /// <returns></returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static bool IsOfGenericType(this object obj, Type type)
     {
         obj.ThrowIfNull();
@@ -253,6 +262,7 @@ public static class ObjectExtensions
     /// <param name="obj"></param>
     /// <param name="anyValue">if true, it tries to convert the object to byte, number or string and checks if it has the value 0 respectively True or False.</param>
     /// <returns></returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static bool ToBool(this object? obj, bool anyValue = false)
     {
         if (null == obj) return false;
@@ -277,6 +287,7 @@ public static class ObjectExtensions
         };
     }
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static byte[]? ToByteArray(this object? obj, Encoding? encoding = null)
     {
         return obj switch
@@ -300,6 +311,7 @@ public static class ObjectExtensions
         };
     }
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static DateTime? ToDateTime(this object? value)
     {
         return value switch
@@ -313,6 +325,7 @@ public static class ObjectExtensions
         };
     }
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static DateTime? ToDateTime(this object? value, DateTimeKind kind)
     {
         return value switch
@@ -332,10 +345,10 @@ public static class ObjectExtensions
     /// <typeparam name="T"></typeparam>
     /// <param name="obj"></param>
     /// <returns></returns>
-    public static Opt<T> To<T>(this object? obj) => obj is T t ? Opt.Some(t) : Opt.None<T>();
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static Option<T> ToOption<T>(this object? obj) => obj is T t ? Option.Some(t) : Option.None<T>();
 
-    public static Opt<T> To<T>(this T? obj) => null == obj ? Opt.None<T>() : Opt.Some(obj);
-
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static string ToStringOrEmpty(this object? obj)
     {
         if (obj is null) return String.Empty;
@@ -343,6 +356,7 @@ public static class ObjectExtensions
         return obj.ToString() ?? String.Empty;
     }
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static T ValueOr<T>(this object? value, T or) => value is T t ? t : or;
 }
 

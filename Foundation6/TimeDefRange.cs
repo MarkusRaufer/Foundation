@@ -2,14 +2,14 @@
 
 public class TimeDefRange : TimeDefVisitor
 {
-    public Opt<TimeDef> Greatest { get; private set; }
+    public Option<TimeDef> Greatest { get; private set; }
 
     protected bool SetGreatest(TimeDef? td)
     {
         ArgumentNullException.ThrowIfNull(td);
 
         if (Greatest.IsNone || Greatest.OrThrow().Compare(td) == -1)
-            Greatest = Opt.Some(td);
+            Greatest = Option.Some(td);
 
         return true;
     }
@@ -17,12 +17,12 @@ public class TimeDefRange : TimeDefVisitor
     protected bool SetSmallest(TimeDef td)
     {
         if (Smallest.IsNone || Smallest.OrThrow().Compare(td) == 1)
-            Smallest = Opt.Some(td);
+            Smallest = Option.Some(td);
 
         return true;
     }
 
-    public Opt<TimeDef> Smallest { get; private set; }
+    public Option<TimeDef> Smallest { get; private set; }
 
     protected override bool VisitDateSpan(TimeDef.DateSpan td)
     {

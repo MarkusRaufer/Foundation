@@ -3,7 +3,7 @@ using System.Runtime.CompilerServices;
 
 namespace Foundation;
 
-public static class OptExtensions
+public static class OptionExtensions
 {
     /// <summary>
     /// Compares two optionals.
@@ -13,7 +13,7 @@ public static class OptExtensions
     /// <param name="rhs"></param>
     /// <returns></returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static int CompareTo<T>(this Opt<T> lhs, Opt<T> rhs)
+    public static int CompareTo<T>(this Option<T> lhs, Option<T> rhs)
         where T : IComparable<T>
     {
         if(lhs.IsNone) return rhs.IsNone ? 0 : - 1;
@@ -33,7 +33,7 @@ public static class OptExtensions
     [return: NotNull]
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static bool Invoke<T>(
-        this Opt<T> option,
+        this Option<T> option,
         Action<T> some,
         Action none)
     {
@@ -63,7 +63,7 @@ public static class OptExtensions
     [return: NotNull]
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static TResult Match<T, TResult>(
-        this Opt<T> option, 
+        this Option<T> option, 
         Func<T, TResult> some, 
         Func<TResult> none)
         where TResult : notnull
@@ -76,7 +76,7 @@ public static class OptExtensions
 
     [return: NotNull]
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static Unit OnNone<T>(this Opt<T> option, Action action)
+    public static Unit OnNone<T>(this Option<T> option, Action action)
     {
         if (option.IsNone) action.Invoke();
 
@@ -85,7 +85,7 @@ public static class OptExtensions
 
     [return: NotNull]
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static Unit OnSome<T>(this Opt<T> option, Action<T> action)
+    public static Unit OnSome<T>(this Option<T> option, Action<T> action)
     {
         if (option.IsSome) action.Invoke(option.Value!);
 
@@ -101,7 +101,7 @@ public static class OptExtensions
     /// <returns></returns>
     [return: NotNull]
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static T Or<T>(this Opt<T> option, T none)
+    public static T Or<T>(this Option<T> option, T none)
     {
         return option.IsSome ? option.Value! : none.ThrowIfNull();
     }
@@ -115,7 +115,7 @@ public static class OptExtensions
     /// <returns></returns>
     [return: NotNull]
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static T Or<T>(this Opt<T> option, Func<T> none)
+    public static T Or<T>(this Option<T> option, Func<T> none)
     {
         none.ThrowIfNull();
 
@@ -134,7 +134,7 @@ public static class OptExtensions
     /// <returns></returns>
     [return: NotNull]
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static T OrThrow<T>(this Opt<T> option)
+    public static T OrThrow<T>(this Option<T> option)
     {
         return OrThrow(option, () => new NullReferenceException(nameof(option)));
     }
@@ -149,7 +149,7 @@ public static class OptExtensions
     /// <returns></returns>
     [return: NotNull]
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static T OrThrow<T, TException>(this Opt<T> option, Func<TException> exception)
+    public static T OrThrow<T, TException>(this Option<T> option, Func<TException> exception)
         where TException : Exception
     {
         if (option.IsSome) return option.Value!;

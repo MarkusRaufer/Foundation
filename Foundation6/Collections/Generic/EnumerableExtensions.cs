@@ -180,7 +180,7 @@ public static class EnumerableExtensions
     /// <param name="seed">A functor transforms the first element in the list.</param>
     /// <param name="func">The aggregation function.</param>
     /// <returns></returns>
-    public static Opt<TAccumulate> Aggregate<T, TAccumulate>(
+    public static Option<TAccumulate> Aggregate<T, TAccumulate>(
         this IEnumerable<T> items,
         Func<T, TAccumulate> seed,
         Func<TAccumulate, T, TAccumulate> func)
@@ -195,7 +195,7 @@ public static class EnumerableExtensions
             acc = func(acc!, item);
         }
 
-        return Opt.Maybe(acc);
+        return Option.Maybe(acc);
     }
 
     /// <summary>
@@ -266,15 +266,15 @@ public static class EnumerableExtensions
     /// <typeparam name="T"></typeparam>
     /// <param name="items"></param>
     /// <returns></returns>
-    public static (Opt<T> value1, Opt<T> value2) AverageMedianValues<T>(this IEnumerable<T> items)
+    public static (Option<T> value1, Option<T> value2) AverageMedianValues<T>(this IEnumerable<T> items)
     {
         var sorted = items.OrderBy(x => x);
         var count = sorted.Count();
         int halfIndex = count / 2;
 
         return (count % 2 == 0)
-            ? (Opt.Some(sorted.ElementAt(halfIndex - 1)), Opt.Some(sorted.ElementAt(halfIndex)))
-            : (Opt.Some(sorted.ElementAt(halfIndex)), Opt.None<T>());
+            ? (Option.Some(sorted.ElementAt(halfIndex - 1)), Option.Some(sorted.ElementAt(halfIndex)))
+            : (Option.Some(sorted.ElementAt(halfIndex)), Option.None<T>());
     }
 
     /// <summary>
@@ -726,7 +726,7 @@ public static class EnumerableExtensions
     }
 
     /// <summary>
-    /// Filters and transform items. It returns only Opt.Some values.
+    /// Filters and transform items. It returns only Option.Some values.
     /// </summary>
     /// <typeparam name="T"></typeparam>
     /// <typeparam name="TResult"></typeparam>
@@ -735,7 +735,7 @@ public static class EnumerableExtensions
     /// <returns></returns>
     public static IEnumerable<TResult> FilterMap<T, TResult>(
         this IEnumerable<T> items, 
-        Func<T, Opt<TResult>> selector)
+        Func<T, Option<TResult>> selector)
     {
         selector.ThrowIfNull();
 
@@ -747,14 +747,14 @@ public static class EnumerableExtensions
     }
 
     /// <summary>
-    /// Returns first item as Opt. If the list is empty None is returned.
+    /// Returns first item as Option. If the list is empty None is returned.
     /// </summary>
     /// <typeparam name="T"></typeparam>
     /// <param name="items"></param>
     /// <returns></returns>
-    public static Opt<T> FirstAsOpt<T>(this IEnumerable<T> items)
+    public static Option<T> FirstAsOption<T>(this IEnumerable<T> items)
     {
-        return items.FirstAsOpt(x => true);
+        return items.FirstAsOption(x => true);
     }
 
     /// <summary>
@@ -764,11 +764,11 @@ public static class EnumerableExtensions
     /// <typeparam name="TResult"></typeparam>
     /// <param name="items"></param>
     /// <returns></returns>
-    public static Opt<TResult> FirstAsOpt<T, TResult>(this IEnumerable<T> items)
+    public static Option<TResult> FirstAsOption<T, TResult>(this IEnumerable<T> items)
     {
-        return items.FirstAsOpt(x => true)
-                    .Match(x => x is TResult result ? Opt.Some(result) : Opt.None<TResult>(),
-                          () => Opt.None<TResult>());
+        return items.FirstAsOption(x => true)
+                    .Match(x => x.ToOption<TResult>(),
+                          () => Option.None<TResult>());
     }
 
     /// <summary>
@@ -779,9 +779,9 @@ public static class EnumerableExtensions
     /// <param name="items"></param>
     /// <param name="onSome"></param>
     /// <returns></returns>
-    public static Opt<TResult> FirstAsOpt<T, TResult>(this IEnumerable<T> items, Func<T, TResult> onSome)
+    public static Option<TResult> FirstAsOption<T, TResult>(this IEnumerable<T> items, Func<T, TResult> onSome)
     {
-        return items.FirstAsOpt(x => true, onSome);
+        return items.FirstAsOption(x => true, onSome);
     }
 
     /// <summary>
@@ -791,24 +791,24 @@ public static class EnumerableExtensions
     /// <param name="items"></param>
     /// <param name="predicate"></param>
     /// <returns></returns>
-    public static Opt<T> FirstAsOpt<T>(this IEnumerable<T> items, Func<T, bool> predicate)
+    public static Option<T> FirstAsOption<T>(this IEnumerable<T> items, Func<T, bool> predicate)
     {
-        return items.FirstAsOpt(predicate, x => x);
+        return items.FirstAsOption(predicate, x => x);
     }
 
-    public static Opt<TResult> FirstAsOpt<T, TResult>(
+    public static Option<TResult> FirstAsOption<T, TResult>(
         this IEnumerable<T> items,
         Func<T, bool> predicate,
         Func<T, TResult> onSome)
     {
-        if (null == items) return Opt.None<TResult>();
+        if (null == items) return Option.None<TResult>();
         predicate.ThrowIfNull();
         onSome.ThrowIfNull();
 
         foreach (var item in items.Where(predicate))
-            return Opt.Some(onSome(item));
+            return Option.Some(onSome(item));
 
-        return Opt.None<TResult>();
+        return Option.None<TResult>();
     }
 
     /// <summary>
@@ -819,13 +819,13 @@ public static class EnumerableExtensions
     /// <param name="items">a list of results.</param>
     /// <param name="predicate"></param>
     /// <returns></returns>
-    public static Opt<TOk> FirstOk<TOk, TError>(
+    public static Option<TOk> FirstOk<TOk, TError>(
         this IEnumerable<Result<TOk, TError>> items, 
         Func<TOk, bool> predicate)
     {
         predicate.ThrowIfNull();
 
-        return items.SelectOk().FirstAsOpt(predicate);
+        return items.SelectOk().FirstAsOption(predicate);
     }
 
     /// <summary>
@@ -1128,6 +1128,22 @@ public static class EnumerableExtensions
         }
     }
 
+    public static IEnumerable<T> Ignore<T>(this IEnumerable<T> items, Func<T, bool> predicate, Action<T> action)
+    {
+        predicate.ThrowIfNull();
+
+        foreach (var item in items)
+        {
+            if (predicate(item))
+            {
+                action(item);
+                continue;
+            }
+
+            yield return item;
+        }
+    }
+
     /// <summary>
     /// Items at indicies are not returned.
     /// </summary>
@@ -1408,15 +1424,15 @@ public static class EnumerableExtensions
     /// <typeparam name="T"></typeparam>
     /// <param name="source"></param>
     /// <returns></returns>
-    public static Opt<T> LastAsOpt<T>(this IEnumerable<T> source)
+    public static Option<T> LastAsOption<T>(this IEnumerable<T> source)
     {
         var it = source.ThrowIfNull().GetEnumerator();
 
-        var last = Opt.None<T>();
+        var last = Option.None<T>();
 
         while (it.MoveNext())
         {
-            last = Opt.Some(it.Current);
+            last = Option.Some(it.Current);
         }
 
         return last;
@@ -1596,7 +1612,7 @@ public static class EnumerableExtensions
     /// <typeparam name="T">T must implement IComparable<T></typeparam>
     /// <param name="items"></param>
     /// <returns></returns>
-    public static Opt<(T min, T max)> MinMax<T>(this IEnumerable<T> items)
+    public static Option<(T min, T max)> MinMax<T>(this IEnumerable<T> items)
         where T : IComparable<T>
     {
         items.ThrowIfNull();
@@ -1623,8 +1639,8 @@ public static class EnumerableExtensions
         }
 
         return (hasValue && null != min && null != max)
-            ? Opt.Some((min, max)) 
-            : Opt.None<(T, T)>() ;
+            ? Option.Some((min, max)) 
+            : Option.None<(T, T)>() ;
     }
 
     /// <summary>
@@ -1635,7 +1651,7 @@ public static class EnumerableExtensions
     /// <param name="items"></param>
     /// <param name="selector"></param>
     /// <returns></returns>
-    public static Opt<(T min, T max)> MinMax<T, TSelector>(
+    public static Option<(T min, T max)> MinMax<T, TSelector>(
         this IEnumerable<T> items,
         Func<T, TSelector> selector)
         where TSelector : IComparable
@@ -1666,8 +1682,8 @@ public static class EnumerableExtensions
         }
 
         return hasValue && null != min.Value && null != max.Value
-            ? Opt.Some((min.Value, max.Value))
-            : Opt.None<(T, T)>();
+            ? Option.Some((min.Value, max.Value))
+            : Option.None<(T, T)>();
     }
 
     /// <summary>
@@ -1773,9 +1789,9 @@ public static class EnumerableExtensions
     /// <param name="items"></param>
     /// <param name="index"></param>
     /// <returns>An optional.</returns>
-    public static Opt<T> Nth<T>(this IEnumerable<T> items, int index)
+    public static Option<T> Nth<T>(this IEnumerable<T> items, int index)
     {
-        if (0 > index) return Opt.None<T>();
+        if (0 > index) return Option.None<T>();
 
         var pos = 0;
         foreach (var item in items.ThrowIfNull())
@@ -1783,11 +1799,11 @@ public static class EnumerableExtensions
             if (pos > index) break;
 
             if (index == pos)
-                return Opt.Some(item);
+                return Option.Some(item);
 
             pos++;
         }
-        return Opt.None<T>();
+        return Option.None<T>();
     }
 
 
@@ -2339,16 +2355,16 @@ public static class EnumerableExtensions
     }
 
     /// <summary>
-    /// Returns items only if all projections do have a value (are Opt.Some).
+    /// Returns items only if all projections do have a value (are Option.Some).
     /// </summary>
     /// <typeparam name="T"></typeparam>
     /// <typeparam name="TResult"></typeparam>
     /// <param name="items"></param>
     /// <param name="project"></param>
-    /// <returns>Returns an empty list if not all projections are Opt.Some.</returns>
+    /// <returns>Returns an empty list if not all projections are Option.Some.</returns>
     public static IEnumerable<TResult> SelectAll<T, TResult>(
         this IEnumerable<T> items, 
-        Func<T, Opt<TResult>> project)
+        Func<T, Option<TResult>> project)
     {
         project.ThrowIfNull();
 
@@ -2419,7 +2435,7 @@ public static class EnumerableExtensions
     /// <typeparam name="T"></typeparam>
     /// <param name="items"></param>
     /// <returns></returns>
-    public static IEnumerable<T> SelectSome<T>(this IEnumerable<Opt<T>> items)
+    public static IEnumerable<T> SelectSome<T>(this IEnumerable<Option<T>> items)
     {
         return items.ThrowIfNull()
                     .Where(item => item.IsSome)
@@ -2433,18 +2449,18 @@ public static class EnumerableExtensions
     /// <param name="items"></param>
     /// <param name="predicate"></param>
     /// <returns></returns>
-    public static Opt<T> SingleAsOpt<T>(this IEnumerable<T> items)
+    public static Option<T> SingleAsOpt<T>(this IEnumerable<T> items)
     {
         var it = items.ThrowIfNull()
                       .GetEnumerator();
 
-        if (!it.MoveNext()) return Opt.None<T>();
+        if (!it.MoveNext()) return Option.None<T>();
 
         var first = it.Current;
 
-        if (it.MoveNext()) return Opt.None<T>();
+        if (it.MoveNext()) return Option.None<T>();
 
-        return Opt.Maybe(first);
+        return Option.Maybe(first);
     }
 
     /// <summary>
@@ -2454,18 +2470,18 @@ public static class EnumerableExtensions
     /// <param name="items"></param>
     /// <param name="predicate"></param>
     /// <returns></returns>
-    public static Opt<T> SingleAsOpt<T>(this IEnumerable<T> items, Func<T, bool> predicate)
+    public static Option<T> SingleAsOption<T>(this IEnumerable<T> items, Func<T, bool> predicate)
     {
         items.ThrowIfNull();
         predicate.ThrowIfNull();
 
-        var found = Opt.None<T>();
+        var found = Option.None<T>();
         foreach (var item in items)
         {
             if (predicate(item))
             {
-                if (found.IsSome) return Opt.None<T>();
-                found = Opt.Some(item);
+                if (found.IsSome) return Option.None<T>();
+                found = Option.Some(item);
             }
         }
         return found;
@@ -2997,9 +3013,9 @@ public static class EnumerableExtensions
     /// <param name="items"></param>
     /// <param name="project"></param>
     /// <returns></returns>
-    public static IEnumerable<Opt<TResult>> ToOptionals<T, TResult>(
+    public static IEnumerable<Option<TResult>> ToOptionals<T, TResult>(
         this IEnumerable<T> items,
-        Func<T, Opt<TResult>> project)
+        Func<T, Option<TResult>> project)
     {
         items.ThrowIfNull();
         project.ThrowIfNull();
@@ -3148,7 +3164,7 @@ public static class EnumerableExtensions
     /// <typeparam name="T"></typeparam>
     /// <param name="items"></param>
     /// <returns></returns>
-    public static IEnumerable<T> WhereSome<T>(this IEnumerable<Opt<T>> items)
+    public static IEnumerable<T> WhereSome<T>(this IEnumerable<Option<T>> items)
     {
         return items.Where(item => item.IsSome).Select(opt => opt.OrThrow());
     }

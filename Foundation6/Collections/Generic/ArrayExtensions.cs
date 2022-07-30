@@ -22,7 +22,7 @@ public static class ArrayExtensions
         return (value1 + value2) / 2M;
     }
 
-    public static (Opt<T> pos1, Opt<T> pos2) AverageMedianPosition<T>(
+    public static (Option<T> pos1, Option<T> pos2) AverageMedianPosition<T>(
         this T[] array,
         IComparer<T>? comparer = null)
     {
@@ -37,8 +37,8 @@ public static class ArrayExtensions
         int halfIndex = sorted.Length / 2;
 
         return (sorted.Length % 2 == 0)
-            ? (Opt.Some(sorted[halfIndex - 1]), Opt.Some(sorted[halfIndex]))
-            : (Opt.Some(sorted[halfIndex]), Opt.None<T>());
+            ? (Option.Some(sorted[halfIndex - 1]), Option.Some(sorted[halfIndex]))
+            : (Option.Some(sorted[halfIndex]), Option.None<T>());
     }
 
     /// <summary>

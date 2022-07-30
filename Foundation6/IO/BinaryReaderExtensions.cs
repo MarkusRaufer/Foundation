@@ -94,7 +94,7 @@ namespace Foundation.IO
             obj.ThrowIfNull();
 
             var type = obj.GetType();
-            var members = memberNames.FilterMap(name => type.GetMember(name).FirstAsOpt());
+            var members = memberNames.FilterMap(name => type.GetMember(name).FirstAsOption());
             ReadToObject(reader, obj, members);
         }
 

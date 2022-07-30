@@ -1040,7 +1040,7 @@ public class EnumerableExtensionsTests
     public void Nth_Should_ReturnNone_When_UsingInvalidIndex()
     {
         var items = new List<int> { 1, 2, 3, 4, 5 };
-        var none = Opt.None<int>();
+        var none = Option.None<int>();
 
         Assert.AreEqual(none, items.Nth(-1));
         Assert.AreEqual(none, items.Nth(10));

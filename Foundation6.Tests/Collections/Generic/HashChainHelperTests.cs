@@ -38,7 +38,7 @@ public class HashChainHelperTests
     
         elements.Remove(element);
 
-        element = HashChainElement.New(element.Payload, x => x.GetHashCode(), Opt.Some(element.Payload.GetHashCode()));
+        element = HashChainElement.New(element.Payload, x => x.GetHashCode(), Option.Some(element.Payload.GetHashCode()));
         Assert.IsFalse(HashChainHelper.IsConsistent(elements, x => x.PreviousElementHash));
     }
 
@@ -51,14 +51,14 @@ public class HashChainHelperTests
 
     private static IEnumerable<HashChainElement<string, int>> CreateElements(int numberOfElements)
     {
-        var prevHash = Opt.None<int>();
+        var prevHash = Option.None<int>();
         foreach(var number in Enumerable.Range(0, numberOfElements))
         {
             var str = number.ToString();
             if(prevHash.IsNone)
             {
-                var firstElem = new HashChainElement<string, int>(str, x => x.GetHashCode(), Opt.None<int>());
-                prevHash = Opt.Some(firstElem.Hash);
+                var firstElem = new HashChainElement<string, int>(str, x => x.GetHashCode(), Option.None<int>());
+                prevHash = Option.Some(firstElem.Hash);
                 yield return firstElem;
                 continue;
             }
@@ -66,7 +66,7 @@ public class HashChainHelperTests
             var elem = new HashChainElement<string, int>(str, x => x.GetHashCode(), prevHash);
             yield return elem;
 
-            prevHash = Opt.Some(elem.Hash);
+            prevHash = Option.Some(elem.Hash);
         }
     }
 }

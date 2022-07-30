@@ -211,7 +211,7 @@ namespace Foundation
 
             var period1 = Period.New(newDate(10), newDate(13));
             var period2 = Period.New(newDate(8), newDate(9));
-            Assert.AreEqual(Opt.None<Period>(), period1.Intersect(period2));
+            Assert.AreEqual(Option.None<Period>(), period1.Intersect(period2));
         }
 
         [Test]

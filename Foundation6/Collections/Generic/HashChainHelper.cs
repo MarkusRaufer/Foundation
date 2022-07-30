@@ -2,7 +2,7 @@
 {
     public static class HashChainHelper
     {
-        public static bool IsConsistent<T>(IEnumerable<T> elements, Func<T, Opt<int>> getPrevElementHash)
+        public static bool IsConsistent<T>(IEnumerable<T> elements, Func<T, Option<int>> getPrevElementHash)
             where T : notnull
         {
             return IsConsistent(elements, elem => elem.GetHashCode(), getPrevElementHash);
@@ -11,7 +11,7 @@
         public static bool IsConsistent<T>(
             IEnumerable<T> elements, 
             Func<T, int> getHash, 
-            Func<T, Opt<int>> getPrevElementHash)
+            Func<T, Option<int>> getPrevElementHash)
             where T : notnull
         {
             return IsConsistent<T, int>(elements, getHash, getPrevElementHash);
@@ -20,11 +20,11 @@
         public static bool IsConsistent<T, THash>(
             IEnumerable<T> elems, 
             Func<T, THash> getElementHash, 
-            Func<T, Opt<THash>> getPrevElementHash)
+            Func<T, Option<THash>> getPrevElementHash)
             where T : notnull
             where THash : notnull
         {
-            var prevHash = Opt.None<THash>();
+            var prevHash = Option.None<THash>();
 
             foreach (var elem in elems)
             {
@@ -39,7 +39,7 @@
                 {
                     if(currentElemPrevHash.IsSome) return false;
 
-                    prevHash = Opt.Some(currentElemHash);
+                    prevHash = Option.Some(currentElemHash);
                     continue;
                 }
 

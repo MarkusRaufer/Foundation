@@ -12,11 +12,11 @@ namespace Foundation.Collections.Generic
         /// <param name="keyValues"></param>
         /// <param name="key"></param>
         /// <returns></returns>
-        public static Opt<TValue> Nth<TKey, TValue>(this IEnumerable<KeyValuePair<TKey, TValue>> keyValues, TKey key)
+        public static Option<TValue> Nth<TKey, TValue>(this IEnumerable<KeyValuePair<TKey, TValue>> keyValues, TKey key)
             where TKey : notnull
-            => keyValues.FirstAsOpt(kv => kv.Key.Equals(key))
-                        .Match(kv => Opt.Some(kv.Value),
-                               () => Opt.None<TValue>());
+            => keyValues.FirstAsOption(kv => kv.Key.Equals(key))
+                        .Match(kv => Option.Some(kv.Value),
+                               () => Option.None<TValue>());
 
 
         public static KeyValuePair<TKey, TValue> ThrowIfEmpty<TKey, TValue>(

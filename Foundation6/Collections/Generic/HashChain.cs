@@ -18,14 +18,14 @@ public class HashChain<T, THash> : IHashChain<T>
         HashChainElement<T, THash> chainElement;
         if (0 == _elements.Count)
         {
-            chainElement = new HashChainElement<T, THash>(item, GetHash, Opt.None<THash>());
+            chainElement = new HashChainElement<T, THash>(item, GetHash, Option.None<THash>());
         }
             
         else
         {
             var prevElement = _elements[_elements.Count - 1];
 
-            chainElement = new HashChainElement<T, THash>(item, GetHash, Opt.Some(prevElement.Hash));
+            chainElement = new HashChainElement<T, THash>(item, GetHash, Option.Some(prevElement.Hash));
         }
 
         _elements.Add(chainElement);

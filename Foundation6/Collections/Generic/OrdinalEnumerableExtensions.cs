@@ -14,7 +14,7 @@ namespace Foundation.Collections.Generic
         /// <typeparam name="T"></typeparam>
         /// <param name="ordinals"></param>
         /// <returns></returns>
-        public static IEnumerable<Opt<T>> OrdinalFill<T>(this IEnumerable<Ordinal<T>> ordinals)
+        public static IEnumerable<Option<T>> OrdinalFill<T>(this IEnumerable<Ordinal<T>> ordinals)
         {
             var i = 0;
             foreach (var ordinal in ordinals.OrderBy(o => o.Position))
@@ -23,12 +23,12 @@ namespace Foundation.Collections.Generic
                 {
                     foreach (var pos in EnumerableEx.Range(i, ordinal.Position - 1))
                     {
-                        yield return Opt.None<T>();
+                        yield return Option.None<T>();
                         ++i;
                     }
                 }
 
-                if (i == ordinal.Position) yield return Opt.Some(ordinal.Value);
+                if (i == ordinal.Position) yield return Option.Some(ordinal.Value);
 
                 ++i;
             }

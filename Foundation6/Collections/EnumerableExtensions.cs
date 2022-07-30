@@ -67,17 +67,17 @@ public static class EnumerableExtensions
         return item.Value!;
     }
 
-    private static Opt<object> FirstOrDefaultObject(this IEnumerable items)
+    private static Option<object> FirstOrDefaultObject(this IEnumerable items)
     {
         items.ThrowIfNull();
 
         var enumerator = items.GetEnumerator();
         if (enumerator.MoveNext())
         {
-            return Opt.Some(enumerator.Current);
+            return Option.Some(enumerator.Current);
         }
 
-        return Opt.None<object>();
+        return Option.None<object>();
     }
 
     public static void ForEachObject(this IEnumerable items, Action<object> action)

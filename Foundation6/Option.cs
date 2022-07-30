@@ -2,13 +2,13 @@
 
 using System.Runtime.Serialization;
 
-public static class Opt
+public static class Option
 {
-    public static Opt<T> Maybe<T>(T? value) => (null == value) ? None<T>() : Some(value);
+    public static Option<T> Maybe<T>(T? value) => (null == value) ? None<T>() : Some(value);
 
-    public static Opt<T> None<T>() => Opt<T>.None;
+    public static Option<T> None<T>() => Option<T>.None;
 
-    public static Opt<T> Some<T>(T value) => null != value ? new Opt<T>(value) : throw new ArgumentNullException(nameof(value));
+    public static Option<T> Some<T>(T value) => null != value ? new Option<T>(value) : throw new ArgumentNullException(nameof(value));
 }
 
 /// <summary>
@@ -16,19 +16,19 @@ public static class Opt
 /// </summary>
 /// <typeparam name="T"></typeparam>
 [Serializable]
-public readonly struct Opt<T>
-    : IEquatable<Opt<T>>
+public readonly struct Option<T>
+    : IEquatable<Option<T>>
     , ISerializable
 {
     private readonly T? _value;
 
-    internal Opt(T? value)
+    internal Option(T? value)
     {
         IsSome = value is not null;
         _value = value;
     }
 
-    public Opt(SerializationInfo info, StreamingContext context)
+    public Option(SerializationInfo info, StreamingContext context)
     {
         if (info.GetValue(nameof(IsSome), typeof(bool)) is not bool isSome)
         {
@@ -48,15 +48,15 @@ public readonly struct Opt<T>
         _value = value;
     }
 
-    public static implicit operator Opt<T>(T obj) => Opt.Maybe(obj);
+    public static implicit operator Option<T>(T obj) => Option.Maybe(obj);
 
-    public static bool operator ==(Opt<T> lhs, Opt<T> rhs) => lhs.Equals(rhs);
+    public static bool operator ==(Option<T> lhs, Option<T> rhs) => lhs.Equals(rhs);
 
-    public static bool operator !=(Opt<T> lhs, Opt<T> rhs) => !(lhs == rhs);
+    public static bool operator !=(Option<T> lhs, Option<T> rhs) => !(lhs == rhs);
 
-    public override bool Equals(object? obj) => obj is Opt<T> other && Equals(other);
+    public override bool Equals(object? obj) => obj is Option<T> other && Equals(other);
 
-    public bool Equals(Opt<T> other)
+    public bool Equals(Option<T> other)
     {
         if (IsNone) return other.IsNone;
         return other.IsSome && _value!.Equals(other.Value);
@@ -87,7 +87,7 @@ public readonly struct Opt<T>
 
     public override string ToString() => IsSome ? $"Some({_value})" : "None";
 
-    internal static readonly Opt<T> None = new();
+    internal static readonly Option<T> None = new();
 
     internal T Value
     {

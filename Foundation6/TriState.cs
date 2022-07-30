@@ -7,7 +7,7 @@ public struct TriState : IEquatable<TriState>
 {
     public TriState(bool isTrue)
     {
-        State = Opt.Some(isTrue);
+        State = Option.Some(isTrue);
     }
 
     public static bool operator ==(TriState left, TriState right)
@@ -36,7 +36,7 @@ public struct TriState : IEquatable<TriState>
         return State.OrThrow() ? 2 : 1;
     }
         
-    public Opt<bool> State { get; }
+    public Option<bool> State { get; }
 
     public override string ToString() => $"{State}";
 
@@ -78,14 +78,14 @@ public struct TriState<TState1, TState2> : IEquatable<TriState<TState1, TState2>
     {
         state1.ThrowIfNull();
 
-        State = Opt.Some(new OneOf<TState1, TState2>(state1));
+        State = Option.Some(new OneOf<TState1, TState2>(state1));
     }
 
     public TriState(TState2 state2)
     {
         state2.ThrowIfNull();
 
-        State = Opt.Some(new OneOf<TState1, TState2>(state2));
+        State = Option.Some(new OneOf<TState1, TState2>(state2));
 
     }
 
@@ -139,7 +139,7 @@ public struct TriState<TState1, TState2> : IEquatable<TriState<TState1, TState2>
         return State.OrThrow().Match(state1, state2);
     }
 
-    public Opt<OneOf<TState1, TState2>> State { get; }
+    public Option<OneOf<TState1, TState2>> State { get; }
 
     public override string ToString()
     {

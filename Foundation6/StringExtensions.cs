@@ -91,6 +91,13 @@ public static class StringExtensions
         }
     }
 
+    /// <summary>
+    /// Returns a list of indices of the found characters.
+    /// </summary>
+    /// <param name="str"></param>
+    /// <param name="values"></param>
+    /// <param name="stopAfterNumberOfHits"></param>
+    /// <returns></returns>
     public static IEnumerable<int> IndicesOfAny(this string str, char[] values, int stopAfterNumberOfHits = -1)
     {
         var numberOfHits = 0;
@@ -183,56 +190,56 @@ public static class StringExtensions
         return false;
     }
 
-    public static Opt<object> ParseScalarType(this string str, Type type)
+    public static Option<object> ParseScalarType(this string str, Type type)
     {
         type.ThrowIfNull();
 
         return Type.GetTypeCode(type) switch
         {
             TypeCode.Boolean => bool.TryParse(str, out bool boolean)
-                   ? Opt.Some<object>(boolean)
-                   : Opt.None<object>(),
+                   ? Option.Some<object>(boolean)
+                   : Option.None<object>(),
             TypeCode.Byte => byte.TryParse(str, out byte @byte)
-                   ? Opt.Some<object>(@byte)
-                   : Opt.None<object>(),
+                   ? Option.Some<object>(@byte)
+                   : Option.None<object>(),
             TypeCode.Char => char.TryParse(str, out char @char)
-                   ? Opt.Some<object>(@char)
-                   : Opt.None<object>(),
+                   ? Option.Some<object>(@char)
+                   : Option.None<object>(),
             TypeCode.DateTime => DateTimeHelper.TryParseFromIso8601(str, out DateTime dt)
-                   ? Opt.Some<object>(dt)
-                   : Opt.None<object>(),
+                   ? Option.Some<object>(dt)
+                   : Option.None<object>(),
             TypeCode.Decimal => decimal.TryParse(str, out decimal @decimal)
-                   ? Opt.Some<object>(@decimal)
-                   : Opt.None<object>(),
+                   ? Option.Some<object>(@decimal)
+                   : Option.None<object>(),
             TypeCode.Double => double.TryParse(str, out double @double)
-                   ? Opt.Some<object>(@double)
-                   : Opt.None<object>(),
+                   ? Option.Some<object>(@double)
+                   : Option.None<object>(),
             TypeCode.Int16 => Int16.TryParse(str, out Int16 @int16)
-                   ? Opt.Some<object>(@int16)
-                   : Opt.None<object>(),
+                   ? Option.Some<object>(@int16)
+                   : Option.None<object>(),
             TypeCode.Int32 => Int32.TryParse(str, out Int32 @int32)
-                   ? Opt.Some<object>(@int32)
-                   : Opt.None<object>(),
+                   ? Option.Some<object>(@int32)
+                   : Option.None<object>(),
             TypeCode.Int64 => Int64.TryParse(str, out Int64 @int64)
-                   ? Opt.Some<object>(@int64)
-                   : Opt.None<object>(),
+                   ? Option.Some<object>(@int64)
+                   : Option.None<object>(),
             TypeCode.SByte => SByte.TryParse(str, out SByte @sbyte)
-                   ? Opt.Some<object>(@sbyte)
-                   : Opt.None<object>(),
+                   ? Option.Some<object>(@sbyte)
+                   : Option.None<object>(),
             TypeCode.Single => Single.TryParse(str, out Single @single)
-                   ? Opt.Some<object>(@single)
-                   : Opt.None<object>(),
-            TypeCode.String => Opt.Some<object>(str),
+                   ? Option.Some<object>(@single)
+                   : Option.None<object>(),
+            TypeCode.String => Option.Some<object>(str),
             TypeCode.UInt16 => UInt16.TryParse(str, out UInt16 @uint16)
-                   ? Opt.Some<object>(@uint16)
-                   : Opt.None<object>(),
+                   ? Option.Some<object>(@uint16)
+                   : Option.None<object>(),
             TypeCode.UInt32 => UInt32.TryParse(str, out UInt32 @uint32)
-                   ? Opt.Some<object>(@uint32)
-                   : Opt.None<object>(),
+                   ? Option.Some<object>(@uint32)
+                   : Option.None<object>(),
             TypeCode.UInt64 => UInt64.TryParse(str, out UInt64 @uint64)
-                   ? Opt.Some<object>(@uint64)
-                   : Opt.None<object>(),
-            _ => Opt.None<object>()
+                   ? Option.Some<object>(@uint64)
+                   : Option.None<object>(),
+            _ => Option.None<object>()
         };
     }
 
@@ -303,7 +310,7 @@ public static class StringExtensions
     /// <returns></returns>
     public static IEnumerable<KeyValuePair<char, string>> SplitSeq(this string str, char[] separator)
     {
-        var key = Opt.None<char>();
+        var key = Option.None<char>();
         var sb = new StringBuilder();
         var len = str.Length;
         var i = 0;
@@ -316,7 +323,7 @@ public static class StringExtensions
                     yield return Pair.New(key.Value, sb.ToString());
                     sb.Clear();
                 }
-                key = Opt.Some(c);
+                key = Option.Some(c);
                 i++;
                 if (i == len)
                     yield return Pair.New(key.Value, sb.ToString());
@@ -416,12 +423,12 @@ public static class StringExtensions
         return null;
     }
 
-    public static Opt<double> ToDoubleAsOpt(this string str)
+    public static Option<double> ToDoubleAsOption(this string str)
     {
         if (double.TryParse(str, out double value))
-            return Opt.Some(value);
+            return Option.Some(value);
 
-        return Opt.None<double>();
+        return Option.None<double>();
     }
 
     public static T? ToNullableIfNullOrEmpty<T>(this string str, Func<string, T> projection)
@@ -465,28 +472,28 @@ public static class StringExtensions
         return null;
     }
 
-    public static Opt<string> ToOptIfNullOrEmpty(this string str)
+    public static Option<string> ToOptIfNullOrEmpty(this string str)
     {
-        return string.IsNullOrEmpty(str) ? Opt.None<string>() : Opt.Some(str);
+        return string.IsNullOrEmpty(str) ? Option.None<string>() : Option.Some(str);
     }
 
-    public static Opt<T> ToOptIfNullOrEmpty<T>(this string str, Func<string, T> projection)
+    public static Option<T> ToOptIfNullOrEmpty<T>(this string str, Func<string, T> projection)
     {
         projection.ThrowIfNull();
 
-        return string.IsNullOrEmpty(str) ? Opt.None<T>() : Opt.Some(projection(str));
+        return string.IsNullOrEmpty(str) ? Option.None<T>() : Option.Some(projection(str));
     }
 
-    public static Opt<string> ToOptIfNullOrWhiteSpace(this string str)
+    public static Option<string> ToOptIfNullOrWhiteSpace(this string str)
     {
-        return string.IsNullOrWhiteSpace(str) ? Opt.None<string>() : Opt.Some(str);
+        return string.IsNullOrWhiteSpace(str) ? Option.None<string>() : Option.Some(str);
     }
 
-    public static Opt<T> ToOptIfNullOrWhiteSpace<T>(this string str, Func<string, T> projection)
+    public static Option<T> ToOptIfNullOrWhiteSpace<T>(this string str, Func<string, T> projection)
     {
         projection.ThrowIfNull();
 
-        return string.IsNullOrWhiteSpace(str) ? Opt.None<T>() : Opt.Some(projection(str));
+        return string.IsNullOrWhiteSpace(str) ? Option.None<T>() : Option.Some(projection(str));
     }
 
     public static string TrimApostrophes(this string str)
