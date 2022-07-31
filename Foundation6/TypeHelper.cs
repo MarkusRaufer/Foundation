@@ -37,22 +37,6 @@ public static class TypeHelper
         _ => null,
     };
 
-    public static IEnumerable<string> GetPrimitiveTypeShortNames()
-    {
-        yield return "bool";
-        yield return "byte";
-        yield return "char";
-        yield return "double";
-        yield return "float";
-        yield return "int";
-        yield return "long";
-        yield return "sbyte";
-        yield return "short";
-        yield return "uint";
-        yield return "ulong";
-        yield return "ushort";
-    }
-
     /// <summary>
     /// returns the type from the short name. e.g. int, string.
     /// </summary>
@@ -86,19 +70,6 @@ public static class TypeHelper
             nameof(TimeOnly) => typeof(TimeOnly).FullName,
             _ => null,
         };
-    }
-
-    public static IEnumerable<string> GetScalarTypeShortNames()
-    {
-        foreach(var typeName in GetPrimitiveTypeShortNames())
-            yield return typeName;
-
-        yield return nameof(DateOnly);
-        yield return nameof(DateTime);
-        yield return "decimal";
-        yield return nameof(Guid);
-        yield return "string";
-        yield return nameof(TimeOnly);
     }
 
     public static IEnumerable<Type> PrimitiveArrayTypes()
@@ -149,6 +120,33 @@ public static class TypeHelper
         yield return typeof(UInt64);
     }
 
+    public static IEnumerable<string> PrimitiveTypeShortNames()
+    {
+        yield return "bool";
+        yield return "byte";
+        yield return "char";
+        yield return "double";
+        yield return "float";
+        yield return "int";
+        yield return "long";
+        yield return "sbyte";
+        yield return "short";
+        yield return "uint";
+        yield return "ulong";
+        yield return "ushort";
+    }
+
+    /// <summary>
+    /// Real number types.
+    /// </summary>
+    /// <returns></returns>
+    public static IEnumerable<Type> RealNumberTypes()
+    {
+        yield return typeof(Decimal);
+        yield return typeof(Double);
+        yield return typeof(Single);
+    }
+
     public static IEnumerable<Type> ScalarArrayTypes()
     {
         foreach (var primitive in PrimitiveArrayTypes())
@@ -190,6 +188,19 @@ public static class TypeHelper
         yield return typeof(Guid);
         yield return typeof(string);
         yield return typeof(TimeOnly);
+    }
+
+    public static IEnumerable<string> ScalarTypeShortNames()
+    {
+        foreach (var typeName in PrimitiveTypeShortNames())
+            yield return typeName;
+
+        yield return nameof(DateOnly);
+        yield return nameof(DateTime);
+        yield return "decimal";
+        yield return nameof(Guid);
+        yield return "string";
+        yield return nameof(TimeOnly);
     }
 }
 
