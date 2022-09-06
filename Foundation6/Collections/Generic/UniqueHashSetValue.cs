@@ -3,11 +3,11 @@
 using System.Collections.Generic;
 using System.Runtime.Serialization;
 
-public static class UniqueOnlyHashSet
+public static class UniqueHashSetValue
 {
-    public static UniqueOnlyHashSet<T> New<T>(params T[] values)
+    public static UniqueHashSetValue<T> New<T>(params T[] values)
     {
-        return new UniqueOnlyHashSet<T>(values);
+        return new UniqueHashSetValue<T>(values);
     }
 }
 
@@ -17,18 +17,18 @@ public static class UniqueOnlyHashSet
 /// </summary>
 /// <typeparam name="T"></typeparam>
 [Serializable]
-public class UniqueOnlyHashSet<T> : EquatableHashSet<T>
+public class UniqueHashSetValue<T> : HashSetValue<T>
 {
 #pragma warning disable CS0414
     private readonly Func<EnumerableCounter<T>>? _counter;
 #pragma warning restore CS0414 
 
-    public UniqueOnlyHashSet() : base()
+    public UniqueHashSetValue() : base()
     {
         _counter = null;
     }
 
-    public UniqueOnlyHashSet(IEnumerable<T> collection) 
+    public UniqueHashSetValue(IEnumerable<T> collection) 
         : base(new EnumerableCounter<T>(collection, out Func<EnumerableCounter<T>> _counter))
     {
         _counter.ThrowIfNull();
@@ -37,15 +37,15 @@ public class UniqueOnlyHashSet<T> : EquatableHashSet<T>
         if (counter.Count != Count) throw new ArgumentException(" values are not unique", nameof(collection));
     }
 
-    public UniqueOnlyHashSet(IEqualityComparer<T>? comparer) : base(comparer)
+    public UniqueHashSetValue(IEqualityComparer<T>? comparer) : base(comparer)
     {
     }
 
-    public UniqueOnlyHashSet(int capacity) : base(capacity)
+    public UniqueHashSetValue(int capacity) : base(capacity)
     {
     }
 
-    public UniqueOnlyHashSet(IEnumerable<T> collection, IEqualityComparer<T>? comparer)
+    public UniqueHashSetValue(IEnumerable<T> collection, IEqualityComparer<T>? comparer)
         : base(new EnumerableCounter<T>(collection, out Func<EnumerableCounter<T>> _counter), comparer)
     {
         _counter.ThrowIfNull();
@@ -54,12 +54,12 @@ public class UniqueOnlyHashSet<T> : EquatableHashSet<T>
         if (counter.Count != Count) throw new ArgumentException(" values are not unique", nameof(collection));
      }
 
-    public UniqueOnlyHashSet(int capacity, IEqualityComparer<T>? comparer)
+    public UniqueHashSetValue(int capacity, IEqualityComparer<T>? comparer)
         : base(capacity, comparer)
     {
     }
 
-    protected UniqueOnlyHashSet(SerializationInfo serializationInfo, StreamingContext streamingContext)
+    protected UniqueHashSetValue(SerializationInfo serializationInfo, StreamingContext streamingContext)
         : base(serializationInfo, streamingContext)
     {
     }

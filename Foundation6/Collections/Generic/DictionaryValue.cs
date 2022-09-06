@@ -6,25 +6,25 @@ using System.Collections;
 using System.Diagnostics.CodeAnalysis;
 
 /// <summary>
-/// This dictionary considers the equality of all keys and values <see cref="Equals"/>.
+/// This immutable dictionary considers the equality of all keys and values <see cref="Equals"/>.
 /// The position of the elements are ignored.
 /// </summary>
 /// <typeparam name="TKey"></typeparam>
 /// <typeparam name="TValue"></typeparam>
-public class EquatableDictionary<TKey, TValue>
+public class DictionaryValue<TKey, TValue>
     : IReadOnlyDictionary<TKey, TValue>
-    , IEquatable<EquatableDictionary<TKey, TValue>>
+    , IEquatable<DictionaryValue<TKey, TValue>>
     where TKey : notnull
 {
     private readonly IDictionary<TKey, TValue> _dictionary;
     private readonly int _hashCode;
 
-    public EquatableDictionary(IEnumerable<KeyValuePair<TKey, TValue>> keyValues)
+    public DictionaryValue(IEnumerable<KeyValuePair<TKey, TValue>> keyValues)
         : this(keyValues.ToDictionary(kvp => kvp.Key, kvp => kvp.Value))
     {
     }
 
-    public EquatableDictionary(IDictionary<TKey, TValue> dictionary)
+    public DictionaryValue(IDictionary<TKey, TValue> dictionary)
     {
         _dictionary = dictionary.ThrowIfNull();
         _hashCode = HashCode.FromObjects(_dictionary);
@@ -36,11 +36,11 @@ public class EquatableDictionary<TKey, TValue>
 
     public bool ContainsKey(TKey key) => _dictionary.ContainsKey(key);
 
-    protected static int DefaultHashCode { get; } = typeof(EquatableDictionary<TKey, TValue>).GetHashCode();
+    protected static int DefaultHashCode { get; } = typeof(DictionaryValue<TKey, TValue>).GetHashCode();
 
-    public override bool Equals(object? obj) => Equals(obj as EquatableDictionary<TKey, TValue>);
+    public override bool Equals(object? obj) => Equals(obj as DictionaryValue<TKey, TValue>);
 
-    public bool Equals(EquatableDictionary<TKey, TValue>? other)
+    public bool Equals(DictionaryValue<TKey, TValue>? other)
     {
         if (other is null) return false;
         if (_hashCode != other._hashCode) return false;

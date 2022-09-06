@@ -3,46 +3,46 @@
 using System.Collections;
 using System.Diagnostics.CodeAnalysis;
 
-public static class EquatableBag
+public static class ArrayValue
 {
-    public static EquatableBag<T> New<T>(params T[] values)
+    public static ArrayValue<T> New<T>(params T[] values)
     {
-        return new EquatableBag<T>(values);
+        return new ArrayValue<T>(values);
     }
 }
 
 /// <summary>
-/// This is an immutable array that compares each element on <see cref="Equals(EquatableBag{T})"/>.
+/// This is an immutable array that compares each element on <see cref="Equals(ArrayValue{T})"/>.
 /// That enables the comparison of two arrays.
 /// </summary>
 /// <typeparam name="T"></typeparam>
-public struct EquatableBag<T>
+public struct ArrayValue<T>
     : ICloneable
     , IEnumerable<T>
-    , IEquatable<EquatableBag<T>>
+    , IEquatable<ArrayValue<T>>
     , IEquatable<T[]>
 {
     private readonly int _hashCode;
     private string _valuesAsString;
     private readonly T[] _values;
 
-    public EquatableBag(T[] values)
+    public ArrayValue(T[] values)
     {
         _values = values.ThrowIfNull();
-        _hashCode = HashCode.FromOrderedObjects(_values);
+        _hashCode = HashCode.FromObjects(_values);
         _valuesAsString = "";
     }
 
-    public static implicit operator EquatableBag<T>(T[] array) => EquatableBag.New(array);
+    public static implicit operator ArrayValue<T>(T[] array) => ArrayValue.New(array);
 
-    public static implicit operator T[](EquatableBag<T> array) => array._values;
+    public static implicit operator T[](ArrayValue<T> array) => array._values;
 
-    public static bool operator ==(EquatableBag<T> left, EquatableBag<T> right)
+    public static bool operator ==(ArrayValue<T> left, ArrayValue<T> right)
     {
         return left.Equals(right);
     }
 
-    public static bool operator !=(EquatableBag<T> left, EquatableBag<T> right)
+    public static bool operator !=(ArrayValue<T> left, ArrayValue<T> right)
     {
         return !(left == right);
     }
@@ -52,27 +52,27 @@ public struct EquatableBag<T>
     public object Clone()
     {
         return IsEmpty
-            ? new EquatableArray<T>(Array.Empty<T>())
-            : new EquatableArray<T>((T[])_values.Clone());
+            ? new ArrayValue<T>(Array.Empty<T>())
+            : new ArrayValue<T>((T[])_values.Clone());
     }
 
-    public override bool Equals([NotNullWhen(true)] object? obj) => obj is EquatableBag<T> other && Equals(other);
+    public override bool Equals([NotNullWhen(true)] object? obj) => obj is ArrayValue<T> other && Equals(other);
 
     public bool Equals(T[]? other)
     {
         if (IsEmpty) return null == other || 0 == other.Length;
 
-        return null != other && _values.IsEqualToSet(other);
+        return null != other && _values.SequenceEqual(other);
     }
 
-    public bool Equals(EquatableBag<T> other)
+    public bool Equals(ArrayValue<T> other)
     {
         if (IsEmpty) return other.IsEmpty;
         if (other.IsEmpty) return false;
 
         if (GetHashCode() != other.GetHashCode()) return false;
 
-        return _values.IsEqualToSet(other._values);
+        return _values.SequenceEqual(other._values);
     }
 
     public IEnumerator<T> GetEnumerator() => _values.GetEnumerator<T>();

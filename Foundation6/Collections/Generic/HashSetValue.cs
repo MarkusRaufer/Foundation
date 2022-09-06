@@ -9,16 +9,16 @@ using System.Runtime.Serialization;
 /// </summary>
 /// <typeparam name="T"></typeparam>
 [Serializable]
-public class EquatableHashSet<T>
+public class HashSetValue<T>
     : HashSet<T>
     , ICollectionChanged<T>
-    , IEquatable<EquatableHashSet<T>>
+    , IEquatable<HashSetValue<T>>
     , IEquatable<IEnumerable<T>>
     , ISerializable
 {
     private int _hashCode;
 
-    public EquatableHashSet() : base()
+    public HashSetValue() : base()
     {
         _hashCode = 0;
         CollectionChanged = new Event<Action<CollectionEvent<T>>>();
@@ -29,19 +29,19 @@ public class EquatableHashSet<T>
     /// </summary>
     /// <param name="collection">EnumerableCounter is needed to detect wether the collection contains duplicates.
     /// Use T[], Collection<typeparamref name="T"/> or List<typeparamref name="T"/></param>
-    public EquatableHashSet(IEnumerable<T> collection) : base(collection)
+    public HashSetValue(IEnumerable<T> collection) : base(collection)
     {        
         _hashCode = CreateHashCode();
         CollectionChanged = new Event<Action<CollectionEvent<T>>>();
     }
 
-    public EquatableHashSet(IEqualityComparer<T>? comparer) : base(comparer)
+    public HashSetValue(IEqualityComparer<T>? comparer) : base(comparer)
     {
         _hashCode = CreateHashCode();
         CollectionChanged = new Event<Action<CollectionEvent<T>>>();
     }
 
-    public EquatableHashSet(int capacity) : base(capacity)
+    public HashSetValue(int capacity) : base(capacity)
     {
         _hashCode = CreateHashCode();
         CollectionChanged = new Event<Action<CollectionEvent<T>>>();
@@ -53,20 +53,20 @@ public class EquatableHashSet<T>
     /// <param name="collection">EnumerableCounter is needed to detect wether the collection contains duplicates.
     /// Use T[], Collection<typeparamref name="T"/> or List<typeparamref name="T"/></param>
     /// <param name="comparer"></param>
-    public EquatableHashSet(IEnumerable<T> collection, IEqualityComparer<T>? comparer) : base(collection, comparer)
+    public HashSetValue(IEnumerable<T> collection, IEqualityComparer<T>? comparer) : base(collection, comparer)
     {
         _hashCode = CreateHashCode();
         CollectionChanged = new Event<Action<CollectionEvent<T>>>();
     }
 
-    public EquatableHashSet(int capacity, IEqualityComparer<T>? comparer)
+    public HashSetValue(int capacity, IEqualityComparer<T>? comparer)
         : base(capacity, comparer)
     {
         _hashCode = CreateHashCode();
         CollectionChanged = new Event<Action<CollectionEvent<T>>>();
     }
 
-    public EquatableHashSet(SerializationInfo info, StreamingContext context) : base(info, context)
+    public HashSetValue(SerializationInfo info, StreamingContext context) : base(info, context)
     {
         _hashCode = CreateHashCode();
         CollectionChanged = new Event<Action<CollectionEvent<T>>>();
@@ -109,16 +109,16 @@ public class EquatableHashSet<T>
                         .GetHashCode();
     }
 
-    protected static int DefaultHashCode { get; } = typeof(EquatableHashSet<T>).GetHashCode();
+    protected static int DefaultHashCode { get; } = typeof(HashSetValue<T>).GetHashCode();
 
-    public override bool Equals(object? obj) => Equals(obj as EquatableHashSet<T>);
+    public override bool Equals(object? obj) => Equals(obj as HashSetValue<T>);
 
     /// <summary>
     /// Checks the equality of all elements. The position of the elements are ignored.
     /// </summary>
     /// <param name="other"></param>
     /// <returns></returns>
-    public bool Equals(EquatableHashSet<T>? other)
+    public bool Equals(HashSetValue<T>? other)
     {
         if (null == other) return false;
         if (_hashCode != other._hashCode) return false;

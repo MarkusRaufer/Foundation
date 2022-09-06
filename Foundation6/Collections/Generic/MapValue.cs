@@ -13,26 +13,26 @@ using System.Runtime.Serialization;
 /// <typeparam name="TKey"></typeparam>
 /// <typeparam name="TValue"></typeparam>
 [Serializable]
-public class EquatableMap<TKey, TValue>
+public class MapValue<TKey, TValue>
     : IDictionary<TKey, TValue>
     , ICollectionChanged<KeyValuePair<TKey, TValue>>
-    , IEquatable<EquatableMap<TKey, TValue>>
+    , IEquatable<MapValue<TKey, TValue>>
     , ISerializable
     where TKey : notnull
 {
     private int _hashCode;
     private readonly IDictionary<TKey, TValue> _keyValues;
 
-    public EquatableMap() : this(new Dictionary<TKey, TValue>())
+    public MapValue() : this(new Dictionary<TKey, TValue>())
     {
     }
 
-    public EquatableMap(IEnumerable<KeyValuePair<TKey, TValue>> keyValues)
+    public MapValue(IEnumerable<KeyValuePair<TKey, TValue>> keyValues)
         : this(keyValues.ToDictionary(kv => kv.Key, kv => kv.Value))
     {
     }
 
-    public EquatableMap(IDictionary<TKey, TValue> keyValues)
+    public MapValue(IDictionary<TKey, TValue> keyValues)
     {
         _keyValues = keyValues.ThrowIfNull();
         _hashCode = CreateHashCode();
@@ -40,7 +40,7 @@ public class EquatableMap<TKey, TValue>
         CollectionChanged = new Event<Action<CollectionEvent<KeyValuePair<TKey, TValue>>>>();
     }
 
-    public EquatableMap(SerializationInfo info, StreamingContext context)
+    public MapValue(SerializationInfo info, StreamingContext context)
     {
         if (info.GetValue(nameof(_keyValues), typeof(Dictionary<TKey, TValue>)) is Dictionary<TKey, TValue> keyValues)
         {
@@ -138,7 +138,7 @@ public class EquatableMap<TKey, TValue>
                        .GetHashCode();
     }
 
-    protected static int DefaultHashCode { get; } = typeof(EquatableMap<TKey, TValue>).GetHashCode();
+    protected static int DefaultHashCode { get; } = typeof(MapValue<TKey, TValue>).GetHashCode();
 
     /// <summary>
     /// Considers keys and values only. Positions of the elements are ignored.
@@ -152,7 +152,7 @@ public class EquatableMap<TKey, TValue>
     /// </summary>
     /// <param name="other"></param>
     /// <returns></returns>
-    public bool Equals(EquatableMap<TKey, TValue>? other)
+    public bool Equals(MapValue<TKey, TValue>? other)
     {
         if (other is null) return false;
         if (_hashCode != other._hashCode) return false;

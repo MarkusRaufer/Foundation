@@ -3,7 +3,6 @@
 using Foundation;
 using Foundation.ComponentModel;
 using System.Collections;
-using System.Diagnostics.CodeAnalysis;
 using System.Runtime.Serialization;
 
 /// <summary>
@@ -11,20 +10,20 @@ using System.Runtime.Serialization;
 /// </summary>
 /// <typeparam name="T"></typeparam>
 [Serializable]
-public class EquatableCollection<T>
+public class CollectionValue<T>
     : ICollection<T>
     , ICollectionChanged<T>
     , ISerializable
-    , IEquatable<EquatableCollection<T>>
+    , IEquatable<CollectionValue<T>>
 {
     private readonly ICollection<T> _collection;
     private int _hashCode;
 
-    public EquatableCollection() : this(new List<T>())
+    public CollectionValue() : this(new List<T>())
     {
     }
 
-    public EquatableCollection(ICollection<T> collection)
+    public CollectionValue(ICollection<T> collection)
     {
         _collection = collection.ThrowIfNull();
 
@@ -33,11 +32,11 @@ public class EquatableCollection<T>
         CollectionChanged = new Event<Action<CollectionEvent<T>>>();
     }
 
-    public EquatableCollection(int capacity) : this(new List<T>(capacity))
+    public CollectionValue(int capacity) : this(new List<T>(capacity))
     {
     }
 
-    public EquatableCollection(SerializationInfo info, StreamingContext context)
+    public CollectionValue(SerializationInfo info, StreamingContext context)
     {
         if (info.GetValue(nameof(_collection), typeof(List<T>)) is List<T> collection)
         {
@@ -88,21 +87,21 @@ public class EquatableCollection<T>
                        .GetHashCode();
     }
 
-    protected static int DefaultHashCode { get; } = typeof(EquatableCollection<T>).GetHashCode();
+    protected static int DefaultHashCode { get; } = typeof(CollectionValue<T>).GetHashCode();
 
     /// <summary>
     /// Checks the equality of all elements. Positions of the elements are ignored.
     /// </summary>
     /// <param name="obj"></param>
     /// <returns></returns>
-    public override bool Equals(object? obj) => obj is EquatableCollection<T> other && Equals(other);
+    public override bool Equals(object? obj) => obj is CollectionValue<T> other && Equals(other);
 
     /// <summary>
     /// Checks the equality of all elements. Positions of the elements are ignored.
     /// </summary>
     /// <param name="other"></param>
     /// <returns></returns>
-    public bool Equals(EquatableCollection<T>? other)
+    public bool Equals(CollectionValue<T>? other)
     {
         if (other is null) return false;
         if (_hashCode != other._hashCode) return false;

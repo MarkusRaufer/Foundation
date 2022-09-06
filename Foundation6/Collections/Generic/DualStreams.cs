@@ -5,7 +5,7 @@
 /// </summary>
 /// <typeparam name="TLeft"></typeparam>
 /// <typeparam name="TRight"></typeparam>
-public class DualStreams<TLeft, TRight>
+public class DualStreams<TLeft, TRight> : IDualStreams<TLeft, TRight>
 {
     public void Deconstruct(out IEnumerable<TLeft> left, out IEnumerable<TRight> right)
     {

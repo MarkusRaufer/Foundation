@@ -91,63 +91,6 @@ public static class EnumerableExtensions
     }
 
     /// <summary>
-    /// Returns adjacent items as tuples.
-    /// </summary>
-    /// <typeparam name="T"></typeparam>
-    /// <typeparam name="TResult"></typeparam>
-    /// <param name="items"></param>
-    /// <param name="selector">First T is lhs item and second T is the rhs item and so on.</param>
-    /// <returns></returns>
-    public static IEnumerable<(T lhs, T rhs)> Adjacent<T>(this IEnumerable<T> items)
-    {
-        var it = items.ThrowIfNull()
-                      .GetEnumerator();
-
-        if (!it.MoveNext()) yield break;
-
-        var lhs = it.Current;
-        while (it.MoveNext())
-        {
-            yield return (lhs, it.Current);
-
-            lhs = it.Current;
-        }
-    }
-
-    /// <summary>
-    /// Calls action on all adjacent elements.
-    /// </summary>
-    /// <typeparam name="T"></typeparam>
-    /// <param name="items"></param>
-    /// <param name="action">Contains the previous and the current item.</param>
-    /// <returns></returns>
-    public static IEnumerable<(T lhs, T rhs)> Adjacent<T>(this IEnumerable<T> items, Action<T, T> action)
-    {
-        action.ThrowIfNull();
-
-        foreach (var tuple in items.Adjacent())
-        {
-            action(tuple.lhs, tuple.rhs);
-            yield return tuple;
-        }
-    }
-
-    /// <summary>
-    /// Calls selector on all adjacent elements and transforms each element into TReturn.
-    /// </summary>
-    /// <typeparam name="T"></typeparam>
-    /// <param name="items"></param>
-    /// <param name="action">Contains the previous and the current item.</param>
-    /// <returns></returns>
-    public static IEnumerable<TReturn> Adjacent<T, TReturn>(this IEnumerable<T> items, Func<T, T, TReturn> selector)
-    {
-        selector.ThrowIfNull();
-
-        foreach (var (lhs, rhs) in items.Adjacent())
-            yield return selector(lhs, rhs);
-    }
-
-    /// <summary>
     /// Executes action after every item except the last one.
     /// </summary>
     /// <typeparam name="T"></typeparam>
@@ -2107,6 +2050,64 @@ public static class EnumerableExtensions
     }
 
     /// <summary>
+    /// Returns adjacent items as tuples.
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <typeparam name="TResult"></typeparam>
+    /// <param name="items"></param>
+    /// <param name="selector">First T is lhs item and second T is the rhs item and so on.</param>
+    /// <returns></returns>
+    public static IEnumerable<(T lhs, T rhs)> Pairs<T>(this IEnumerable<T> items)
+    {
+        var it = items.ThrowIfNull()
+                      .GetEnumerator();
+
+        if (!it.MoveNext()) yield break;
+
+        var lhs = it.Current;
+        while (it.MoveNext())
+        {
+            yield return (lhs, it.Current);
+
+            lhs = it.Current;
+        }
+    }
+
+
+    /// <summary>
+    /// Calls action on all adjacent elements.
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <param name="items"></param>
+    /// <param name="action">Contains the previous and the current item.</param>
+    /// <returns></returns>
+    public static IEnumerable<(T lhs, T rhs)> Pairs<T>(this IEnumerable<T> items, Action<T, T> action)
+    {
+        action.ThrowIfNull();
+
+        foreach (var tuple in items.Pairs())
+        {
+            action(tuple.lhs, tuple.rhs);
+            yield return tuple;
+        }
+    }
+
+    /// <summary>
+    /// Calls selector on all adjacent elements and transforms each element into TReturn.
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <param name="items"></param>
+    /// <param name="action">Contains the previous and the current item.</param>
+    /// <returns></returns>
+    public static IEnumerable<TReturn> Pairs<T, TReturn>(this IEnumerable<T> items, Func<T, T, TReturn> selector)
+    {
+        selector.ThrowIfNull();
+
+        foreach (var (lhs, rhs) in items.Pairs())
+            yield return selector(lhs, rhs);
+    }
+
+    /// <summary>
     /// Partitions items into two lists. If predicate is true the item is added to matching otherwise to notMatching.
     /// </summary>
     /// <typeparam name="T"></typeparam>
@@ -2117,20 +2118,12 @@ public static class EnumerableExtensions
         this IEnumerable<T> items, 
         Func<T, bool> predicate)
     {
+        items.ThrowIfNull();
         predicate.ThrowIfNull();
 
-        (IEnumerable<T> matching, IEnumerable<T> notMatching) = (Enumerable.Empty<T>(), Enumerable.Empty<T>());
-        foreach (var item in items.ThrowIfNull())
-        {
-            if (predicate(item))
-            {
-                matching = matching.Append(item);
-                continue;
-            }
-            notMatching = notMatching.Append(item);
-        }
+        var groups = items.GroupBy(predicate);
 
-        return (matching, notMatching);
+        return (groups.Where(grp => grp.Key).SelectMany(x => x), groups.Where(grp => !grp.Key).SelectMany(x => x));
     }
 
     /// <summary>

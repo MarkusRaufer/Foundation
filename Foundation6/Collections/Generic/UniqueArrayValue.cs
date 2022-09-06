@@ -3,11 +3,11 @@
 using System.Collections;
 using System.Diagnostics.CodeAnalysis;
 
-public static class UniqueOnlyArray
+public static class UniqueArrayValue
 {
-    public static UniqueOnlyArray<T> New<T>(params T[] values)
+    public static UniqueArrayValue<T> New<T>(params T[] values)
     {
-        return new UniqueOnlyArray<T>(values);
+        return new UniqueArrayValue<T>(values);
     }
 }
 
@@ -16,17 +16,17 @@ public static class UniqueOnlyArray
 /// All elements are compared by using Equals.
 /// </summary>
 /// <typeparam name="T"></typeparam>
-public struct UniqueOnlyArray<T>
+public struct UniqueArrayValue<T>
     : ICloneable
     , IEnumerable<T>
-    , IEquatable<UniqueOnlyArray<T>>
+    , IEquatable<UniqueArrayValue<T>>
     , IEquatable<T[]>
 {
     private readonly int _hashCode;
     private string? _valuesAsString;
     private readonly HashSet<T>? _values;
 
-    public UniqueOnlyArray(T[] values)
+    public UniqueArrayValue(T[] values)
     {
         values.ThrowIfNull();
 
@@ -39,17 +39,17 @@ public struct UniqueOnlyArray<T>
         _valuesAsString = "";
     }
 
-    public static implicit operator UniqueOnlyArray<T>(T[] array) => UniqueOnlyArray.New(array);
+    public static implicit operator UniqueArrayValue<T>(T[] array) => UniqueArrayValue.New(array);
 
-    public static implicit operator T[](UniqueOnlyArray<T> array) 
+    public static implicit operator T[](UniqueArrayValue<T> array) 
         => null == array._values ? Array.Empty<T>() : array._values.ToArray();
 
-    public static bool operator ==(UniqueOnlyArray<T> left, UniqueOnlyArray<T> right)
+    public static bool operator ==(UniqueArrayValue<T> left, UniqueArrayValue<T> right)
     {
         return left.Equals(right);
     }
 
-    public static bool operator !=(UniqueOnlyArray<T> left, UniqueOnlyArray<T> right)
+    public static bool operator !=(UniqueArrayValue<T> left, UniqueArrayValue<T> right)
     {
         return !(left == right);
     }
@@ -59,11 +59,11 @@ public struct UniqueOnlyArray<T>
     public object Clone()
     {
         return IsEmpty
-            ? new UniqueOnlyArray<T>(Array.Empty<T>())
-            : new UniqueOnlyArray<T>(this);
+            ? new UniqueArrayValue<T>(Array.Empty<T>())
+            : new UniqueArrayValue<T>(this);
     }
 
-    public override bool Equals([NotNullWhen(true)] object? obj) => obj is UniqueOnlyArray<T> other && Equals(other);
+    public override bool Equals([NotNullWhen(true)] object? obj) => obj is UniqueArrayValue<T> other && Equals(other);
 
     public bool Equals(T[]? other)
     {
@@ -72,7 +72,7 @@ public struct UniqueOnlyArray<T>
         return null != other && _values!.SetEquals(other);
     }
 
-    public bool Equals(UniqueOnlyArray<T> other)
+    public bool Equals(UniqueArrayValue<T> other)
     {
         if (IsEmpty) return other.IsEmpty;
         return !other.IsEmpty && _values!.SetEquals(other._values!);

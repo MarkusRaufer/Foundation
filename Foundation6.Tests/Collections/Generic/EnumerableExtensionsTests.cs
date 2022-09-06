@@ -63,25 +63,6 @@ public class EnumerableExtensionsTests
     // ReSharper disable InconsistentNaming
 
     [Test]
-    public void Adjacent()
-    {
-        var numbers = Enumerable.Range(0, 5);
-
-        var tupleStrings = new List<string>();
-
-        foreach (var _ in numbers.Adjacent((lhs, rhs) => tupleStrings.Add($"{lhs}, {rhs}")))
-        {
-        }
-
-        Assert.AreEqual(4, tupleStrings.Count);
-
-        Assert.AreEqual("0, 1", tupleStrings[0]);
-        Assert.AreEqual("1, 2", tupleStrings[1]);
-        Assert.AreEqual("2, 3", tupleStrings[2]);
-        Assert.AreEqual("3, 4", tupleStrings[3]);
-    }
-
-    [Test]
     public void AfterEach()
     {
         var items = new List<string> { "1", "2", "3" };
@@ -1285,6 +1266,36 @@ public class EnumerableExtensionsTests
     }
 
     [Test]
+    public void Pairs_Should_ReturnAListOfTuples_When_NotEmpty()
+    {
+        var numbers = Enumerable.Range(0, 5);
+
+        var tuples = numbers.Pairs().ToArray();
+
+        Assert.AreEqual(4, tuples.Length);
+
+        Assert.AreEqual((0, 1), tuples[0]);
+        Assert.AreEqual((1, 2), tuples[1]);
+        Assert.AreEqual((2, 3), tuples[2]);
+        Assert.AreEqual((3, 4), tuples[3]);
+    }
+
+    [Test]
+    public void Pairs_ShouldReturnStrings_When_TransformToStrings()
+    {
+        var numbers = Enumerable.Range(0, 5);
+
+        var strings = numbers.Pairs((lhs, rhs) => $"{lhs}, {rhs}").ToArray();
+
+        Assert.AreEqual(4, strings.Length);
+
+        Assert.AreEqual("0, 1", strings[0]);
+        Assert.AreEqual("1, 2", strings[1]);
+        Assert.AreEqual("2, 3", strings[2]);
+        Assert.AreEqual("3, 4", strings[3]);
+    }
+
+    [Test]
     public void Partition_Should_ReturnTupleWithEvenAndOddNumbers_When_PredicateSelectsEventNumbers()
     {
         var numbers = Enumerable.Range(1, 10);
@@ -2036,6 +2047,7 @@ public class EnumerableExtensionsTests
                          .AddToRight(n => 0 == n % 5, _ => buzz, true)
                          .MergeStreams(n => n.ToString())
                          .ToArray();
+
 
         foreach (var (item, counter) in all.Enumerate(seed: 1))
         {

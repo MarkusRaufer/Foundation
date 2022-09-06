@@ -26,9 +26,9 @@ namespace Foundation.Benchmark
         //}
 
         [Benchmark]
-        public EquatableHashSet<int> EquatableHashSet()
+        public HashSetValue<int> EquatableHashSet()
         {
-            return new EquatableHashSet<int>(_values!);
+            return new HashSetValue<int>(_values!);
         }
 
         [Benchmark]
@@ -38,15 +38,15 @@ namespace Foundation.Benchmark
         }
 
         [Benchmark]
-        public UniqueOnlyArray<int> UniqueOnlyArray()
+        public UniqueArrayValue<int> UniqueOnlyArray()
         {
-            return new UniqueOnlyArray<int>(_values!);
+            return new UniqueArrayValue<int>(_values!);
         }
 
         [Benchmark]
-        public UniqueOnlyHashSet<int> UniqueOnlyHashSet()
+        public UniqueHashSetValue<int> UniqueOnlyHashSet()
         {
-            return new UniqueOnlyHashSet<int>(_values!);
+            return new UniqueHashSetValue<int>(_values!);
         }
     }
 }
