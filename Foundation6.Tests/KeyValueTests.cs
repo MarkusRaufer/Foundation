@@ -1,4 +1,4 @@
-﻿using Foundation.Test.Runtime.Serialization;
+﻿using Foundation.TestUtil.Runtime.Serialization;
 using NUnit.Framework;
 using System.IO;
 

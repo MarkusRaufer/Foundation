@@ -1,4 +1,4 @@
-﻿namespace Foundation.Test.Collections.Generic;
+﻿namespace Foundation.TestUtil.Collections.Generic;
 
 using System.Collections;
 

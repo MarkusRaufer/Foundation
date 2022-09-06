@@ -1,5 +1,5 @@
 ﻿using Foundation.ComponentModel;
-using Foundation.Test.Collections.Generic;
+using Foundation.TestUtil.Collections.Generic;
 using NUnit.Framework;
 using System;
 using System.Collections.Generic;
