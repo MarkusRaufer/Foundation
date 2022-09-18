@@ -1,7 +1,7 @@
 ﻿namespace Foundation;
 
 /// <summary>
-/// Can have three states: <see cref="State"/> can be IsNone or<typeparamref name="TState1"/> and <typeparamref name="TState2"/>.
+/// Can have three states: <see cref="State"/> can be Some(true), Some(false) or None./>.
 /// </summary>
 public struct TriState : IEquatable<TriState>
 {
