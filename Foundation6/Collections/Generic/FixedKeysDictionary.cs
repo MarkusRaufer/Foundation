@@ -15,6 +15,12 @@ public class FixedKeysDictionary<TKey, TValue> : IDictionary<TKey, TValue>
         _dictionary = new Dictionary<TKey, TValue>();
     }
 
+    public FixedKeysDictionary(IEnumerable<KeyValuePair<TKey, TValue>> keyValues)
+    {
+        _dictionary = new Dictionary<TKey, TValue>(keyValues);
+        _keys = new HashSet<TKey>(_dictionary.Keys);
+    }
+
     public TValue this[TKey key] 
     { 
         get => _dictionary[key]; 

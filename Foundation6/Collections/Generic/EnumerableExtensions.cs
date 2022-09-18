@@ -107,9 +107,35 @@ public static class EnumerableExtensions
         while (next)
         {
             yield return it.Current;
+
             next = it.MoveNext();
             if (next)
                 action();
+        }
+    }
+
+    /// <summary>
+    /// Executes action after every item except the last one.
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <param name="items"></param>
+    /// <param name="action">The parameter is the item before the action.</param>
+    /// <returns></returns>
+    /// <exception cref="ArgumentNullException"></exception>
+    public static IEnumerable<T> AfterEach<T>(this IEnumerable<T> items, Action<T> action)
+    {
+        action.ThrowIfNull();
+
+        var it = items.GetEnumerator();
+        var next = it.MoveNext();
+        while (next)
+        {
+            var prevItem = it.Current;
+            yield return prevItem;
+
+            next = it.MoveNext();
+            if (next)
+                action(prevItem);
         }
     }
 
@@ -1053,6 +1079,27 @@ public static class EnumerableExtensions
     }
 
     /// <summary>
+    /// Only items withing the range are returned. If the position is greater than the range end it stops.
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <param name="items"></param>
+    /// <param name="range"></param>
+    /// <returns></returns>
+    /// <exception cref="ArgumentOutOfRangeException"></exception>
+    public static IEnumerable<T> Ignore<T>(this IEnumerable<T> items, System.Range range)
+    {
+        if (range.Start.Value < 0) throw new ArgumentOutOfRangeException(nameof(range));
+
+        int i = 0;
+        foreach (var item in items.ThrowIfNull())
+        {
+            if(range.IsInRange(i)) yield return item;
+            if (range.End.Value < i) yield break;
+            i++;
+        }
+    }
+
+    /// <summary>
     /// Items for which the predicate applies are not returned.
     /// </summary>
     /// <typeparam name="T"></typeparam>
@@ -1102,27 +1149,6 @@ public static class EnumerableExtensions
         foreach (var item in items)
         {
             if (!indices.Contains(i))
-                yield return item;
-
-            i++;
-        }
-    }
-
-    /// <summary>
-    /// Ignores items when predicate returns true.
-    /// </summary>
-    /// <typeparam name="T"></typeparam>
-    /// <param name="items"></param>
-    /// <param name="predicate">First parameter is the index. Second parameter is an item.</param>
-    /// <returns></returns>
-    public static IEnumerable<T> Ignore<T>(this IEnumerable<T> items, Func<int, T, bool> predicate)
-    {
-        predicate.ThrowIfNull();
-
-        var i = 0;
-        foreach (var item in items)
-        {
-            if (!predicate(i, item))
                 yield return item;
 
             i++;
@@ -1185,6 +1211,19 @@ public static class EnumerableExtensions
     }
 
     /// <summary>
+    /// Intersects to lists using a compare function.
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <param name="lhs"></param>
+    /// <param name="rhs"></param>
+    /// <param name="compare"></param>
+    /// <returns></returns>
+    public static IEnumerable<T> Intersect<T>(this IEnumerable<T> lhs, IEnumerable<T> rhs, Func<T?, T?, bool> compare)
+    {
+        return lhs.Intersect(rhs, new LambdaEqualityComparer<T>(compare));
+    }
+
+    /// <summary>
     /// Intersects all collections.
     /// </summary>
     /// <typeparam name="T"></typeparam>
@@ -1199,6 +1238,25 @@ public static class EnumerableExtensions
         while (itCollections.MoveNext())
         {
             intersected = intersected.Intersect(itCollections.Current);
+
+            if (!intersected.Any()) break;
+        }
+
+        foreach (var item in intersected)
+        {
+            yield return item;
+        }
+    }
+
+    public static IEnumerable<T> Intersect<T>(this IEnumerable<IEnumerable<T>> collections, Func<T?, T?, bool> compare)
+    {
+        var itCollections = collections.GetEnumerator();
+        if (!itCollections.MoveNext()) yield break;
+
+        var intersected = itCollections.Current;
+        while (itCollections.MoveNext())
+        {
+            intersected = intersected.Intersect(itCollections.Current, new LambdaEqualityComparer<T>(compare));
 
             if (!intersected.Any()) break;
         }
@@ -1630,6 +1688,20 @@ public static class EnumerableExtensions
     }
 
     /// <summary>
+    /// Returns true if the list contains more than one element.
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <param name="items"></param>
+    /// <returns></returns>
+    public static bool MoreThanOne<T>(this IEnumerable<T> items)
+    {
+        var it = items.GetEnumerator();
+        if (!it.MoveNext()) return false;
+        if (!it.MoveNext()) return false;
+        return true;
+    }
+
+    /// <summary>
     /// returns the elements that occure most frequently.
     /// </summary>
     /// <typeparam name="T"></typeparam>
@@ -1795,9 +1867,9 @@ public static class EnumerableExtensions
     /// <param name="items"></param>
     /// <param name="types"></param>
     /// <returns></returns>
-    public static IEnumerable<T> OfTypes<T, TResult>(this IEnumerable<T> items, params Type[] types)
+    public static IEnumerable<T> OfType<T, TResult>(this IEnumerable<T> items, params Type[] types)
     {
-        return items.OfTypes(x => x, types);
+        return items.OfType(x => x, types);
     }
 
     /// <summary>
@@ -1809,7 +1881,7 @@ public static class EnumerableExtensions
     /// <param name="selector"></param>
     /// <param name="types"></param>
     /// <returns></returns>
-    public static IEnumerable<TResult> OfTypes<T, TResult>(
+    public static IEnumerable<TResult> OfType<T, TResult>(
         this IEnumerable<T> items,
         Func<T, TResult> selector, 
         params Type[] types)
@@ -2072,7 +2144,6 @@ public static class EnumerableExtensions
             lhs = it.Current;
         }
     }
-
 
     /// <summary>
     /// Calls action on all adjacent elements.
