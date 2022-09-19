@@ -10,6 +10,7 @@ namespace Foundation.Collections.ObjectModel
         : IDictionary<TKey, TValue>
         , IMutable
         , INotifyCollectionChanged
+        where TKey : notnull
     {
         public event NotifyCollectionChangedEventHandler? CollectionChanged;
 
@@ -98,7 +99,7 @@ namespace Foundation.Collections.ObjectModel
 
         public bool Remove(TKey key)
         {
-            if (!_dictionary.TryGetValue(key, out TValue value))
+            if (!_dictionary.TryGetValue(key, out TValue? value))
                 return false;
 
             IsDirty = true;
@@ -119,7 +120,7 @@ namespace Foundation.Collections.ObjectModel
             return true;
         }
 
-        public bool TryGetValue(TKey key, out TValue value) => _dictionary.TryGetValue(key, out value);
+        public bool TryGetValue(TKey key, out TValue value) => _dictionary.TryGetValue(key, out value!);
 
         #endregion public methods
     }

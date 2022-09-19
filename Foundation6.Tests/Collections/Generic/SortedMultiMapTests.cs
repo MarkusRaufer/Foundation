@@ -46,7 +46,6 @@ namespace Foundation.Collections.Generic
 
             _sut.Add(key, value1);
             _sut.Add(key, value2);
-            Assert.AreEqual(1, _sut.Count);
 
             var item = _sut.GetKeyValues().Single();
             
@@ -150,8 +149,18 @@ namespace Foundation.Collections.Generic
             }
             {
                 var item = array[1];
+                Assert.AreEqual(key1, item.Key);
+                Assert.AreEqual(uno, item.Value);
+            }
+            {
+                var item = array[2];
                 Assert.AreEqual(key2, item.Key);
                 Assert.AreEqual(two, item.Value);
+            }
+            {
+                var item = array[3];
+                Assert.AreEqual(key2, item.Key);
+                Assert.AreEqual(dos, item.Value);
             }
         }
 
@@ -170,7 +179,7 @@ namespace Foundation.Collections.Generic
             _sut.Add(key2, two);
             _sut.Add(key2, dos);
 
-            Assert.AreEqual(2, _sut.Count);
+            Assert.AreEqual(4, _sut.Count);
         }
 
         [Test]
@@ -187,9 +196,8 @@ namespace Foundation.Collections.Generic
             _sut.Add(key1, uno);
             _sut.Add(key2, two);
             _sut.Add(key2, dos);
-            Assert.AreEqual(2, _sut.Count);
 
-            var items = _sut.GetFlattenedKeyValues(key1).OrderBy(x => x.Key).ToArray();
+            var items = _sut.GetFlattenedKeyValues(key1).ToArray();
             Assert.AreEqual(2, items.Length);
             {
                 var item = items[0];
@@ -217,7 +225,6 @@ namespace Foundation.Collections.Generic
             _sut.Add(key1, uno);
             _sut.Add(key2, two);
             _sut.Add(key2, dos);
-            Assert.AreEqual(2, _sut.Count);
 
             var items = _sut.OrderBy(x => x.Key).ToArray();
             {
@@ -227,8 +234,18 @@ namespace Foundation.Collections.Generic
             }
             {
                 var item = items[1];
+                Assert.AreEqual(key1, item.Key);
+                Assert.AreEqual(uno, item.Value);
+            }
+            {
+                var item = items[2];
                 Assert.AreEqual(key2, item.Key);
                 Assert.AreEqual(two, item.Value);
+            }
+            {
+                var item = items[3];
+                Assert.AreEqual(key2, item.Key);
+                Assert.AreEqual(dos, item.Value);
             }
         }
 
@@ -247,7 +264,7 @@ namespace Foundation.Collections.Generic
             _sut.Add(key2, two);
             _sut.Add(key2, dos);
 
-            Assert.AreEqual(4, _sut.ValuesCount);
+            Assert.AreEqual(4, _sut.Count);
         }
 
         [Test]

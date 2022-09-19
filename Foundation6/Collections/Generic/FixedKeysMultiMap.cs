@@ -9,49 +9,54 @@ using System.Diagnostics.CodeAnalysis;
 /// </summary>
 /// <typeparam name="TKey"></typeparam>
 /// <typeparam name="TValue"></typeparam>
-public class MultiMap<TKey, TValue> : IMultiMap<TKey, TValue>
+public class FixedKeysMultiMap<TKey, TValue> : IMultiMap<TKey, TValue>
     where TKey : notnull
 {
     private readonly IDictionary<TKey, ICollection<TValue>> _dictionary;
+    private readonly HashSet<TKey> _keys;
     private readonly Func<ICollection<TValue>> _valueCollectionFactory;
 
-    public MultiMap() : this(new Dictionary<TKey, ICollection<TValue>>(), () => new List<TValue>())
+    public FixedKeysMultiMap(IEnumerable<TKey> keys) 
+        : this(keys, new Dictionary<TKey, ICollection<TValue>>(), () => new List<TValue>())
     {
     }
 
-    public MultiMap(int capacity) : this(capacity, () => new List<TValue>())
+    public FixedKeysMultiMap(IEnumerable<TKey> keys, int capacity) : this(keys, capacity, () => new List<TValue>())
     {
     }
 
-    public MultiMap(int capacity, Func<ICollection<TValue>> valueCollectionFactory)
-        : this(new Dictionary<TKey, ICollection<TValue>>(capacity), valueCollectionFactory)
+    public FixedKeysMultiMap(IEnumerable<TKey> keys, int capacity, Func<ICollection<TValue>> valueCollectionFactory)
+        : this(keys, new Dictionary<TKey, ICollection<TValue>>(capacity), valueCollectionFactory)
     {
     }
 
-    public MultiMap(IEqualityComparer<TKey> comparer) : this(comparer, () => new List<TValue>())
+    public FixedKeysMultiMap(IEnumerable<TKey> keys, IEqualityComparer<TKey> comparer)
+        : this(keys, comparer, () => new List<TValue>())
     {
     }
 
-    public MultiMap(IEqualityComparer<TKey> comparer, Func<ICollection<TValue>> valueCollectionFactory)
-        : this(new Dictionary<TKey, ICollection<TValue>>(comparer), valueCollectionFactory)
+    public FixedKeysMultiMap(IEnumerable<TKey> keys, IEqualityComparer<TKey> comparer, Func<ICollection<TValue>> valueCollectionFactory)
+        : this(keys, new Dictionary<TKey, ICollection<TValue>>(comparer), valueCollectionFactory)
     {
     }
 
-    public MultiMap(IDictionary<TKey, ICollection<TValue>> dictionary)
-        : this(dictionary, () => new List<TValue>())
+    public FixedKeysMultiMap(IEnumerable<TKey> keys, IDictionary<TKey, ICollection<TValue>> dictionary)
+        : this(keys, dictionary, () => new List<TValue>())
     {
     }
 
-    public MultiMap(Func<ICollection<TValue>> valueCollectionFactory)
-        : this(new Dictionary<TKey, ICollection<TValue>>(), valueCollectionFactory)
+    public FixedKeysMultiMap(IEnumerable<TKey> keys, Func<ICollection<TValue>> valueCollectionFactory)
+        : this(keys, new Dictionary<TKey, ICollection<TValue>>(), valueCollectionFactory)
     {
     }
 
 
-    public MultiMap(
+    public FixedKeysMultiMap(
+        IEnumerable<TKey> keys,
         IDictionary<TKey, ICollection<TValue>> dictionary,
         Func<ICollection<TValue>> valueCollectionFactory)
     {
+        _keys = new HashSet<TKey>(keys);
         _dictionary = dictionary.ThrowIfNull();
         _valueCollectionFactory = valueCollectionFactory.ThrowIfNull();
     }
@@ -60,6 +65,8 @@ public class MultiMap<TKey, TValue> : IMultiMap<TKey, TValue>
 
     public void Add(TKey key, TValue value)
     {
+        if (!_keys.Contains(key)) throw new ArgumentOutOfRangeException(nameof(key));
+
         if (!_dictionary.TryGetValue(key, out ICollection<TValue>? values))
         {
             values = _valueCollectionFactory();
@@ -69,15 +76,21 @@ public class MultiMap<TKey, TValue> : IMultiMap<TKey, TValue>
         values.Add(value);
     }
 
+    /// <summary>
+    /// Replaces all values of a key with one value.
+    /// </summary>
+    /// <param name="item"></param>
     public void AddSingle(KeyValuePair<TKey, TValue> item) => AddSingle(item.Key, item.Value);
 
     /// <summary>
-    /// Has only one value for a key.
+    /// Replaces all values of a key with one value.
     /// </summary>
     /// <param name="key"></param>
     /// <param name="value"></param>
     public void AddSingle(TKey key, TValue value)
     {
+        if (!_keys.Contains(key)) throw new ArgumentOutOfRangeException(nameof(key));
+
         if (!_dictionary.TryGetValue(key, out ICollection<TValue>? values))
         {
             values = _valueCollectionFactory();
@@ -93,6 +106,8 @@ public class MultiMap<TKey, TValue> : IMultiMap<TKey, TValue>
 
     public bool AddUnique(TKey key, TValue value, bool replaceExisting = false)
     {
+        if (!_keys.Contains(key)) throw new ArgumentOutOfRangeException(nameof(key));
+
         if (!_dictionary.TryGetValue(key, out ICollection<TValue>? values))
         {
             values = _valueCollectionFactory();
@@ -156,11 +171,11 @@ public class MultiMap<TKey, TValue> : IMultiMap<TKey, TValue>
     /// Copies only first value of each key.
     /// </summary>
     /// <param name="array"></param>
-    /// <param name="arrayIndex">The index of the array where to start copiing.</param>
+    /// <param name="arrayIndex"></param>
     public void CopyTo(KeyValuePair<TKey, TValue>[] array, int arrayIndex)
     {
         var it = GetEnumerator();
-        for(var i = arrayIndex; i < array.Length; i++)
+        for (var i = arrayIndex; i < array.Length; i++)
         {
             if (!it.MoveNext()) return;
 
@@ -299,10 +314,7 @@ public class MultiMap<TKey, TValue> : IMultiMap<TKey, TValue>
     /// </summary>
     public int KeyCount => _dictionary.Count;
 
-    public ICollection<TKey> Keys
-    {
-        get { return _dictionary.Keys; }
-    }
+    public ICollection<TKey> Keys => _dictionary.Keys;
 
     public virtual bool Remove(TKey key) => _dictionary.Remove(key);
 

@@ -61,12 +61,12 @@ public interface IReadOnlyMultiMap<TKey, TValue> : IEnumerable<KeyValuePair<TKey
     /// <returns></returns>
     int GetValuesCount(TKey key);
 
+    /// <summary>
+    /// Returns the number of keys.
+    /// </summary>
+    public int KeyCount { get; }
+
     bool TryGetValue(TKey key, [MaybeNullWhen(false)] out TValue? value);
 
     bool TryGetValues(TKey key, out IEnumerable<TValue> values);
-
-    /// <summary>
-    /// Returns the number of all values.
-    /// </summary>
-    int ValuesCount { get; }
 }
