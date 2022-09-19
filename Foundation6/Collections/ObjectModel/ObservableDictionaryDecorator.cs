@@ -1,7 +1,6 @@
 ﻿using Foundation.Collections.Generic;
 using Foundation.ComponentModel;
 using System.Collections;
-using System.Collections.Generic;
 using System.Collections.Specialized;
 
 namespace Foundation.Collections.ObjectModel
@@ -63,10 +62,7 @@ namespace Foundation.Collections.ObjectModel
 
         #region public methods
 
-        public void Add(KeyValuePair<TKey, TValue> item)
-        {
-            Add(item.Key, item.Value);
-        }
+        public void Add(KeyValuePair<TKey, TValue> item) => Add(item.Key, item.Value);
 
         public void Add(TKey key, TValue value)
         {
