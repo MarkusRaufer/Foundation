@@ -34,7 +34,7 @@ public class Event<TDelegate> : IDisposable
 
     public void Publish(params object?[] args)
     {
-        foreach (var subscribtion in _subscribtions.Value)
+        foreach (var subscribtion in _subscribtions.Value.ToArray())
         {
             subscribtion.DynamicInvoke(args);
         }
