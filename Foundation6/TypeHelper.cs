@@ -42,9 +42,9 @@ public static class TypeHelper
     /// </summary>
     /// <param name="shortTypeName"></param>
     /// <returns></returns>
-    public static Type? GetScalarType(string shortTypeName)
+    public static Type? GetScalarType(string shortTypeName, bool whithoutPrimitives = false)
     {
-        var fullName = GetScalarTypeFullName(shortTypeName);
+        var fullName = GetScalarTypeFullName(shortTypeName, whithoutPrimitives);
         if (null == fullName) return null;
 
         return Type.GetType(fullName);
@@ -55,10 +55,13 @@ public static class TypeHelper
     /// </summary>
     /// <param name="shortTypeName">e.g. DateTime, decimal, string.</param>
     /// <returns></returns>
-    public static string? GetScalarTypeFullName(string shortTypeName)
+    public static string? GetScalarTypeFullName(string shortTypeName, bool whithoutPrimitives = false)
     {
-        var fullName = GetPrimitiveTypeFullName(shortTypeName);
-        if(null != fullName) return fullName;
+        if(!whithoutPrimitives)
+        {
+            var fullName = GetPrimitiveTypeFullName(shortTypeName);
+            if (null != fullName) return fullName;
+        }
 
         return shortTypeName switch
         {
@@ -147,11 +150,14 @@ public static class TypeHelper
         yield return typeof(Single);
     }
 
-    public static IEnumerable<Type> ScalarArrayTypes()
+    public static IEnumerable<Type> ScalarArrayTypes(bool whithoutPrimitives = false)
     {
-        foreach (var primitive in PrimitiveArrayTypes())
+        if(!whithoutPrimitives)
         {
-            yield return primitive;
+            foreach (var primitive in PrimitiveArrayTypes())
+            {
+                yield return primitive;
+            }
         }
         yield return typeof(DateOnly[]);
         yield return typeof(DateTime[]);
@@ -161,11 +167,14 @@ public static class TypeHelper
         yield return typeof(TimeOnly[]);
     }
 
-    public static IEnumerable<Type> ScalarEnumerableTypes()
+    public static IEnumerable<Type> ScalarEnumerableTypes(bool whithoutPrimitives = false)
     {
-        foreach (var primitive in PrimitiveEnumerableTypes())
+        if(!whithoutPrimitives)
         {
-            yield return primitive;
+            foreach (var primitive in PrimitiveEnumerableTypes())
+            {
+                yield return primitive;
+            }
         }
         yield return typeof(IEnumerable<DateOnly>);
         yield return typeof(IEnumerable<DateTime>);
@@ -173,13 +182,17 @@ public static class TypeHelper
         yield return typeof(IEnumerable<Guid>);
         yield return typeof(IEnumerable<string>);
         yield return typeof(IEnumerable<TimeOnly>);
+        yield return typeof(IEnumerable<TimeSpan>);
     }
 
-    public static IEnumerable<Type> ScalarTypes()
+    public static IEnumerable<Type> ScalarTypes(bool whithoutPrimitives = false)
     {
-        foreach (var primitive in PrimitiveTypes())
+        if(!whithoutPrimitives)
         {
-            yield return primitive;
+            foreach (var primitive in PrimitiveTypes())
+            {
+                yield return primitive;
+            }
         }
 
         yield return typeof(DateOnly);
@@ -188,12 +201,16 @@ public static class TypeHelper
         yield return typeof(Guid);
         yield return typeof(string);
         yield return typeof(TimeOnly);
+        yield return typeof(TimeSpan);
     }
 
-    public static IEnumerable<string> ScalarTypeShortNames()
+    public static IEnumerable<string> ScalarTypeShortNames(bool whithoutPrimitives = false)
     {
-        foreach (var typeName in PrimitiveTypeShortNames())
-            yield return typeName;
+        if(!whithoutPrimitives)
+        {
+            foreach (var typeName in PrimitiveTypeShortNames())
+                yield return typeName;
+        }
 
         yield return nameof(DateOnly);
         yield return nameof(DateTime);
@@ -201,6 +218,7 @@ public static class TypeHelper
         yield return nameof(Guid);
         yield return "string";
         yield return nameof(TimeOnly);
+        yield return nameof(TimeSpan);
     }
 }
 
