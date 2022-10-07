@@ -4,7 +4,7 @@
 /// This event automatically removes all subscribers on Dispose().
 /// </summary>
 /// <typeparam name="TDelegate"></typeparam>
-public class Event<TDelegate> : IDisposable
+public sealed class Event<TDelegate> : IDisposable
     where TDelegate : Delegate
 {
     private readonly Lazy<ICollection<TDelegate>> _subscribtions
