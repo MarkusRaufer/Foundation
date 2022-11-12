@@ -1143,6 +1143,41 @@ public class EnumerableExtensionsTests
     }
 
     [Test]
+    public void Occurrencies_ShouldReturnTheRightQuantity_When_AValuesOccurresMoreThanOneTimes()
+    {
+        var numbers = new[] { 1, 2, 1, 3, 4, 1, 3, 5 };
+        var occurrencies = numbers.Occurrencies().ToArray();
+
+        var distinct = numbers.Distinct().ToArray();
+        Assert.AreEqual(distinct.Length, occurrencies.Length);
+        {
+            var (value, quantity) = occurrencies[0];
+            Assert.AreEqual(1, value);
+            Assert.AreEqual(3, quantity);
+        }
+        {
+            var (value, quantity) = occurrencies[1];
+            Assert.AreEqual(2, value);
+            Assert.AreEqual(1, quantity);
+        }
+        {
+            var (value, quantity) = occurrencies[2];
+            Assert.AreEqual(3, value);
+            Assert.AreEqual(2, quantity);
+        }
+        {
+            var (value, quantity) = occurrencies[3];
+            Assert.AreEqual(4, value);
+            Assert.AreEqual(1, quantity);
+        }
+        {
+            var (value, quantity) = occurrencies[4];
+            Assert.AreEqual(5, value);
+            Assert.AreEqual(1, quantity);
+        }
+    }
+
+    [Test]
     public void OfTypes_ShouldJumpIntoAction_When_UsedAction()
     {
         var items = new object[] { "1", 2, 3.3, "4", 5, 6.6 };
