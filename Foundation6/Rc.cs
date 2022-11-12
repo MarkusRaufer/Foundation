@@ -89,9 +89,9 @@ public class Rc<T>
         return _value;
     }
 
-    public override int GetHashCode() => System.HashCode.Combine(Counter, _value);
+    public override int GetHashCode() => System.HashCode.Combine(_value, Counter);
 
-    public int GeValueHashCode() => _value!.GetHashCode();
+    public int GetValueHashCode() => _value!.GetHashCode();
 
     public void Reset()
     {
