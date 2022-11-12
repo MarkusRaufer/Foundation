@@ -9,7 +9,7 @@ using System.Diagnostics.CodeAnalysis;
 /// </summary>
 /// <typeparam name="TKey"></typeparam>
 /// <typeparam name="TValue"></typeparam>
-public class FixedKeysMultiMap<TKey, TValue> : IMultiMap<TKey, TValue>
+public class FixedKeysMultiMap<TKey, TValue> : IMultiValueMap<TKey, TValue>
     where TKey : notnull
 {
     private readonly IDictionary<TKey, ICollection<TValue>> _dictionary;

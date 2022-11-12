@@ -371,15 +371,33 @@ public static class EnumerableExtensions
     /// <summary>
     /// returns doublets of a list. If there are e.g. three of an item, 2 will returned.
     /// </summary>
-    /// <typeparam name="T"></typeparam>
-    /// <param name="items"></param>
-    /// <returns></returns>
+    /// <typeparam name="T">Item type</typeparam>
+    /// <param name="items">the list of items</param>
+    /// <returns>all doublets</returns>
+    /// <exception cref="ArgumentNullException"></exception>
     public static IEnumerable<T> Duplicates<T>(this IEnumerable<T> items)
     {
         if (null == items) throw new ArgumentNullException(nameof(items));
 
         var set = new HashSet<T>();
         foreach(var item in items)
+        {
+            if (!set.Add(item)) yield return item;
+        }
+    }
+
+    /// <summary>
+    /// returns doublets of a list. If there are e.g. three of an item, 2 will returned.
+    /// </summary>
+    /// <typeparam name="T">Item type</typeparam>
+    /// <param name="items">list of items</param>
+    /// <param name="comparer">comparer used for equality</param>
+    /// <returns>all doublets</returns>
+    /// <exception cref="ArgumentNullException"></exception>
+    public static IEnumerable<T> Duplicates<T>(this IEnumerable<T> items, IEqualityComparer<T> comparer)
+    {
+        var set = new HashSet<T>(comparer.ThrowIfNull());
+        foreach (var item in items.ThrowIfNull())
         {
             if (!set.Add(item)) yield return item;
         }
@@ -581,10 +599,10 @@ public static class EnumerableExtensions
     /// <returns></returns>
     public static IEnumerable<T> ExceptWithDuplicates<T>(this IEnumerable<T> lhs, IEnumerable<T> rhs)
     {
-        var lhsMap = new MultiMap<NullableKey<T>, T>();
+        var lhsMap = new MultiValueMap<NullableKey<T>, T>();
         lhs.ForEach(x => lhsMap.Add(NullableKey.New(x), x));
 
-        var rhsMap = new MultiMap<NullableKey<T>, T>();
+        var rhsMap = new MultiValueMap<NullableKey<T>, T>();
         rhs.ForEach(x => rhsMap.Add(NullableKey.New(x), x));
 
         foreach (var left in lhsMap)
@@ -1093,7 +1111,7 @@ public static class EnumerableExtensions
         int i = 0;
         foreach (var item in items.ThrowIfNull())
         {
-            if(range.IsInRange(i)) yield return item;
+            if(range.Start.Value >= i && range.End.Value <= i) yield return item;
             if (range.End.Value < i) yield break;
             i++;
         }
@@ -1466,8 +1484,8 @@ public static class EnumerableExtensions
                      join right in rhsTuples on keySelector(left.item) equals keySelector(right.item)
                      select (left, right);
 
-        var lhsMap = new MultiMap<TKey, (T, int)>();
-        var rhsMap = new MultiMap<TKey, (T, int)>();
+        var lhsMap = new MultiValueMap<TKey, (T, int)>();
+        var rhsMap = new MultiValueMap<TKey, (T, int)>();
 
         foreach (var (left, right) in tuples)
         {
@@ -1505,8 +1523,8 @@ public static class EnumerableExtensions
                      (left, right) => (left, right)).ToArray();
 
         
-        var lhsMap = new MultiMap<NullableKey<T>, (T?, int)>();
-        var rhsMap = new MultiMap<NullableKey<T>, (T?, int)>();
+        var lhsMap = new MultiValueMap<NullableKey<T>, (T?, int)>();
+        var rhsMap = new MultiValueMap<NullableKey<T>, (T?, int)>();
 
         foreach (var (left, right) in tuples)
         {
@@ -1552,8 +1570,8 @@ public static class EnumerableExtensions
                      join right in enumeratedRhs on keySelector(left.item) equals keySelector(right.item)
                      select (left, right);
 
-        var lhsMap = new MultiMap<TKey, (T, int)>();
-        var rhsMap = new MultiMap<TKey, (T, int)>();
+        var lhsMap = new MultiValueMap<TKey, (T, int)>();
+        var rhsMap = new MultiValueMap<TKey, (T, int)>();
 
         foreach (var (left, right) in tuples)
         {
@@ -1834,7 +1852,7 @@ public static class EnumerableExtensions
         int i = 0;
         foreach (var item in items.ThrowIfNull())
         {
-            if (range.IsInRange(i)) yield return item;
+            if (range.Includes(i)) yield return item;
 
             i++;
         }
@@ -1870,6 +1888,71 @@ public static class EnumerableExtensions
     public static IEnumerable<T> OfType<T, TResult>(this IEnumerable<T> items, params Type[] types)
     {
         return items.OfType(x => x, types);
+    }
+
+    /// <summary>
+    /// Returns all items with their occurrencies.
+    /// </summary>
+    /// <typeparam name="T">Item type</typeparam>
+    /// <param name="items">list of items</param>
+    /// <returns>Returns all items with their occurrencies.</returns>
+    public static IEnumerable<(T value, int quantity)> Occurrencies<T>(this IEnumerable<T> items)
+    {
+        var set = new HashSet<Countable<T>>(new NullableEqualityComparer<Countable<T>>(
+                        (x, y) => x.ValueEquals(y), 
+                        x => x.GetValueHashCode()));
+
+        foreach(var item in items)
+        {
+            var countable = Countable.New(item);
+            if (set.TryGetValue(countable, out var existing))
+            {
+                existing.Inc();
+                continue;
+            }
+
+            countable.Inc();
+            set.Add(countable);
+        }
+
+        foreach(var countable in set)
+        {
+            yield return (value: countable.Value, quantity: countable.Count);
+        }
+    }
+
+    /// <summary>
+    /// Returns all items with their occurrencies.
+    /// </summary>
+    /// <typeparam name="T">Item type</typeparam>
+    /// <param name="items">List of items</param>
+    /// <param name="comparer">custom comparer.</param>
+    /// <returns>Returns all items with their occurrencies.</returns>
+    public static IEnumerable<(T value, int quantity)> Occurrencies<T>(
+        this IEnumerable<T> items,
+        IEqualityComparer<T> comparer)
+    {
+        var set = new HashSet<Countable<T>>(new NullableEqualityComparer<Countable<T>>(
+                        (x, y) => comparer.Equals(x.Value, y.Value),
+                        x => comparer.GetHashCode(x.Value)));
+
+        foreach (var item in items)
+        {
+            var countable = Countable.New(item);
+            if (set.TryGetValue(countable, out var existing))
+            {
+                existing.Inc();
+                continue;
+            }
+
+            countable.Inc();
+            set.Add(countable);
+        }
+
+        foreach (var countable in set)
+        {
+            yield return (value: countable.Value, quantity: countable.Count);
+        }
     }
 
     /// <summary>
@@ -2986,16 +3069,16 @@ public static class EnumerableExtensions
         return new HashSet<T>(items.ThrowIfNull());
     }
 
-    public static IMultiMap<TKey, T> ToMultiMap<T, TKey>(this IEnumerable<T> items, Func<T, TKey> keySelector)
+    public static IMultiValueMap<TKey, T> ToMultiValueMap<T, TKey>(this IEnumerable<T> items, Func<T, TKey> keySelector)
         where TKey : notnull
     {
         items.ThrowIfNull();
         keySelector.ThrowIfNull();
 
-        return ToMultiMap(items, keySelector, x => x);
+        return ToMultiValueMap(items, keySelector, x => x);
     }
 
-    public static IMultiMap<TKey, TValue> ToMultiMap<T, TKey, TValue>(
+    public static IMultiValueMap<TKey, TValue> ToMultiValueMap<T, TKey, TValue>(
         this IEnumerable<T> items, 
         Func<T, TKey> keySelector, 
         Func<T, TValue> valueSelector)
@@ -3004,7 +3087,7 @@ public static class EnumerableExtensions
         items.ThrowIfNull();
         keySelector.ThrowIfNull();
 
-        var dictionary = new MultiMap<TKey, TValue>();
+        var dictionary = new MultiValueMap<TKey, TValue>();
         foreach (var item in items)
             dictionary.Add(keySelector(item), valueSelector(item));
 
@@ -3021,7 +3104,7 @@ public static class EnumerableExtensions
         lhsSelector.ThrowIfNull();
         rhsSelector.ThrowIfNull();
 
-        var one2Many = new MultiMap<TLhs, TRhs>();
+        var one2Many = new MultiValueMap<TLhs, TRhs>();
         foreach (var sourceElem in source)
         {
             var lhsElem = lhsSelector(sourceElem);

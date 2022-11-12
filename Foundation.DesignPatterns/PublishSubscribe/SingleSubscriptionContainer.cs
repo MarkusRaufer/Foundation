@@ -10,11 +10,11 @@ public class SingleSubscriptionContainer<TSubject, TDelegate>
     where TSubject : notnull
     where TDelegate : Delegate
 {
-    private readonly MultiMap<TSubject, TDelegate> _subscriptions;
+    private readonly MultiValueMap<TSubject, TDelegate> _subscriptions;
 
     public SingleSubscriptionContainer()
     {
-        _subscriptions = new MultiMap<TSubject, TDelegate>();
+        _subscriptions = new MultiValueMap<TSubject, TDelegate>();
         OnSubscribe = new Event<Action<(TSubject, TDelegate)>>();
     }
 

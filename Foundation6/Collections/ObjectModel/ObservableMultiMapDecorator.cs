@@ -7,7 +7,7 @@ using System.Diagnostics.CodeAnalysis;
 namespace Foundation.Collections.ObjectModel;
 
 public class ObservableMultiMapDecorator<TKey, TValue>
-    : IMultiMap<TKey, TValue>
+    : IMultiValueMap<TKey, TValue>
     , IMutable
     , INotifyCollectionChanged
 
@@ -15,9 +15,9 @@ public class ObservableMultiMapDecorator<TKey, TValue>
 {
     public event NotifyCollectionChangedEventHandler? CollectionChanged;
 
-    private readonly IMultiMap<TKey, TValue> _map;
+    private readonly IMultiValueMap<TKey, TValue> _map;
 
-    public ObservableMultiMapDecorator(IMultiMap<TKey, TValue> map)
+    public ObservableMultiMapDecorator(IMultiValueMap<TKey, TValue> map)
     {
         _map = map.ThrowIfNull();
     }
@@ -141,7 +141,7 @@ public class ObservableMultiMapDecorator<TKey, TValue>
     public bool RemoveValue(TValue value, params TKey[] keys) => _map.RemoveValue(value, keys);
 
     public bool TryGetValue(TKey key, [MaybeNullWhen(false)] out TValue value)
-        => ((IReadOnlyMultiMap<TKey, TValue>)_map).TryGetValue(key, out value);
+        => ((IReadOnlyMultiValueMap<TKey, TValue>)_map).TryGetValue(key, out value);
 
     public bool TryGetValues(TKey key, out IEnumerable<TValue> values) => _map.TryGetValues(key, out values);
 

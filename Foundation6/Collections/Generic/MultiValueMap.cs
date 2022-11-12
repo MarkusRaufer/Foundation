@@ -9,46 +9,51 @@ using System.Diagnostics.CodeAnalysis;
 /// </summary>
 /// <typeparam name="TKey"></typeparam>
 /// <typeparam name="TValue"></typeparam>
-public class MultiMap<TKey, TValue> : IMultiMap<TKey, TValue>
+public class MultiValueMap<TKey, TValue> : IMultiValueMap<TKey, TValue>
     where TKey : notnull
 {
     private readonly IDictionary<TKey, ICollection<TValue>> _dictionary;
     private readonly Func<ICollection<TValue>> _valueCollectionFactory;
 
-    public MultiMap() : this(new Dictionary<TKey, ICollection<TValue>>(), () => new List<TValue>())
+    public MultiValueMap() : this(new Dictionary<TKey, ICollection<TValue>>(), () => new List<TValue>())
     {
     }
 
-    public MultiMap(int capacity) : this(capacity, () => new List<TValue>())
+    public MultiValueMap(int capacity) : this(capacity, () => new List<TValue>())
     {
     }
 
-    public MultiMap(int capacity, Func<ICollection<TValue>> valueCollectionFactory)
+    public MultiValueMap(int capacity, Func<ICollection<TValue>> valueCollectionFactory)
         : this(new Dictionary<TKey, ICollection<TValue>>(capacity), valueCollectionFactory)
     {
     }
 
-    public MultiMap(IEqualityComparer<TKey> comparer) : this(comparer, () => new List<TValue>())
+    public MultiValueMap(IEqualityComparer<TKey> comparer) : this(comparer, () => new List<TValue>())
     {
     }
 
-    public MultiMap(IEqualityComparer<TKey> comparer, Func<ICollection<TValue>> valueCollectionFactory)
+    public MultiValueMap(IEqualityComparer<TKey> comparer, Func<ICollection<TValue>> valueCollectionFactory)
         : this(new Dictionary<TKey, ICollection<TValue>>(comparer), valueCollectionFactory)
     {
     }
 
-    public MultiMap(IDictionary<TKey, ICollection<TValue>> dictionary)
+    public MultiValueMap(int capasity, IEqualityComparer<TKey> comparer, Func<ICollection<TValue>> valueCollectionFactory)
+        : this(new Dictionary<TKey, ICollection<TValue>>(capasity, comparer), valueCollectionFactory)
+    {
+    }
+
+    public MultiValueMap(IDictionary<TKey, ICollection<TValue>> dictionary)
         : this(dictionary, () => new List<TValue>())
     {
     }
 
-    public MultiMap(Func<ICollection<TValue>> valueCollectionFactory)
+    public MultiValueMap(Func<ICollection<TValue>> valueCollectionFactory)
         : this(new Dictionary<TKey, ICollection<TValue>>(), valueCollectionFactory)
     {
     }
 
 
-    public MultiMap(
+    public MultiValueMap(
         IDictionary<TKey, ICollection<TValue>> dictionary,
         Func<ICollection<TValue>> valueCollectionFactory)
     {

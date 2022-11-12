@@ -2,7 +2,7 @@ namespace Foundation.Collections.Generic;
 
 using System.Diagnostics.CodeAnalysis;
 
-public interface IReadOnlyMultiMap<TKey, TValue> : IEnumerable<KeyValuePair<TKey, TValue>>
+public interface IReadOnlyMultiValueMap<TKey, TValue> : IEnumerable<KeyValuePair<TKey, TValue>>
     where TKey : notnull
 {
     /// <summary>

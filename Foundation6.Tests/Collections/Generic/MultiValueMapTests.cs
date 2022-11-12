@@ -9,11 +9,11 @@ namespace Foundation.Collections.Generic
     {
         // ReSharper disable InconsistentNaming
 
-        private MultiMap<string, string> _sut;
+        private MultiValueMap<string, string> _sut;
 
         public MultiMapTests()
         {
-            _sut = new MultiMap<string, string>();
+            _sut = new MultiValueMap<string, string>();
         }
 
         [TearDown]

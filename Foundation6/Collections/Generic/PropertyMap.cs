@@ -88,7 +88,7 @@ namespace Foundation.Collections.Generic
     {
         private readonly IDictionary<string, object> _dictionary;
         private readonly IList<TEvent> _events;
-        private readonly IMultiMap<string, string> _keys;
+        private readonly IMultiValueMap<string, string> _keys;
 
         protected PropertyMap(char pathSeparator = '/')
             : this(new SortedDictionary<string, object>(), pathSeparator)
@@ -100,7 +100,7 @@ namespace Foundation.Collections.Generic
             _dictionary = dictionary.ThrowIfNull();
             PathSeparator = pathSeparator;
 
-            _keys = new MultiMap<string, string>();
+            _keys = new MultiValueMap<string, string>();
             _events = new List<TEvent>();
         }
 

@@ -6,7 +6,7 @@
 /// </summary>
 /// <typeparam name="TKey"></typeparam>
 /// <typeparam name="TValue"></typeparam>
-public class SortedMultiMap<TKey, TValue> : MultiMap<TKey, TValue>
+public class SortedMultiMap<TKey, TValue> : MultiValueMap<TKey, TValue>
     where TKey : notnull
 {
     public SortedMultiMap() : base(new SortedDictionary<TKey, ICollection<TValue>>(), () => new List<TValue>())

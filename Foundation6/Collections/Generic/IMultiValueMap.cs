@@ -1,8 +1,8 @@
 namespace Foundation.Collections.Generic;
 
-public interface IMultiMap<TKey, TValue>
+public interface IMultiValueMap<TKey, TValue>
     : IDictionary<TKey, TValue>
-    , IReadOnlyMultiMap<TKey, TValue>
+    , IReadOnlyMultiValueMap<TKey, TValue>
     where TKey : notnull
 {
     /// <summary>
