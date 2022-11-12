@@ -4,12 +4,12 @@ using System.Diagnostics;
 
 public class Range
 {
-    public static Range<T, T> Create<T>(params IRangeExpression<T>[] rangeExpressions)
+    public static Range<T, T> New<T>(params IRangeExpression<T>[] rangeExpressions)
     {
-        return Create<T, T>(rangeExpressions);
+        return New<T, T>(rangeExpressions);
     }
 
-    public static Range<TIn, TOut> Create<TIn, TOut>(params IRangeExpression<TIn>[] rangeExpressions)
+    public static Range<TIn, TOut> New<TIn, TOut>(params IRangeExpression<TIn>[] rangeExpressions)
     {
         return new Range<TIn, TOut>(rangeExpressions);
     }
@@ -19,7 +19,7 @@ public class Range
 /// Defines a range of values.
 /// </summary>
 [DebuggerDisplay("Min={Min}, Max={Max}")]
-public struct Range<TIn, TOut>
+public readonly struct Range<TIn, TOut>
 {
     private readonly bool _containsOnlyValueExpressions;
     private readonly IRangeExpression<TIn>[] _rangeExpressions;

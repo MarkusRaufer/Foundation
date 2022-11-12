@@ -16,6 +16,18 @@ public static class Is
     }
 
     /// <summary>
+    /// Creates a Between range expression. 
+    /// </summary>
+    /// <param name="range">includes the min and max value.</param>
+    /// <returns></returns>
+    public static IRangeExpression<int> Between(System.Range range)
+    {
+        var min = range.Start.IsFromEnd ? 0 : range.Start.Value;
+        var max = range.End.IsFromEnd ? int.MaxValue : range.End.Value;
+        return Between<int>(min, max);
+    }
+
+    /// <summary>
     /// Creates an Exactly range expression.
     /// </summary>
     /// <typeparam name="T">Type of the value.</typeparam>

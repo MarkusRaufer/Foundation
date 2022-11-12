@@ -14,7 +14,7 @@ namespace Foundation
         {
             var min = 3;
             var max = 5;
-            var sut = Range.Create(Is.Between(min, max));
+            var sut = Range.New(Is.Between(min, max));
             Assert.IsTrue(sut.IsInRange(min));
             Assert.IsTrue(sut.IsInRange(4));
             Assert.IsTrue(sut.IsInRange(max));
@@ -31,7 +31,7 @@ namespace Foundation
         [Test]
         public void Between_One_Values()
         {
-            var sut = Range.Create(Is.Between(3, 5));
+            var sut = Range.New(Is.Between(3, 5));
             Assert.IsFalse(sut.ContainsOnlyValueExpressions);
             Assert.AreEqual(0, sut.Values.Count());
         }
@@ -39,7 +39,7 @@ namespace Foundation
         [Test]
         public void Between_Three_IsInRange()
         {
-            var sut = Range.Create(Is.Between(2, 3), 
+            var sut = Range.New(Is.Between(2, 3), 
                                    Is.Between(5, 6), 
                                    Is.Between(8, 9));
 
@@ -62,7 +62,7 @@ namespace Foundation
         public void Exactly_One_IsInRange()
         {
             var value = 3;
-            var sut = Range.Create(Is.Exactly(value));
+            var sut = Range.New(Is.Exactly(value));
             Assert.IsTrue(sut.IsInRange(value));
 
             Assert.IsFalse(sut.IsInRange(2));
@@ -75,7 +75,7 @@ namespace Foundation
         [Test]
         public void Exactly_One_Values()
         {
-            var sut = Range.Create(Is.Exactly(3));
+            var sut = Range.New(Is.Exactly(3));
             Assert.IsTrue(sut.ContainsOnlyValueExpressions);
 
             var values = sut.Values.ToList();
@@ -85,7 +85,7 @@ namespace Foundation
         [Test]
         public void Exactly_Three_IsInRange()
         {
-            var sut = Range.Create(Is.Exactly(1), Is.Exactly(3), Is.Exactly(5));
+            var sut = Range.New(Is.Exactly(1), Is.Exactly(3), Is.Exactly(5));
             Assert.IsTrue(sut.IsInRange(1));
             Assert.IsTrue(sut.IsInRange(3));
             Assert.IsTrue(sut.IsInRange(5));
@@ -105,7 +105,7 @@ namespace Foundation
         [Test]
         public void Matching_One()
         {
-            var sut = Range.Create(Is.Matching<int>(n => n > 3));
+            var sut = Range.New(Is.Matching<int>(n => n > 3));
             Assert.IsFalse(sut.IsInRange(2));
             Assert.IsFalse(sut.IsInRange(3));
 
@@ -118,7 +118,7 @@ namespace Foundation
         [Test]
         public void Matching_Three()
         {
-            var sut = Range.Create(Is.Matching<int>(n => n == 2), 
+            var sut = Range.New(Is.Matching<int>(n => n == 2), 
                                    Is.Matching<int>(n => n == 5), 
                                    Is.Matching<int>(n => n == 7));
 
@@ -138,7 +138,7 @@ namespace Foundation
         [Test]
         public void Mixed_IsInRange()
         {
-            var sut = Range.Create(Is.OneOf(2, 4, 7), 
+            var sut = Range.New(Is.OneOf(2, 4, 7), 
                                    Is.Exactly(6), 
                                    Is.Between(8, 10),
                                    Is.Matching<int>(n => n > 23 && n < 25));
@@ -165,7 +165,7 @@ namespace Foundation
         [Test]
         public void OneOf_One_IsInRange()
         {
-            var sut = Range.Create(Is.OneOf(1, 3, 5));
+            var sut = Range.New(Is.OneOf(1, 3, 5));
             Assert.IsTrue(sut.IsInRange(1));
             Assert.IsTrue(sut.IsInRange(3));
             Assert.IsTrue(sut.IsInRange(5));
@@ -178,7 +178,7 @@ namespace Foundation
         [Test]
         public void OneOf_WithStrings_One_IsInRange()
         {
-            var sut = Range.Create(Is.OneOf("1", "3", "5"));
+            var sut = Range.New(Is.OneOf("1", "3", "5"));
             Assert.IsTrue(sut.IsInRange("1"));
             Assert.IsTrue(sut.IsInRange("3"));
             Assert.IsTrue(sut.IsInRange("5"));
@@ -199,7 +199,7 @@ namespace Foundation
         [Test]
         public void OneOf_Three_IsInRange()
         {
-            var sut = Range.Create(Is.OneOf(2, 4), Is.OneOf(6, 8), Is.OneOf(10, 12));
+            var sut = Range.New(Is.OneOf(2, 4), Is.OneOf(6, 8), Is.OneOf(10, 12));
             Assert.IsTrue(sut.IsInRange(2));
             Assert.IsTrue(sut.IsInRange(4));
             Assert.IsTrue(sut.IsInRange(6));
@@ -232,7 +232,7 @@ namespace Foundation
         [Test]
         public void TypeOf()
         {
-            var sut = Range.Create<object, int>(Is.OfType<int>());
+            var sut = Range.New<object, int>(Is.OfType<int>());
             Assert.IsTrue(sut.IsInRange(-1));
             Assert.AreEqual(-1, sut.Values.Single());
 
@@ -250,7 +250,7 @@ namespace Foundation
         [Test]
         public void Values_Mixed()
         {
-            var sut = Range.Create(Is.OneOf(2, 4), Is.Exactly(6), Is.Between(8, 10));
+            var sut = Range.New(Is.OneOf(2, 4), Is.Exactly(6), Is.Between(8, 10));
             Assert.IsFalse(sut.ContainsOnlyValueExpressions);
             Assert.AreEqual(0, sut.Values.Count());
         }
@@ -258,7 +258,7 @@ namespace Foundation
         [Test]
         public void Values_Mixed_ValueRangeExpressionsOnly()
         {
-            var sut = Range.Create(Is.OneOf(2, 4), Is.Exactly(6), Is.NumericBetween(8, 10));
+            var sut = Range.New(Is.OneOf(2, 4), Is.Exactly(6), Is.NumericBetween(8, 10));
             Assert.IsTrue(sut.ContainsOnlyValueExpressions);
 
             var expected = new List<int> { 2, 4, 6, 8, 9, 10 };
@@ -270,7 +270,7 @@ namespace Foundation
         [Test]
         public void Values_One_NumericBetween()
         {
-            var sut = Range.Create(Is.NumericBetween(3, 5));
+            var sut = Range.New(Is.NumericBetween(3, 5));
             Assert.IsTrue(sut.ContainsOnlyValueExpressions);
 
             var expected = new List<int> { 3, 4, 5 };
@@ -282,7 +282,7 @@ namespace Foundation
         [Test]
         public void Values_One_OneOf()
         {
-            var sut = Range.Create(Is.OneOf(1, 3, 5));
+            var sut = Range.New(Is.OneOf(1, 3, 5));
             Assert.IsTrue(sut.ContainsOnlyValueExpressions);
 
             var expected = new List<int> { 1, 3, 5 };
@@ -294,7 +294,7 @@ namespace Foundation
         [Test]
         public void Values_Three_Between()
         {
-            var sut = Range.Create(Is.Between(2, 3), Is.Between(5, 6), Is.Between(8, 9));
+            var sut = Range.New(Is.Between(2, 3), Is.Between(5, 6), Is.Between(8, 9));
             Assert.IsFalse(sut.ContainsOnlyValueExpressions);
             Assert.AreEqual(0, sut.Values.Count());
         }
@@ -302,7 +302,7 @@ namespace Foundation
         [Test]
         public void Values_Three_Exactly()
         {
-            var sut = Range.Create(Is.Exactly(1), Is.Exactly(3), Is.Exactly(5));
+            var sut = Range.New(Is.Exactly(1), Is.Exactly(3), Is.Exactly(5));
             Assert.IsTrue(sut.ContainsOnlyValueExpressions);
 
             var expected = new List<int> { 1, 3, 5 };
@@ -313,7 +313,7 @@ namespace Foundation
         [Test]
         public void Values_Three_NumericBetween()
         {
-            var sut = Range.Create(Is.NumericBetween(2, 3), Is.NumericBetween(5, 6), Is.NumericBetween(8, 9));
+            var sut = Range.New(Is.NumericBetween(2, 3), Is.NumericBetween(5, 6), Is.NumericBetween(8, 9));
             Assert.IsTrue(sut.ContainsOnlyValueExpressions);
             
             var expected = new List<int> { 2, 3, 5, 6, 8, 9 };
@@ -325,7 +325,7 @@ namespace Foundation
         [Test]
         public void Values_Three_OneOf()
         {
-            var sut = Range.Create(Is.OneOf(1, 3), Is.OneOf(5, 7), Is.OneOf(9, 11));
+            var sut = Range.New(Is.OneOf(1, 3), Is.OneOf(5, 7), Is.OneOf(9, 11));
             Assert.IsTrue(sut.ContainsOnlyValueExpressions);
 
             var expected = new List<int> { 1, 3, 5, 7, 9, 11 };

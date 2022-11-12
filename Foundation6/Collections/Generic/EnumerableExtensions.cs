@@ -471,13 +471,12 @@ public static class EnumerableExtensions
     /// <returns></returns>
     public static IEnumerable<(T item, int counter)> Enumerate<T>(this IEnumerable<T> items, System.Range range)
     {
-        if(range.Start.IsFromEnd) throw new ArgumentException($"{range.Start}.IsFromEnd is not allowed");
         if (range.End.IsFromEnd) throw new ArgumentException($"{range.End}.IsFromEnd is not allowed");
 
-        var i = range.Start.Value;
+        var i = range.Start.IsFromEnd ? 0 : range.Start.Value;
         foreach (var item in items)
         {
-            if (i > range.End.Value) i = range.Start.Value;
+            if (!range.End.IsFromEnd && range.End.Value < i) i = range.Start.Value;
 
             yield return (item, i);
             i++;
