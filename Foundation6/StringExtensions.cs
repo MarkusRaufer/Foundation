@@ -270,6 +270,21 @@ public static class StringExtensions
         return sb.ToString();
     }
 
+    /// <summary>
+    /// Repeats str
+    /// </summary>
+    /// <param name="str"></param>
+    /// <param name="repeat"></param>
+    /// <returns></returns>
+    public static string Repeat(this string str, int quantity)
+    {
+        var sb = new StringBuilder();
+        for(var i=0; i< quantity; i++)
+            sb.Append(str);
+
+        return sb.ToString();
+    }
+
     public static IEnumerable<string> SplitAtIndex(this string str, params int[] indexes)
     {
         if (0 == indexes.Length)
