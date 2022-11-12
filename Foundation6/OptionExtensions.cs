@@ -93,6 +93,18 @@ public static class OptionExtensions
     }
 
     /// <summary>
+    /// If lhs has a value lhs is returned otherwise rhs is returned.
+    /// </summary>
+    /// <typeparam name="T">The type of the value</typeparam>
+    /// <param name="lhs">The left option containing a possible value.</param>
+    /// <param name="rhs">The right option containing a possible value.</param>
+    /// <returns></returns>
+    public static Option<T> Or<T>(this Option<T> lhs, Option<T> rhs)
+    {
+        return lhs.IsSome ? lhs : rhs;
+    }
+
+    /// <summary>
     /// Returns the value if IsSome is true or returns <paramref name="none"/>
     /// </summary>
     /// <typeparam name="T"></typeparam>
@@ -155,6 +167,25 @@ public static class OptionExtensions
         if (option.IsSome) return option.Value!;
 
         throw exception();
+    }
+
+    /// <summary>
+    /// If returning true it has a value otherwise it returns false.
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <param name="option">The option containing the possible value.</param>
+    /// <param name="value">The value if the option has some value.</param>
+    /// <returns></returns>
+    public static bool TryGet<T>(this Option<T> option, out T? value)
+    {
+        if(option.IsSome)
+        {
+            value = option.OrThrow();
+            return true;
+        }
+
+        value = default;
+        return false;
     }
 }
 
