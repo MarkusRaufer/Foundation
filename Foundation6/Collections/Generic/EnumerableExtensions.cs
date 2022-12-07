@@ -2541,7 +2541,7 @@ public static class EnumerableExtensions
     public static IEnumerable<TError> SelectError<TOk, TError>(this IEnumerable<Result<TOk, TError>> items)
     {
         return items.ThrowIfNull()
-                    .Where(item => item.IsError)
+                    .Where(item => !item.IsOk)
                     .Select(result => result.Error);
     }
 

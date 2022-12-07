@@ -46,7 +46,7 @@
         /// <returns></returns>
         public static Unit OnError<TOk, TError>(this Result<TOk, TError> result, Action<TError> error)
         {
-            if (result.IsError) error(result.Error);
+            if (!result.IsOk) error(result.Error);
 
             return new Unit();
         }

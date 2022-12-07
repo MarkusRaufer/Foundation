@@ -43,17 +43,19 @@ public static class Result
 }
 
 /// <summary>
-/// This is a result that can be either Ok or Error.
+/// This is a result that can be only Error.
 /// </summary>
 /// <typeparam name="TError"></typeparam>
-public struct Result<TError>
+public readonly struct Result<TError>
     : IResult<TError>
     , IEquatable<Result<TError>>
 {
+    private readonly bool _isError;
+
     internal Result(TError error)
     {
         Error = error.ThrowIfNull();
-        IsError = true;
+        _isError = true;
     }
 
     public static bool operator ==(Result<TError> left, Result<TError> right)
@@ -74,7 +76,7 @@ public struct Result<TError>
     {
         if (IsOk) return other.IsOk;
 
-        return other.IsError
+        return !other.IsOk
             && EqualityComparer<TError>.Default.Equals(Error, other.Error);
     }
 
@@ -83,21 +85,17 @@ public struct Result<TError>
                                          : System.HashCode.Combine(typeof(Result<TError>), Error);
 
     /// <summary>
-    /// Is true if Result has an error. If <see cref="IsError"/> is true, <see cref="IsOk"/> is false;
+    /// Is true if Result has a value <see cref="IsOk"/> otherwise false;
     /// </summary>
-    public bool IsError { get; }
+    public bool IsOk => !_isError;
 
-    /// <summary>
-    /// Is true if Result has a value. If <see cref="IsOk"/> is true, <see cref="IsError"/> is false;
-    /// </summary>
-    public bool IsOk => !IsError;
-
-    public override string ToString() => IsOk ? $"IsOk: {IsOk}" : $"IsOk: {IsOk}, Error: {Error}";
+    public override string ToString()
+        => IsOk ? $"IsOk: {IsOk}" : $"IsOk: {IsOk}, Error: {Error}";
 }
 
 [DebuggerDisplay("IsOk={IsOk}")]
 [Serializable]
-public struct Result<TOk, TError>
+public readonly struct Result<TOk, TError>
     : IResult<TOk, TError>
     , IEquatable<Result<TOk, TError>>
 {
@@ -128,13 +126,14 @@ public struct Result<TOk, TError>
         return !(left == right);
     }
 
-    public override bool Equals(object? obj) => obj is Result<TOk, TError> other && Equals(other);
+    public override bool Equals(object? obj)
+        => obj is Result<TOk, TError> other && Equals(other);
 
     public bool Equals(Result<TOk, TError> other)
     {
         if (IsOk) return other.IsOk && EqualityComparer<TOk>.Default.Equals(Ok, other.Ok);
 
-        return other.IsError && EqualityComparer<TError>.Default.Equals(Error, other.Error);
+        return !other.IsOk && EqualityComparer<TError>.Default.Equals(Error, other.Error);
     }
 
     public TError Error
@@ -148,16 +147,13 @@ public struct Result<TOk, TError>
 
     public override int GetHashCode() => _hashCode;
 
-    public bool IsError => !IsOk;
-
     public bool IsOk => _ok.IsSome;
 
     public TOk Ok
     {
         get
         {
-            if (IsError)
-                throw new ArgumentException("Ok is not valid because the result contains an error");
+            if (!IsOk) throw new ArgumentException("Result contains an error");
 
             return _ok.OrThrow();
         }
@@ -165,10 +161,8 @@ public struct Result<TOk, TError>
 
     public override string ToString()
     {
-
         return IsOk
             ? $"IsOk: {IsOk}, Ok: {Ok}"
             : $"IsOk: {IsOk}, Error: {Error}";
     }
 }
-

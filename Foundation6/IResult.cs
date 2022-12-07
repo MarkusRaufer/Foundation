@@ -7,7 +7,6 @@ public interface IResult : IResult<Exception>
 public interface IResult<out TError>
 {
     TError Error { get; }
-    bool IsError { get; }
     bool IsOk { get; }
 }
 

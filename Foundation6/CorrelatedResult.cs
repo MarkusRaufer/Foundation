@@ -26,7 +26,8 @@ public static class CorrelatedResult
 }
 
 
-public struct CorrelatedResult<TCorrelationId, TOk, TError> : ICorrelatedResult<TCorrelationId, TOk, TError>
+public struct CorrelatedResult<TCorrelationId, TOk, TError>
+    : ICorrelatedResult<TCorrelationId, TOk, TError>
     where TCorrelationId : notnull
 {
     private readonly Result<TOk, TError> _result;
@@ -47,8 +48,6 @@ public struct CorrelatedResult<TCorrelationId, TOk, TError> : ICorrelatedResult<
     public TCorrelationId CorrelationId { get; }
 
     public TError Error => _result.Error;
-
-    public bool IsError => _result.IsError;
 
     public bool IsOk => _result.IsOk;
 
