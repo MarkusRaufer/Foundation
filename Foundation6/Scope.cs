@@ -43,7 +43,8 @@ public static class Scope
     }
 
     /// <summary>
-    /// Returns a value from a scope. This can be used to avoid state. This enables e.g. return a value from an if or foreach statement.
+    /// Returns a value from a scope. This can be used to avoid state.
+    /// This enables e.g. return a value from an if or foreach statement.
     /// </summary>
     /// <typeparam name="T"></typeparam>
     /// <param name="ret"></param>
@@ -52,5 +53,18 @@ public static class Scope
     {
         ret.ThrowIfNull();
         return ret();
+    }
+
+    /// <summary>
+    /// Returns a value asynchronous from a scope. This can be used to avoid state.
+    /// This enables e.g. return a value from an if or foreach statement.
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <param name="ret"></param>
+    /// <returns></returns>
+    public static async Task<T> ReturnsAsync<T>(Func<Task<T>> ret)
+    {
+        ret.ThrowIfNull();
+        return await ret();
     }
 }
