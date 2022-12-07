@@ -1,8 +1,5 @@
 ﻿namespace Foundation;
-
-using System.Diagnostics;
-
-public struct Period : IComparable<Period>
+public readonly struct Period : IComparable<Period>
 {
     public enum Direction
     {
@@ -69,7 +66,7 @@ public struct Period : IComparable<Period>
 
     public TimeSpan Duration => End - Start;
 
-    public DateTime End { get; private set; }
+    public DateTime End { get; }
 
     public override bool Equals(object? obj) => obj is Period other && Equals(other);
 
@@ -130,7 +127,7 @@ public struct Period : IComparable<Period>
         return new Period(dateTime - duration, dateTime);
     }
 
-    public DateTime Start { get; private set; }
+    public DateTime Start { get; }
 
     public override string ToString() => $"{nameof(Start)}={Start:o}, {nameof(End)}={End:o}, {nameof(Duration)}={Duration}";
 }
