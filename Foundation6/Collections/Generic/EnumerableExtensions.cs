@@ -139,6 +139,27 @@ public static class EnumerableExtensions
         }
     }
 
+    public static IEnumerable<T> AfterFirst<T>(this IEnumerable<T> items, Action<T> action)
+    {
+        action.ThrowIfNull();
+
+        var it = items.ThrowIfNull()
+                      .GetEnumerator();
+
+        if (!it.MoveNext()) yield break;
+        var first = it.Current;
+        yield return first;
+
+        if (!it.MoveNext()) yield break;
+        action(first);
+        yield return it.Current;
+
+        while (it.MoveNext())
+        {
+            yield return it.Current;
+        }
+    }
+
     /// <summary>
     /// Aggregates elements like standard LINQ.
     /// The first element is taken as seed and can be transformed.
@@ -159,7 +180,8 @@ public static class EnumerableExtensions
 
         TAccumulate? acc = default;
 
-        foreach (var item in items.OnFirstTakeOne(x => acc = seed(x)))
+        foreach (var item in items.OnFirst(x => acc = seed(x))
+                                  .Skip(1))
         {
             acc = func(acc!, item);
         }
@@ -1639,12 +1661,14 @@ public static class EnumerableExtensions
 
         var hasValue = false;
 
-        foreach (var item in items.OnFirstTakeOne(i =>
+        foreach (var item in items
+        .OnFirst(i =>
         {
             min = i;
             max = i;
             hasValue = true;
-        }))
+        })
+        .Skip(1))
         {
             if (-1 == item.CompareTo(min))
             {
@@ -1679,12 +1703,14 @@ public static class EnumerableExtensions
 
         var hasValue = false;
 
-        foreach (var item in items.OnFirstTakeOne(i =>
+        foreach (var item in items
+            .OnFirst(i =>
         {
             min = Pair.New(selector(i), i);
             max = Pair.New(selector(i), i);
             hasValue = true;
-        }))
+        })
+        .Skip(1))
         {
             var selectorValue = selector(item);
             if (null == selectorValue) continue;
@@ -2075,11 +2101,11 @@ public static class EnumerableExtensions
     }
 
     /// <summary>
-    /// Calls action on first item.
+    /// Is called on first item.
     /// </summary>
-    /// <typeparam name="T"></typeparam>
-    /// <param name="items"></param>
-    /// <param name="action"></param>
+    /// <typeparam name="T">Type of items.</typeparam>
+    /// <param name="items">List of items</param>
+    /// <param name="action">Is called on first item.</param>
     /// <returns></returns>
     public static IEnumerable<T> OnFirst<T>(this IEnumerable<T> items, Action<T> action)
     {
@@ -2092,30 +2118,6 @@ public static class EnumerableExtensions
 
         action(it.Current);
         yield return it.Current;
-
-        while (it.MoveNext())
-        {
-            yield return it.Current;
-        }
-    }
-
-    /// <summary>
-    /// Calls action on first item. The IEnumerable result starts from the 2nd element.
-    /// </summary>
-    /// <typeparam name="T"></typeparam>
-    /// <param name="items"></param>
-    /// <param name="action"></param>
-    /// <returns></returns>
-    public static IEnumerable<T> OnFirstTakeOne<T>(this IEnumerable<T> items, Action<T> action)
-    {
-        action.ThrowIfNull();
-
-        var it = items.ThrowIfNull()
-                      .GetEnumerator();
-
-        if (!it.MoveNext()) yield break;
-
-        action(it.Current);
 
         while (it.MoveNext())
         {

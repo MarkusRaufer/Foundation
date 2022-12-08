@@ -1191,6 +1191,64 @@ public class EnumerableExtensionsTests
     }
 
     [Test]
+    public void OnCombinationOnFirstAfterFirstAfterEachOnLast_WithArgument()
+    {
+        var numbers = Enumerable.Range(1, 10);
+        var loopCounter = 0;
+
+        var onFirstCounter = 0;
+        var onFirstValue = -1;
+        void onFirst(int x)
+        {
+            onFirstCounter++;
+            onFirstValue = x;
+        }
+
+        var afterFirstCounter = 0;
+        var afterFirstValue = -1;
+        void afterFirst(int x)
+        {
+            afterFirstCounter++;
+            afterFirstValue = x;
+        }
+
+        var afterEachCounter = 0;
+        void afterEach(int x)
+        {
+            afterEachCounter++;
+        }
+
+        var onLastCounter = 0;
+        var onLastValue = -1;
+        void onLast(int x)
+        {
+            onLastCounter++;
+            onLastValue = x;
+        }
+
+        foreach (var n in numbers.OnFirst(onFirst)
+                                 .AfterFirst(afterFirst)
+                                 .AfterEach(afterEach)
+                                 .OnLast(onLast))
+        {
+            loopCounter++;
+        }
+
+        Assert.AreEqual(10, loopCounter);
+
+        Assert.AreEqual(1, onFirstCounter);
+        Assert.AreEqual(1, onFirstValue);
+
+        Assert.AreEqual(1, afterFirstCounter);
+        Assert.AreEqual(1, afterFirstValue);
+
+        Assert.AreEqual(9, afterEachCounter);
+
+        Assert.AreEqual(1, onLastCounter);
+        Assert.AreEqual(10, onLastValue);
+    }
+
+    [Test]
     public void OnEmpty_ShouldCallAction_When_ListIsEmpty()
     {
         var items = Enumerable.Empty<int>();
@@ -1283,9 +1341,10 @@ public class EnumerableExtensionsTests
     public void OnLast_WithArgument()
     {
         var numbers = Enumerable.Range(0, 10);
+        var loopCounter = 0;
         var actionCounter = 0;
         var actionValue = -1;
-        var loopCounter = 0;
+
         void action(int x)
         {
             actionCounter++;
@@ -1295,9 +1354,10 @@ public class EnumerableExtensionsTests
         foreach (var n in numbers.OnLast(action))
             loopCounter++;
 
+        Assert.AreEqual(10, loopCounter);
+
         Assert.AreEqual(1, actionCounter);
         Assert.AreEqual(9, actionValue);
-        Assert.AreEqual(10, loopCounter);
     }
 
     [Test]
