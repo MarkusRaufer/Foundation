@@ -93,7 +93,6 @@ public readonly struct Result<TError>
         => IsOk ? $"IsOk: {IsOk}" : $"IsOk: {IsOk}, Error: {Error}";
 }
 
-[DebuggerDisplay("IsOk={IsOk}")]
 [Serializable]
 public readonly struct Result<TOk, TError>
     : IResult<TOk, TError>
