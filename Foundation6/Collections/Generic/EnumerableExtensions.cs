@@ -120,8 +120,7 @@ public static class EnumerableExtensions
     /// <typeparam name="T"></typeparam>
     /// <param name="items"></param>
     /// <param name="action">The parameter is the item before the action.</param>
-    /// <returns></returns>
-    /// <exception cref="ArgumentNullException"></exception>
+    /// <returns>List of items</returns>
     public static IEnumerable<T> AfterEach<T>(this IEnumerable<T> items, Action<T> action)
     {
         action.ThrowIfNull();
@@ -139,6 +138,42 @@ public static class EnumerableExtensions
         }
     }
 
+    /// <summary>
+    /// Executes action after first item except there is no second item.
+    /// </summary>
+    /// <typeparam name="T">The type of the items</typeparam>
+    /// <param name="items">List of items</param>
+    /// <param name="action">The action which is executed after the first item.</param>
+    /// <returns></returns>
+    public static IEnumerable<T> AfterFirst<T>(this IEnumerable<T> items, Action action)
+    {
+        action.ThrowIfNull();
+
+        var it = items.ThrowIfNull()
+                      .GetEnumerator();
+
+        if (!it.MoveNext()) yield break;
+        var first = it.Current;
+        yield return first;
+
+        if (!it.MoveNext()) yield break;
+        action();
+        yield return it.Current;
+
+        while (it.MoveNext())
+        {
+            yield return it.Current;
+        }
+    }
+
+    /// <summary>
+    /// xecutes action after first item except there is no second item.
+    /// </summary>
+    /// <typeparam name="T">Type of item</typeparam>
+    /// <param name="items">List of items</param>
+    /// <param name="action">The action which is executed after the first item.
+    /// The argument is the first item.</param>
+    /// <returns></returns>
     public static IEnumerable<T> AfterFirst<T>(this IEnumerable<T> items, Action<T> action)
     {
         action.ThrowIfNull();
