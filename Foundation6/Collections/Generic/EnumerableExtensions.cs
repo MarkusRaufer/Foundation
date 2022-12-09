@@ -167,7 +167,7 @@ public static class EnumerableExtensions
     }
 
     /// <summary>
-    /// xecutes action after first item except there is no second item.
+    /// Executes action after first item only if there is a second item.
     /// </summary>
     /// <typeparam name="T">Type of item</typeparam>
     /// <param name="items">List of items</param>
