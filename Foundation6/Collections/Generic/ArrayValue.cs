@@ -5,10 +5,11 @@ using System.Diagnostics.CodeAnalysis;
 
 public static class ArrayValue
 {
-    public static ArrayValue<T> New<T>(params T[] values)
-    {
-        return new ArrayValue<T>(values);
-    }
+    public static ArrayValue<T> New<T>(params T[] values) =>
+        new (values);
+
+    public static ArrayValue<T> New<T>(string separator, params T[] values)
+        => new (values, separator);
 }
 
 /// <summary>
