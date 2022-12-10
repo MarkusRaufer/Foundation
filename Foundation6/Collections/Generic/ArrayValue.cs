@@ -85,6 +85,12 @@ public struct ArrayValue<T>
 
     public int Length => IsEmpty ? 0 : _values.Length;
 
+    public static ArrayValue<T> New<T>(params T[] values)
+        => new (values);
+
+    public static ArrayValue<T> New<T>(string separator, params T[] values)
+        => new (values, separator);
+
     public override string? ToString()
     {
         return IsEmpty ? "" : string.Join(_separator, _values);
