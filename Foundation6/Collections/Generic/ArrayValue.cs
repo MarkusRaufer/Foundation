@@ -23,14 +23,14 @@ public struct ArrayValue<T>
     , IEquatable<T[]>
 {
     private readonly int _hashCode;
-    private string _valuesAsString;
+    private readonly string _separator;
     private readonly T[] _values;
 
-    public ArrayValue(T[] values)
+    public ArrayValue(T[] values, string separator = ", ")
     {
         _values = values.ThrowIfNull();
+        _separator = separator.ThrowIfNull();
         _hashCode = HashCode.FromObjects(_values);
-        _valuesAsString = "";
     }
 
     public static implicit operator ArrayValue<T>(T[] array) => ArrayValue.New(array);
@@ -52,7 +52,7 @@ public struct ArrayValue<T>
     public object Clone()
     {
         return IsEmpty
-            ? new ArrayValue<T>(Array.Empty<T>())
+            ? new ArrayValue<T>(Array.Empty<T>(), _separator)
             : new ArrayValue<T>((T[])_values.Clone());
     }
 
@@ -87,11 +87,6 @@ public struct ArrayValue<T>
 
     public override string? ToString()
     {
-        if (IsEmpty || 0 == _values.Length) return "";
-        
-        if(0 == _valuesAsString.Length)
-            _valuesAsString = string.Join(", ", _values);
-
-        return _valuesAsString;
+        return IsEmpty ? "" : string.Join(_separator, _values);
     }
 }
