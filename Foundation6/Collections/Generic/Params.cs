@@ -34,7 +34,9 @@ public struct Params<T> : IEnumerable<T>
 
     public Params(params T[] values)
     {
-        _values = values.ThrowIfNull();
+        values.ThrowIfNull();
+
+        _values = values;
         _isInitialized = true;
     }
 

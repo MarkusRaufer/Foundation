@@ -3077,7 +3077,63 @@ public static class EnumerableExtensions
     /// <returns></returns>
     public static IEnumerable<T> ThrowIfEmpty<T>(this IEnumerable<T> items, Func<Exception> exceptionFactory)
     {
-        exceptionFactory.ThrowIfNull();
+        if (!items.Any())
+        {
+            var exception = exceptionFactory() ?? throw new ArgumentException("returned null", nameof(exceptionFactory));
+            throw exception;
+        }
+        return items;
+    }
+
+    /// <summary>
+    /// Throws an Exception if items is null.
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <param name="items"></param>
+    /// <param name="name"></param>
+    /// <returns></returns>
+    public static IEnumerable<T> ThrowIfNull<T>(this IEnumerable<T> items, [CallerArgumentExpression("items")] string name = "")
+    {
+        return ThrowIfNull(items, () => new ArgumentNullException(name));
+    }
+
+    /// <summary>
+    /// Throws an Exception if items is null.
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <param name="items"></param>
+    /// <param name="exceptionFactory">This creates an exception when items is null.</param>
+    /// <returns></returns>
+    public static IEnumerable<T> ThrowIfNull<T>(this IEnumerable<T> items, Func<Exception> exceptionFactory)
+    {
+        if (items is null) throw exceptionFactory();
+        
+        return items;
+    }
+
+    /// <summary>
+    /// Throws an Exception if items is null or empty.
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <param name="items"></param>
+    /// <param name="name"></param>
+    /// <returns></returns>
+    public static IEnumerable<T> ThrowIfNullOrEmpty<T>(this IEnumerable<T> items, [CallerArgumentExpression("items")] string name = "")
+    {
+        return ThrowIfNullOrEmpty(items, () => new ArgumentNullException(name));
+    }
+
+    /// <summary>
+    /// Throws an Exception if items is null or empty.
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <param name="items"></param>
+    /// <param name="exceptionFactory"></param>
+    /// <returns></returns>
+    /// <exception cref="ArgumentException"></exception>
+    public static IEnumerable<T> ThrowIfNullOrEmpty<T>(this IEnumerable<T> items, Func<Exception> exceptionFactory)
+    {
+        items.ThrowIfNull(exceptionFactory);
 
         if (!items.Any())
         {

@@ -1,7 +1,8 @@
-﻿namespace Foundation.Collections.Generic;
-
+﻿using Foundation;
 using System.Collections;
 using System.Diagnostics.CodeAnalysis;
+
+namespace Foundation.Collections.Generic;
 
 public static class ArrayValue
 {
@@ -30,7 +31,7 @@ public struct ArrayValue<T>
     public ArrayValue(T[] values, string separator = ", ")
     {
         _values = values.ThrowIfNull();
-        _separator = separator.ThrowIfNull();
+        _separator = separator ?? throw new ArgumentNullException(nameof(separator)); ;
         _hashCode = HashCode.FromObjects(_values);
     }
 

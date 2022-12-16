@@ -1,4 +1,6 @@
-﻿namespace Foundation.Collections.Generic;
+﻿using System.Runtime.CompilerServices;
+
+namespace Foundation.Collections.Generic;
 
 public static  class DictionaryExtensions
 {
@@ -65,6 +67,16 @@ public static  class DictionaryExtensions
         dictionary.Remove(key);
         return Option.Some(Pair.New(key, value));
     }
+
+    public static IDictionary<TKey, TValue> ThrowIfEmpty<TKey, TValue>(this IDictionary<TKey, TValue> dictionary, [CallerArgumentExpression("dictionary")] string paramName = "")
+        => 0 < dictionary.Count
+        ? dictionary
+        : throw new ArgumentOutOfRangeException($"{paramName} must not be empty");
+
+    public static IDictionary<TKey, TValue> ThrowIfNull<TKey, TValue>(this IDictionary<TKey, TValue> dictionary, [CallerArgumentExpression("dictionary")] string paramName = "")
+        => dictionary ?? throw new ArgumentException($"{paramName} must not be empty");
+    public static IDictionary<TKey, TValue> ThrowIfNullOrEmpty<TKey, TValue>(this IDictionary<TKey, TValue> dictionary, [CallerArgumentExpression("dictionary")] string paramName = "")
+        => ThrowIfNull(dictionary, paramName).ThrowIfEmpty(paramName);
 
     public static IEnumerable<KeyValue<TKey, TValue>> ToKeyValues<TKey, TValue>(this IDictionary<TKey, TValue> dictionary)
         where TKey : notnull

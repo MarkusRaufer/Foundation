@@ -11,8 +11,10 @@ public class FixedKeysDictionaryDecorator<TKey, TValue> : IDictionary<TKey, TVal
 
     public FixedKeysDictionaryDecorator(IEnumerable<TKey> keys, IDictionary<TKey, TValue> dictionary)
     {
+        dictionary.ThrowIfNull();
+
         _keys = new HashSet<TKey>(keys);
-        _dictionary = dictionary.ThrowIfNull();
+        _dictionary = dictionary;
     }
 
     public TValue this[TKey key] 

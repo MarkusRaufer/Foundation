@@ -7,11 +7,11 @@ using System.Diagnostics.CodeAnalysis;
 /// <summary>
 /// This immutable hashset considers the equality and number of all elements <see cref="Equals"/>. The position of the elements are ignored.
 /// </summary>
-public static class HashSetValue
+public static class NonEmptyHashSetValue
 {
-    public static HashSetValue<T> New<T>(params T[] values)
+    public static NonEmptyHashSetValue<T> New<T>(params T[] values)
     {
-        return new HashSetValue<T>(values);
+        return new NonEmptyHashSetValue<T>(values);
     }
 }
 
@@ -20,56 +20,53 @@ public static class HashSetValue
 /// </summary>
 /// <typeparam name="T"></typeparam>
 [Serializable]
-public readonly struct HashSetValue<T> 
+public readonly struct NonEmptyHashSetValue<T> 
     : IReadOnlyCollection<T>
-    , IEquatable<HashSetValue<T>>
+    , IEquatable<NonEmptyHashSetValue<T>>
 {
     private readonly int _hashCode = 0;
     private readonly HashSet<T> _values;
 
-    public HashSetValue(IEnumerable<T> values)
+    public NonEmptyHashSetValue(IEnumerable<T> values)
         : this(new HashSet<T>(values))
     {
     }
 
-    public HashSetValue(HashSet<T> values)
+    public NonEmptyHashSetValue(HashSet<T> values)
     {
-        _values = values.ThrowIfNull();
+        _values = values.ThrowIfNullOrEmpty();
         _hashCode = HashCode.FromOrderedObjects(_values);
     }
 
-    public HashSetValue(IEqualityComparer<T>? comparer)
+    public NonEmptyHashSetValue(IEqualityComparer<T>? comparer)
         : this(new HashSet<T>(comparer))
     {
     }
 
-    public HashSetValue(int capacity) 
+    public NonEmptyHashSetValue(int capacity) 
         : this(new HashSet<T>(capacity))
     {
     }
 
-    public HashSetValue(IEnumerable<T> values, IEqualityComparer<T>? comparer)
+    public NonEmptyHashSetValue(IEnumerable<T> values, IEqualityComparer<T>? comparer)
         : this(new HashSet<T>(values, comparer))
     {
      }
 
-    public HashSetValue(int capacity, IEqualityComparer<T>? comparer)
+    public NonEmptyHashSetValue(int capacity, IEqualityComparer<T>? comparer)
         : this(new HashSet<T>(capacity, comparer))
     {
     }
 
-    public static bool operator ==(HashSetValue<T> left, HashSetValue<T> right)
+    public static bool operator ==(NonEmptyHashSetValue<T> left, NonEmptyHashSetValue<T> right)
     {
         return left.Equals(right);
     }
 
-    public static bool operator !=(HashSetValue<T> left, HashSetValue<T> right)
+    public static bool operator !=(NonEmptyHashSetValue<T> left, NonEmptyHashSetValue<T> right)
     {
         return !(left == right);
     }
-
-    public static implicit operator HashSetValue<T>(T[] values)
-        => new (values);
 
     /// <summary>
     /// Number of values.
@@ -82,14 +79,14 @@ public readonly struct HashSetValue<T>
     /// <param name="obj"></param>
     /// <returns></returns>
     public override bool Equals([NotNullWhen(true)] object? obj)
-        => obj is HashSetValue<T> other && Equals(other);
+        => obj is NonEmptyHashSetValue<T> other && Equals(other);
 
     /// <summary>
     /// considers the equality and number of all elements <see cref="Equals"/>. The position of the elements are ignored.
     /// </summary>
     /// <param name="other"></param>
     /// <returns></returns>
-    public bool Equals(HashSetValue<T> other)
+    public bool Equals(NonEmptyHashSetValue<T> other)
     {
         if(GetHashCode() != other.GetHashCode()) return false;
 

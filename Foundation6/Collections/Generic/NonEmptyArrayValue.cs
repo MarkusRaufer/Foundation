@@ -3,12 +3,12 @@
 using System.Collections;
 using System.Diagnostics.CodeAnalysis;
 
-public static class NotEmptyArrayValue
+public static class NonEmptyArrayValue
 {
-    public static NotEmptyArrayValue<T> New<T>(params T[] values) =>
+    public static NonEmptyArrayValue<T> New<T>(params T[] values) =>
         new (values);
 
-    public static NotEmptyArrayValue<T> New<T>(string separator, params T[] values)
+    public static NonEmptyArrayValue<T> New<T>(string separator, params T[] values)
         => new (values, separator);
 }
 
@@ -17,33 +17,33 @@ public static class NotEmptyArrayValue
 /// That enables the comparison of two arrays.
 /// </summary>
 /// <typeparam name="T"></typeparam>
-public struct NotEmptyArrayValue<T>
+public readonly struct NonEmptyArrayValue<T>
     : ICloneable
     , IEnumerable<T>
-    , IEquatable<NotEmptyArrayValue<T>>
+    , IEquatable<NonEmptyArrayValue<T>>
     , IEquatable<T[]>
 {
     private readonly int _hashCode;
     private readonly string _separator;
     private readonly T[] _values;
 
-    public NotEmptyArrayValue(T[] values, string separator = ", ")
+    public NonEmptyArrayValue(T[] values, string separator = ", ")
     {
         _values = values.ThrowIfNullOrEmpty();
-        _separator = separator.ThrowIfNull();
+        _separator = separator ?? throw new ArgumentNullException(nameof(separator));
         _hashCode = HashCode.FromObjects(_values);
     }
 
-    public static implicit operator NotEmptyArrayValue<T>(T[] array) => NotEmptyArrayValue.New(array);
+    public static implicit operator NonEmptyArrayValue<T>(T[] array) => NonEmptyArrayValue.New(array);
 
-    public static implicit operator T[](NotEmptyArrayValue<T> array) => array._values;
+    public static implicit operator T[](NonEmptyArrayValue<T> array) => array._values;
 
-    public static bool operator ==(NotEmptyArrayValue<T> left, NotEmptyArrayValue<T> right)
+    public static bool operator ==(NonEmptyArrayValue<T> left, NonEmptyArrayValue<T> right)
     {
         return left.Equals(right);
     }
 
-    public static bool operator !=(NotEmptyArrayValue<T> left, NotEmptyArrayValue<T> right)
+    public static bool operator !=(NonEmptyArrayValue<T> left, NonEmptyArrayValue<T> right)
     {
         return !(left == right);
     }
@@ -58,7 +58,7 @@ public struct NotEmptyArrayValue<T>
     }
 
     public override bool Equals([NotNullWhen(true)] object? obj)
-        => obj is NotEmptyArrayValue<T> other && Equals(other);
+        => obj is NonEmptyArrayValue<T> other && Equals(other);
 
     public bool Equals(T[]? other)
     {
@@ -67,7 +67,7 @@ public struct NotEmptyArrayValue<T>
         return null != other && _values.SequenceEqual(other);
     }
 
-    public bool Equals(NotEmptyArrayValue<T> other)
+    public bool Equals(NonEmptyArrayValue<T> other)
     {
         if (IsEmpty) return other.IsEmpty;
         if (other.IsEmpty) return false;

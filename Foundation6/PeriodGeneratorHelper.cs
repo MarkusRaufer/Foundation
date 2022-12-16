@@ -51,7 +51,7 @@ public class PeriodGeneratorHelper
 
     public static IPeriodGenerator Day(TimeDef.Day day)
     {
-        return Day(day.DayOfMonth);
+        return Day(day.DayOfMonth.ToArray());
     }
 
     public static IPeriodGenerator Days(int days)
@@ -79,7 +79,7 @@ public class PeriodGeneratorHelper
 
     public static IPeriodGenerator Hour(TimeDef.Hour hour)
     {
-        return Hour(hour.HourOfDay);
+        return Hour(hour.HourOfDay.ToArray());
     }
 
     public static IPeriodGenerator Hours(int hours)
@@ -107,7 +107,7 @@ public class PeriodGeneratorHelper
 
     public static IPeriodGenerator Minute(TimeDef.Minute minute)
     {
-        return Minute(minute.MinuteOfHour);
+        return Minute(minute.MinuteOfHour.ToArray());
     }
 
     public static IPeriodGenerator Minutes(int minutes)
@@ -136,7 +136,7 @@ public class PeriodGeneratorHelper
 
     public static IPeriodGenerator Month(TimeDef.Month month)
     {
-        return Month(month.MonthOfYear);
+        return Month(month.MonthOfYear.ToArray());
     }
 
     public static IPeriodGenerator Months(int months)
@@ -234,7 +234,7 @@ public class PeriodGeneratorHelper
 
     public static IPeriodGenerator Week(TimeDef.WeekOfMonth weekOfMonth)
     {
-        return Week(weekOfMonth.WeekStartsWith, weekOfMonth.Week);
+        return Week(weekOfMonth.WeekStartsWith, weekOfMonth.Week.ToArray());
     }
 
     public static IPeriodGenerator Weekday(params DayOfWeek[] weekday)
@@ -244,7 +244,7 @@ public class PeriodGeneratorHelper
 
     public static IPeriodGenerator Weekday(TimeDef.Weekday weekday)
     {
-        return Weekday(weekday.DayOfWeek);
+        return Weekday(weekday.DayOfWeek.ToArray());
     }
 
     public static IPeriodGenerator Weeks(int weeks, DayOfWeek start)
@@ -278,7 +278,7 @@ public class PeriodGeneratorHelper
 
     public static IPeriodGenerator Year(TimeDef.Year year)
     {
-        return Year(year.YearOfDate);
+        return Year(year.YearOfDate.ToArray());
     }
 
     public static IPeriodGenerator Years(int years)

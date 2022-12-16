@@ -415,8 +415,16 @@ public static class StringExtensions
 
         return str.Substring(start, end - start + 1);
     }
-    
+
     [return: NotNull]
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static string ThrowIfNull(this string str, [CallerArgumentExpression("str")] string argumentName = "")
+    {
+        return str ?? throw new ArgumentNullException(argumentName); ;
+    }
+
+    [return: NotNull]
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static string ThrowIfNullOrEmpty(this string str, [CallerArgumentExpression("str")] string argumentName = "")
     {
         if (string.IsNullOrEmpty(str)) throw new ArgumentNullException(argumentName);
@@ -424,6 +432,7 @@ public static class StringExtensions
     }
 
     [return: NotNull]
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static string ThrowIfNullOrWhiteSpace(this string str, [CallerArgumentExpression("str")] string argumentName ="")
     {
         if (string.IsNullOrWhiteSpace(str)) throw new ArgumentNullException(argumentName);

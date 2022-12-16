@@ -87,5 +87,12 @@ public static class ArrayExtensions
 
     public static T[] ThrowIfEmpty<T>(this T[] arr, [CallerArgumentExpression("arr")] string paramName = "")
         => 0 == arr.Length ? throw new ArgumentException($"{paramName} must not be empty") : arr;
+
+
+    public static T[] ThrowIfNull<T>(this T[] arr, [CallerArgumentExpression("arr")] string paramName = "")
+            => arr ?? throw new ArgumentException($"{paramName} must not be empty");
+
+    public static T[] ThrowIfNullOrEmpty<T>(this T[] arr, [CallerArgumentExpression("arr")] string paramName = "")
+            => ThrowIfNull(arr, paramName).ThrowIfEmpty(paramName);
 }
 

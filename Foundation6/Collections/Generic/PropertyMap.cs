@@ -97,7 +97,9 @@ namespace Foundation.Collections.Generic
 
         protected PropertyMap(SortedDictionary<string, object> dictionary, char pathSeparator = '/')
         {
-            _dictionary = dictionary.ThrowIfNull();
+            dictionary.ThrowIfNull();
+
+            _dictionary = dictionary;
             PathSeparator = pathSeparator;
 
             _keys = new MultiValueMap<string, string>();

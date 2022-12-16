@@ -56,7 +56,7 @@ public class FixedKeysMultiMap<TKey, TValue> : IMultiValueMap<TKey, TValue>
         IDictionary<TKey, ICollection<TValue>> dictionary,
         Func<ICollection<TValue>> valueCollectionFactory)
     {
-        _keys = new HashSet<TKey>(keys);
+        _keys = new HashSet<TKey>(keys.ThrowIfNullOrEmpty());
         _dictionary = dictionary.ThrowIfNull();
         _valueCollectionFactory = valueCollectionFactory.ThrowIfNull();
     }

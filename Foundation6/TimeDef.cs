@@ -8,23 +8,23 @@ public abstract record TimeDef
     public record And(TimeDef Lhs, TimeDef Rhs) : TimeDef;
     public record DateSpan(DateOnly From, DateOnly To) : TimeDef;
     public record DateTimeSpan(DateTime From, DateTime To) : TimeDef;
-    public record Day(UniqueArrayValue<int> DayOfMonth) : TimeDef;
+    public record Day(HashSetValue<int> DayOfMonth) : TimeDef;
     public record Days(int Quantity) : TimeDef;
     public record Difference(TimeDef Lhs, TimeDef Rhs) : TimeDef;
-    public record Hour(UniqueArrayValue<int> HourOfDay) : TimeDef;
+    public record Hour(HashSetValue<int> HourOfDay) : TimeDef;
     public record Hours(int Quantity) : TimeDef;
-    public record Minute(UniqueArrayValue<int> MinuteOfHour) : TimeDef;
+    public record Minute(HashSetValue<int> MinuteOfHour) : TimeDef;
     public record Minutes(int Quantity) : TimeDef;
-    public record Month(UniqueArrayValue<Foundation.Month> MonthOfYear) : TimeDef;
+    public record Month(HashSetValue<Foundation.Month> MonthOfYear) : TimeDef;
     public record Months(int Quantity) : TimeDef;
     public record Not(TimeDef TimeDef) : TimeDef;
     public record Or(TimeDef Lhs, TimeDef Rhs) : TimeDef;
     public record Timespan(TimeOnly From, TimeOnly To) : TimeDef;
     public record Union(TimeDef Lhs, TimeDef Rhs) : TimeDef;
-    public record Weekday(UniqueArrayValue<DayOfWeek> DayOfWeek) : TimeDef;
-    public record WeekOfMonth(DayOfWeek WeekStartsWith, UniqueArrayValue<int> Week) : TimeDef;
+    public record Weekday(HashSetValue<DayOfWeek> DayOfWeek) : TimeDef;
+    public record WeekOfMonth(DayOfWeek WeekStartsWith, HashSetValue<int> Week) : TimeDef;
     public record Weeks(int Quantity, DayOfWeek WeekStartsWith) : TimeDef;
-    public record Year(UniqueArrayValue<int> YearOfDate) : TimeDef;
+    public record Year(HashSetValue<int> YearOfDate) : TimeDef;
     public record Years(int Quantity) : TimeDef;
     #endregion time defintions
 

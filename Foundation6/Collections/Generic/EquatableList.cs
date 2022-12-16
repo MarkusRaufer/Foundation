@@ -2,11 +2,11 @@
 
 namespace Foundation.Collections.Generic;
 
-public static class ListValue
+public static class EquatableList
 {
-    public static ListValue<T> New<T>(params T[] values)
+    public static EquatableList<T> New<T>(params T[] values)
     {
-        return new ListValue<T>(values);
+        return new EquatableList<T>(values);
     }
 }
 
@@ -15,21 +15,21 @@ public static class ListValue
 /// </summary>
 /// <typeparam name="T"></typeparam>
 [Serializable]
-public class ListValue<T>
+public class EquatableList<T>
     : List<T>
-    , IEquatable<ListValue<T>>
+    , IEquatable<EquatableList<T>>
     , ISerializable
 {
     private const string SerializationKey = "items";
 
     private int _hashCode;
 
-    public ListValue()
+    public EquatableList()
     {
         CreateHashCode();
     }
 
-    public ListValue(IEnumerable<T> collection)
+    public EquatableList(IEnumerable<T> collection)
     {
         foreach (T item in collection)
             base.Add(item);
@@ -37,12 +37,12 @@ public class ListValue<T>
         CreateHashCode();
     }
 
-    public ListValue(int capacity) : base(capacity)
+    public EquatableList(int capacity) : base(capacity)
     {
         CreateHashCode();
     }
 
-    public ListValue(SerializationInfo info, StreamingContext context)
+    public EquatableList(SerializationInfo info, StreamingContext context)
     {
         if (info.GetValue(SerializationKey, typeof(List<T>)) is List<T> collection)
         {
@@ -87,21 +87,21 @@ public class ListValue<T>
                                     .GetHashCode();
     }
 
-    protected static int DefaultHashCode { get; } = typeof(ListValue<T>).GetHashCode();
+    protected static int DefaultHashCode { get; } = typeof(EquatableList<T>).GetHashCode();
 
     /// <summary>
     /// Checks the equality of all elements and their position.
     /// </summary>
     /// <param name="obj"></param>
     /// <returns></returns>
-    public override bool Equals(object? obj) => Equals(obj as ListValue<T>);
+    public override bool Equals(object? obj) => Equals(obj as EquatableList<T>);
 
     /// <summary>
     /// Checks the equality of all elements and their position.
     /// </summary>
     /// <param name="other"></param>
     /// <returns></returns>
-    public bool Equals(ListValue<T>? other)
+    public bool Equals(EquatableList<T>? other)
     {
         if (other is null) return false;
         if (_hashCode != other._hashCode) return false;
