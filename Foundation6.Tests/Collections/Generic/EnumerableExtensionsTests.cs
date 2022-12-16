@@ -551,20 +551,6 @@ public class EnumerableExtensionsTests
     }
 
     [Test]
-    public void FromIndex()
-    {
-        var items = new List<string> { "0", "1", "2", "3", "4", "5", "6", "7", "8", "9" };
-        var selected = items.FromIndex(index => (index % 2) == 0).ToArray();
-
-        Assert.AreEqual(items.Count / 2, selected.Length);
-        Assert.AreEqual("0", selected[0]);
-        Assert.AreEqual("2", selected[1]);
-        Assert.AreEqual("4", selected[2]);
-        Assert.AreEqual("6", selected[3]);
-        Assert.AreEqual("8", selected[4]);
-    }
-
-    [Test]
     public void If_Should_ExecuteAction_When_Predicate_IsTrue()
     {
         {
@@ -1140,6 +1126,19 @@ public class EnumerableExtensionsTests
         var items = list.AsEnumerable();
 
         Assert.Throws<ArgumentOutOfRangeException>(() => items.Nths(-5..9).ToArray());
+    }
+    [Test]
+    public void Nths_Should_ReturnItemsOfEvenPositions_When_PredicateSelectsEvenPositions()
+    {
+        var items = new List<string> { "0", "1", "2", "3", "4", "5", "6", "7", "8", "9" };
+        var selected = items.Nths(index => (index % 2) == 0).ToArray();
+
+        Assert.AreEqual(items.Count / 2, selected.Length);
+        Assert.AreEqual("0", selected[0]);
+        Assert.AreEqual("2", selected[1]);
+        Assert.AreEqual("4", selected[2]);
+        Assert.AreEqual("6", selected[3]);
+        Assert.AreEqual("8", selected[4]);
     }
 
     [Test]

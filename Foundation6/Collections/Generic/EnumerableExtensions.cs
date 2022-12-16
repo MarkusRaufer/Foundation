@@ -921,21 +921,6 @@ public static class EnumerableExtensions
         }
     }
 
-    /// <summary>
-    /// Returns a list of items. The predicate allows filtering items by index.
-    /// </summary>
-    /// <typeparam name="T"></typeparam>
-    /// <param name="items"></param>
-    /// <param name="predicate"></param>
-    /// <returns></returns>
-    public static IEnumerable<T> FromIndex<T>(this IEnumerable<T> items, Func<long, bool> predicate)
-    {
-        predicate.ThrowIfNull();
-
-        long i = 0;
-        return items.Where(item => predicate(i++));
-    }
-
     public static IElseIf<T> If<T>(
         this IEnumerable<T> items,
         Func<T, bool> predicate,
@@ -1935,6 +1920,21 @@ public static class EnumerableExtensions
 
             pos++;
         }
+    }
+
+    /// <summary>
+    /// Returns a list of items. The predicate allows filtering items by index.
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <param name="items"></param>
+    /// <param name="predicate"></param>
+    /// <returns></returns>
+    public static IEnumerable<T> Nths<T>(this IEnumerable<T> items, Func<long, bool> predicate)
+    {
+        predicate.ThrowIfNull();
+
+        long i = 0;
+        return items.Where(item => predicate(i++));
     }
 
     /// <summary>
