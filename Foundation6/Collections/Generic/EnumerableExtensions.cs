@@ -2351,6 +2351,32 @@ public static class EnumerableExtensions
     }
 
     /// <summary>
+    /// Partitions items into two lists. If predicate is true the item is added to matching otherwise notMatching.
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <typeparam name="TResult"></typeparam>
+    /// <param name="items"></param>
+    /// <param name="predicate"></param>
+    /// <param name="match">projection to TResult.</param>
+    /// <param name="noMatch">projection to TResult.</param>
+    /// <returns></returns>
+    /// 
+    public static (TResult matching, TResult notMatching) Partition<T, TResult>(
+        this IEnumerable<T> items,
+        Func<T, bool> predicate,
+        Func<IEnumerable<T>, TResult> match,
+        Func<IEnumerable<T>, TResult> noMatch)
+    {
+        predicate.ThrowIfNull();
+        match.ThrowIfNull();
+        noMatch.ThrowIfNull();
+
+        var (matching, notMatching) = Partition(items, predicate);
+
+        return (match(matching), noMatch(notMatching));
+    }
+
+    /// <summary>
     /// Creates permutations of a list.
     /// </summary>
     /// <typeparam name="T"></typeparam>
