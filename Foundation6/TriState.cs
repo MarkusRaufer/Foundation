@@ -114,8 +114,8 @@ public readonly struct TriState<TState1, TState2> : IEquatable<TriState<TState1,
     }
 
     public void Invoke(
-        Action<TState1>? state1 = null, 
-        Action<TState2>? state2 = null, 
+        Action<TState1>? onState1 = null, 
+        Action<TState2>? onState2 = null, 
         Action? none = null)
     {
         if (State.IsNone)
@@ -125,18 +125,18 @@ public readonly struct TriState<TState1, TState2> : IEquatable<TriState<TState1,
         }
         var oneOf = State.OrThrow();
 
-        oneOf.Invoke(s1 => state1?.Invoke(s1));
-        oneOf.Invoke(s2 => state2?.Invoke(s2));
+        oneOf.Invoke(s1 => onState1?.Invoke(s1));
+        oneOf.Invoke(s2 => onState2?.Invoke(s2));
     }
 
     public TResult Either<TResult>(
-        Func<TState1, TResult> state1, 
-        Func<TState2, TResult> state2,
+        Func<TState1, TResult> onState1, 
+        Func<TState2, TResult> onState2,
         Func<TResult> none)
     {
         if(State.IsNone) return none();
 
-        return State.OrThrow().Either(state1, state2);
+        return State.OrThrow().Either(onState1, onState2);
     }
 
     public Option<OneOf<TState1, TState2>> State { get; }

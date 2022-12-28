@@ -204,7 +204,7 @@ namespace Foundation
             var sut = new TriState<int, string>(expectedState);
 
             var value = 0;
-            sut.Invoke(state1: state => value = state);
+            sut.Invoke(onState1: state => value = state);
 
             Assert.AreEqual(expectedState, value);
         }
@@ -227,7 +227,7 @@ namespace Foundation
             var sut = new TriState<int, string>(expectedState);
 
             var value = "";
-            sut.Invoke(state2: state => value = state);
+            sut.Invoke(onState2: state => value = state);
 
             Assert.AreEqual(expectedState, value);
         }
@@ -237,8 +237,8 @@ namespace Foundation
         {
             var sut = new TriState<int, string>();
 
-            var value = sut.Either(state1: state => state,
-                                  state2: state => int.Parse(state),
+            var value = sut.Either(onState1: state => state,
+                                  onState2: state => int.Parse(state),
                                   none: () => -1);
 
             Assert.AreEqual(-1, value);
@@ -250,8 +250,8 @@ namespace Foundation
             var expectedState = 2;
             var sut = new TriState<int, string>(expectedState);
 
-            var value = sut.Either(state1: state => state,
-                                  state2: state => int.Parse(state),
+            var value = sut.Either(onState1: state => state,
+                                  onState2: state => int.Parse(state),
                                   none: () => -1);
 
             Assert.AreEqual(expectedState, value);
@@ -262,8 +262,8 @@ namespace Foundation
         {
             var sut = new TriState<int, string>("5");
 
-            var value = sut.Either(state1: state => state,
-                                  state2: state => int.Parse(state),
+            var value = sut.Either(onState1: state => state,
+                                  onState2: state => int.Parse(state),
                                   none: () => -1);
 
             Assert.AreEqual(5, value);
