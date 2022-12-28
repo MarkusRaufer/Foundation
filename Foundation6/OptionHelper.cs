@@ -5,7 +5,7 @@ namespace Foundation;
 public class OptionHelper
 {
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static Option<object> CreateOptFromObject(object? obj)
+    public static Option<object> CreateOptionFromObject(object? obj)
     {
         if (obj is null) return Option.None<object>();
 
@@ -17,10 +17,10 @@ public class OptionHelper
 
         if (isSomeProp.GetValue(obj) is not bool isSome || !isSome) return Option.None<object>();
 
-        var valueProp = type.GetProperty(nameof(Option<object>.ValueAsObject));
-        if (null == valueProp) return Option.None<object>();
+        var valueField = type.GetField("_value");
+        if (null == valueField) return Option.None<object>();
 
-        var value = valueProp.GetValue(obj);
+        var value = valueField.GetValue(obj);
         return Option.Maybe(value);
     }
 }

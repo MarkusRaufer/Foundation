@@ -810,7 +810,7 @@ public static class EnumerableExtensions
     public static Option<TResult> FirstAsOption<T, TResult>(this IEnumerable<T> items)
     {
         return items.FirstAsOption(x => true)
-                    .Match(x => x.ToOption<TResult>(),
+                    .Either(x => x.ToOption<TResult>(),
                           () => Option.None<TResult>());
     }
 

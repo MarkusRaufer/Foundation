@@ -15,7 +15,7 @@ namespace Foundation.Collections.Generic
         public static Option<TValue> Nth<TKey, TValue>(this IEnumerable<KeyValuePair<TKey, TValue>> keyValues, TKey key)
             where TKey : notnull
             => keyValues.FirstAsOption(kv => kv.Key.Equals(key))
-                        .Match(kv => Option.Some(kv.Value),
+                        .Either(kv => Option.Some(kv.Value),
                                () => Option.None<TValue>());
 
 

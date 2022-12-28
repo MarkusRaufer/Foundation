@@ -109,7 +109,7 @@ public static class PeriodExtensions
         foreach (var p in periods)
         {
             var intersected = period.Intersect(p);
-            if (intersected.IsSome) yield return intersected.Value;
+            if (intersected.TryGet(out Period value)) yield return value;
         }
     }
 
@@ -215,10 +215,12 @@ public static class PeriodExtensions
             if (!period.IsOverlapping(coverPeriod)) continue;
 
             var diff = period.Intersect(coverPeriod);
-            if (diff.IsNone) continue;
-            if (period.IsBetween(diff.Value)) return true;
 
-            diffs.Add(diff.Value);
+            if (!diff.TryGet(out Period diffValue)) continue;
+
+            if (period.IsBetween(diffValue)) return true;
+
+            diffs.Add(diffValue);
         }
         return IsBetween(period, diffs);
     }
@@ -325,10 +327,12 @@ public static class PeriodExtensions
             if (!period.IsOverlapping(coverPeriod)) continue;
 
             var diff = period.Intersect(coverPeriod);
-            if (diff.IsNone) continue;
-            if (period.IsTimeBetween(diff.Value)) return true;
 
-            diffs.Add(diff.Value);
+            if (!diff.TryGet(out Period diffValue)) continue;
+
+            if (period.IsTimeBetween(diffValue)) return true;
+
+            diffs.Add(diffValue);
         }
         return IsBetween(period, diffs);
     }

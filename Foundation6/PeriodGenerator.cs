@@ -21,7 +21,7 @@ public class PeriodGenerator : IPeriodGenerator
 
         if (range.Smallest.IsNone) return Enumerable.Empty<Period>();
 
-        return range.Smallest.Value switch
+        return range.Smallest.OrThrow() switch
         {
             TimeDef.Day _ => period.Days(),
             TimeDef.Days _ => period.Days(),

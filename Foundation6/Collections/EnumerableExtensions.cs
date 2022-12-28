@@ -62,9 +62,10 @@ public static class EnumerableExtensions
     {
         items.ThrowIfNull();
         var item = FirstOrDefaultObject(items);
-        if (item.IsNone) throw new InvalidOperationException("sequence is emtpy");
 
-        return item.Value!;
+        if (!item.TryGet(out object? value)) throw new InvalidOperationException("sequence is emtpy");
+
+        return value!;
     }
 
     private static Option<object> FirstOrDefaultObject(this IEnumerable items)

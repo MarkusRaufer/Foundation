@@ -333,15 +333,15 @@ public static class StringExtensions
         {
             if (separator.Contains(c))
             {
-                if (key.IsSome)
+                if (key.TryGet(out char keyValue))
                 {
-                    yield return Pair.New(key.Value, sb.ToString());
+                    yield return Pair.New(keyValue, sb.ToString());
                     sb.Clear();
                 }
                 key = Option.Some(c);
                 i++;
                 if (i == len)
-                    yield return Pair.New(key.Value, sb.ToString());
+                    yield return Pair.New(keyValue, sb.ToString());
 
                 continue;
             }

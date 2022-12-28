@@ -45,7 +45,7 @@ public class PeriodHelper
                 if (r.Start > l.End) break;
 
                 var result = l.Intersect(r.Start, r.End);
-                if (result.IsSome) periods.Add(result.Value);
+                if (result.TryGet(out Period value)) periods.Add(value);
             }
             if (0 == periods.Count) continue;
             periods.ForEach(intersected.Add);
@@ -66,7 +66,7 @@ public class PeriodHelper
             var first = periods.First();
             var second = periods.Last();
             if (first.IsOverlapping(second))
-                yield return first.Union(second).Value;
+                yield return first.Union(second).OrThrow();
             else
             {
                 yield return first;
@@ -87,7 +87,7 @@ public class PeriodHelper
             var prevPeriod = mergedPeriods.Last();
             if (prevPeriod.IsOverlapping(period))
             {
-                var merged = prevPeriod.Union(period).Value;
+                var merged = prevPeriod.Union(period).OrThrow();
                 mergedPeriods.RemoveLast();
                 mergedPeriods.AddLast(merged);
             }

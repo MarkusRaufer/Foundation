@@ -19,7 +19,10 @@ public static class OptionExtensions
         if(lhs.IsNone) return rhs.IsNone ? 0 : - 1;
         if(rhs.IsNone) return 1;
 
-        return lhs.Value!.CompareTo(rhs.Value);
+        lhs.TryGet(out T? lhsValue);
+        rhs.TryGet(out T? rhsValue);
+
+        return lhsValue!.CompareTo(rhsValue);
     }
 
     /// <summary>
@@ -40,14 +43,13 @@ public static class OptionExtensions
         some.ThrowIfNull();
         none.ThrowIfNull();
 
-        if (option.IsSome)
+        if (option.TryGet(out T? value))
         {
-            some.Invoke(option.Value!);
+            some.Invoke(value!);
             return true;
         }
 
         none.Invoke();
-
         return false;
     }
 
@@ -62,7 +64,7 @@ public static class OptionExtensions
     /// <returns></returns>
     [return: NotNull]
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static TResult Match<T, TResult>(
+    public static TResult Either<T, TResult>(
         this Option<T> option, 
         Func<T, TResult> some, 
         Func<TResult> none)
@@ -71,7 +73,7 @@ public static class OptionExtensions
         some.ThrowIfNull();
         none.ThrowIfNull();
 
-        return option.IsSome ? some(option.Value!) : none();
+        return option.TryGet(out T? value) ? some(value!) : none();
     }
 
     [return: NotNull]
@@ -87,7 +89,7 @@ public static class OptionExtensions
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static Unit OnSome<T>(this Option<T> option, Action<T> action)
     {
-        if (option.IsSome) action.Invoke(option.Value!);
+        if (option.TryGet(out T? value)) action.Invoke(value!);
 
         return new Unit();
     }
@@ -105,20 +107,6 @@ public static class OptionExtensions
     }
 
     /// <summary>
-    /// Returns the value if IsSome is true or returns <paramref name="none"/>
-    /// </summary>
-    /// <typeparam name="T"></typeparam>
-    /// <param name="option"></param>
-    /// <param name="none"></param>
-    /// <returns></returns>
-    [return: NotNull]
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static T Or<T>(this Option<T> option, T none)
-    {
-        return option.IsSome ? option.Value! : none.ThrowIfNull();
-    }
-
-    /// <summary>
     /// Returns value if IsNone or calls <paramref name="none"/>;
     /// </summary>
     /// <typeparam name="T"></typeparam>
@@ -131,9 +119,9 @@ public static class OptionExtensions
     {
         none.ThrowIfNull();
 
-        if(option.IsSome) return option.Value!;
+        if(option.TryGet(out T? value)) return value!;
 
-        var value = none();
+        value = none();
 
         return value.ThrowIf(() => null == value, $"{nameof(none)} returned null");
     }
@@ -164,28 +152,9 @@ public static class OptionExtensions
     public static T OrThrow<T, TException>(this Option<T> option, Func<TException> exception)
         where TException : Exception
     {
-        if (option.IsSome) return option.Value!;
+        if (option.TryGet(out T? value)) return value!;
 
         throw exception();
-    }
-
-    /// <summary>
-    /// If returning true it has a value otherwise it returns false.
-    /// </summary>
-    /// <typeparam name="T"></typeparam>
-    /// <param name="option">The option containing the possible value.</param>
-    /// <param name="value">The value if the option has some value.</param>
-    /// <returns></returns>
-    public static bool TryGet<T>(this Option<T> option, out T? value)
-    {
-        if(option.IsSome)
-        {
-            value = option.OrThrow();
-            return true;
-        }
-
-        value = default;
-        return false;
     }
 }
 
