@@ -5,6 +5,13 @@ using Foundation;
 using System.Collections;
 using System.Diagnostics.CodeAnalysis;
 
+public static class NonEmptyDictionaryValue
+{
+    public static NonEmptyDictionaryValue<TKey, TValue> New<TKey, TValue>(IDictionary<TKey, TValue> dictionary)
+        where TKey : notnull
+        => new(dictionary);
+}
+
 /// <summary>
 /// This immutable dictionary considers the equality of all keys and values <see cref="Equals"/>.
 /// The position of the elements are ignored.

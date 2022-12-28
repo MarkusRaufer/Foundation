@@ -10,9 +10,7 @@ using System.Diagnostics.CodeAnalysis;
 public static class NonEmptyHashSetValue
 {
     public static NonEmptyHashSetValue<T> New<T>(params T[] values)
-    {
-        return new NonEmptyHashSetValue<T>(values);
-    }
+        => new(values);
 }
 
 /// <summary>
@@ -67,6 +65,9 @@ public readonly struct NonEmptyHashSetValue<T>
     {
         return !(left == right);
     }
+
+    public static implicit operator NonEmptyHashSetValue<T>(T[] values)
+        => NonEmptyHashSetValue.New(values);
 
     /// <summary>
     /// Number of values.
