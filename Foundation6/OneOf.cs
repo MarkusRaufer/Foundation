@@ -1,4 +1,6 @@
-﻿namespace Foundation;
+﻿using System.Data.Common;
+
+namespace Foundation;
 
 /// <summary>
 /// This class represent disjunct alternatives of types. Types are mutually exclusive. Just one of the types is set.
@@ -11,6 +13,10 @@ public class OneOf<T1, T2> : IEquatable<OneOf<T1, T2>>
     {
     }
 
+    /// <summary>
+    /// Sets Value to T1 t1.
+    /// </summary>
+    /// <param name="t1"></param>
     public OneOf(T1 t1)
     {
         t1.ThrowIfNull();
@@ -20,6 +26,10 @@ public class OneOf<T1, T2> : IEquatable<OneOf<T1, T2>>
         Value = t1!;
     }
 
+    /// <summary>
+    /// Sets Value to T2 t2.
+    /// </summary>
+    /// <param name="t2"></param>
     public OneOf(T2 t2)
     {
         t2.ThrowIfNull();
@@ -27,6 +37,26 @@ public class OneOf<T1, T2> : IEquatable<OneOf<T1, T2>>
         
         SelectedType = typeof(T2);
         Value = t2!;
+    }
+
+    /// <summary>
+    /// Executes either onT1 or onT2 depending on Value is of type T1 or T2.
+    /// </summary>
+    /// <typeparam name="TResult"></typeparam>
+    /// <param name="onT1"></param>
+    /// <param name="onT2"></param>
+    /// <returns></returns>
+    /// <exception cref="NotSupportedException"></exception>
+    public TResult Either<TResult>(
+        Func<T1, TResult> onT1,
+        Func<T2, TResult> onT2)
+    {
+        return Value switch
+        {
+            T1 t1 => onT1(t1),
+            T2 t2 => onT2(t2),
+            _ => throw new NotSupportedException()
+        };
     }
 
     public override bool Equals(object? obj) => Equals(obj as OneOf<T1, T2>);
@@ -39,32 +69,53 @@ public class OneOf<T1, T2> : IEquatable<OneOf<T1, T2>>
     }
 
     public override int GetHashCode() => System.HashCode.Combine(SelectedType, Value);
-    
-    public void Invoke(Action<T1> action)
+
+    /// <summary>
+    /// Invokes action if Value is of type T1.
+    /// </summary>
+    /// <param name="action"></param>
+    /// <returns></returns>
+    public bool Invoke(Action<T1> action)
     {
-        if(Value is T1 value) action(value);
+        if (Value is T1 value)
+        {
+            action(value);
+            return true;
+        }
+        return false;
     }
 
-    public void Invoke(Action<T2> action)
+    /// <summary>
+    /// Invokes action if Value is of type T2.
+    /// </summary>
+    /// <param name="action"></param>
+    /// <returns></returns>
+    public bool Invoke(Action<T2> action)
     {
-        if (Value is T2 value) action(value);
+        if (Value is T2 value)
+        {
+            action(value);
+            return true;
+        }
+        return false;
+    }
+
+    /// <summary>
+    /// Invokes the the action that matches the type of <see cref="Value"/>.
+    /// </summary>
+    /// <param name="onT1"></param>
+    /// <param name="onT2"></param>
+    /// <returns></returns>
+    public bool Invoke(
+        Action<T1> onT1,
+        Action<T2> onT2)
+    {
+        return Invoke(onT1) || Invoke(onT2);
     }
 
     public Option<T1> Item1 { get; }
 
     public Option<T2> Item2 { get; }
-
-    public TResult Match<TResult>(
-        Func<T1, TResult> onT1,
-        Func<T2, TResult> onT2)
-    {
-        return Value switch
-        {
-            T1 t1 => onT1(t1),
-            T2 t2 => onT2(t2),
-            _ => throw new NotSupportedException()
-        };
-    }
 
     public virtual bool TryGet<T>(out T? value)
     {
@@ -119,14 +170,16 @@ public class OneOf<T1, T2, T3> : OneOf<T1, T2>
         Value = t3!;
     }
 
-    public void Invoke(Action<T3> action)
-    {
-        if (Value is T3 value) action(value);
-    }
-
-    public Option<T3> Item3 { get; }
-
-    public TResult Match<TResult>(
+    /// <summary>
+    /// Executes either onT1 or onT2 depending on Value is of type T1, T2 or T3.
+    /// </summary>
+    /// <typeparam name="TResult"></typeparam>
+    /// <param name="onT1"></param>
+    /// <param name="onT2"></param>
+    /// <param name="onT3"></param>
+    /// <returns></returns>
+    /// <exception cref="NotSupportedException"></exception>
+    public TResult Either<TResult>(
         Func<T1, TResult> onT1,
         Func<T2, TResult> onT2,
         Func<T3, TResult> onT3)
@@ -139,6 +192,38 @@ public class OneOf<T1, T2, T3> : OneOf<T1, T2>
             _ => throw new NotSupportedException()
         };
     }
+
+    /// <summary>
+    /// Invokes action if Value is of type T3.
+    /// </summary>
+    /// <param name="action"></param>
+    /// <returns></returns>
+    public bool Invoke(Action<T3> action)
+    {
+        if (Value is T3 value)
+        {
+            action(value);
+            return true;
+        }
+        return false;
+    }
+
+    /// <summary>
+    /// Invokes the the action that matches the type of <see cref="Value"/>.
+    /// </summary>
+    /// <param name="onT1"></param>
+    /// <param name="onT2"></param>
+    /// <param name="onT3"></param>
+    /// <returns></returns>
+    public bool Invoke(
+        Action<T1> onT1,
+        Action<T2> onT2,
+        Action<T3> onT3)
+    {
+        return Invoke(onT1, onT2) || Invoke(onT3);
+    }
+
+    public Option<T3> Item3 { get; }
 
     public override bool TryGet<T>(out T? value) where T : default
     {
@@ -185,14 +270,17 @@ public class OneOf<T1, T2, T3, T4> : OneOf<T1, T2, T3>
         Value = t4!;
     }
 
-    public void Invoke(Action<T4> action)
-    {
-        if (Value is T4 value) action(value);
-    }
-
-    public Option<T4> Item4 { get; }
-
-    public TResult Match<TResult>(
+    /// <summary>
+    /// Executes either onT1 or onT2 depending on Value is of type T1, T2, T3 or T4.
+    /// </summary>
+    /// <typeparam name="TResult"></typeparam>
+    /// <param name="onT1"></param>
+    /// <param name="onT2"></param>
+    /// <param name="onT3"></param>
+    /// <param name="onT4"></param>
+    /// <returns></returns>
+    /// <exception cref="NotSupportedException">Throw an exception if it is not of any available type</exception>
+    public TResult Either<TResult>(
         Func<T1, TResult> onT1,
         Func<T2, TResult> onT2,
         Func<T3, TResult> onT3,
@@ -207,6 +295,40 @@ public class OneOf<T1, T2, T3, T4> : OneOf<T1, T2, T3>
             _ => throw new NotSupportedException()
         };
     }
+
+    /// <summary>
+    /// Invokes action if Value is of type T4.
+    /// </summary>
+    /// <param name="action"></param>
+    /// <returns></returns>
+    public bool Invoke(Action<T4> action)
+    {
+        if (Value is T4 value)
+        {
+            action(value);
+            return true;
+        }
+        return false;
+    }
+
+    /// <summary>
+    /// Invokes the the action that matches the type of <see cref="Value"/>.
+    /// </summary>
+    /// <param name="onT1"></param>
+    /// <param name="onT2"></param>
+    /// <param name="onT3"></param>
+    /// <param name="onT4"></param>
+    /// <returns></returns>
+    public bool Invoke(
+        Action<T1> onT1,
+        Action<T2> onT2,
+        Action<T3> onT3,
+        Action<T4> onT4)
+    {
+        return Invoke(onT1, onT2, onT3) || Invoke(onT4);
+    }
+
+    public Option<T4> Item4 { get; }
 
     public override bool TryGet<T>(out T? value) where T : default
     {
@@ -238,14 +360,18 @@ public class OneOf<T1, T2, T3, T4, T5> : OneOf<T1, T2, T3, T4>
         Value = t5!;
     }
 
-    public void Invoke(Action<T5> action)
-    {
-        if (Value is T5 value) action(value);
-    }
-
-    public Option<T5> Item5 { get; }
-
-    public TResult Match<TResult>(
+    /// <summary>
+    /// Executes either onT1 or onT2 depending on Value is of type T1, T2, T3, T4 or T5.
+    /// </summary>
+    /// <typeparam name="TResult"></typeparam>
+    /// <param name="onT1"></param>
+    /// <param name="onT2"></param>
+    /// <param name="onT3"></param>
+    /// <param name="onT4"></param>
+    /// <param name="onT5"></param>
+    /// <returns></returns>
+    /// <exception cref="NotSupportedException"></exception>
+    public TResult Either<TResult>(
         Func<T1, TResult> onT1,
         Func<T2, TResult> onT2,
         Func<T3, TResult> onT3,
@@ -262,6 +388,42 @@ public class OneOf<T1, T2, T3, T4, T5> : OneOf<T1, T2, T3, T4>
             _ => throw new NotSupportedException()
         };
     }
+
+    /// <summary>
+    /// Invokes action if Value is of type T5.
+    /// </summary>
+    /// <param name="action"></param>
+    /// <returns></returns>
+    public bool Invoke(Action<T5> action)
+    {
+        if (Value is T5 value)
+        {
+            action(value);
+            return true;
+        }
+        return false;
+    }
+
+    /// <summary>
+    /// Invokes the the action that matches the type of <see cref="Value"/>.
+    /// </summary>
+    /// <param name="onT1"></param>
+    /// <param name="onT2"></param>
+    /// <param name="onT3"></param>
+    /// <param name="onT4"></param>
+    /// <param name="onT5"></param>
+    /// <returns></returns>
+    public bool Invoke(
+        Action<T1> onT1,
+        Action<T2> onT2,
+        Action<T3> onT3,
+        Action<T4> onT4,
+        Action<T5> onT5)
+    {
+        return Invoke(onT1, onT2, onT3, onT4) || Invoke(onT5);
+    }
+
+    public Option<T5> Item5 { get; }
 
     public override bool TryGet<T>(out T? value) where T : default
     {

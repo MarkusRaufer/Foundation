@@ -237,7 +237,7 @@ namespace Foundation
         {
             var sut = new TriState<int, string>();
 
-            var value = sut.Match(state1: state => state,
+            var value = sut.Either(state1: state => state,
                                   state2: state => int.Parse(state),
                                   none: () => -1);
 
@@ -250,7 +250,7 @@ namespace Foundation
             var expectedState = 2;
             var sut = new TriState<int, string>(expectedState);
 
-            var value = sut.Match(state1: state => state,
+            var value = sut.Either(state1: state => state,
                                   state2: state => int.Parse(state),
                                   none: () => -1);
 
@@ -262,7 +262,7 @@ namespace Foundation
         {
             var sut = new TriState<int, string>("5");
 
-            var value = sut.Match(state1: state => state,
+            var value = sut.Either(state1: state => state,
                                   state2: state => int.Parse(state),
                                   none: () => -1);
 

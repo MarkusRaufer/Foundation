@@ -3,7 +3,7 @@
 /// <summary>
 /// Can have three states: <see cref="State"/> can be Some(true), Some(false) or None./>.
 /// </summary>
-public struct TriState : IEquatable<TriState>
+public readonly struct TriState : IEquatable<TriState>
 {
     public TriState(bool isTrue)
     {
@@ -72,7 +72,7 @@ public struct TriState : IEquatable<TriState>
 /// </summary>
 /// <typeparam name="TState1"></typeparam>
 /// <typeparam name="TState2"></typeparam>
-public struct TriState<TState1, TState2> : IEquatable<TriState<TState1, TState2>>
+public readonly struct TriState<TState1, TState2> : IEquatable<TriState<TState1, TState2>>
 {
     public TriState(TState1 state1)
     {
@@ -129,14 +129,14 @@ public struct TriState<TState1, TState2> : IEquatable<TriState<TState1, TState2>
         oneOf.Invoke(s2 => state2?.Invoke(s2));
     }
 
-    public TResult Match<TResult>(
+    public TResult Either<TResult>(
         Func<TState1, TResult> state1, 
         Func<TState2, TResult> state2,
         Func<TResult> none)
     {
         if(State.IsNone) return none();
 
-        return State.OrThrow().Match(state1, state2);
+        return State.OrThrow().Either(state1, state2);
     }
 
     public Option<OneOf<TState1, TState2>> State { get; }
@@ -146,7 +146,7 @@ public struct TriState<TState1, TState2> : IEquatable<TriState<TState1, TState2>
         if (State.IsNone) return $"{State}";
 
         return State.OrThrow()
-                    .Match(state1 => $"{state1}", state2 => $"{state2}");
+                    .Either(state1 => $"{state1}", state2 => $"{state2}");
     }
 
     public bool TryGet(out TState1? state) => State.OrThrow().TryGet(out state);

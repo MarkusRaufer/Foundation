@@ -7,6 +7,38 @@ namespace Foundation
     public class OneOfTests
     {
         [Test]
+        public void Either_Should_ReturnTheResultOfTheMatchingFunc_When_CalledRightFunc()
+        {
+            {
+                var expected = 12;
+
+                var sut = new OneOf<int, double>(expected);
+
+                var result = sut.Either((int i) => i, (double _) => 20);
+
+                Assert.AreEqual(expected, result);
+            }
+            {
+                var expected = 12.3;
+
+                var sut = new OneOf<int, double>(expected);
+
+                var result = sut.Either(_ => 20.0, (double d) => d);
+
+                Assert.AreEqual(expected, result);
+            }
+            {
+                var expected = "myValue";
+
+                var sut = new OneOf<int, string, double>(expected);
+
+                var result = sut.Either((int _) => "int", (string s) => s, (double _) => "double");
+
+                Assert.AreEqual(expected, result);
+            }
+        }
+
+        [Test]
         public void Invoke_Should_CallTheMatchingAction_When_TypeMatches()
         {
             {
@@ -15,8 +47,8 @@ namespace Foundation
                 var sut = new OneOf<int, double>(expected);
                 var value = 0;
 
-                sut.Invoke((int i) => value = i);
-                sut.Invoke((double _) => value = 20);
+                Assert.True(sut.Invoke((int i) => value = i));
+                Assert.False(sut.Invoke((double _) => value = 20));
 
                 Assert.AreEqual(expected, value);
             }
@@ -26,8 +58,8 @@ namespace Foundation
                 var sut = new OneOf<int, double>(expected);
                 var value = 0D;
 
-                sut.Invoke((int _) => value = 20D);
-                sut.Invoke((double d) => value = d);
+                Assert.False(sut.Invoke((int _) => value = 20D));
+                Assert.True(sut.Invoke((double d) => value = d));
 
                 Assert.AreEqual(expected, value);
             }
@@ -37,15 +69,28 @@ namespace Foundation
                 var sut = new OneOf<int, string, double>(expected);
                 var value = "";
 
-                sut.Invoke((int _) => value = "int");
-                sut.Invoke((string s) => value = s);
-                sut.Invoke((double _) => value = "double");
+                Assert.False(sut.Invoke((int _) => value = "int"));
+                Assert.True(sut.Invoke((string s) => value = s));
+                Assert.False(sut.Invoke((double _) => value = "double"));
 
                 Assert.AreEqual(expected, value);
             }
         }
 
-    
+
+        [Test]
+        public void Invoke_Should_ExecuteMatchingAction_When_UsingMultipleActions()
+        {
+            var expected = 12;
+
+            var sut = new OneOf<int, double>(expected);
+
+            var value = 0;
+
+            sut.Invoke((int i) => value = i, (double _) => value = 20);
+
+            Assert.AreEqual(expected, value);
+        }
 
         [Test]
         public void Item1_Should_ReturnSome_When_TypeIsTheFirstTypeArgument()
@@ -80,52 +125,20 @@ namespace Foundation
 
                 var sut = new OneOf<int, string>(expected);
 
-                Assert.IsTrue(sut.Item1.IsSome);
+                Assert.True(sut.Item1.IsSome);
                 Assert.AreEqual(expected, sut.Item1.OrThrow());
 
-                Assert.IsFalse(sut.Item2.IsSome);
+                Assert.False(sut.Item2.IsSome);
             }
             {
                 var expected = "12";
 
                 var sut = new OneOf<int, string>(expected);
 
-                Assert.IsFalse(sut.Item1.IsSome);
+                Assert.False(sut.Item1.IsSome);
 
-                Assert.IsTrue(sut.Item2.IsSome);
+                Assert.True(sut.Item2.IsSome);
                 Assert.AreEqual(expected, sut.Item2.OrThrow());
-            }
-        }
-
-        [Test]
-        public void Match_Should_ReturnTheResultOfTheMatchingFunc_When_CalledRightFunc()
-        {
-            {
-                var expected = 12;
-
-                var sut = new OneOf<int, double>(expected);
-
-                var result = sut.Match((int i) => i, (double _) => 20);
-
-                Assert.AreEqual(expected, result);
-            }
-            {
-                var expected = 12.3;
-
-                var sut = new OneOf<int, double>(expected);
-
-                var result = sut.Match(_ => 20.0, (double d) => d);
-
-                Assert.AreEqual(expected, result);
-            }
-            {
-                var expected = "myValue";
-
-                var sut = new OneOf<int, string, double>(expected);
-
-                var result = sut.Match((int _) => "int", (string s) => s, (double _) => "double");
-
-                Assert.AreEqual(expected, result);
             }
         }
 
