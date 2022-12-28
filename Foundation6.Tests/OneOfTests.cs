@@ -100,45 +100,19 @@ namespace Foundation
 
                 var sut = new OneOf<int, string>(expected);
 
-                Assert.IsTrue(sut.Item1.IsSome);
-                Assert.AreEqual(expected, sut.Item1.OrThrow());
+                if (sut.Item1 is int item1) Assert.AreEqual(expected, item1);
+                else Assert.Fail("Item1 has no value");
 
-                Assert.IsFalse(sut.Item2.IsSome);
+                Assert.IsNull(sut.Item2);
+                
             }
             {
                 var expected = "12";
 
                 var sut = new OneOf<int, string>(expected);
 
-                Assert.IsFalse(sut.Item1.IsSome);
-
-                Assert.IsTrue(sut.Item2.IsSome);
-                Assert.AreEqual(expected, sut.Item2.OrThrow());
-            }
-        }
-
-        [Test]
-        public void Item2_Should_ReturnSome_When_TypeIsTheScondTypeArgument()
-        {
-            {
-                var expected = 12;
-
-                var sut = new OneOf<int, string>(expected);
-
-                Assert.True(sut.Item1.IsSome);
-                Assert.AreEqual(expected, sut.Item1.OrThrow());
-
-                Assert.False(sut.Item2.IsSome);
-            }
-            {
-                var expected = "12";
-
-                var sut = new OneOf<int, string>(expected);
-
-                Assert.False(sut.Item1.IsSome);
-
-                Assert.True(sut.Item2.IsSome);
-                Assert.AreEqual(expected, sut.Item2.OrThrow());
+                if (sut.Item2 is string item2) Assert.AreEqual(expected, item2);
+                else Assert.Fail("Item1 has no value");
             }
         }
 

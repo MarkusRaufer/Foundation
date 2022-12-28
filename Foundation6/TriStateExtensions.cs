@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Foundation
+﻿namespace Foundation
 {
     public static class TriStateExtensions
     {
@@ -12,26 +6,20 @@ namespace Foundation
             this TriState<TState1, TState2> triState,
             Func<TState1, TResult> onState1)
         {
-            if (triState.State.IsNone) return Option.None<TResult>();
+            if (triState.State.TryGet(out OneOf<TState1, TState2>? oneOf)
+                && oneOf!.TryGet(out TState1? state1)) return onState1(state1!);
 
-            var state = triState.State.OrThrow();
-
-            if(state.Item2.IsSome) return Option.None<TResult>();
-
-            return onState1(state.Item1.OrThrow());
+            return Option.None<TResult>();
         }
 
         public static Option<TResult> OnState2<TState1, TState2, TResult>(
             this TriState<TState1, TState2> triState,
             Func<TState2, TResult> onState2)
         {
-            if (triState.State.IsNone) return Option.None<TResult>();
+            if (triState.State.TryGet(out OneOf<TState1, TState2>? oneOf)
+                && oneOf!.TryGet(out TState2? state2)) return onState2(state2!);
 
-            var state = triState.State.OrThrow();
-
-            if (state.Item1.IsSome) return Option.None<TResult>();
-
-            return onState2(state.Item2.OrThrow());
+            return Option.None<TResult>();
         }
     }
 }
