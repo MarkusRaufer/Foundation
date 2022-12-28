@@ -178,9 +178,7 @@ public static class OptionExtensions
 
         var result = projection(value!);
 
-        return result is null 
-            ? Option.None<TResult>()
-            : Option.Some(result);
+        return Option.Maybe(result);
     }
 }
 
