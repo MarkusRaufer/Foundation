@@ -58,6 +58,7 @@ public readonly struct Option<T>
     {
         if (!IsSome) return !other.IsSome;
         if(!other.IsSome) return false;
+
         return GetHashCode() == other.GetHashCode() 
             && _value!.Equals(other._value);
     }

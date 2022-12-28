@@ -156,5 +156,31 @@ public static class OptionExtensions
 
         throw exception();
     }
+
+    /// <summary>
+    /// Converts an option of type T into an option of type TResult.
+    /// If conversion is not possible, it returns None.
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <typeparam name="TResult"></typeparam>
+    /// <param name="option"></param>
+    /// <param name="projection"></param>
+    /// <returns></returns>
+    [return: NotNull]
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static Option<TResult> To<T, TResult>(
+        this Option<T> option,
+        Func<T, TResult> projection)
+    {
+        projection.ThrowIfNull();
+
+        if (!option.TryGet(out T? value)) return Option.None<TResult>();
+
+        var result = projection(value!);
+
+        return result is null 
+            ? Option.None<TResult>()
+            : Option.Some(result);
+    }
 }
 
