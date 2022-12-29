@@ -2894,6 +2894,94 @@ public static class EnumerableExtensions
     }
 
     /// <summary>
+    /// Returns a tuple of taken elements and remaining elements.
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <typeparam name="TTaken"></typeparam>
+    /// <param name="items"></param>
+    /// <param name="numberOfElements"></param>
+    /// <param name="projectTaken">Projection of taken elements.</param>
+    /// <returns></returns>
+    /// <exception cref="ArgumentOutOfRangeException"></exception>
+    public static (TTaken taken, IEnumerable<T> remaining) Take<T, TTaken>(
+        this IEnumerable<T> items, 
+        int numberOfElements,
+        Func<IEnumerable<T>, TTaken> projectTaken)
+    {
+        if (0 > numberOfElements) throw new ArgumentOutOfRangeException(nameof(numberOfElements), "cannot be negative");
+
+        var it = items.GetEnumerator();
+        var itemCounter = 0;
+
+        var takenElements = Enumerable.Empty<T>();
+
+        while(it.MoveNext())
+        {
+            itemCounter++;
+
+            if (itemCounter >= numberOfElements) break;
+            
+            takenElements = takenElements.Append(it.Current);
+        }
+
+        var remaining = Enumerable.Empty<T>();
+
+        while (it.MoveNext())
+        {
+            remaining = remaining.Append(it.Current);
+        }
+
+        return (projectTaken(takenElements), remaining);
+    }
+
+    /// <summary>
+    /// Returns a tuple of taken elements and remaining elements.
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <typeparam name="TTaken"></typeparam>
+    /// <typeparam name="TRemaining"></typeparam>
+    /// <param name="items"></param>
+    /// <param name="numberOfElements"></param>
+    /// <param name="projectTaken">Projection of taken elements.</param>
+    /// <param name="projectRemaining">Projection of remaining elements.</param>
+    /// <returns></returns>
+    /// <exception cref="ArgumentOutOfRangeException"></exception>
+    public static (TTaken taken, TRemaining remaining) Take<T, TTaken, TRemaining>(
+        this IEnumerable<T> items,
+        int numberOfElements,
+        Func<IEnumerable<T>, TTaken> projectTaken,
+        Func<IEnumerable<T>, TRemaining> projectRemaining)
+    {
+        if (0 > numberOfElements) throw new ArgumentOutOfRangeException(nameof(numberOfElements), "cannot be negative");
+
+        var it = items.GetEnumerator();
+        var itemCounter = 0;
+
+        var takenElements = Enumerable.Empty<T>();
+        var remaining = Enumerable.Empty<T>();
+
+        while (it.MoveNext())
+        {
+            if (itemCounter >= numberOfElements)
+            {
+                remaining = remaining.Append(it.Current);
+                break;
+            }
+
+            takenElements = takenElements.Append(it.Current);
+            itemCounter++;
+        }
+
+
+        while (it.MoveNext())
+        {
+            remaining = remaining.Append(it.Current);
+        }
+
+        return (projectTaken(takenElements), projectRemaining(remaining));
+    }
+
+    /// <summary>
     /// Returns at least numberOfElements elements. If the number of elements is smaller, an empty enumerable is returned.
     /// </summary>
     /// <typeparam name="T"></typeparam>

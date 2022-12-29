@@ -1881,6 +1881,23 @@ public class EnumerableExtensionsTests
     }
 
     [Test]
+    public void Take_Should_ReturnATupleWith3TakenAnd7Remaining_When_Taken3Elements()
+    {
+        var numbers = Enumerable.Range(0, 10).ToArray();
+
+        var (taken, remaining) = numbers.Take(3, x => x.ToArray(), x => x.ToArray());
+
+        Assert.AreEqual(3, taken.Length);
+
+        for(var i = 1; i < taken.Length; i++)
+            Assert.AreEqual(i, taken[i]);
+
+        Assert.AreEqual(7, remaining.Length);
+        for (var i=0; i < remaining.Length; i++)
+            Assert.AreEqual(i + taken.Length, remaining[i]);
+    }
+
+    [Test]
     public void TakeAtLeast_Should_Return0Elements_When_ListHas3ELementsAndNumberOfElementsIs4()
     {
         var items = new List<string> { "1", "2", "3" }.ToArray();
