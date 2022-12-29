@@ -16,7 +16,7 @@
             Action<TOk> ok,
             Action<TError> error)
         {
-            return result.Match(_ => result.OnOk(ok), _ => result.OnError(error));
+            return result.Either(_ => result.OnOk(ok), _ => result.OnError(error));
         }
             
 
@@ -30,7 +30,7 @@
         /// <param name="ok"></param>
         /// <param name="error"></param>
         /// <returns></returns>
-        public static TResult Match<TOk, TError, TResult>(
+        public static TResult Either<TOk, TError, TResult>(
             this Result<TOk, TError> result,
             Func<TOk, TResult> ok,
             Func<TError, TResult> error)
