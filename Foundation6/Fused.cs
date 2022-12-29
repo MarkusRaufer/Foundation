@@ -5,7 +5,7 @@
 /// </summary>
 public struct Fused
 {
-    public static FusedValue<T> Value<T>(T value)
+    public static FusedValue<T> Value<T>(T? value)
     {
         return new FusedValue<T>(value);
     }
@@ -13,16 +13,17 @@ public struct Fused
 
 public struct FusedValue<T>
 {
-    internal FusedValue(T value)
+    internal FusedValue(T? value)
     {
-        Value = value.ThrowIfNull();
+        Value = value;
         IsInitialized = true;
     }
 
     public bool IsInitialized { get; }
 
     public override string ToString() => $"{Value}";
-    public T Value { get; }
+
+    public T? Value { get; }
 }
 
 public static class FusedValueExtensions
@@ -53,7 +54,7 @@ public static class FusedValueExtensions
         return new Fused<T>(value.Value, x =>
         {
             if (!initialValue.IsInitialized) return null == x;
-            return !initialValue.Value.Equals(x);
+            return !initialValue.Value.EqualsNullable(x);
         });
     }
 
