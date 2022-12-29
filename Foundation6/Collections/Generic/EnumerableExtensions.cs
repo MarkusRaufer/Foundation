@@ -3182,11 +3182,6 @@ public static class EnumerableExtensions
         return items ?? Enumerable.Empty<T>();
     }
 
-    public static HashSet<T> ToHashSet<T>(this IEnumerable<T> items)
-    {
-        return new HashSet<T>(items.ThrowIfNull());
-    }
-
     public static IMultiValueMap<TKey, T> ToMultiValueMap<T, TKey>(this IEnumerable<T> items, Func<T, TKey> keySelector)
         where TKey : notnull
     {
