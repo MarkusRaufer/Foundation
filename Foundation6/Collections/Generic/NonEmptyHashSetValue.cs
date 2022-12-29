@@ -70,6 +70,13 @@ public readonly struct NonEmptyHashSetValue<T>
         => NonEmptyHashSetValue.New(values);
 
     /// <summary>
+    /// Returns true if NonEmptyHashSetValue contains the item. 
+    /// </summary>
+    /// <param name="item">searchable item.</param>
+    /// <returns>true if found.</returns>
+    public bool Contains(T item) => _values.Contains(item);
+
+    /// <summary>
     /// Number of values.
     /// </summary>
     public int Count => _values.Count;
