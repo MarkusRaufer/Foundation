@@ -18,7 +18,7 @@
         {
             return result.Either(_ => result.OnOk(ok), _ => result.OnError(error));
         }
-            
+
 
         /// <summary>
         /// If IsOk is true <paramref name="ok"/> is called otherwise <paramref name="error"/> is called.
@@ -34,7 +34,11 @@
             this Result<TOk, TError> result,
             Func<TOk, TResult> ok,
             Func<TError, TResult> error)
-            => result.IsOk ? ok(result.Ok) : error(result.Error);
+        {
+            if (result.TryGetOk(out TOk? okValue)) return ok(okValue!);
+                
+            return error(result.ToError());
+        }
 
         /// <summary>
         /// <paramref name="error"/> is only called when IsError of <paramref name="result"/> is true.
@@ -46,8 +50,10 @@
         /// <returns></returns>
         public static Unit OnError<TOk, TError>(this Result<TOk, TError> result, Action<TError> error)
         {
-            if (!result.IsOk) error(result.Error);
+            error.ThrowIfNull();
 
+            if (!result.IsOk && result.TryGetError(out TError? errorValue)) error(errorValue!);
+            
             return new Unit();
         }
 
@@ -61,9 +67,56 @@
         /// <returns></returns>
         public static Unit OnOk<TOk, TError>(this Result<TOk, TError> result, Action<TOk> ok)
         {
-            if(result.IsOk) ok(result.Ok);
+            ok.ThrowIfNull();
+
+            if (!result.IsOk && result.TryGetOk(out TOk? okValue)) ok(okValue!);
 
             return new Unit();
+        }
+
+        /// <summary>
+        /// If result contains an error an error is returned otherwise an exception is thrown.
+        /// </summary>
+        /// <typeparam name="TOk"></typeparam>
+        /// <typeparam name="TError"></typeparam>
+        /// <param name="result"></param>
+        /// <returns></returns>
+        /// <exception cref="ArgumentException">Is thrown if result does not contain an error.</exception>
+        public static TError ToError<TError>(this Result<TError> result)
+        {
+            if (result.TryGetError(out TError? error)) return error!;
+
+            throw new ArgumentException($"{nameof(result)} does not contain an error");
+        }
+
+        /// <summary>
+        /// If result contains an error an error is returned otherwise an exception is thrown.
+        /// </summary>
+        /// <typeparam name="TOk"></typeparam>
+        /// <typeparam name="TError"></typeparam>
+        /// <param name="result"></param>
+        /// <returns></returns>
+        /// <exception cref="ArgumentException">Is thrown if result does not contain an error.</exception>
+        public static TError ToError<TOk, TError>(this Result<TOk, TError> result)
+        {
+            if (result.TryGetError(out TError? error)) return error!;
+
+            throw new ArgumentException($"{nameof(result)} does not contain an error");
+        }
+
+        /// <summary>
+        /// If result contains a value a value is returned otherwise an exception is thrown.
+        /// </summary>
+        /// <typeparam name="TOk"></typeparam>
+        /// <typeparam name="TError"></typeparam>
+        /// <param name="result"></param>
+        /// <returns></returns>
+        /// <exception cref="ArgumentException">Is thrown if result does contain an error.</exception>
+        public static TOk ToOk<TOk, TError>(this Result<TOk, TError> result)
+        {
+            if (result.TryGetOk(out TOk? ok)) return ok!;
+
+            throw new ArgumentException($"{nameof(result)} does not contains an error");
         }
 
         /// <summary>
@@ -73,7 +126,7 @@
         /// <typeparam name="TError"></typeparam>
         /// <param name="result"></param>
         /// <returns></returns>
-        public static Option<TOk> ToOption<TOk, TError>(this Result<TOk, TError> result) 
-            => result.IsOk ? Option.Some(result.Ok) : Option.None<TOk>();
+        public static Option<TOk> ToOption<TOk, TError>(this Result<TOk, TError> result)
+            => result.IsOk && result.TryGetOk(out TOk? ok) ? Option.Some(ok!) : Option.None<TOk>();
     }
 }

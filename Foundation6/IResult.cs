@@ -4,13 +4,13 @@ public interface IResult : IResult<Exception>
 {
 }
 
-public interface IResult<out TError>
+public interface IResult<TError>
 {
-    TError Error { get; }
     bool IsOk { get; }
+    bool TryGetError(out TError? error);
 }
 
-public interface IResult<out TOk, out TError> : IResult<TError>
+public interface IResult<TOk, TError> : IResult<TError>
 {
-    TOk Ok { get; }
+    bool TryGetOk(out TOk? ok);
 }

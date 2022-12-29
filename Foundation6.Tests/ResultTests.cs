@@ -1,9 +1,5 @@
 ﻿using NUnit.Framework;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Foundation;
 
@@ -11,27 +7,18 @@ namespace Foundation;
 public class ResultTests
 {
     [Test]
-    public void Error_Should_IsOkFalse_When_UsedWithError()
+    public void IsOk_Should_ReturnFalse_When_ResultContainsAnError()
     {
-        var exception = new ArgumentException("error");
-        var sut = Result.Error(exception);
+        var sut = Result.Error(new ArgumentException());
+
         Assert.False(sut.IsOk);
-        Assert.AreEqual(exception, sut.Error);
     }
 
     [Test]
-    public void Error_Should_IsOkFalse_When_GenericUsedWithError()
-    {
-        var error = "error";
-        var sut = Result.Error<int, string>(error);
-        Assert.False(sut.IsOk);
-        Assert.AreEqual(error, sut.Error);
-    }
-
-    [Test]
-    public void Ok_Should_IsOkTrue_When_UsedWithoutValue()
+    public void IsOk_Should_ReturnTrue_When_ResultIsOk()
     {
         var sut = Result.Ok();
+
         Assert.True(sut.IsOk);
     }
 
@@ -41,6 +28,41 @@ public class ResultTests
         var value = 5;
         var sut = Result.Ok<int, string>(value);
         Assert.True(sut.IsOk);
-        Assert.AreEqual(value, sut.Ok);
+        Assert.AreEqual(value, sut.ToOk());
+    }
+
+    [Test]
+    public void ToError_Should_ReturnTrue_When_ResultContainsAnError()
+    {
+        var exception = new ArgumentException("error");
+        var sut = Result.Error(exception);
+
+        Assert.AreEqual(exception, sut.ToError());
+    }
+
+    [Test]
+    public void ToError_Should_ThrowException_When_ResultContainsNoError()
+    {
+        var sut = Result.Ok();
+
+        Assert.Throws<ArgumentException>(() => sut.ToError());
+    }
+
+    [Test]
+    public void TryGetError_Should_ReturnFalse_When_ResultContainsNoError()
+    {
+        var sut = Result.Ok();
+
+        Assert.False(sut.TryGetError(out Exception? error));
+    }
+
+    [Test]
+    public void TryGetError_Should_ReturnTrue_When_ResultContainsAnError()
+    {
+        var exception = new ArgumentException("error");
+        var sut = Result.Error(exception);
+
+        Assert.True(sut.TryGetError(out Exception? error));
+        Assert.AreEqual(exception, error);
     }
 }

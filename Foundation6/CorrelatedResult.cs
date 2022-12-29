@@ -1,4 +1,6 @@
-﻿namespace Foundation;
+﻿using System.Diagnostics.CodeAnalysis;
+
+namespace Foundation;
 
 public static class CorrelatedResult
 {
@@ -47,12 +49,25 @@ public struct CorrelatedResult<TCorrelationId, TOk, TError>
 
     public TCorrelationId CorrelationId { get; }
 
-    public TError Error => _result.Error;
-
     public bool IsOk => _result.IsOk;
 
-    public TOk Ok => _result.Ok;
-
     public override string ToString() => $"CorrelationId: {CorrelationId} Result: {_result}";
+
+    public bool TryGetError([NotNullWhen(true)] out TError? error)
+    {
+        if (!IsOk) return _result.TryGetError(out error);
+
+        error = default;
+        return false;
+    }
+
+    public bool TryGetOk([NotNullWhen(true)] out TOk? ok)
+    {
+
+        if (IsOk) return _result.TryGetOk(out ok);
+
+        ok = default;
+        return false;
+    }
 }
 

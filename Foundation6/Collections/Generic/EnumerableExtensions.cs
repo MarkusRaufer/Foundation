@@ -2605,7 +2605,7 @@ public static class EnumerableExtensions
     {
         return items.ThrowIfNull()
                     .Where(item => !item.IsOk)
-                    .Select(result => result.Error);
+                    .Select(result => result.ToError());
     }
 
 
@@ -2635,7 +2635,7 @@ public static class EnumerableExtensions
     {
         return items.ThrowIfNull()
                     .Where(item => item.IsOk)
-                    .Select(result => result.Ok!);
+                    .Select(result => result.ToOk());
     }
 
     /// <summary>

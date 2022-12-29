@@ -1,6 +1,6 @@
 ﻿namespace Foundation;
 
-using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 
 public static class Result
 {
@@ -50,11 +50,12 @@ public readonly struct Result<TError>
     : IResult<TError>
     , IEquatable<Result<TError>>
 {
+    private readonly TError _error;
     private readonly bool _isError;
 
     internal Result(TError error)
     {
-        Error = error.ThrowIfNull();
+        _error = error.ThrowIfNull();
         _isError = true;
     }
 
@@ -68,8 +69,6 @@ public readonly struct Result<TError>
         return !(left == right);
     }
 
-    public TError Error { get; }
-
     public override bool Equals(object? obj) => obj is Result<TError> other && Equals(other);
 
     public bool Equals(Result<TError> other)
@@ -77,12 +76,12 @@ public readonly struct Result<TError>
         if (IsOk) return other.IsOk;
 
         return !other.IsOk
-            && EqualityComparer<TError>.Default.Equals(Error, other.Error);
+            && EqualityComparer<TError>.Default.Equals(_error, other._error);
     }
 
     public override int GetHashCode() => IsOk 
                                          ? typeof(Result<TError>).GetHashCode()
-                                         : System.HashCode.Combine(typeof(Result<TError>), Error);
+                                         : System.HashCode.Combine(typeof(Result<TError>), _error);
 
     /// <summary>
     /// Is true if Result has a value <see cref="IsOk"/> otherwise false;
@@ -90,7 +89,24 @@ public readonly struct Result<TError>
     public bool IsOk => !_isError;
 
     public override string ToString()
-        => IsOk ? $"IsOk: {IsOk}" : $"IsOk: {IsOk}, Error: {Error}";
+        => IsOk ? $"IsOk: {IsOk}" : $"IsOk: {IsOk}, Error: {_error}";
+
+    /// <summary>
+    /// Returns true if result contains an error.
+    /// </summary>
+    /// <param name="error"></param>
+    /// <returns></returns>
+    public bool TryGetError(out TError? error)
+    {
+        if(!IsOk)
+        {
+            error = _error;
+            return true;
+        }
+
+        error = default;
+        return false;
+    }
 }
 
 [Serializable]
@@ -130,38 +146,58 @@ public readonly struct Result<TOk, TError>
 
     public bool Equals(Result<TOk, TError> other)
     {
-        if (IsOk) return other.IsOk && EqualityComparer<TOk>.Default.Equals(Ok, other.Ok);
-
-        return !other.IsOk && EqualityComparer<TError>.Default.Equals(Error, other.Error);
-    }
-
-    public TError Error
-    {
-        get
+        if (!IsOk)
         {
-            if (IsOk) throw new ArgumentException("The result conains no error");
-            return _error.OrThrow();
+            if(other.IsOk) return false;
+            return _error.Equals(other._error);
         }
+        if (!other.IsOk) return false;
+
+        return _ok.Equals(other._ok);
     }
 
     public override int GetHashCode() => _hashCode;
 
     public bool IsOk => _ok.IsSome;
 
-    public TOk Ok
-    {
-        get
-        {
-            if (!IsOk) throw new ArgumentException("Result contains an error");
-
-            return _ok.OrThrow();
-        }
-    }
-
     public override string ToString()
     {
         return IsOk
-            ? $"IsOk: {IsOk}, Ok: {Ok}"
-            : $"IsOk: {IsOk}, Error: {Error}";
+            ? $"IsOk: {IsOk}, Ok: {_ok.OrThrow()}"
+            : $"IsOk: {IsOk}, Error: {_error.OrThrow()}";
+    }
+
+    /// <summary>
+    /// Returns true if result contains an error otherwise returns false and error has the default value.
+    /// </summary>
+    /// <param name="error"></param>
+    /// <returns></returns>
+    public bool TryGetError([NotNullWhen(true)] out TError? error)
+    {
+        if(!IsOk)
+        {
+            error = _error.OrThrow();
+            return true;
+        }
+
+        error = default;
+        return false;
+    }
+
+    /// <summary>
+    /// Returns true if result contains a value otherwise false and ok is set to the default value.
+    /// </summary>
+    /// <param name="ok"></param>
+    /// <returns></returns>
+    public bool TryGetOk([NotNullWhen(true)] out TOk? ok)
+    {
+        if (IsOk)
+        {
+            ok = _ok.OrThrow();
+            return true;
+        }
+
+        ok = default;
+        return false;
     }
 }
