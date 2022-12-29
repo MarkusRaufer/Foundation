@@ -24,7 +24,8 @@ public class DictionaryValueTests
         };
 
         var sut1 = new DictionaryValue<string, object>(keyValues1);
-        var sut2 = new DictionaryValue<string, object>(keyValues2);
+        var sut2 = DictionaryValue.New(keyValues2);
+
 
         Assert.AreNotEqual(sut1, sut2);
         Assert.AreNotEqual(sut1.GetHashCode(), sut2.GetHashCode());

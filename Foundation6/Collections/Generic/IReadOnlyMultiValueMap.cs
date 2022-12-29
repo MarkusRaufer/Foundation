@@ -28,7 +28,7 @@ public interface IReadOnlyMultiValueMap<TKey, TValue> : IEnumerable<KeyValuePair
     IEnumerable<KeyValuePair<TKey, TValue>> GetFlattenedKeyValues(params TKey[] keys);
 
     /// <summary>
-    /// Returns values as flat lit of the specified keys.
+    /// Returns values as flat list of the specified keys.
     /// </summary>
     /// <returns></returns>
     IEnumerable<TValue> GetFlattenedValues(params TKey[] keys);
@@ -48,7 +48,7 @@ public interface IReadOnlyMultiValueMap<TKey, TValue> : IEnumerable<KeyValuePair
     IEnumerable<KeyValuePair<TKey, IEnumerable<TValue>>> GetKeyValues(params TKey[] keys);
 
     /// <summary>
-    /// Returns the values of the specified key.
+    /// Returns the values of the specified keys.
     /// </summary>
     /// <param name="keys"></param>
     /// <returns></returns>

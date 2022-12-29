@@ -218,7 +218,7 @@ public class MultiValueMap<TKey, TValue> : IMultiValueMap<TKey, TValue>
     {
         return 0 == keys.Length
             ? _dictionary.Values.SelectMany(values => values)
-            : keys.SelectMany(key => GetValues(key));
+            : GetValues(keys);
     }
     
     /// <summary>

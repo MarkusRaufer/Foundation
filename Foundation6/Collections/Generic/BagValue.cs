@@ -40,19 +40,11 @@ public readonly struct BagValue<T>
 
     public static implicit operator T[](BagValue<T> array) => array._values;
 
-    public static bool operator ==(BagValue<T> left, BagValue<T> right)
-    {
-        return left.Equals(right);
-    }
+    public static bool operator ==(BagValue<T> left, BagValue<T> right) => left.Equals(right);
 
-    public static bool operator !=(BagValue<T> left, BagValue<T> right)
-    {
-        return !(left == right);
-    }
+    public static bool operator !=(BagValue<T> left, BagValue<T> right) => !(left == right);
 
-    public T this[int index] => _values[index];
-
-    public int Count => _values.Length;
+    public int Count => IsEmpty ? 0 : _values.Length;
 
     public object Clone()
     {
@@ -80,13 +72,11 @@ public readonly struct BagValue<T>
         return _values.IsEqualToSet(other._values);
     }
 
-    public IEnumerator<T> GetEnumerator() => _values.GetEnumerator<T>();
+    public IEnumerator<T> GetEnumerator() => IsEmpty ? Enumerable.Empty<T>().GetEnumerator() : _values.GetEnumerator<T>();
 
-    IEnumerator IEnumerable.GetEnumerator() => _values.GetEnumerator();
+    IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
 
     public override int GetHashCode() => _hashCode;
 
     public bool IsEmpty => null == _values || 0 == _values.Length;
-
-    public int Length => IsEmpty ? 0 : _values.Length;
 }
