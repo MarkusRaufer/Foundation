@@ -149,7 +149,19 @@ public readonly struct TriState<TState1, TState2> : IEquatable<TriState<TState1,
                     .Either(state1 => $"{state1}", state2 => $"{state2}");
     }
 
-    public bool TryGet(out TState1? state) => State.OrThrow().TryGet(out state);
+    public bool TryGet(out TState1? state)
+    {
+        if(State.IsSome) return State.OrThrow().TryGet(out state);
 
-    public bool TryGet(out TState2? state) => State.OrThrow().TryGet(out state);
+        state = default;
+        return false;
+    }
+
+    public bool TryGet(out TState2? state)
+    {
+        if (State.IsSome) return State.OrThrow().TryGet(out state);
+
+        state = default;
+        return false;
+    }
 }
