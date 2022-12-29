@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Runtime.Serialization;
 
 namespace Foundation;
@@ -85,7 +86,7 @@ public readonly struct Option<T>
     /// </summary>
     /// <param name="value"></param>
     /// <returns></returns>
-    public bool TryGet(out T? value)
+    public bool TryGet([NotNullWhen(true)] out T? value)
     {
         value = _value;
 
