@@ -2326,46 +2326,12 @@ public static class EnumerableExtensions
     /// <param name="match">projection to TResult.</param>
     /// <param name="noMatch">projection to TResult.</param>
     /// <returns></returns>
-    public static (IEnumerable<TResult> matching, IEnumerable<TResult> notMatching) Partition<T, TResult>(
-        this IEnumerable<T> items,
-        Func<T, bool> predicate,
-        Func<T, TResult> match,
-        Func<T, TResult> noMatch)
-    {
-        predicate.ThrowIfNull();
-        match.ThrowIfNull();
-        noMatch.ThrowIfNull();
-
-        (IEnumerable<TResult> matching, IEnumerable<TResult> notMatching) = (Enumerable.Empty<TResult>(), Enumerable.Empty<TResult>());
-        foreach (var item in items.ThrowIfNull())
-        {
-            if (predicate(item))
-            {
-                matching = matching.Append(match(item));
-                continue;
-            }
-            notMatching = notMatching.Append(noMatch(item));
-        }
-
-        return (matching, notMatching);
-    }
-
-    /// <summary>
-    /// Partitions items into two lists. If predicate is true the item is added to matching otherwise notMatching.
-    /// </summary>
-    /// <typeparam name="T"></typeparam>
-    /// <typeparam name="TResult"></typeparam>
-    /// <param name="items"></param>
-    /// <param name="predicate"></param>
-    /// <param name="match">projection to TResult.</param>
-    /// <param name="noMatch">projection to TResult.</param>
-    /// <returns></returns>
     /// 
-    public static (TResult matching, TResult notMatching) Partition<T, TResult>(
+    public static (TMatch matching, TNoMatch notMatching) Partition<T, TMatch, TNoMatch>(
         this IEnumerable<T> items,
         Func<T, bool> predicate,
-        Func<IEnumerable<T>, TResult> match,
-        Func<IEnumerable<T>, TResult> noMatch)
+        Func<IEnumerable<T>, TMatch> match,
+        Func<IEnumerable<T>, TNoMatch> noMatch)
     {
         predicate.ThrowIfNull();
         match.ThrowIfNull();
