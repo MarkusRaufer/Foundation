@@ -35,7 +35,7 @@ public static class FusedValueExtensions
     /// <param name="value"></param>
     /// <param name="predicate"></param>
     /// <returns></returns>
-    public static Fused<T> BlowIf<T>(this FusedValue<T> value, Func<T, bool> predicate)
+    public static Fused<T> BlowIf<T>(this FusedValue<T> value, Func<T?, bool> predicate)
     {
         return new Fused<T>(value.Value, predicate);
     }
@@ -61,25 +61,25 @@ public static class FusedValueExtensions
     public static Fused<T> BlowIfGreater<T>(this FusedValue<T> value, T theshold)
         where T : IComparable<T>
     {
-        return new Fused<T>(value.Value, x => x.CompareTo(theshold) == 1);
+        return new Fused<T>(value.Value, x => x.CompareNullableTo(theshold) == 1);
     }
 
     public static Fused<T> BlowIfGreaterEqual<T>(this FusedValue<T> value, T theshold)
         where T : IComparable<T>
     {
-        return new Fused<T>(value.Value, x => x.CompareTo(theshold) != -1);
+        return new Fused<T>(value.Value, x => x.CompareNullableTo(theshold) != -1);
     }
 
     public static Fused<T> BlowIfLess<T>(this FusedValue<T> value, T theshold)
         where T : IComparable<T>
     {
-        return new Fused<T>(value.Value, x => x.CompareTo(theshold) == -1);
+        return new Fused<T>(value.Value, x => x.CompareNullableTo(theshold) == -1);
     }
 
     public static Fused<T> BlowIfLessEqual<T>(this FusedValue<T> value, T theshold)
         where T : IComparable<T>
     {
-        return new Fused<T>(value.Value, x => x.CompareTo(theshold) != 1);
+        return new Fused<T>(value.Value, x => x.CompareNullableTo(theshold) != 1);
     }
 }
 
@@ -89,12 +89,12 @@ public static class FusedValueExtensions
 /// <typeparam name="T"></typeparam>
 public struct Fused<T> : IEquatable<Fused<T>>
 {
-    private readonly Func<T, bool> _predicate;
-    private T _value;
+    private readonly Func<T?, bool> _predicate;
+    private T? _value;
 
-    public Fused(T? seed, Func<T, bool> predicate)
+    public Fused(T? seed, Func<T?, bool> predicate)
     {
-        _value = seed.ThrowIfNull();
+        _value = seed;
         _predicate = predicate.ThrowIfNull();
         IsBlown = false;
     }
@@ -124,7 +124,7 @@ public struct Fused<T> : IEquatable<Fused<T>>
 
     public override string ToString() => $"Value:{Value}, IsBlown:{IsBlown}";
 
-    public T Value
+    public T? Value
     {
         get { return _value; }
         set
