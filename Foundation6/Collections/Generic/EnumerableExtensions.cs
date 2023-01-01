@@ -984,31 +984,31 @@ public static class EnumerableExtensions
     }
 
     /// <summary>
-    /// If lhs is empty it returns the items from factory otherwise lhs.
+    /// If lhs is empty it returns the items from factory otherwise items.
     /// </summary>
     /// <typeparam name="T"></typeparam>
-    /// <param name="lhs"></param>
-    /// <param name="factory"></param>
+    /// <param name="items"></param>
+    /// <param name="whenEmpty"></param>
     /// <returns></returns>
-    public static IEnumerable<T> IfEmpty<T>(this IEnumerable<T> lhs, Func<IEnumerable<T>> factory)
+    public static IEnumerable<T> IfEmpty<T>(this IEnumerable<T> items, Func<IEnumerable<T>> whenEmpty)
     {
-        factory.ThrowIfNull();
+        whenEmpty.ThrowIfNull();
 
-        var lit = lhs.GetEnumerator();
-        if (!lit.MoveNext())
+        var it = items.GetEnumerator();
+        if (!it.MoveNext())
         {
-            foreach (var r in factory())
+            foreach (var x in whenEmpty())
             {
-                yield return r;
+                yield return x;
             }
             yield break;
         }
 
-        yield return lit.Current;
+        yield return it.Current;
 
-        while (lit.MoveNext())
+        while (it.MoveNext())
         {
-            yield return lit.Current;
+            yield return it.Current;
         }
     }
 
@@ -1800,6 +1800,17 @@ public static class EnumerableExtensions
         if (null == mostFrequent) return (Enumerable.Empty<T>(), 0);
 
         return (mostFrequent.Select(g => g.First()), itemCount);
+    }
+
+    /// <summary>
+    /// Returns only items that occure more than once.
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <param name="items"></param>
+    /// <returns></returns>
+    public static IEnumerable<IGrouping<TKey, T>> MultipleOccurrences<T, TKey>(this IEnumerable<T> items, Func<T, TKey> keySelector)
+    {
+        return items.GroupBy(keySelector).Where(grp => 1 < grp.Count());
     }
 
     /// <summary>

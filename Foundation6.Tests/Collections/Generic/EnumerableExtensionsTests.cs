@@ -977,6 +977,23 @@ public class EnumerableExtensionsTests
     }
 
     [Test]
+    public void MultipleOccurrences_Should_Return2Groupings_When_2NumbersOccureMoreThanOnce()
+    {
+        var numbers = new[] { 1, 2, 2, 3, 3, 3, 3, 4 };
+
+        var multiOccurrences = numbers.MultipleOccurrences(x => x).ToArray();
+
+        Assert.AreEqual(2, multiOccurrences.Length);
+
+        Assert.AreEqual(2, multiOccurrences[0].Key);
+        Assert.AreEqual(2, multiOccurrences[0].Count()); // 2 occurrences
+
+        Assert.AreEqual(3, multiOccurrences[1].Key);
+        Assert.AreEqual(4, multiOccurrences[1].Count()); // 4 occurrences
+    }
+
+
+    [Test]
     public void NotOfType_Should_ReturnRightValue_When_SingleMaxValue()
     {
         var values = new object[] { 1, "2", new DateOnly(2022, 3, 5), 4, "5", 6.6 };
