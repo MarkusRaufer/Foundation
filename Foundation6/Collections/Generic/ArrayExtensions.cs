@@ -1,21 +1,28 @@
-﻿using System.Runtime.CompilerServices;
+﻿namespace Foundation.Collections.Generic;
 
-namespace Foundation.Collections.Generic;
+using System.Runtime.CompilerServices;
+using Foundation;
+using Foundation.Collections.Generic;
 
 public static class ArrayExtensions
 {
+    public static IEnumerable<T> AsEnumerable<T>(params T[] items)
+    {
+        return items;
+    }
+
     public static decimal AverageMedian<T>(this T[] array, Func<T, decimal>? converter = null)
     {
-        var (opt1, opt2) = AverageMedianPosition(array);
+        var (opt1, opt2) = array.AverageMedianPosition();
         if (opt1.IsNone) return 0;
 
-        var value1 = (null == converter)
+        var value1 = null == converter
             ? Convert.ToDecimal(opt1.OrThrow())
             : converter(opt1.OrThrow());
 
         if (opt2.IsNone) return value1;
 
-        var value2 = (null == converter)
+        var value2 = null == converter
             ? Convert.ToDecimal(opt2.OrThrow())
             : converter(opt2.OrThrow());
 
@@ -36,9 +43,40 @@ public static class ArrayExtensions
 
         int halfIndex = sorted.Length / 2;
 
-        return (sorted.Length % 2 == 0)
+        return sorted.Length % 2 == 0
             ? (Option.Some(sorted[halfIndex - 1]), Option.Some(sorted[halfIndex]))
             : (Option.Some(sorted[halfIndex]), Option.None<T>());
+    }
+
+    public static bool EqualsArray<T>(this T[] lhs, T[] rhs)
+    {
+        if (lhs is null) return rhs is null;
+
+        if (rhs is null || lhs.Length != rhs.Length) return false;
+        for (var i = 0; i < lhs.Length; i++)
+        {
+            if (!EqualityComparer<T>.Default.Equals(lhs[i], rhs[i])) return false;
+        }
+
+        return true;
+    }
+
+    public static bool EqualsArray(this byte[] lhs, byte[] rhs)
+    {
+        if (lhs is null) return rhs is null;
+
+        if (rhs is null || lhs.Length != rhs.Length) return false;
+        for (var i = 0; i < lhs.Length; i++)
+        {
+            if (lhs[i] != rhs[i]) return false;
+        }
+
+        return true;
+    }
+
+    public static IEnumerator<T> GetEnumerator<T>(this T[] array)
+    {
+        return array.AsEnumerable().GetEnumerator();
     }
 
     /// <summary>
@@ -60,7 +98,26 @@ public static class ArrayExtensions
 
     public static IEnumerable<int> IndexesOf<T>(this T[] array, params T[] selectors)
     {
-        return IndexesOf<T>(array, (IEnumerable<T>)selectors);
+        return array.IndexesOf((IEnumerable<T>)selectors);
+    }
+
+    /// <summary>
+    /// Creates a new array and prepends <paramref name="elem"/> to the new array.
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <param name="array"></param>
+    /// <param name="elem"></param>
+    /// <returns></returns>
+    public static T[] Prepend<T>(this T[] array, T elem)
+    {
+        array.ThrowIfNull();
+
+        var newValues = new T[array.Length + 1];
+        newValues[0] = elem;
+
+        Array.Copy(array, 0, newValues, 1, array.Length);
+
+        return newValues;
     }
 
     /// <summary>
@@ -75,7 +132,7 @@ public static class ArrayExtensions
         if (null == random) random = new Random();
 
         var n = array.Length;
-        for (int i = 0; i < (n - 1); i++)
+        for (int i = 0; i < n - 1; i++)
         {
             var r = i + random.Next(n - i);
 
@@ -93,6 +150,6 @@ public static class ArrayExtensions
             => arr ?? throw new ArgumentException($"{paramName} must not be empty");
 
     public static T[] ThrowIfNullOrEmpty<T>(this T[] arr, [CallerArgumentExpression("arr")] string paramName = "")
-            => ThrowIfNull(arr, paramName).ThrowIfEmpty(paramName);
+            => arr.ThrowIfNull(paramName).ThrowIfEmpty(paramName);
 }
 

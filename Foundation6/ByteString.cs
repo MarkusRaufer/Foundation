@@ -3,6 +3,7 @@
 using System.Collections;
 using System.Runtime.Serialization;
 using System.Text;
+using Foundation.Collections.Generic;
 
 [Serializable]
 public sealed class ByteString
