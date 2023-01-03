@@ -13,8 +13,8 @@ namespace Foundation.Collections.Generic
     {
         private record KeyTuple(TKey Key, int Number);
 
-        private readonly IDictionary<KeyTuple, TValue> _values;
         private readonly IMultiValueMap<TKey, KeyTuple> _keys;
+        private readonly IDictionary<KeyTuple, TValue> _values;
 
         public MultiKeyMap()
         {
@@ -42,10 +42,11 @@ namespace Foundation.Collections.Generic
 
         public MultiKeyMap(IEnumerable<KeyValuePair<TKey, TValue>> items)
         {
-            items.ThrowIfNull();
+            _keys = new MultiValueMap<TKey, KeyTuple>();
+            _values = new Dictionary<KeyTuple, TValue>();
 
-            _values = items.Enumerate().ToDictionary(x => new KeyTuple(x.item.Key, 0), x => x.item.Value);
-            _keys = _values.Keys.ToMultiValueMap(x => x.Key, x => x);
+            foreach (var kvp in items)
+                Add(kvp);
         }
 
         public TValue this[TKey key]

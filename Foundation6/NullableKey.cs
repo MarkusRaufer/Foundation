@@ -40,21 +40,16 @@ namespace Foundation
             if (other.Value is IComparable<T> right) return right.CompareTo(Value) * -1;
 
             throw new InvalidOperationException("values are not comparable");
-
-        }
-        public override bool Equals([NotNullWhen(true)] object? obj)
-        {
-            if(obj is NullableKey<T> key) return Equals(key);
-
-            return false;
         }
 
+        public override bool Equals([NotNullWhen(true)] object? obj) => obj is NullableKey<T> other && Equals(other);
+        
         public bool Equals(NullableKey<T> other)
         {
             return EqualityComparer<T>.Default.Equals(Value, other.Value);
         }
 
-        public override int GetHashCode() => Value is null ? 0 : Value.GetHashCode();
+        public override int GetHashCode() => Value.GetNullableHashCode();
 
         public bool IsNull => Value is null;
 
