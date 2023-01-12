@@ -18,12 +18,20 @@ namespace Foundation.Collections.Generic
                         .Either(kv => Option.Some(kv.Value),
                                () => Option.None<TValue>());
 
-
         public static KeyValuePair<TKey, TValue> ThrowIfEmpty<TKey, TValue>(
             this KeyValuePair<TKey, TValue> pair,
             [CallerArgumentExpression("pair")] string name = "")
         {
             return null != pair.Key ? pair : throw new ArgumentNullException(name);
+        }
+
+        public static KeyValuePair<string, TValue> ThrowIfNullOrWhiteSpace<TValue>(
+            this KeyValuePair<string, TValue> pair,
+            [CallerArgumentExpression("pair")] string name = "")
+        {
+            if (string.IsNullOrWhiteSpace(pair.Key)) throw new ArgumentNullException(name);
+
+            return null != pair.Value ? pair : throw new ArgumentNullException(name);
         }
 
         public static IEnumerable<KeyValue<TKey, TValue>> ToKeyValues<TKey, TValue>(this IEnumerable<KeyValuePair<TKey, TValue>> keyValues)
