@@ -1,82 +1,70 @@
 ﻿using System.Collections;
+using System.Collections.Specialized;
 using System.Diagnostics.CodeAnalysis;
 
 namespace Foundation.Collections.Generic;
 
-public class FixedKeysDictionary<TKey, TValue> : IDictionary<TKey, TValue>
+public class FixedKeysDictionary<TKey, TValue>
+    : IFixedKeysDictionary<TKey, TValue>
     where TKey : notnull
 {
+    public event NotifyCollectionChangedEventHandler? CollectionChanged;
+
     private readonly HashSet<TKey> _keys;
-    private readonly IDictionary<TKey, TValue> _dictionary;
+    private readonly IDictionary<TKey, TValue> _keyValues;
 
     public FixedKeysDictionary(IEnumerable<TKey> keys)
     {
         _keys = new HashSet<TKey>(keys);
-        _dictionary = new Dictionary<TKey, TValue>();
+        _keyValues = new Dictionary<TKey, TValue>();
     }
 
     public FixedKeysDictionary(IEnumerable<KeyValuePair<TKey, TValue>> keyValues)
     {
-        _dictionary = new Dictionary<TKey, TValue>(keyValues);
-        _keys = new HashSet<TKey>(_dictionary.Keys);
+        _keyValues = keyValues.ToDictionary(x => x.Key, x => x.Value);
+        _keys = new HashSet<TKey>(_keyValues.Keys);
     }
 
-    public TValue this[TKey key] 
-    { 
-        get => _dictionary[key]; 
+    public FixedKeysDictionary(IDictionary<TKey, TValue> dictionary)
+    {
+        _keyValues = dictionary.ThrowIfNull();
+        _keys = new HashSet<TKey>(_keyValues.Keys);
+    }
+
+    public TValue this[TKey key]
+    {
+        get => _keyValues[key];
         set
         {
             if (!_keys.Contains(key)) return;
 
-            _dictionary[key] = value;
+            var valueExists = _keyValues.TryGetValue(key, out TValue? oldValue);
+            if (valueExists && oldValue.EqualsNullable(value)) return;
+
+            _keyValues[key] = value;
+
+            if (null == CollectionChanged) return;
+
+            var args = valueExists
+                ? new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Replace, Pair.New(key, value), Pair.New(key, oldValue))
+                : new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Replace, Pair.New(key, value), null);
+
+            CollectionChanged?.Invoke(this, args);
         }
     }
 
-    public bool IsComplete => _dictionary.Count == _keys.Count;
+    public int Count => _keyValues.Count;
 
-    public ICollection<TKey> Keys => _keys.ToArray();
+    public IEnumerable<TKey> Keys => _keyValues.Keys;
 
-    public ICollection<TValue> Values => _dictionary.Values;
+    public IEnumerable<TValue> Values => _keyValues.Values;
 
-    public int Count => _dictionary.Count;
+    public bool ContainsKey(TKey key) => _keys.Contains(key);
 
-    public bool IsReadOnly => _dictionary.IsReadOnly;
+    public IEnumerator<KeyValuePair<TKey, TValue>> GetEnumerator() => _keyValues.GetEnumerator();
 
-    public void Add(TKey key, TValue value)
-    {
-        if (!_keys.Contains(key)) throw new ArgumentOutOfRangeException(nameof(key));
+    IEnumerator IEnumerable.GetEnumerator() => _keyValues.GetEnumerator();
 
-        _dictionary.Add(key, value);
-    }
+    public bool TryGetValue(TKey key, [MaybeNullWhen(false)] out TValue value) => _keyValues.TryGetValue(key, out value);
 
-    public void Add(KeyValuePair<TKey, TValue> item)
-    {
-        if (!_keys.Contains(item.Key)) throw new ArgumentOutOfRangeException(nameof(item), "key not allowed");
-        _dictionary.Add(item);
-    }
-
-    public void Clear()
-    {
-        _dictionary.Clear();
-    }
-
-    public bool Contains(KeyValuePair<TKey, TValue> item) => _dictionary.Contains(item);
-
-    public bool ContainsKey(TKey key) => _dictionary.ContainsKey(key);
-
-    public void CopyTo(KeyValuePair<TKey, TValue>[] array, int arrayIndex)
-    {
-        _dictionary.CopyTo(array, arrayIndex);
-    }
-
-    public IEnumerator<KeyValuePair<TKey, TValue>> GetEnumerator() => _dictionary.GetEnumerator();
-
-    public bool Remove(TKey key) => _dictionary.Remove(key);
-
-    public bool Remove(KeyValuePair<TKey, TValue> item) => _dictionary.Remove(item);
-
-    public bool TryGetValue(TKey key, [MaybeNullWhen(false)] out TValue value) =>
-        _dictionary.TryGetValue(key, out value);
-
-    IEnumerator IEnumerable.GetEnumerator() => _dictionary.GetEnumerator();
 }
