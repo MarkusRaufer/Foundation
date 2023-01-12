@@ -40,7 +40,13 @@ public class DictionaryValue<TKey, TValue>
         _dictionary = dictionary.ThrowIfNull();
         _hashCode = HashCode.FromObjects(_dictionary);
     }
-    
+
+    public static implicit operator DictionaryValue<TKey, TValue>(KeyValuePair<TKey, TValue>[] keyValues)
+        => new(keyValues);
+
+    public static implicit operator DictionaryValue<TKey, TValue>(Dictionary<TKey, TValue> dictionary)
+        => new(dictionary);
+
     public TValue this[TKey key] => _dictionary[key];
 
     public int Count => _dictionary.Count;
