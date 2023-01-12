@@ -2171,6 +2171,27 @@ public static class EnumerableExtensions
         }
     }
 
+    public static IEnumerable<TResult> OnFirstSelect<T, TResult>(
+        this IEnumerable<T> items, 
+        Func<T, TResult> onFirst,
+        Func<T, TResult> onRemaining)
+    {
+        onFirst.ThrowIfNull();
+        onRemaining.ThrowIfNull();
+
+        var it = items.ThrowIfNull()
+                      .GetEnumerator();
+
+        if (!it.MoveNext()) yield break;
+
+        yield return onFirst(it.Current);
+
+        while (it.MoveNext())
+        {
+            yield return onRemaining(it.Current);
+        }
+    }
+
     /// <summary>
     /// Calls action on last item.
     /// </summary>
