@@ -50,7 +50,6 @@ public class FixedKeysMultiMap<TKey, TValue> : IMultiValueMap<TKey, TValue>
     {
     }
 
-
     public FixedKeysMultiMap(
         IEnumerable<TKey> keys,
         IDictionary<TKey, ICollection<TValue>> dictionary,
