@@ -333,6 +333,35 @@ public class EnumerableExtensionsTests
     }
 
     [Test]
+    public void Duplicates_ShouldReturnDouplets_When_HasDuplicates2()
+    {
+        var items = new List<(int, string)> 
+        { 
+            (1, "a"),
+            (2, "b"),
+            (3, "c"),
+            (4, "d"),
+            (5, "e"), 
+            (2, "f"),
+            (4, "g"),
+            (2, "h")
+        };
+
+        var result = items.Duplicates(x => x.Item1).ToArray();
+
+        Assert.AreEqual(3, result.Length);
+        
+        Assert.AreEqual(2,   result[0].Item1);
+        Assert.AreEqual("f", result[0].Item2);
+
+        Assert.AreEqual(4,   result[1].Item1);
+        Assert.AreEqual("g", result[1].Item2);
+
+        Assert.AreEqual(2,   result[2].Item1);
+        Assert.AreEqual("h", result[2].Item2);
+    }
+
+    [Test]
     public void Duplicates_DistinctIsFalse_WithoutDuplicateValues()
     {
         var items = new List<int> { 1, 2, 3, 4, 5 };

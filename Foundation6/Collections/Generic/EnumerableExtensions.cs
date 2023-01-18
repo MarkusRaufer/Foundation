@@ -428,8 +428,8 @@ public static class EnumerableExtensions
     /// <summary>
     /// returns doublets of a list. If there are e.g. three of an item, 2 will returned.
     /// </summary>
-    /// <typeparam name="T">Item type</typeparam>
-    /// <param name="items">the list of items</param>
+    /// <typeparam name="T">type of elements</typeparam>
+    /// <param name="items">list of elements</param>
     /// <returns>all doublets</returns>
     /// <exception cref="ArgumentNullException"></exception>
     public static IEnumerable<T> Duplicates<T>(this IEnumerable<T> items)
@@ -440,6 +440,28 @@ public static class EnumerableExtensions
         foreach(var item in items)
         {
             if (!set.Add(item)) yield return item;
+        }
+    }
+
+    /// <summary>
+    /// returns doublets of a list. If there are e.g. three of an item, 2 will returned.
+    /// </summary>
+    /// <typeparam name="T">type of elements</typeparam>
+    /// <typeparam name="TSelector">type of selector value</typeparam>
+    /// <param name="items">list of elements</param>
+    /// <param name="selector">selector delegate</param>
+    /// <returns></returns>
+    /// <exception cref="ArgumentNullException"></exception>
+    public static IEnumerable<T> Duplicates<T, TSelector>(
+        this IEnumerable<T> items,
+        Func<T, TSelector> selector)
+    {
+        if (null == items) throw new ArgumentNullException(nameof(items));
+
+        var set = new HashSet<TSelector>();
+        foreach (var item in items)
+        {
+            if (!set.Add(selector(item))) yield return item;
         }
     }
 

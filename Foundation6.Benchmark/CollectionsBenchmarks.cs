@@ -38,9 +38,9 @@ namespace Foundation.Benchmark
         }
 
         [Benchmark]
-        public HashSetValue<int> UniqueOnlyHashSet()
+        public UniqueValues<int> UniqueOnlyHashSet()
         {
-            return new HashSetValue<int>(_values!);
+            return new UniqueValues<int>(_values!);
         }
     }
 }

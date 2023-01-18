@@ -20,7 +20,7 @@ public static class HashSetValue
 /// </summary>
 /// <typeparam name="T"></typeparam>
 [Serializable]
-public readonly struct HashSetValue<T> 
+public readonly struct HashSetValue<T>
     : IReadOnlyCollection<T>
     , IEquatable<HashSetValue<T>>
 {
@@ -38,23 +38,8 @@ public readonly struct HashSetValue<T>
         _hashCode = HashCode.FromOrderedObjects(_values);
     }
 
-    public HashSetValue(IEqualityComparer<T>? comparer)
-        : this(new HashSet<T>(comparer))
-    {
-    }
-
-    public HashSetValue(int capacity) 
-        : this(new HashSet<T>(capacity))
-    {
-    }
-
     public HashSetValue(IEnumerable<T> values, IEqualityComparer<T>? comparer)
         : this(new HashSet<T>(values, comparer))
-    {
-     }
-
-    public HashSetValue(int capacity, IEqualityComparer<T>? comparer)
-        : this(new HashSet<T>(capacity, comparer))
     {
     }
 
@@ -69,7 +54,7 @@ public readonly struct HashSetValue<T>
     }
 
     public static implicit operator HashSetValue<T>(T[] values)
-        => new (values);
+        => new(values);
 
     /// <summary>
     /// Number of values.
@@ -91,7 +76,7 @@ public readonly struct HashSetValue<T>
     /// <returns></returns>
     public bool Equals(HashSetValue<T> other)
     {
-        if(GetHashCode() != other.GetHashCode()) return false;
+        if (GetHashCode() != other.GetHashCode()) return false;
 
         return _values.SetEquals(other._values);
     }

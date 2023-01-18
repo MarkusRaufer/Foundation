@@ -9,7 +9,7 @@ using System.Diagnostics.CodeAnalysis;
 /// </summary>
 /// <typeparam name="TKey"></typeparam>
 /// <typeparam name="TValue"></typeparam>
-public class FixedKeysMultiMap<TKey, TValue> : IMultiValueMap<TKey, TValue>
+public class FixedKeysMultiMap<TKey, TValue> : IReadOnlyMultiValueMap<TKey, TValue>
     where TKey : notnull
 {
     private readonly IDictionary<TKey, ICollection<TValue>> _dictionary;
@@ -18,15 +18,6 @@ public class FixedKeysMultiMap<TKey, TValue> : IMultiValueMap<TKey, TValue>
 
     public FixedKeysMultiMap(IEnumerable<TKey> keys) 
         : this(keys, new Dictionary<TKey, ICollection<TValue>>(), () => new List<TValue>())
-    {
-    }
-
-    public FixedKeysMultiMap(IEnumerable<TKey> keys, int capacity) : this(keys, capacity, () => new List<TValue>())
-    {
-    }
-
-    public FixedKeysMultiMap(IEnumerable<TKey> keys, int capacity, Func<ICollection<TValue>> valueCollectionFactory)
-        : this(keys, new Dictionary<TKey, ICollection<TValue>>(capacity), valueCollectionFactory)
     {
     }
 
@@ -59,74 +50,6 @@ public class FixedKeysMultiMap<TKey, TValue> : IMultiValueMap<TKey, TValue>
         _dictionary = dictionary.ThrowIfNull();
         _valueCollectionFactory = valueCollectionFactory.ThrowIfNull();
     }
-
-    public void Add(KeyValuePair<TKey, TValue> item) => Add(item.Key, item.Value);
-
-    public void Add(TKey key, TValue value)
-    {
-        if (!_keys.Contains(key)) throw new ArgumentOutOfRangeException(nameof(key));
-
-        if (!_dictionary.TryGetValue(key, out ICollection<TValue>? values))
-        {
-            values = _valueCollectionFactory();
-            _dictionary.Add(key, values);
-        }
-
-        values.Add(value);
-    }
-
-    /// <summary>
-    /// Replaces all values of a key with one value.
-    /// </summary>
-    /// <param name="item"></param>
-    public void AddSingle(KeyValuePair<TKey, TValue> item) => AddSingle(item.Key, item.Value);
-
-    /// <summary>
-    /// Replaces all values of a key with one value.
-    /// </summary>
-    /// <param name="key"></param>
-    /// <param name="value"></param>
-    public void AddSingle(TKey key, TValue value)
-    {
-        if (!_keys.Contains(key)) throw new ArgumentOutOfRangeException(nameof(key));
-
-        if (!_dictionary.TryGetValue(key, out ICollection<TValue>? values))
-        {
-            values = _valueCollectionFactory();
-            values.Add(value);
-
-            _dictionary.Add(key, values);
-            return;
-        }
-
-        values.Clear();
-        values.Add(value);
-    }
-
-    public bool AddUnique(TKey key, TValue value, bool replaceExisting = false)
-    {
-        if (!_keys.Contains(key)) throw new ArgumentOutOfRangeException(nameof(key));
-
-        if (!_dictionary.TryGetValue(key, out ICollection<TValue>? values))
-        {
-            values = _valueCollectionFactory();
-            values.Add(value);
-
-            _dictionary.Add(key, values);
-            return true;
-        }
-
-        if (values.Contains(value))
-        {
-            if (!replaceExisting) return false;
-            values.Remove(value);
-        }
-
-        values.Add(value);
-        return true;
-    }
-
-    public virtual void Clear() => _dictionary.Clear();
 
     /// <summary>
     /// Checks if key value pair exists.
@@ -313,66 +236,8 @@ public class FixedKeysMultiMap<TKey, TValue> : IMultiValueMap<TKey, TValue>
     /// </summary>
     public int KeyCount => _dictionary.Count;
 
-    public ICollection<TKey> Keys => _dictionary.Keys;
+    public IEnumerable<TKey> Keys => _dictionary.Keys;
 
-    public virtual bool Remove(TKey key) => _dictionary.Remove(key);
-
-    public virtual bool Remove(KeyValuePair<TKey, TValue> item) => Remove(item.Key, item.Value);
-
-    public virtual bool Remove(TKey key, TValue value)
-    {
-        if (_dictionary.TryGetValue(key, out ICollection<TValue>? values))
-        {
-            var removed = values.Remove(value);
-            if (!values.Any())
-                removed = _dictionary.Remove(key);
-
-            return removed;
-        }
-
-        return false;
-    }
-
-    /// <summary>
-    /// Removes value from all keys.
-    /// </summary>
-    /// <param name="value"></param>
-    /// <returns></returns>
-    public virtual bool RemoveValue(TValue value)
-    {
-        var removed = Fused.Value(false).BlowIfChanged();
-        foreach (var values in _dictionary.Values)
-        {
-            removed.Value = values.Remove(value);
-        }
-
-        return removed.Value;
-    }
-
-    /// <summary>
-    /// Removes value from keys.
-    /// </summary>
-    /// <param name=""></param>
-    /// <param name="keys"></param>
-    /// <returns></returns>
-    public virtual bool RemoveValue(TValue value, params TKey[] keys)
-    {
-        var removed = Fused.Value(false).BlowIfChanged();
-        foreach (var key in keys)
-        {
-            if (!_dictionary.TryGetValue(key, out ICollection<TValue>? values)) continue;
-
-            if (values.Remove(value))
-            {
-                removed.Value = true;
-
-                if (0 == values.Count)
-                    _dictionary.Remove(key);
-            }
-        }
-
-        return removed.Value;
-    }
 
 #pragma warning disable CS8767
     public bool TryGetValue(TKey key, [MaybeNullWhen(false)] out TValue? value)
@@ -411,13 +276,19 @@ public class FixedKeysMultiMap<TKey, TValue> : IMultiValueMap<TKey, TValue>
 
     public virtual TValue this[TKey key]
     {
-        get { return _dictionary[key].First(); }
-        set { Add(key, value); }
-    }
+        get => _dictionary[key].First();
+        set
+        {
+            if (!_keys.Contains(key)) return;
 
-    /// <summary>
-    /// Gets all values from all keys.
-    /// </summary>
-    public ICollection<TValue> Values => GetFlattenedValues().ToList();
+            if (!_dictionary.TryGetValue(key, out ICollection<TValue>? values))
+            {
+                values = _valueCollectionFactory();
+                _dictionary[key] = values;
+            }
+
+            values.Add(value);
+        }
+    }
 }
 

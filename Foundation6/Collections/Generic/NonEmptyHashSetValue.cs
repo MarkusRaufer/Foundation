@@ -18,7 +18,7 @@ public static class NonEmptyHashSetValue
 /// </summary>
 /// <typeparam name="T"></typeparam>
 [Serializable]
-public readonly struct NonEmptyHashSetValue<T> 
+public readonly struct NonEmptyHashSetValue<T>
     : IReadOnlyCollection<T>
     , IEquatable<NonEmptyHashSetValue<T>>
 {
@@ -36,23 +36,8 @@ public readonly struct NonEmptyHashSetValue<T>
         _hashCode = HashCode.FromOrderedObjects(_values);
     }
 
-    public NonEmptyHashSetValue(IEqualityComparer<T>? comparer)
-        : this(new HashSet<T>(comparer))
-    {
-    }
-
-    public NonEmptyHashSetValue(int capacity) 
-        : this(new HashSet<T>(capacity))
-    {
-    }
-
     public NonEmptyHashSetValue(IEnumerable<T> values, IEqualityComparer<T>? comparer)
         : this(new HashSet<T>(values, comparer))
-    {
-     }
-
-    public NonEmptyHashSetValue(int capacity, IEqualityComparer<T>? comparer)
-        : this(new HashSet<T>(capacity, comparer))
     {
     }
 
@@ -96,7 +81,7 @@ public readonly struct NonEmptyHashSetValue<T>
     /// <returns></returns>
     public bool Equals(NonEmptyHashSetValue<T> other)
     {
-        if(GetHashCode() != other.GetHashCode()) return false;
+        if (GetHashCode() != other.GetHashCode()) return false;
 
         return _values.SetEquals(other._values);
     }
