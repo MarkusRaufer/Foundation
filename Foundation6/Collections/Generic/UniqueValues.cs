@@ -4,7 +4,8 @@ using System.Diagnostics.CodeAnalysis;
 namespace Foundation.Collections.Generic;
 
 /// <summary>
-/// This immutable value set considers the equality and number of all elements <see cref="Equals"/>. The position of the elements are ignored.
+/// This immutable collection of values includes only unique values and considers the equality and number of all elements <see cref="Equals"/>. 
+/// The position of the elements are ignored.
 /// </summary>
 public static class UniqueValues
 {
@@ -15,11 +16,12 @@ public static class UniqueValues
     /// <param name="values">Must have at least one value.</param>
     /// <returns>a new <see cref="=UniqueValues<typeparamref name="T"/>"</returns>
     /// <exception cref="ArgumentOutOfRangeException">if values is empty.</exception>
-    public static UniqueValues<T> New<T>(params T[] values) => new (values);
+    public static UniqueValues<T> New<T>(params T[] values) => new(values);
 }
 
 /// <summary>
-/// This immutable value set considers the equality and number of all elements <see cref="Equals"/>. The position of the elements are ignored.
+/// This immutable collection of values includes only unique values and considers the equality and number of all elements <see cref="Equals"/>. 
+/// The position of the elements are ignored.
 /// </summary>
 /// <typeparam name="T"></typeparam>
 [Serializable]

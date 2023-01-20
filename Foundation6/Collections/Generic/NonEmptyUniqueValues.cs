@@ -4,7 +4,7 @@ using System.Diagnostics.CodeAnalysis;
 namespace Foundation.Collections.Generic;
 
 /// <summary>
-/// This immutable set of values considers the equality and number of all elements <see cref="Equals"/>.
+/// This immutable collection of values includes only unique values and considers the equality and number of all elements <see cref="Equals"/>. 
 /// The position of the elements are ignored. The set must not be empty.
 /// </summary>
 public static class NonEmptyUniqueValues
@@ -21,7 +21,7 @@ public static class NonEmptyUniqueValues
 }
 
 /// <summary>
-/// This immutable set of values considers the equality and number of all elements <see cref="Equals"/>.
+/// This immutable collection of values includes only unique values and considers the equality and number of all elements <see cref="Equals"/>. 
 /// The position of the elements are ignored. The set must not be empty.
 /// </summary>
 /// <typeparam name="T">The type of the values</typeparam>
