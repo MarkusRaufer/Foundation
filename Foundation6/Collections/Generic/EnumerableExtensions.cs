@@ -2,6 +2,7 @@
 
 using Foundation;
 using Foundation.ComponentModel;
+using System.ComponentModel;
 //using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
 using System.Text;
@@ -2118,12 +2119,13 @@ public static class EnumerableExtensions
     }
 
     /// <summary>
-    /// Returns a value if list is empty.
+    /// If list is empty onEmpty is called. After returning the single value the iteration stops.
+    /// If the list is not empty it behaves as normal IEnumerable<typeparamref name="T"/>
     /// </summary>
-    /// <typeparam name="T"></typeparam>
-    /// <param name="items"></param>
-    /// <param name="onEmpty"></param>
-    /// <returns></returns>
+    /// <typeparam name="T">Type of items.</typeparam>
+    /// <param name="items">List of items.</param>
+    /// <param name="onEmpty">Factory method which is called if list of items is empty.</param>
+    /// <returns>List of items.</returns>
     public static IEnumerable<T> OnEmpty<T>(this IEnumerable<T> items, Func<T> onEmpty)
     {
         onEmpty.ThrowIfNull();
@@ -2141,6 +2143,37 @@ public static class EnumerableExtensions
         while (it.MoveNext())
         {
             yield return it.Current;
+        }
+    }
+
+    /// <summary>
+    /// Returns a value if list is empty. After returning the single value the iteration stops.
+    /// If the list is not empty it behaves as normal IEnumerable<typeparamref name="T"/>
+    /// </summary>
+    /// <typeparam name="T">Type of items.</typeparam>
+    /// <typeparam name="TResult">Type of returned items.</typeparam>
+    /// <param name="items">List of items.</param>
+    /// <param name="onEmpty">Is called if list is empty.</param>
+    /// <param name="onNotEmpty">Is called if list is not empty.</param>
+    /// <returns>List of items.</returns>
+    public static IEnumerable<TResult> OnEmpty<T, TResult>(this IEnumerable<T> items, Func<TResult> onEmpty, Func<T, TResult> onNotEmpty)
+    {
+        onEmpty.ThrowIfNull();
+        onNotEmpty.ThrowIfNull();
+
+        var it = items.ThrowIfNull()
+                      .GetEnumerator();
+
+        if (!it.MoveNext())
+        {
+            yield return onEmpty();
+            yield break;
+        }
+        yield return onNotEmpty(it.Current);
+
+        while (it.MoveNext())
+        {
+            yield return onNotEmpty(it.Current);
         }
     }
 
@@ -2581,6 +2614,55 @@ public static class EnumerableExtensions
                     .ZipLeft(orderedTuples,
                             (lhs, rhs) => lhs.Item2 == rhs.Item2 ? BinarySelection.Right : BinarySelection.Left,
                             tuple => project(tuple.item));
+    }
+
+    /// <summary>
+    /// Enable you to do folds like <see cref="=Aggregate"/>, while collecting the intermediate results.
+    /// This is equivalent to the Scala scanLeft function.
+    /// </summary>
+    /// <typeparam name="T">Type of an item</typeparam>
+    /// <param name="items">List of items.</param>
+    /// <param name="seed">The initial value.</param>
+    /// <param name="func">The scan function</param>
+    /// <returns></returns>
+    public static IEnumerable<T> ScanLeft<T>(this IEnumerable<T> items, T seed, Func<T, T, T> func)
+    {
+        var it = items.GetEnumerator();
+        var result = seed;
+
+        yield return result;
+
+        while (it.MoveNext())
+        {
+            result = func(result, it.Current);
+            yield return result;
+        }
+    }
+
+    /// <summary>
+    /// Enable you to do folds like <see cref="=Aggregate"/>, while collecting the intermediate results.
+    /// This is equivalent to the Scala scanRight function.
+    /// </summary>
+    /// <typeparam name="T">Type of an item</typeparam>
+    /// <param name="items">List of items.</param>
+    /// <param name="seed">The initial value.</param>
+    /// <param name="func">The scan function</param>
+    /// <returns></returns>
+    public static IEnumerable<T> ScanRight<T>(this IEnumerable<T> items, T seed, Func<T, T, T> func)
+    {
+        var it = items.Reverse().GetEnumerator();
+        var result = seed;
+        var sequence = Enumerable.Empty<T>();
+        
+        sequence = sequence.Prepend(result);
+
+        while (it.MoveNext())
+        {
+            result = func(result, it.Current);
+            sequence= sequence.Prepend(result);
+        }
+
+        return sequence;
     }
 
     /// <summary>
@@ -3173,7 +3255,7 @@ public static class EnumerableExtensions
     /// <returns></returns>
     public static IEnumerable<T> ThrowIfEmpty<T>(this IEnumerable<T> items, [CallerArgumentExpression("items")] string name = "")
     {
-        return ThrowIfEmpty(items, () => new ArgumentNullException(name));
+        return ThrowIfEmpty(items, () => new ArgumentOutOfRangeException(name));
     }
 
     /// <summary>
@@ -3187,7 +3269,7 @@ public static class EnumerableExtensions
     {
         if (!items.Any())
         {
-            var exception = exceptionFactory() ?? throw new ArgumentException("returned null", nameof(exceptionFactory));
+            var exception = exceptionFactory() ?? throw new ArgumentNullException("returned null", nameof(exceptionFactory));
             throw exception;
         }
         return items;
@@ -3214,7 +3296,7 @@ public static class EnumerableExtensions
     /// <returns></returns>
     public static IEnumerable<T> ThrowIfNull<T>(this IEnumerable<T> items, Func<Exception> exceptionFactory)
     {
-        if (items is null) throw exceptionFactory();
+        if (items is null) throw exceptionFactory() ?? throw new ArgumentNullException("returned null", nameof(exceptionFactory));
         
         return items;
     }
@@ -3228,7 +3310,8 @@ public static class EnumerableExtensions
     /// <returns></returns>
     public static IEnumerable<T> ThrowIfNullOrEmpty<T>(this IEnumerable<T> items, [CallerArgumentExpression("items")] string name = "")
     {
-        return ThrowIfNullOrEmpty(items, () => new ArgumentNullException(name));
+        return items.ThrowIfNull()
+                    .ThrowIfEmpty();
     }
 
     /// <summary>
@@ -3241,14 +3324,10 @@ public static class EnumerableExtensions
     /// <exception cref="ArgumentException"></exception>
     public static IEnumerable<T> ThrowIfNullOrEmpty<T>(this IEnumerable<T> items, Func<Exception> exceptionFactory)
     {
-        items.ThrowIfNull(exceptionFactory);
+        exceptionFactory.ThrowIfNull();
 
-        if (!items.Any())
-        {
-            var exception = exceptionFactory() ?? throw new ArgumentException("returned null", nameof(exceptionFactory));
-            throw exception;
-        }
-        return items;
+        return items.ThrowIfNull(exceptionFactory)
+                    .ThrowIfEmpty(exceptionFactory);
     }
 
     /// <summary>
