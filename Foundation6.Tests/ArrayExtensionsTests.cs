@@ -48,7 +48,7 @@ namespace Foundation
 
         [Test]
         [TestCase(new int [0])]
-        public void ThrowIfNullOrEmpty_Should_ThrowArgumentNullException_When_Empty(int [] sut)
+        public void ThrowIfNullOrEmpty_Should_ThrowArgumentException_When_Empty(int [] sut)
         {
             Assert.Throws<ArgumentOutOfRangeException>(() => sut.ThrowIfNullOrEmpty());
         }

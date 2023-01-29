@@ -1,4 +1,5 @@
-﻿using Foundation.ComponentModel;
+﻿using FluentAssertions;
+using Foundation.ComponentModel;
 using Foundation.TestUtil.Collections.Generic;
 using NUnit.Framework;
 using System;
@@ -1823,6 +1824,26 @@ public class EnumerableExtensionsTests
         Assert.AreEqual(3, replaced[2]);
         Assert.AreEqual(40, replaced[3]);
         Assert.AreEqual(5, replaced[4]);
+    }
+
+    [Test]
+    public void ScanLeft_Should_ReturnAListOfValues_When_ItemsNotEmpty()
+    {
+        var numbers = Enumerable.Range(1, 5);
+        var scanned = numbers.ScanLeft(0, (x, y) => x + y)
+                             .ToArray();
+
+        scanned.Should().BeEquivalentTo(new int[] { 0, 1, 3, 6, 10, 15 });
+    }
+
+    [Test]
+    public void ScanRight_Should_ReturnAListOfValues_When_ItemsNotEmpty()
+    {
+        var numbers = Enumerable.Range(1, 5);
+        var scanned = numbers.ScanRight(0, (x, y) => x + y)
+                             .ToArray();
+
+        scanned.Should().BeEquivalentTo(new int[] { 15, 14, 12, 9, 5, 0 });
     }
 
     [Test]
