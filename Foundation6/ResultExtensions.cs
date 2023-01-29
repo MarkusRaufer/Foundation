@@ -7,24 +7,6 @@
         /// </summary>
         /// <typeparam name="TOk"></typeparam>
         /// <typeparam name="TError"></typeparam>
-        /// <param name="result"></param>
-        /// <param name="ok"></param>
-        /// <param name="error"></param>
-        /// <returns></returns>
-        public static Unit Invoke<TOk, TError>(
-            this Result<TOk, TError> result,
-            Action<TOk> ok,
-            Action<TError> error)
-        {
-            return result.Either(_ => result.OnOk(ok), _ => result.OnError(error));
-        }
-
-
-        /// <summary>
-        /// If IsOk is true <paramref name="ok"/> is called otherwise <paramref name="error"/> is called.
-        /// </summary>
-        /// <typeparam name="TOk"></typeparam>
-        /// <typeparam name="TError"></typeparam>
         /// <typeparam name="TResult"></typeparam>
         /// <param name="result"></param>
         /// <param name="ok"></param>
@@ -36,8 +18,25 @@
             Func<TError, TResult> error)
         {
             if (result.TryGetOk(out TOk? okValue)) return ok(okValue!);
-                
+
             return error(result.ToError());
+        }
+
+        /// <summary>
+        /// If IsOk is true <paramref name="ok"/> is called otherwise <paramref name="error"/> is called.
+        /// </summary>
+        /// <typeparam name="TOk"></typeparam>
+        /// <typeparam name="TError"></typeparam>
+        /// <param name="result"></param>
+        /// <param name="ok"></param>
+        /// <param name="error"></param>
+        /// <returns></returns>
+        public static Unit Invoke<TOk, TError>(
+            this Result<TOk, TError> result,
+            Action<TOk> ok,
+            Action<TError> error)
+        {
+            return result.Either(_ => result.OnOk(ok), _ => result.OnError(error));
         }
 
         /// <summary>

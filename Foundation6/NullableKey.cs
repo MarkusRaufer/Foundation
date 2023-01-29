@@ -30,6 +30,26 @@ namespace Foundation
             return !(left == right);
         }
 
+        public static bool operator <(NullableKey<T> left, NullableKey<T> right)
+        {
+            return left.CompareTo(right) < 0;
+        }
+
+        public static bool operator <=(NullableKey<T> left, NullableKey<T> right)
+        {
+            return left.CompareTo(right) <= 0;
+        }
+
+        public static bool operator >(NullableKey<T> left, NullableKey<T> right)
+        {
+            return left.CompareTo(right) > 0;
+        }
+
+        public static bool operator >=(NullableKey<T> left, NullableKey<T> right)
+        {
+            return left.CompareTo(right) >= 0;
+        }
+
         public int CompareTo(NullableKey<T> other)
         {
             if (IsNull) return other.IsNull ? 0 : -1;
@@ -56,25 +76,5 @@ namespace Foundation
         public T? Value { get; }
 
         public override string ToString() => $"{Value}";
-
-        public static bool operator <(NullableKey<T> left, NullableKey<T> right)
-        {
-            return left.CompareTo(right) < 0;
-        }
-
-        public static bool operator <=(NullableKey<T> left, NullableKey<T> right)
-        {
-            return left.CompareTo(right) <= 0;
-        }
-
-        public static bool operator >(NullableKey<T> left, NullableKey<T> right)
-        {
-            return left.CompareTo(right) > 0;
-        }
-
-        public static bool operator >=(NullableKey<T> left, NullableKey<T> right)
-        {
-            return left.CompareTo(right) >= 0;
-        }
     }
 }
