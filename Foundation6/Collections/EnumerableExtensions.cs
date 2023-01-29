@@ -21,6 +21,11 @@ public static class EnumerableExtensions
         }
     }
 
+    /// <summary>
+    /// Like <see cref="Any"/>
+    /// </summary>
+    /// <param name="items"></param>
+    /// <returns></returns>
     public static bool AnyObject(this IEnumerable items)
     {
         items.ThrowIfNull();
@@ -28,6 +33,12 @@ public static class EnumerableExtensions
         return items.GetEnumerator().MoveNext();
     }
 
+    /// <summary>
+    /// Like <see cref="=Any"/>
+    /// </summary>
+    /// <param name="items"></param>
+    /// <param name="predicate"></param>
+    /// <returns></returns>
     public static bool AnyObject(this IEnumerable items, Func<object, bool> predicate)
     {
         items.ThrowIfNull();
@@ -41,6 +52,12 @@ public static class EnumerableExtensions
         return false;
     }
 
+    /// <summary>
+    /// List <see cref="=CastTo<typeparamref name="T"/>"/>
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <param name="items"></param>
+    /// <returns></returns>
     public static IEnumerable<T> CastTo<T>(this IEnumerable items)
     {
         if(null == items) return Enumerable.Empty<T>();
@@ -48,16 +65,28 @@ public static class EnumerableExtensions
         return items.SelectObject(obj => (T)obj);
     }
 
-    public static IEnumerable<T> FilterType<T>(this IEnumerable items)
+    /// <summary>
+    /// Returns the number of elements in items.
+    /// </summary>
+    /// <param name="items">List of items.</param>
+    /// <returns>Number of elements in list.</returns>
+    public static int Count(this IEnumerable items)
     {
-        if (null == items) yield break;
-        
+        if (null == items) return 0;
+
+        var count = 0;
         foreach(var item in items)
-        {
-            if (item is T t) yield return t;
-        }
+            count++;
+
+        return count;
     }
 
+    /// <summary>
+    /// Like <see cref="=First"/>
+    /// </summary>
+    /// <param name="items"></param>
+    /// <returns></returns>
+    /// <exception cref="InvalidOperationException"></exception>
     public static object FirstObject(this IEnumerable items)
     {
         items.ThrowIfNull();
@@ -68,6 +97,11 @@ public static class EnumerableExtensions
         return value!;
     }
 
+    /// <summary>
+    /// Like <see cref="=FirstOrDefault"/>
+    /// </summary>
+    /// <param name="items"></param>
+    /// <returns></returns>
     private static Option<object> FirstOrDefaultObject(this IEnumerable items)
     {
         items.ThrowIfNull();
@@ -81,6 +115,11 @@ public static class EnumerableExtensions
         return Option.None<object>();
     }
 
+    /// <summary>
+    /// Like <see cref="ForEach"/>
+    /// </summary>
+    /// <param name="items"></param>
+    /// <param name="action"></param>
     public static void ForEachObject(this IEnumerable items, Action<object> action)
     {
         items.ThrowIfNull();
@@ -134,12 +173,43 @@ public static class EnumerableExtensions
         }
     }
 
-    public static bool IsNullOrEmpty(this IEnumerable items)
+    /// <summary>
+    /// Returns true if items is empty.
+    /// </summary>
+    /// <param name="items"></param>
+    /// <returns></returns>
+    public static bool IsEmpty(this IEnumerable items)
     {
-        if (items == null) return true;
         return !items.GetEnumerator().MoveNext();
     }
 
+    /// <summary>
+    /// Returns true if items is null.
+    /// </summary>
+    /// <param name="items"></param>
+    /// <returns></returns>
+    public static bool IsNull(this IEnumerable items)
+    {
+        return null == items;
+
+    }
+    /// <summary>
+    /// Returns true if items is null or empty
+    /// </summary>
+    /// <param name="items"></param>
+    /// <returns></returns>
+    public static bool IsNullOrEmpty(this IEnumerable items)
+    {
+        if(IsNull(items)) return true;
+        return IsEmpty(items);
+    }
+
+    /// <summary>
+    /// Like <see cref="=OfType<typeparamref name="T"/>"/>
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <param name="items"></param>
+    /// <returns></returns>
     public static IEnumerable<T> OfType<T>(this IEnumerable items)
     {
         foreach (var item in items.ThrowIfNull())
@@ -219,6 +289,11 @@ public static class EnumerableExtensions
         }
     }
 
+    /// <summary>
+    /// Returns all items that are not null.
+    /// </summary>
+    /// <param name="items"></param>
+    /// <returns></returns>
     public static IEnumerable SelectNotNull(this IEnumerable items)
     {
         if(items is null) yield break;
@@ -229,6 +304,12 @@ public static class EnumerableExtensions
         }
     }
 
+    /// <summary>
+    /// Like <see cref="=Select<typeparamref name="T"/>"/>
+    /// </summary>
+    /// <param name="items"></param>
+    /// <param name="selector"></param>
+    /// <returns></returns>
     public static IEnumerable SelectObject(this IEnumerable items, Func<object, object> selector)
     {
         items.ThrowIfNull();
@@ -238,6 +319,13 @@ public static class EnumerableExtensions
             yield return selector(item);
     }
 
+    /// <summary>
+    /// Like <see cref="=Select<typeparamref name="T"/>"/>
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <param name="items"></param>
+    /// <param name="selector"></param>
+    /// <returns></returns>
     public static IEnumerable<T> SelectObject<T>(this IEnumerable items, Func<object, T> selector)
     {
         items.ThrowIfNull();
@@ -256,22 +344,31 @@ public static class EnumerableExtensions
         return items.WhereObject(item => selector(i++));
     }
 
+    /// <summary>
+    /// Like <see cref="=Single<typeparamref name="T"/>"/>
+    /// </summary>
+    /// <param name="items"></param>
+    /// <returns></returns>
+    /// <exception cref="InvalidOperationException"></exception>
     public static object SingleObject(this IEnumerable items)
     {
         items.ThrowIfNull();
 
         var enumerator = items.GetEnumerator();
-        if (enumerator.MoveNext())
-        {
-            var current = enumerator.Current;
-            if(enumerator.MoveNext()) throw new InvalidOperationException("more than one element");
+        if (!enumerator.MoveNext()) throw new InvalidOperationException("no element");
 
-            return current;
-        }
+        var current = enumerator.Current;
+        if (enumerator.MoveNext()) throw new InvalidOperationException("more than one element");
 
-        throw new InvalidOperationException("no element");
+        return current;
     }
 
+    /// <summary>
+    /// Convert to typed enumerable.
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <param name="items"></param>
+    /// <returns></returns>
     public static IEnumerable<T> ToEnumerable<T>(this IEnumerable items) => items.CastTo<T>();
 
     public static IList<T> ToList<T>(this IEnumerable items)
@@ -302,6 +399,12 @@ public static class EnumerableExtensions
         return ReadOnlyCollection.New(items);
     }
 
+    /// <summary>
+    /// Like <see cref="=Where"/>
+    /// </summary>
+    /// <param name="items"></param>
+    /// <param name="selector"></param>
+    /// <returns></returns>
     public static IEnumerable WhereObject(this IEnumerable items, Func<object, bool> selector)
     {
         selector.ThrowIfNull();
