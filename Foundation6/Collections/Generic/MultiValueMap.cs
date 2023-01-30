@@ -165,7 +165,7 @@ public class MultiValueMap<TKey, TValue> : IMultiValueMap<TKey, TValue>
     public void CopyTo(KeyValuePair<TKey, TValue>[] array, int arrayIndex)
     {
         var it = GetEnumerator();
-        for(var i = arrayIndex; i < array.Length; i++)
+        for (var i = arrayIndex; i < array.Length; i++)
         {
             if (!it.MoveNext()) return;
 
@@ -220,15 +220,15 @@ public class MultiValueMap<TKey, TValue> : IMultiValueMap<TKey, TValue>
             ? _dictionary.Values.SelectMany(values => values)
             : GetValues(keys);
     }
-    
+
     /// <summary>
     /// Returns the keys containing the value.
     /// </summary>
     /// <param name="value"></param>
     /// <returns></returns>
-    public IEnumerable<TKey> GetKeys(params TValue[] values)
+    public IEnumerable<TKey> GetKeys(IEnumerable<TValue> values)
     {
-        if (0 == values.Length)
+        if (!values.Any())
         {
             foreach (var key in _dictionary.Keys)
                 yield return key;
@@ -238,7 +238,7 @@ public class MultiValueMap<TKey, TValue> : IMultiValueMap<TKey, TValue>
 
         foreach (var kvp in _dictionary)
         {
-            if (Array.Exists(values, value => kvp.Value.EqualsNullable(value)))
+            if (Array.Exists(values.ToArray(), value => kvp.Value.Contains(value)))
                 yield return kvp.Key;
         }
     }

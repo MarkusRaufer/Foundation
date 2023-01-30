@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using FluentAssertions;
 using NUnit.Framework;
 
 namespace Foundation.Collections.Generic
@@ -204,6 +205,35 @@ namespace Foundation.Collections.Generic
                 Assert.AreEqual(uno, item.Value);
             }
         }
+
+        [Test]
+        public void GetKeys_Should_Return4_When_Adding_2Keys_4Values()
+        {
+            const string key1 = "1";
+            const string one = "one";
+            const string uno = "uno";
+            const string key2 = "2";
+            const string two = "two";
+            const string dos = "dos";
+
+            _sut.Add(key1, one);
+            _sut.Add(key1, uno);
+            _sut.Add(key2, two);
+            _sut.Add(key2, dos);
+
+            var keys = _sut.GetKeys(new[] { uno, dos } ).ToArray();
+
+            keys.Length.Should().Be(2);
+            {
+                var key = keys[0];
+                key.Should().Be(key1);
+            }
+            {
+                var key = keys[1];
+                key.Should().Be(key2);
+            }
+        }
+
 
         [Test]
         public void Iterate()
