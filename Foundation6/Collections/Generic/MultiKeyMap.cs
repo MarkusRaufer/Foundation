@@ -8,42 +8,46 @@ namespace Foundation.Collections.Generic
     /// </summary>
     /// <typeparam name="TKey"></typeparam>
     /// <typeparam name="TValue"></typeparam>
-    public class MultiKeyMap<TKey, TValue> : IDictionary<TKey, TValue>
+    public class MultiKeyMap<TKey, TValue> : IMultiKeyMap<TKey, TValue>
         where TKey : notnull
     {
-        private record KeyTuple(TKey Key, int Number);
+        private readonly bool _allowDuplicates;
+        private readonly IDictionary<TKey, IList<int>> _keyIndices;
+        private readonly IList<KeyValuePair<TKey, TValue>> _keyValues;
 
-        private readonly IMultiValueMap<TKey, KeyTuple> _keys;
-        private readonly IDictionary<KeyTuple, TValue> _values;
-
-        public MultiKeyMap()
+        public MultiKeyMap(bool allowDuplicates = false)
         {
-            _keys = new MultiValueMap<TKey, KeyTuple>();
-            _values = new Dictionary<KeyTuple, TValue>();
+            _allowDuplicates = allowDuplicates;
+            _keyIndices = new Dictionary<TKey, IList<int>>();
+            _keyValues = new List<KeyValuePair<TKey, TValue>>();
         }
 
-        public MultiKeyMap(int capacity)
+        public MultiKeyMap(int capacity, bool allowDuplicates = false)
         {
-            _keys = new MultiValueMap<TKey, KeyTuple>(capacity);
-            _values = new Dictionary<KeyTuple, TValue>(capacity);
+            _allowDuplicates = allowDuplicates;
+            _keyIndices = new Dictionary<TKey, IList<int>>(capacity);
+            _keyValues = new List<KeyValuePair<TKey, TValue>>(capacity);
         }
 
-        public MultiKeyMap(IEqualityComparer<TKey> comparer)
+        public MultiKeyMap(IEqualityComparer<TKey> comparer, bool allowDuplicates = false)
         {
-            _keys = new MultiValueMap<TKey, KeyTuple>(comparer);
-            _values = new Dictionary<KeyTuple, TValue>();
+            _allowDuplicates = allowDuplicates;
+            _keyIndices = new Dictionary<TKey, IList<int>>(comparer);
+            _keyValues = new List<KeyValuePair<TKey, TValue>>();
         }
 
-        public MultiKeyMap(int capacity, IEqualityComparer<TKey> comparer)
+        public MultiKeyMap(int capacity, IEqualityComparer<TKey> comparer, bool allowDuplicates = false)
         {
-            _keys = new MultiValueMap<TKey, KeyTuple>(capacity, comparer, () => new List<KeyTuple>());
-            _values = new Dictionary<KeyTuple, TValue>(capacity);
+            _allowDuplicates = allowDuplicates;
+            _keyIndices = new Dictionary<TKey, IList<int>>(capacity, comparer);
+            _keyValues = new List<KeyValuePair<TKey, TValue>>(capacity);
         }
 
-        public MultiKeyMap(IEnumerable<KeyValuePair<TKey, TValue>> items)
+        public MultiKeyMap(IEnumerable<KeyValuePair<TKey, TValue>> items, bool allowDuplicates = false)
         {
-            _keys = new MultiValueMap<TKey, KeyTuple>();
-            _values = new Dictionary<KeyTuple, TValue>();
+            _allowDuplicates = allowDuplicates;
+            _keyIndices = new Dictionary<TKey, IList<int>>();
+            _keyValues = new List<KeyValuePair<TKey, TValue>>();
 
             foreach (var kvp in items)
                 Add(kvp);
@@ -53,33 +57,52 @@ namespace Foundation.Collections.Generic
         {
             get
             {
-                var tuple = _keys[key];
-                return _values[tuple];
+                if (!_keyIndices.TryGetValue(key, out var indices)) return default;
+
+                return _keyValues[indices.First(x => -1 != x)].Value;
             }
             set
             {
-                if (!((IDictionary<TKey, KeyTuple>)_keys).TryGetValue(key, out var tuple))
-                    tuple = new KeyTuple(key, 0);
+                if (_keyIndices.TryGetValue(key, out var indices))
+                {
+                    foreach(var index in indices.Where(x => -1 != x))
+                    {
+                        var kvp = _keyValues[index];
+                        if(kvp.Key.Equals(key) && kvp.Value.EqualsNullable(value))
+                        {
+                            _keyValues[index] = new KeyValuePair<TKey, TValue>(key, value);
+                            return;
+                        }
+                    }
 
-                _values[tuple] = value;
+                    var count = _keyValues.Count;
+                    _keyValues.Add(new KeyValuePair<TKey, TValue>(key, value));
+                    indices.Add(count);
+                }
             }
         }
 
-        public ICollection<TKey> Keys => _keys.Keys;
-
-        public ICollection<TValue> Values => _values.Values;
-
-        public int Count => _values.Count;
-
-        public bool IsReadOnly => false;
-
         public void Add(TKey key, TValue value)
         {
-            var max = 0 == _keys.Count ? 0 : _keys.GetValues(key).Select(x => x.Number).Max() + 1;
+            if (!_keyIndices.TryGetValue(key, out var indices))
+            {
+                indices = new List<int> { 0 };
+                _keyIndices[key] = indices;
 
-            var tuple = new KeyTuple(key, max);
-            _keys.Add(key, tuple);
-            _values.Add(tuple, value);
+                _keyValues.Add(new KeyValuePair<TKey, TValue>(key, value));
+                return;
+            }
+
+            if(!_allowDuplicates)
+            {
+                var kvps = _keyValues.Nths(indices.Where(x => -1 != x));
+                if (kvps.Any(x => x.Value.EqualsNullable(value))) return;
+            }
+
+            var count = _keyValues.Count;
+            _keyValues.Add(new KeyValuePair<TKey, TValue>(key, value));
+
+            indices.Add(count);
         }
 
         public void Add(KeyValuePair<TKey, TValue> item)
@@ -89,24 +112,29 @@ namespace Foundation.Collections.Generic
 
         public void Clear()
         {
-            _keys.Clear();
-            _values.Clear();
+            _keyIndices.Clear();
+            _keyValues.Clear();
         }
 
         public bool Contains(KeyValuePair<TKey, TValue> item)
         {
-            if (!_keys.TryGetValues(item.Key, out var tuples)) return false;
-
-            var values = tuples.Select(x => _values[x]);
-            return values.Any(x => x.EqualsNullable(item.Value));
+            return Contains(item.Key, item.Value);
         }
 
-        public bool ContainsKey(TKey key) => _keys.ContainsKey(key);
+        public bool Contains(TKey key, TValue value)
+        {
+            if (!_keyIndices.TryGetValue(key, out var indices)) return false;
+
+            var kvps = _keyValues.Nths(indices.Where(x => -1 != x));
+            return kvps.Any(x => x.Value.EqualsNullable(value));
+        }
+
+        public bool ContainsKey(TKey key) => _keyIndices.ContainsKey(key);
 
         public void CopyTo(KeyValuePair<TKey, TValue>[] array, int arrayIndex)
         {
             var it = GetEnumerator();
-            for(var i = arrayIndex; i < array.Length; i++)
+            for (var i = arrayIndex; i < array.Length; i++)
             {
                 if (!it.MoveNext()) break;
 
@@ -114,55 +142,131 @@ namespace Foundation.Collections.Generic
             }
         }
 
+        public int Count => _keyIndices.Values.SelectMany(x => x).Where(x => -1 != x).Count();
+
         public IEnumerator<KeyValuePair<TKey, TValue>> GetEnumerator()
         {
-            foreach(var tuple in _keys.Values)
+            foreach(var indices in _keyIndices.Values)
             {
-                var value = _values[tuple];
-                yield return new KeyValuePair<TKey, TValue>(tuple.Key, value);
+                foreach(var index in indices.Where(x => -1 != x))
+                {
+                    yield return _keyValues[index];
+                }
+            }
+        }
+        
+
+        IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
+
+        public IEnumerable<TKey> GetKeys(IEnumerable<TValue> values)
+        {
+            var valueArr = values.ToArray();
+
+            foreach(var indices in _keyIndices.Values)
+            {
+                foreach(var index in indices.Where(x => -1 != x))
+                {
+                    var kvp = _keyValues[index];
+                    if (valueArr.Contains(kvp.Value)) yield return kvp.Key;
+                }
             }
         }
 
+        public IEnumerable<TValue> GetValues(IEnumerable<TKey> keys)
+        {
+            foreach(var key in keys)
+            {
+                if(!_keyIndices.TryGetValue(key, out var indices)) continue;
+
+                foreach(var index in indices)
+                {
+                    if (-1 == index) continue;
+
+                    yield return _keyValues[index].Value;
+                }
+            }
+        }
+
+        public bool IsReadOnly => false;
+
+        public ICollection<TKey> Keys => _keyValues.Select(x => x.Key).ToList();
+
         public bool Remove(TKey key)
         {
-            if (!_keys.TryGetValues(key, out var tuples)) return false;
+            if (!_keyIndices.TryGetValue(key, out var indices)) return false;
 
-            foreach(var tuple in tuples)
+            if(!_keyIndices.Remove(key)) return false;
+
+            foreach(var index in indices)
             {
-                _values.Remove(tuple);
+                _keyValues.RemoveAt(index);
             }
 
+            indices.Clear();
             return true;
         }
 
         public bool Remove(KeyValuePair<TKey, TValue> item)
         {
-            if (!_keys.TryGetValues(item.Key, out var tuples)) return false;
+            if (!_keyIndices.TryGetValue(item.Key, out var indices)) return false;
 
-            foreach(var tuple in tuples)
+            foreach (var index in indices.Where(x => -1 != x))
             {
-                var value = _values[tuple];
-                if(item.Value.EqualsNullable(value))
+                var value = _keyValues[index];
+                if (!value.Value.EqualsNullable(item.Value)) continue;
+
+                indices[index] = -1;
+                
+                if (!_allowDuplicates) break;
+            }
+
+            if (indices.All(x => -1 == x))
+            {
+                _keyIndices.Remove(item.Key);
+
+                foreach(var kvp in _keyValues.Where(x => x.Key.EqualsNullable(item.Key)).ToArray())
                 {
-                    return _values.Remove(Pair.New(tuple, value));
+                    _keyValues.Remove(kvp);
                 }
             }
 
-            return false;
+            return true;
         }
 
         public bool TryGetValue(TKey key, [MaybeNullWhen(false)] out TValue value)
         {
-            if (!((IDictionary<TKey, KeyTuple>)_keys).TryGetValue(key, out var tuple))
+            if (!_keyIndices.TryGetValue(key, out var indices))
             {
                 value = default;
                 return false;
             }
 
-            value = _values[tuple];
+            var kvp = _keyValues[indices.First(x => -1 != x)];
+            value = kvp.Value;
+
             return true;
         }
 
-        IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
+        public ICollection<TValue> Values
+        {
+            get
+            {
+                var values = new List<TValue>();
+                foreach (var indices in _keyIndices.Values)
+                {
+                    foreach(var index in indices)
+                    {
+                        if(-1 == index) continue;
+
+                        var kvp = _keyValues[index];
+                        values.Add(kvp.Value);
+                    }
+                }
+
+                return values;
+            }
+
+        }
+        
     }
 }
