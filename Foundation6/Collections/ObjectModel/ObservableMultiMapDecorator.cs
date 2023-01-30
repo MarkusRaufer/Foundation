@@ -109,24 +109,24 @@ public class ObservableMultiMapDecorator<TKey, TValue>
 
     IEnumerator IEnumerable.GetEnumerator() => _map.GetEnumerator();
 
-    public IEnumerable<KeyValuePair<TKey, TValue>> GetFlattenedKeyValues(params TKey[] keys)
+    public IEnumerable<KeyValuePair<TKey, TValue>> GetFlattenedKeyValues(IEnumerable<TKey>? keys = default)
     {
         return _map.GetFlattenedKeyValues(keys);
     }
 
-    public IEnumerable<TValue> GetFlattenedValues(params TKey[] keys)
+    public IEnumerable<TValue> GetFlattenedValues(IEnumerable<TKey>? keys = default)
     {
         return _map.GetFlattenedValues(keys);
     }
 
-    public IEnumerable<TKey> GetKeys(params TValue[] values) => _map.GetKeys(values);
+    public IEnumerable<TKey> GetKeys(IEnumerable<TValue> values) => _map.GetKeys(values);
 
-    public IEnumerable<KeyValuePair<TKey, IEnumerable<TValue>>> GetKeyValues(params TKey[] keys)
+    public IEnumerable<KeyValuePair<TKey, IEnumerable<TValue>>> GetKeyValues(IEnumerable<TKey>? keys = default)
     {
         return _map.GetKeyValues(keys);
     }
 
-    public IEnumerable<TValue> GetValues(params TKey[] keys) => _map.GetValues(keys);
+    public IEnumerable<TValue> GetValues(IEnumerable<TKey> keys) => _map.GetValues(keys);
 
     public int GetValuesCount(TKey key) => _map.GetValuesCount(key);
 
@@ -138,7 +138,7 @@ public class ObservableMultiMapDecorator<TKey, TValue>
 
     public bool RemoveValue(TValue value) => _map.RemoveValue(value);
 
-    public bool RemoveValue(TValue value, params TKey[] keys) => _map.RemoveValue(value, keys);
+    public bool RemoveValue(TValue value, IEnumerable<TKey> keys) => _map.RemoveValue(value, keys);
 
     public bool TryGetValue(TKey key, [MaybeNullWhen(false)] out TValue value)
         => ((IReadOnlyMultiValueMap<TKey, TValue>)_map).TryGetValue(key, out value);

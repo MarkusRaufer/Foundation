@@ -20,7 +20,7 @@ public class SingleSubscriptionContainer<TSubject, TDelegate>
 
     public Event<Action<(TSubject, TDelegate)>> OnSubscribe { get; set; }
 
-    public IEnumerable<TDelegate> GetSubscriptions(TSubject subject) => _subscriptions.GetValues(subject)
+    public IEnumerable<TDelegate> GetSubscriptions(TSubject subject) => _subscriptions.GetValues(new[] { subject })
                                                                                       .ToArray();
 
     public IDisposable Subscribe(TSubject subject, TDelegate @delegate)

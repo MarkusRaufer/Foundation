@@ -117,10 +117,10 @@ public class FixedKeysMultiMap<TKey, TValue> : IReadOnlyMultiValueMap<TKey, TVal
     /// </summary>
     /// <param name="keys"></param>
     /// <returns></returns>
-    public IEnumerable<KeyValuePair<TKey, TValue>> GetFlattenedKeyValues(params TKey[] keys)
+    public IEnumerable<KeyValuePair<TKey, TValue>> GetFlattenedKeyValues(IEnumerable<TKey>? keys = default)
     {
 
-        if (0 == keys.Length)
+        if (null == keys || !keys.Any())
         {
             foreach (var kvp in _dictionary)
             {
@@ -146,11 +146,11 @@ public class FixedKeysMultiMap<TKey, TValue> : IReadOnlyMultiValueMap<TKey, TVal
     /// </summary>
     /// <param name="keys"></param>
     /// <returns></returns>
-    public IEnumerable<TValue> GetFlattenedValues(params TKey[] keys)
+    public IEnumerable<TValue> GetFlattenedValues(IEnumerable<TKey>? keys = default)
     {
-        return 0 == keys.Length
-            ? _dictionary.Values.SelectMany(values => values)
-            : keys.SelectMany(key => GetValues(key));
+        return null != keys && keys.Any()
+            ? GetValues(keys)
+            : _dictionary.Values.SelectMany(values => values);
     }
     
     /// <summary>
@@ -158,9 +158,9 @@ public class FixedKeysMultiMap<TKey, TValue> : IReadOnlyMultiValueMap<TKey, TVal
     /// </summary>
     /// <param name="value"></param>
     /// <returns></returns>
-    public IEnumerable<TKey> GetKeys(params TValue[] values)
+    public IEnumerable<TKey> GetKeys(IEnumerable<TValue> values)
     {
-        if (0 == values.Length)
+        if (!values.Any())
         {
             foreach (var key in _dictionary.Keys)
                 yield return key;
@@ -170,7 +170,7 @@ public class FixedKeysMultiMap<TKey, TValue> : IReadOnlyMultiValueMap<TKey, TVal
 
         foreach (var kvp in _dictionary)
         {
-            if (Array.Exists(values, value => kvp.Value.EqualsNullable(value)))
+            if (Array.Exists(values.ToArray(), value => kvp.Value.EqualsNullable(value)))
                 yield return kvp.Key;
         }
     }
@@ -180,9 +180,9 @@ public class FixedKeysMultiMap<TKey, TValue> : IReadOnlyMultiValueMap<TKey, TVal
     /// </summary>
     /// <param name="keys"></param>
     /// <returns></returns>
-    public IEnumerable<KeyValuePair<TKey, IEnumerable<TValue>>> GetKeyValues(params TKey[] keys)
+    public IEnumerable<KeyValuePair<TKey, IEnumerable<TValue>>> GetKeyValues(IEnumerable<TKey>? keys = default)
     {
-        if (0 == keys.Length)
+        if (null == keys || !keys.Any())
         {
             foreach (var kvp in _dictionary)
             {
@@ -204,7 +204,7 @@ public class FixedKeysMultiMap<TKey, TValue> : IReadOnlyMultiValueMap<TKey, TVal
     /// </summary>
     /// <param name="keys"></param>
     /// <returns></returns>
-    public IEnumerable<TValue> GetValues(params TKey[] keys)
+    public IEnumerable<TValue> GetValues(IEnumerable<TKey> keys)
     {
         foreach (var key in keys)
         {

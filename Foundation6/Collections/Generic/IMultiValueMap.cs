@@ -41,5 +41,5 @@ public interface IMultiValueMap<TKey, TValue>
     /// <param name="value"></param>
     /// <param name="keys"></param>
     /// <returns></returns>
-    bool RemoveValue(TValue value, params TKey[] keys);
+    bool RemoveValue(TValue value, IEnumerable<TKey> keys);
 }

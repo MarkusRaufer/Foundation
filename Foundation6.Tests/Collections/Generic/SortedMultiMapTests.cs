@@ -197,7 +197,7 @@ namespace Foundation.Collections.Generic
             _sut.Add(key2, two);
             _sut.Add(key2, dos);
 
-            var items = _sut.GetFlattenedKeyValues(key1).ToArray();
+            var items = _sut.GetFlattenedKeyValues(new[] { key1 }).ToArray();
             Assert.AreEqual(2, items.Length);
             {
                 var item = items[0];

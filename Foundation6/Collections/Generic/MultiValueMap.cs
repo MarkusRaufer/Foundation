@@ -175,7 +175,7 @@ public class MultiValueMap<TKey, TValue> : IMultiValueMap<TKey, TValue>
 
     public IEnumerator<KeyValuePair<TKey, TValue>> GetEnumerator()
     {
-        return GetFlattenedKeyValues().GetEnumerator();
+        return GetFlattenedKeyValues(Array.Empty<TKey>()).GetEnumerator();
     }
 
     IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
@@ -185,10 +185,10 @@ public class MultiValueMap<TKey, TValue> : IMultiValueMap<TKey, TValue>
     /// </summary>
     /// <param name="keys"></param>
     /// <returns></returns>
-    public IEnumerable<KeyValuePair<TKey, TValue>> GetFlattenedKeyValues(params TKey[] keys)
+    public IEnumerable<KeyValuePair<TKey, TValue>> GetFlattenedKeyValues(IEnumerable<TKey>? keys = default)
     {
 
-        if (0 == keys.Length)
+        if (null == keys || !keys.Any())
         {
             foreach (var kvp in _dictionary)
             {
@@ -214,11 +214,11 @@ public class MultiValueMap<TKey, TValue> : IMultiValueMap<TKey, TValue>
     /// </summary>
     /// <param name="keys"></param>
     /// <returns></returns>
-    public IEnumerable<TValue> GetFlattenedValues(params TKey[] keys)
+    public IEnumerable<TValue> GetFlattenedValues(IEnumerable<TKey>? keys = default)
     {
-        return 0 == keys.Length
-            ? _dictionary.Values.SelectMany(values => values)
-            : GetValues(keys);
+        return null != keys && keys.Any()
+            ? GetValues(keys)
+            : _dictionary.Values.SelectMany(values => values);
     }
 
     /// <summary>
@@ -248,9 +248,9 @@ public class MultiValueMap<TKey, TValue> : IMultiValueMap<TKey, TValue>
     /// </summary>
     /// <param name="keys"></param>
     /// <returns></returns>
-    public IEnumerable<KeyValuePair<TKey, IEnumerable<TValue>>> GetKeyValues(params TKey[] keys)
+    public IEnumerable<KeyValuePair<TKey, IEnumerable<TValue>>> GetKeyValues(IEnumerable<TKey>? keys = default)
     {
-        if (0 == keys.Length)
+        if (null == keys || !keys.Any())
         {
             foreach (var kvp in _dictionary)
             {
@@ -272,7 +272,7 @@ public class MultiValueMap<TKey, TValue> : IMultiValueMap<TKey, TValue>
     /// </summary>
     /// <param name="keys"></param>
     /// <returns></returns>
-    public IEnumerable<TValue> GetValues(params TKey[] keys)
+    public IEnumerable<TValue> GetValues(IEnumerable<TKey> keys)
     {
         foreach (var key in keys)
         {
@@ -349,7 +349,7 @@ public class MultiValueMap<TKey, TValue> : IMultiValueMap<TKey, TValue>
     /// <param name=""></param>
     /// <param name="keys"></param>
     /// <returns></returns>
-    public virtual bool RemoveValue(TValue value, params TKey[] keys)
+    public virtual bool RemoveValue(TValue value, IEnumerable<TKey> keys)
     {
         var removed = Fused.Value(false).BlowIfChanged();
         foreach (var key in keys)
@@ -412,6 +412,6 @@ public class MultiValueMap<TKey, TValue> : IMultiValueMap<TKey, TValue>
     /// <summary>
     /// Gets all values from all keys.
     /// </summary>
-    public ICollection<TValue> Values => GetFlattenedValues().ToList();
+    public ICollection<TValue> Values => GetFlattenedValues(Array.Empty<TKey>()).ToList();
 }
 

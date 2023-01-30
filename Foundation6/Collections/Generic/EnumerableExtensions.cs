@@ -1598,8 +1598,8 @@ public static class EnumerableExtensions
 
         foreach (var pair in lhsMap)
         {
-            var lhsTuples = lhsMap.GetValues(pair.Key);
-            var rhsTuples = rhsMap.GetValues(pair.Key);
+            var lhsTuples = lhsMap.GetValues(new[] { pair.Key });
+            var rhsTuples = rhsMap.GetValues(new[] { pair.Key });
 
             var leftTuple = (pair.Key.Value, lhsTuples.Count());
             var rightTuple = (pair.Key.Value, rhsTuples.Count());
@@ -1647,8 +1647,8 @@ public static class EnumerableExtensions
 
         foreach(var pair in lhsMap)
         {
-            var lhsTuples = lhsMap.GetValues(pair.Key);
-            var rhsTuples = rhsMap.GetValues(pair.Key);
+            var lhsTuples = lhsMap.GetValues(new[] { pair.Key });
+            var rhsTuples = rhsMap.GetValues(new[] { pair.Key });
 
             var leftTuple = (pair.Value.Item1, lhsTuples.Count());
             var rightTuple = (pair.Value.Item1, rhsTuples.Count());

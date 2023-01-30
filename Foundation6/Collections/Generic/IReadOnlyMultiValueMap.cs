@@ -25,34 +25,34 @@ public interface IReadOnlyMultiValueMap<TKey, TValue> : IEnumerable<KeyValuePair
     /// </summary>
     /// <param name="keys"></param>
     /// <returns></returns>
-    IEnumerable<KeyValuePair<TKey, TValue>> GetFlattenedKeyValues(params TKey[] keys);
+    IEnumerable<KeyValuePair<TKey, TValue>> GetFlattenedKeyValues(IEnumerable<TKey>? keys = default);
 
     /// <summary>
     /// Returns values as flat list of the specified keys.
     /// </summary>
     /// <returns></returns>
-    IEnumerable<TValue> GetFlattenedValues(params TKey[] keys);
+    IEnumerable<TValue> GetFlattenedValues(IEnumerable<TKey>? keys = default);
 
     /// <summary>
     /// Returns the keys containing the value. If values is empty all keys are returned.
     /// </summary>
     /// <param name="value"></param>
     /// <returns></returns>
-    IEnumerable<TKey> GetKeys(params TValue[] values);
+    IEnumerable<TKey> GetKeys(IEnumerable<TValue> values);
 
     /// <summary>
     /// Gets all keys with their values.
     /// </summary>
     /// <param name="keys"></param>
     /// <returns></returns>
-    IEnumerable<KeyValuePair<TKey, IEnumerable<TValue>>> GetKeyValues(params TKey[] keys);
+    IEnumerable<KeyValuePair<TKey, IEnumerable<TValue>>> GetKeyValues(IEnumerable<TKey>? keys = default);
 
     /// <summary>
     /// Returns the values of the specified keys.
     /// </summary>
     /// <param name="keys"></param>
     /// <returns></returns>
-    IEnumerable<TValue> GetValues(params TKey[] keys);
+    IEnumerable<TValue> GetValues(IEnumerable<TKey> keys);
 
     /// <summary>
     /// Returns the number of values of the specified key.

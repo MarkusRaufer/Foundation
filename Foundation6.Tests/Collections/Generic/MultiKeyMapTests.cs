@@ -36,7 +36,7 @@ public class MultiKeyMapTests
             sut.Add("1", "one");
             sut.Add("1", "one");
 
-            Assert.AreEqual(1, sut.Count);
+            Assert.AreEqual(3, sut.Count);
             var kvp = sut.First();
             kvp.Key.Should().Be("1");
             kvp.Value.Should().Be("one");
@@ -122,7 +122,37 @@ public class MultiKeyMapTests
     }
 
     [Test]
-    public void Remove()
+    public void GetKeys()
+    {
+        var sut = new MultiKeyMap<string, string>();
+
+        var kvp1 = Pair.New("1", "one");
+        var kvp2 = Pair.New("1", "eins");
+        var kvp3 = Pair.New("1", "uno");
+        var kvp4 = Pair.New("2", "two");
+        var kvp5 = Pair.New("2", "zwei");
+
+        sut.Add(kvp1);
+        sut.Add(kvp2);
+        sut.Add(kvp3);
+        sut.Add(kvp4);
+        sut.Add(kvp5);
+
+        var keys = sut.GetKeys(new[] { kvp3.Value, kvp5.Value }).ToArray();
+
+        keys.Length.Should().Be(2);
+        {
+            var key = keys[0];
+            key.Should().Be("1");
+        }
+        {
+            var key = keys[1];
+            key.Should().Be("2");
+        }
+    }
+
+    [Test]
+    public void Remove_Should_RemainOneKeyValueOfFour_When_DeletedThree()
     {
         var sut = new MultiKeyMap<string, string>();
 
