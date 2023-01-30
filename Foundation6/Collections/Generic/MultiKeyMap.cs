@@ -80,8 +80,6 @@ namespace Foundation.Collections.Generic
             _values.Add(newTuple, value);
         }
 
-
-
         public int Count => _values.Count;
 
         public bool IsReadOnly => false;
@@ -148,7 +146,7 @@ namespace Foundation.Collections.Generic
             var valueArr = values.ToArray();
             var tuples = _values.Where(x => valueArr.Contains(x.Value)).Select(x => x.Key).ToArray();
 
-            foreach (var key in _keys.GetKeys(tuples.ToArray()))
+            foreach (var key in _keys.GetKeys(tuples))
             {
                 yield return key;
             }

@@ -170,7 +170,7 @@ public class FixedKeysMultiMap<TKey, TValue> : IReadOnlyMultiValueMap<TKey, TVal
 
         foreach (var kvp in _dictionary)
         {
-            if (Array.Exists(values.ToArray(), value => kvp.Value.EqualsNullable(value)))
+            if (Array.Exists(values.ToArray(), value => kvp.Value.Contains(value)))
                 yield return kvp.Key;
         }
     }

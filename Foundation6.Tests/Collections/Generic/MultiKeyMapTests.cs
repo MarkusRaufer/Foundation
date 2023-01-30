@@ -138,7 +138,7 @@ public class MultiKeyMapTests
         sut.Add(kvp4);
         sut.Add(kvp5);
 
-        var keys = sut.GetKeys(new[] { kvp3.Value, kvp5.Value }).ToArray();
+        var keys = sut.GetKeys(new[] { kvp3.Value, kvp4.Value, kvp5.Value }).ToArray();
 
         keys.Length.Should().Be(2);
         {
