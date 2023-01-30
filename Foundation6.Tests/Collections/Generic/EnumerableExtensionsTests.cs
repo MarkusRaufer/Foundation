@@ -1141,7 +1141,7 @@ public class EnumerableExtensionsTests
     {
         var items = Enumerable.Range(0, 10);
 
-        var selected = items.Nths(1, 2, 5, 7).ToArray();
+        var selected = items.Nths(new[] { 1, 2, 5, 7 }).ToArray();
 
         Assert.AreEqual(4, selected.Length);
 
@@ -1158,7 +1158,7 @@ public class EnumerableExtensionsTests
 
         //with invalid indexes
 
-        var selected = items.Nths(-1, 2, 5, 17).ToArray();
+        var selected = items.Nths(new[] { -1, 2, 5, 17 }).ToArray();
 
         Assert.AreEqual(2, selected.Length);
 

@@ -1944,7 +1944,7 @@ public static class EnumerableExtensions
     /// <param name="items"></param>
     /// <param name="indexes"></param>
     /// <returns></returns>
-    public static IEnumerable<T> Nths<T>(this IEnumerable<T> items, params int[] indexes)
+    public static IEnumerable<T> Nths<T>(this IEnumerable<T> items, IEnumerable<int> indexes)
     {
         var pos = 0;
         foreach (var item in items.ThrowIfNull())
