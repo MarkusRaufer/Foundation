@@ -27,7 +27,7 @@ namespace Foundation
             var name = "test";
             var dt = new DateTime(2018, 5, 17);
 
-            var parameters = new Params(number, name, dt).ToArray();
+            var parameters = Params.New(number, name, dt).ToArray();
             Assert.AreEqual(3, parameters.Length);
             Assert.AreEqual(number, parameters[0]);
             Assert.AreEqual(name, parameters[1]);

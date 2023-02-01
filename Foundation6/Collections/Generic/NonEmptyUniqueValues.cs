@@ -101,4 +101,6 @@ public readonly struct NonEmptyUniqueValues<T>
     public IEnumerator<T> GetEnumerator() => _values.GetEnumerator();
 
     IEnumerator IEnumerable.GetEnumerator() => _values.GetEnumerator();
+
+    public override string ToString() => string.Join(", ", _values);
 }

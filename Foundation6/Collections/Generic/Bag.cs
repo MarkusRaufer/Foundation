@@ -44,5 +44,7 @@ namespace Foundation.Collections.Generic
         public bool Remove(T item) => _collection.Remove(item);
 
         IEnumerator IEnumerable.GetEnumerator() => _collection.GetEnumerator();
+
+        public override string ToString() => string.Join(", ", _collection);
     }
 }

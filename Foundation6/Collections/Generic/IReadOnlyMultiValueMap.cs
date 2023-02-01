@@ -48,6 +48,13 @@ public interface IReadOnlyMultiValueMap<TKey, TValue> : IEnumerable<KeyValuePair
     IEnumerable<KeyValuePair<TKey, IEnumerable<TValue>>> GetKeyValues(IEnumerable<TKey>? keys = default);
 
     /// <summary>
+    /// Returns the values of a specified key.
+    /// </summary>
+    /// <param name="key"></param>
+    /// <returns></returns>
+    IEnumerable<TValue> GetValues(TKey key);
+
+    /// <summary>
     /// Returns the values of the specified keys.
     /// </summary>
     /// <param name="keys"></param>

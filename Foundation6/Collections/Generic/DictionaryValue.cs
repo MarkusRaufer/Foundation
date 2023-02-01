@@ -73,6 +73,8 @@ public class DictionaryValue<TKey, TValue>
 
     public IEnumerable<TKey> Keys => _dictionary.Keys;
 
+    public override string ToString() => string.Join(", ", _dictionary);
+
     public bool TryGetValue(TKey key, [MaybeNullWhen(false)] out TValue value)
     {
         return _dictionary.TryGetValue(key, out value);

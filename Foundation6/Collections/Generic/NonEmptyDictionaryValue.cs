@@ -68,5 +68,7 @@ public class NonEmptyDictionaryValue<TKey, TValue>
         return _dictionary.TryGetValue(key, out value);
     }
 
+    public override string ToString() => string.Join(", ", _dictionary);
+
     public IEnumerable<TValue> Values => _dictionary.Values;
 }

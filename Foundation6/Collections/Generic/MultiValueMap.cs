@@ -267,6 +267,17 @@ public class MultiValueMap<TKey, TValue> : IMultiValueMap<TKey, TValue>
         }
     }
 
+
+    public IEnumerable<TValue> GetValues(TKey key)
+    {
+        if (!_dictionary.TryGetValue(key, out ICollection<TValue>? values)) yield break;
+        foreach (var value in values)
+        {
+            yield return value;
+        }
+    }
+
+
     /// <summary>
     /// Returns the values of the keys.
     /// </summary>
@@ -276,8 +287,7 @@ public class MultiValueMap<TKey, TValue> : IMultiValueMap<TKey, TValue>
     {
         foreach (var key in keys)
         {
-            if (!_dictionary.TryGetValue(key, out ICollection<TValue>? values)) continue;
-            foreach (var value in values)
+            foreach (var value in GetValues(key))
             {
                 yield return value;
             }

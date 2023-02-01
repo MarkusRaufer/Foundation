@@ -126,6 +126,8 @@ public class ObservableMultiMapDecorator<TKey, TValue>
         return _map.GetKeyValues(keys);
     }
 
+    public IEnumerable<TValue> GetValues(TKey key) => _map.GetValues(key);
+
     public IEnumerable<TValue> GetValues(IEnumerable<TKey> keys) => _map.GetValues(keys);
 
     public int GetValuesCount(TKey key) => _map.GetValuesCount(key);

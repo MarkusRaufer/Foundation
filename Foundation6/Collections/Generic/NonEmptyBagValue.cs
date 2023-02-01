@@ -89,4 +89,6 @@ public readonly struct NonEmptyBagValue<T>
     public bool IsEmpty => null == _values || 0 == _values.Length;
 
     public int Length => IsEmpty ? 0 : _values.Length;
+
+    public override string ToString() => string.Join(", ", _values);
 }

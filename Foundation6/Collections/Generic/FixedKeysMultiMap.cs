@@ -199,17 +199,22 @@ public class FixedKeysMultiMap<TKey, TValue> : IReadOnlyMultiValueMap<TKey, TVal
         }
     }
 
-    /// <summary>
-    /// Returns the values of the keys.
-    /// </summary>
-    /// <param name="keys"></param>
-    /// <returns></returns>
+    /// <inheritdoc/>
+    public IEnumerable<TValue> GetValues(TKey key)
+    {
+        if (!_dictionary.TryGetValue(key, out ICollection<TValue>? values)) yield break;
+        foreach (var value in values)
+        {
+            yield return value;
+        }
+    }
+
+    /// <inheritdoc/>
     public IEnumerable<TValue> GetValues(IEnumerable<TKey> keys)
     {
         foreach (var key in keys)
         {
-            if (!_dictionary.TryGetValue(key, out ICollection<TValue>? values)) continue;
-            foreach (var value in values)
+            foreach (var value in GetValues(key))
             {
                 yield return value;
             }
