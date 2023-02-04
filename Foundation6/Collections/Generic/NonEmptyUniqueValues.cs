@@ -21,7 +21,7 @@ public static class NonEmptyUniqueValues
 }
 
 /// <summary>
-/// This immutable collection of values includes only unique values and considers the equality and number of all elements <see cref="Equals"/>. 
+/// Immutable unordered collection that includes only unique values and considers the equality and number of all elements <see cref="Equals"/>. 
 /// The position of the elements are ignored. The set must not be empty.
 /// </summary>
 /// <typeparam name="T">The type of the values</typeparam>

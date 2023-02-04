@@ -4,7 +4,7 @@ using System.Diagnostics.CodeAnalysis;
 namespace Foundation.Collections.Generic;
 
 /// <summary>
-/// This immutable collection of values includes only unique values and considers the equality and number of all elements <see cref="Equals"/>. 
+/// Immutable unordered collection that includes only unique values and considers the equality and number of all elements <see cref="Equals"/>. 
 /// The position of the elements are ignored.
 /// </summary>
 public static class UniqueValues

@@ -102,6 +102,8 @@ public static class ObjectExtensions
         if (ReferenceEquals(lhs, rhs)) return true;
 
         if (null == lhs) return null == rhs;
+        if (null == rhs) return false;
+        if(lhs.GetHashCode() != rhs.GetHashCode()) return false;
 
         return lhs.Equals(rhs);
     }

@@ -45,11 +45,37 @@ public static class EnumerableEx
             yield return i;
     }
 
+    public static IEnumerable<DateOnly> Range(DateOnly min, DateOnly max, TimeSpan increment)
+    {
+        DateOnly inc(DateOnly date) => date.Add(increment);
+        return Range(min, max, inc);
+    }
+
+    public static IEnumerable<DateTime> Range(DateTime min, DateTime max, TimeSpan increment)
+    {
+        return Range(min, max, x => x + increment);
+    }
+
     public static IEnumerable<T> Range<T>(T min, T max, Func<T, T> increment)
+        where T : notnull, IComparable<T>
+    {
+        var current = min;
+        while (current.CompareTo(max) < 1)
+        {
+            yield return current;
+            current = increment(current);
+        }
+    }
+
+    public static IEnumerable<T> Range<T>(T min, T max, Func<T, T, int> compare, Func<T, T> increment)
         where T : notnull
     {
-        for (var i = min; i.EqualsNullable(max); increment(i))
-            yield return i;
+        var current = min;
+        while (compare(current, max) < 1)
+        {
+            yield return current;
+            current = increment(current);
+        }
     }
 }
 

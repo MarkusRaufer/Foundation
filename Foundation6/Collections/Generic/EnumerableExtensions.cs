@@ -334,6 +334,25 @@ public static class EnumerableExtensions
         return search.Overlaps(lhs);
     }
 
+
+    /// <summary>
+    /// Correlates to lists by a selector.
+    /// </summary>
+    /// <typeparam name="T">Type of the items</typeparam>
+    /// <typeparam name="TKey">Type of the selector value.</typeparam>
+    /// <param name="lhs">Left list.</param>
+    /// <param name="rhs">Right list.</param>
+    /// <param name="selector">Selector funciton.</param>
+    /// <returns>List of correlating items</returns>
+    public static IEnumerable<T> Correlate<T, TKey>(this IEnumerable<T> lhs, IEnumerable<T> rhs, Func<T, TKey> selector)
+    {
+        foreach (var (x, y) in lhs.Join(rhs, selector, selector, (x, y) => (x, y)))
+        {
+            yield return x;
+            yield return y;
+        }
+    }
+
     /// <summary>
     /// Creates an endless list of items.
     /// </summary>
@@ -347,6 +366,19 @@ public static class EnumerableExtensions
 
     /// <summary>
     /// Cycles a counter between min and max. If the counter reaches max it starts with min.
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <param name="items"></param>
+    /// <param name="range"></param>
+    /// <returns></returns>
+    public static IEnumerable<(T, int)> CycleEnumerate<T>(this IEnumerable<T> items, System.Range range)
+    {
+        return new CyclicEnumerable<T, int>(items, range.Start.Value, range.End.Value, idx => idx + 1);
+    }
+
+    /// <summary>
+    /// Cycles a counter between min and max. If the counter reaches max it starts with min.
+    /// This allows negative values.
     /// </summary>
     /// <typeparam name="T"></typeparam>
     /// <param name="items"></param>
@@ -427,7 +459,7 @@ public static class EnumerableExtensions
     }
 
     /// <summary>
-    /// returns doublets of a list. If there are e.g. three of an item, 2 will returned.
+    /// Returns doublets of a list. If there are e.g. three of an item, 2 will returned.
     /// </summary>
     /// <typeparam name="T">type of elements</typeparam>
     /// <param name="items">list of elements</param>
@@ -524,7 +556,8 @@ public static class EnumerableExtensions
     }
 
     /// <summary>
-    /// Enumerates items. Starting from Min until Max. If the counter reaches Max it starts again from Min.
+    /// Enumerates items. Starting from min until max. If the counter reaches max it starts again from min.
+    /// This allows also negative values.
     /// </summary>
     /// <typeparam name="T"></typeparam>
     /// <param name="items"></param>
@@ -580,27 +613,6 @@ public static class EnumerableExtensions
     {
         foreach (var item in items)
             yield return (item, createValue1(item), createValue2(item));
-    }
-
-    /// <summary>
-    /// Returns all items except item.
-    /// </summary>
-    /// <typeparam name="T"></typeparam>
-    /// <param name="items"></param>
-    /// <param name="item"></param>
-    /// <returns></returns>
-    public static IEnumerable<T> Except<T>(this IEnumerable<T> items, T? item)
-    {
-        Func<T, bool> equals = null == item 
-            ? x => null == x || x.Equals(item)
-            : x => null != x && x.Equals(item);
-
-        foreach (var elem in items)
-        {
-            if (equals(elem)) continue;
-
-            yield return elem;
-        }
     }
 
     /// <summary>
@@ -662,7 +674,7 @@ public static class EnumerableExtensions
         lhsKeySelector.ThrowIfNull();
         rhsKeySelector.ThrowIfNull();
         resultSelector.ThrowIfNull();
-
+        
         var hashedRhs = new HashSet<TKey>(rhs.Select(rhsKeySelector));
         return lhs.Where(l => !hashedRhs.Contains(lhsKeySelector(l))).Select(resultSelector);
     }
@@ -698,6 +710,7 @@ public static class EnumerableExtensions
 
     /// <summary>
     /// Returns all elements from <paramref name="lhs"/> which are not in <paramref name="rhs"/> including duplicates.
+    /// First lhs and rhs are sorted and then a <see cref="=Array.BinarySearch"/> is made.
     /// The smaller list should be rhs.
     /// </summary>
     /// <typeparam name="T"></typeparam>
@@ -800,15 +813,36 @@ public static class EnumerableExtensions
     /// <param name="selector"></param>
     /// <returns></returns>
     public static IEnumerable<TResult> FilterMap<T, TResult>(
-        this IEnumerable<T> items, 
+        this IEnumerable<T> items,
         Func<T, Option<TResult>> selector)
     {
         selector.ThrowIfNull();
 
         foreach (var item in items)
         {
-            var option = selector(item);
-            if (option.IsSome) yield return option.OrThrow();
+            var optional = selector(item);
+            if (optional.TryGet(out TResult? value)) yield return value;
+        }
+    }
+
+    /// <summary>
+    /// Filters and transform items. It returns only Option.Some values.
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <typeparam name="TResult"></typeparam>
+    /// <param name="items"></param>
+    /// <param name="selector"></param>
+    /// <returns></returns>
+    public static IEnumerable<TResult> FilterMap<T, TResult>(
+        this IEnumerable<T> items, 
+        Func<T, bool> predicate,
+        Func<T, TResult> selector)
+    {
+        selector.ThrowIfNull();
+
+        foreach (var item in items)
+        {
+            if (predicate(item)) yield return selector(item);
         }
     }
 
@@ -944,6 +978,41 @@ public static class EnumerableExtensions
         }
     }
 
+    /// <summary>
+    /// Calls action if items has <see cref="=numberOfElements"/>.
+    /// </summary>
+    /// <typeparam name="T">Type of list elements.</typeparam>
+    /// <param name="items">List of items.</param>
+    /// <param name="numberOfElements">The number of elements</param>
+    /// <param name="action">action which is called if numberOfElements is reached.</param>
+    /// <returns></returns>
+    public static IEnumerable<T> HasNelements<T>(this IEnumerable<T> items, int numberOfElements, Action action)
+    {
+        action.ThrowIfNull();
+        numberOfElements.ThrowIfOutOfRange(() => 0 > numberOfElements);
+
+        int counter = 1;
+        var it = items.GetEnumerator();
+        var hasNext = false;
+        while(hasNext = it.MoveNext())
+        {
+            yield return it.Current;
+            
+            if (counter == numberOfElements)
+            {
+                action();
+                break;
+            }
+
+            counter++;
+        }
+
+        while (hasNext && it.MoveNext())
+        {
+            yield return it.Current;
+        }
+    }
+
     public static IElseIf<T> If<T>(
         this IEnumerable<T> items,
         Func<T, bool> predicate,
@@ -978,7 +1047,7 @@ public static class EnumerableExtensions
     }
 
     /// <summary>
-    /// Returns lhs. If lhs is empty rhs is returned;
+    /// Returns rhs if rhs is empty.
     /// </summary>
     /// <typeparam name="T"></typeparam>
     /// <param name="lhs"></param>
@@ -1109,6 +1178,13 @@ public static class EnumerableExtensions
         return -1;
     }
 
+    /// <summary>
+    /// Returns the index of the first item found with a specific predicate.
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <param name="items"></param>
+    /// <param name="predicate"></param>
+    /// <returns></returns>
     public static int IndexOf<T>(this IEnumerable<T> items, Func<T, bool> predicate)
     {
         predicate.ThrowIfNull();
@@ -1123,6 +1199,14 @@ public static class EnumerableExtensions
         return -1;
     }
 
+    /// <summary>
+    /// Returns the index of the first item found after start with a specific predicate.
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <param name="items"></param>
+    /// <param name="start"></param>
+    /// <param name="predicate"></param>
+    /// <returns></returns>
     public static int IndexOf<T>(this IEnumerable<T> items, int start, Func<T, bool> predicate)
     {
         predicate.ThrowIfNull();
@@ -1293,20 +1377,7 @@ public static class EnumerableExtensions
     }
 
     /// <summary>
-    /// Intersects to lists using a compare function.
-    /// </summary>
-    /// <typeparam name="T"></typeparam>
-    /// <param name="lhs"></param>
-    /// <param name="rhs"></param>
-    /// <param name="compare"></param>
-    /// <returns></returns>
-    public static IEnumerable<T> Intersect<T>(this IEnumerable<T> lhs, IEnumerable<T> rhs, Func<T?, T?, bool> compare)
-    {
-        return lhs.Intersect(rhs, new LambdaEqualityComparer<T>(compare));
-    }
-
-    /// <summary>
-    /// Intersects all collections.
+    /// Intersects a list of collections.
     /// </summary>
     /// <typeparam name="T"></typeparam>
     /// <param name="collections"></param>
@@ -1330,7 +1401,14 @@ public static class EnumerableExtensions
         }
     }
 
-    public static IEnumerable<T> Intersect<T>(this IEnumerable<IEnumerable<T>> collections, Func<T?, T?, bool> compare)
+    /// <summary>
+    /// Intersects all collections.
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <param name="collections"></param>
+    /// <param name="compare"></param>
+    /// <returns></returns>
+    public static IEnumerable<T> IntersectBy<T>(this IEnumerable<IEnumerable<T>> collections, Func<T?, T?, bool> compare)
     {
         var itCollections = collections.GetEnumerator();
         if (!itCollections.MoveNext()) yield break;
@@ -1354,8 +1432,9 @@ public static class EnumerableExtensions
     /// </summary>
     /// <typeparam name="T"></typeparam>
     /// <param name="items"></param>
+    /// <param name="allowEqual">if true equal values return true otherwise false.</param>
     /// <returns></returns>
-    public static bool IsInAscendingOrder<T>(this IEnumerable<T> items)
+    public static bool IsInAscendingOrder<T>(this IEnumerable<T> items, bool allowEqual = false)
         where T : IComparable<T>
     {
         items.ThrowIfNull();
@@ -1367,8 +1446,10 @@ public static class EnumerableExtensions
         var prev = it.Current;
         while (it.MoveNext())
         {
-            if (1 == prev.CompareTo(it.Current))
-                return false;
+            var compare = prev.CompareTo(it.Current);
+
+            var isAscending = allowEqual ? 1 > compare : -1 == compare;
+            if(!isAscending) return false;
 
             prev = it.Current;
         }
@@ -1406,6 +1487,7 @@ public static class EnumerableExtensions
 
     /// <summary>
     /// Returns true, if all elements of lhs appear in rhs and the number of items and their occurrency are same.
+    /// Positions can be different.
     /// </summary>
     /// <param name="lhs"></param>
     /// <param name="rhs"></param>
@@ -1449,7 +1531,7 @@ public static class EnumerableExtensions
     }
 
     /// <summary>
-    /// Iterates to all items.
+    /// Iterates to all items. Can be used to iterate all items without using memory.
     /// </summary>
     /// <typeparam name="T"></typeparam>
     /// <param name="items"></param>
@@ -1502,14 +1584,14 @@ public static class EnumerableExtensions
     }
 
     /// <summary>
-    /// Returns the last item of source if not empty.
+    /// Returns the last item of items if not empty.
     /// </summary>
     /// <typeparam name="T"></typeparam>
-    /// <param name="source"></param>
+    /// <param name="items"></param>
     /// <returns></returns>
-    public static Option<T> LastAsOption<T>(this IEnumerable<T> source)
+    public static Option<T> LastAsOption<T>(this IEnumerable<T> items)
     {
-        var it = source.ThrowIfNull().GetEnumerator();
+        var it = items.ThrowIfNull().GetEnumerator();
 
         var last = Option.None<T>();
 
@@ -1702,14 +1784,11 @@ public static class EnumerableExtensions
         T? min = default;
         T? max = default;
 
-        var hasValue = false;
-
         foreach (var item in items
         .OnFirst(i =>
         {
             min = i;
             max = i;
-            hasValue = true;
         })
         .Skip(1))
         {
@@ -1723,9 +1802,9 @@ public static class EnumerableExtensions
                 max = item;
         }
 
-        return (hasValue && null != min && null != max)
-            ? Option.Some((min, max)) 
-            : Option.None<(T, T)>() ;
+        return (null != min && null != max)
+            ? Option.Some((min, max))
+            : Option.None<(T, T)>();
     }
 
     /// <summary>
@@ -1741,35 +1820,32 @@ public static class EnumerableExtensions
         Func<T, TSelector> selector)
         where TSelector : IComparable
     {
-        KeyValuePair<TSelector, T> min = default;
-        KeyValuePair<TSelector, T> max = default;
-
-        var hasValue = false;
+        T? min = default;
+        T? max = default;
 
         foreach (var item in items
-            .OnFirst(i =>
+            .OnFirst(x =>
         {
-            min = Pair.New(selector(i), i);
-            max = Pair.New(selector(i), i);
-            hasValue = true;
+            min = x;
+            max = x;
         })
         .Skip(1))
         {
             var selectorValue = selector(item);
             if (null == selectorValue) continue;
 
-            if (-1 == selectorValue.CompareTo(min.Key))
+            if (-1 == selectorValue.CompareTo(selector(min!)))
             {
-                min = Pair.New(selectorValue, item);
+                min = item;
                 continue;
             }
 
-            if (1 == selectorValue.CompareTo(max.Key))
-                max = Pair.New(selectorValue, item);
+            if (1 == selectorValue.CompareTo(selector(max!)))
+                max = item;
         }
 
-        return hasValue && null != min.Value && null != max.Value
-            ? Option.Some((min.Value, max.Value))
+        return null != min && null != max
+            ? Option.Some((min, max))
             : Option.None<(T, T)>();
     }
 

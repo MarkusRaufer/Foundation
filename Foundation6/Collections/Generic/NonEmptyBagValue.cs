@@ -12,8 +12,7 @@ public static class NonEmptyBagValue
 }
 
 /// <summary>
-/// This is an immutable array that compares each element on <see cref="Equals(NonEmptyBagValue{T})"/>.
-/// That enables the comparison of two arrays.
+/// This is an immutable unordered collection that considers the equality of each element on <see cref="Equals(NonEmptyBagValue{T})"/>.
 /// </summary>
 /// <typeparam name="T"></typeparam>
 public readonly struct NonEmptyBagValue<T>

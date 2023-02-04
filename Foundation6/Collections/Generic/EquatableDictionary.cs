@@ -8,7 +8,8 @@ using System.Linq;
 using System.Runtime.Serialization;
 
 /// <summary>
-/// This map considers the equality of all keys and values <see cref="Equals"/>. The position of the elements are ignored.
+/// This dictionary considers the equality of all keys and values <see cref="Equals"/>.
+/// The position of the elements are ignored.
 /// </summary>
 /// <typeparam name="TKey"></typeparam>
 /// <typeparam name="TValue"></typeparam>

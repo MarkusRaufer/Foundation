@@ -25,12 +25,12 @@ public readonly struct Period : IComparable<Period>
 
     public static bool operator !=(Period lhs, Period rhs) => !lhs.Equals(rhs);
 
-    public static Period operator +(Period lhs, TimeSpan rhs) => New(lhs.Start, lhs.End + rhs);
+    public static Period operator +(Period period, TimeSpan span) => New(period.Start, period.End + span);
 
-    public static Period operator -(Period lhs, TimeSpan rhs)
+    public static Period operator -(Period period, TimeSpan span)
     {
-        if (lhs.Duration < rhs) throw new ArithmeticException(nameof(rhs));
-        return New(lhs.Start, lhs.End - rhs);
+        if (period.Duration < span) throw new ArithmeticException(nameof(span));
+        return New(period.Start, period.End - span);
     }
 
     public static bool operator <(Period lhs, Period rhs)

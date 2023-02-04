@@ -2,12 +2,14 @@
 using Foundation.ComponentModel;
 using Foundation.TestUtil.Collections.Generic;
 using NUnit.Framework;
+using NUnit.Framework.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
+using static Foundation.TimeDef;
 
 namespace Foundation.Collections.Generic;
 
@@ -216,6 +218,34 @@ public class EnumerableExtensionsTests
         IEnumerable<int> items2 = new List<int> { 1, 5, 12 };
 
         Assert.IsTrue(items1.Contains(items2));
+    }
+
+    [Test]
+    public void Correlate_Should_ReturnTwoElements_When_AllListsContainTwoSameElements()
+    {
+        var lhs = new DateOnly[]
+        {
+            new DateOnly(2023, 1, 1),
+            new DateOnly(2023, 2, 2),
+            new DateOnly(2023, 3, 3),
+            new DateOnly(2023, 4, 4),
+        };
+
+        var rhs = new DateOnly[]
+        {
+            new DateOnly(2023, 5, 3),
+            new DateOnly(2023, 6, 4),
+            new DateOnly(2023, 7, 5),
+            new DateOnly(2023, 8, 6),
+        };
+
+        var intersected = lhs.Correlate(rhs, x => x.Day).ToArray();
+
+        intersected.Length.Should().Be(4);
+        intersected[0].Should().Be(new DateOnly(2023, 3, 3));
+        intersected[1].Should().Be(new DateOnly(2023, 5, 3));
+        intersected[2].Should().Be(new DateOnly(2023, 4, 4));
+        intersected[3].Should().Be(new DateOnly(2023, 6, 4));
     }
 
     [Test]
@@ -461,7 +491,7 @@ public class EnumerableExtensionsTests
         Assert.AreEqual(("2", 6), enumerated[1]);
         Assert.AreEqual(("3", 7), enumerated[2]);
     }
-    
+
     [Test]
     public void ExceptBy()
     
@@ -528,7 +558,7 @@ public class EnumerableExtensionsTests
         var items1 = new[] { 1, 1, 1, 2, 3, 2, 1 };
         var items2 = new[] { 1, 2, 3, 1, 4 };
 
-        var result = items1.ExceptWithDuplicatesSorted(items2).OrderBy(x => x).ToArray();
+        var result = items1.ExceptWithDuplicatesSorted(items2).ToArray();
 
         var expected = new[] { 1, 1, 2 };
         Assert.IsTrue(expected.SequenceEqual(result));
@@ -559,6 +589,16 @@ public class EnumerableExtensionsTests
     }
 
     [Test]
+    public void FilterMap()
+    {
+        var numbers = Enumerable.Range(1, 10);
+
+        var strings = numbers.FilterMap(x => x % 2 == 0, x => x.ToString());
+        var expected = new[] { "2", "4", "6", "8", "10" };
+        strings.Should().Contain(expected);
+    }
+
+    [Test]
     public void ForEach_Returning_number_of_processed_acctions()
     {
         var items = Enumerable.Range(1, 5);
@@ -578,6 +618,38 @@ public class EnumerableExtensionsTests
         items.ForEach(action: x => sum += x, emptyAction: () => sum = 1);
 
         Assert.AreEqual(1, sum);
+    }
+
+    [Test]
+    public void HasNelements_Should_ReturnFalse_When_LessElementsInListAsNumberOfElements()
+    {
+        var numbers = new[] { 1, 2 };
+        var has3Elements = false;
+        void action()
+        {
+            has3Elements = true;
+        }
+
+        var result = numbers.HasNelements(3, action).ToArray();
+        
+        has3Elements.Should().BeFalse();
+        result.Length.Should().Be(2);
+    }
+
+    [Test]
+    public void HasNelements_Should_ReturnTrue_When_NumberOfElementsInList()
+    {
+        var numbers = new[] { 1, 2, 3 };
+        var has3Elements = false;
+        void action()
+        {
+            has3Elements = true;
+        }
+
+        var result = numbers.HasNelements(2, action).ToArray();
+
+        has3Elements.Should().BeTrue();
+        result.Length.Should().Be(3);
     }
 
     [Test]
@@ -696,6 +768,19 @@ public class EnumerableExtensionsTests
     }
 
     [Test]
+    public void IndexOf_Should_ReturnTheIndexOfAnItem_When_PredicateIsTrue()
+    {
+        var items = new string[] { "a", "b", "c", "b", "d" };
+
+        var index = items.IndexOf("b");
+        index.Should().Be(1);
+
+        index = items.IndexOf(index + 1, x => x == "b");
+        index.Should().Be(3);
+    }
+
+
+    [Test]
     public void Insert_Should_InsertItem_When_EmptyEnumerable_Predicate()
     {
         var items = new List<int>();
@@ -715,6 +800,23 @@ public class EnumerableExtensionsTests
         var newItems = items.Insert(item, Comparer<int>.Default).ToArray();
 
         Assert.Contains(item, newItems);
+    }
+
+    [Test]
+    public void Intersect_Should_ReturnTwoElements_When_AllListsContainTwoSameElements()
+    {
+        var items = new List<IEnumerable<int>>
+        {
+            new int[] { 1, 2, 3, 4 },
+            new int[] { 2, 3, 4, 5 },
+            new int[] { 3, 4, 5, 6 }
+        };
+
+        var intersected = items.Intersect().ToArray();
+
+        intersected.Length.Should().Be(2);
+        intersected[0].Should().Be(3);
+        intersected[1].Should().Be(4);
     }
 
     [Test]
@@ -744,6 +846,30 @@ public class EnumerableExtensionsTests
             var expected = new[] { 1, 4, 3, 5 };
             CollectionAssert.AreEqual(expected, newItems);
         }
+    }
+
+    [Test]
+    public void IsInAscendingOrder_Should_ReturnFalse_When_AllowEqualFalseAndItemsIncludeEqualValues()
+    {
+        var items = new int[] { 1, 2, 2, 3, 4 };
+        
+        items.IsInAscendingOrder().Should().BeFalse();
+    }
+
+    [Test]
+    public void IsInAscendingOrder_Should_ReturnTrue_When_AllowEqualFalseAndAllItemsAreInAscendingOrder()
+    {
+        var items = Enumerable.Range(0, 5);
+
+        items.IsInAscendingOrder().Should().BeTrue();
+    }
+
+    [Test]
+    public void IsInAscendingOrder_Should_ReturnTrue_When_AllowEqualTrueAndItemsIncludeEqualValues()
+    {
+        var items = new int[] { 1, 2, 2, 3, 4 };
+
+        items.IsInAscendingOrder(allowEqual: true).Should().BeTrue();
     }
 
     [Test]
@@ -801,7 +927,7 @@ public class EnumerableExtensionsTests
     {
         var numbers = new[] { 4, 3, 7, 9 };
 
-        Assert.IsFalse(numbers.IsInAscendingOrder());
+        numbers.IsInAscendingOrder().Should().BeFalse();
     }
 
     [Test]
@@ -809,27 +935,12 @@ public class EnumerableExtensionsTests
     {
         var numbers = new[] { 4, 3, 7, 9 };
 
-        Assert.IsFalse(numbers.IsInAscendingOrder((a, b) =>
+        numbers.IsInAscendingOrder((a, b) =>
         {
             if (a < b) return CompareResult.Smaller;
             if (a > b) return CompareResult.Greater;
             return CompareResult.Equal;
-        }));
-    }
-
-    [Test]
-    public void IsInAscendingOrder_ShouldReturnTrue_When_ValuesAreAscending()
-    {
-        {
-            var numbers = Enumerable.Range(1, 5);
-
-            Assert.IsTrue(numbers.IsInAscendingOrder());
-        }
-        {
-            var numbers = new[] { 3, 4, 4, 7, 9 };
-
-            Assert.IsTrue(numbers.IsInAscendingOrder());
-        }
+        }).Should().BeFalse();
     }
 
     [Test]
@@ -958,7 +1069,7 @@ public class EnumerableExtensionsTests
             new (2018, 1,  1),
             new (2019, 5, 26),
             new (2020, 4, 13),
-       };
+        };
 
         var (min, max) = dates.MinMax(dt => dt.Month).OrThrow();
 

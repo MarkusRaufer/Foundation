@@ -4,6 +4,11 @@ using System.Diagnostics.CodeAnalysis;
 
 namespace Foundation.Collections.Generic;
 
+/// <summary>
+/// Dictionary with immutable keys.
+/// </summary>
+/// <typeparam name="TKey"></typeparam>
+/// <typeparam name="TValue"></typeparam>
 public class FixedKeysDictionary<TKey, TValue>
     : IFixedKeysDictionary<TKey, TValue>
     where TKey : notnull

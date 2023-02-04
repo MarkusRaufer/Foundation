@@ -2,18 +2,23 @@
 {
     public static class DateOnlyExtensions
     {
-        public static DateTime ToDateTime(this DateOnly dateOnly)
+        public static DateOnly Add(this DateOnly date, TimeSpan span)
         {
-            return new DateTime(dateOnly.Year, dateOnly.Month, dateOnly.Day);
+            return DateOnly.FromDateTime(date.ToDateTime().Add(span));
         }
 
-        public static DateTime ToDateTime(this DateOnly dateOnly, DateTimeKind kind)
+        public static DateTime ToDateTime(this DateOnly date)
         {
-            return new DateTime(dateOnly.Year, dateOnly.Month, dateOnly.Day, 0, 0, 0, kind);
+            return new DateTime(date.Year, date.Month, date.Day);
         }
 
-        public static long ToTicks(this DateOnly dateOnly) => dateOnly.ToDateTime().Ticks;
+        public static DateTime ToDateTime(this DateOnly date, DateTimeKind kind)
+        {
+            return new DateTime(date.Year, date.Month, date.Day, 0, 0, 0, kind);
+        }
 
-        public static long ToTicks(this DateOnly dateOnly, DateTimeKind kind) => dateOnly.ToDateTime(kind).Ticks;
+        public static long ToTicks(this DateOnly date) => date.ToDateTime().Ticks;
+
+        public static long ToTicks(this DateOnly date, DateTimeKind kind) => date.ToDateTime(kind).Ticks;
     }
 }
