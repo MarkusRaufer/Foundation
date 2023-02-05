@@ -2603,6 +2603,55 @@ public static class EnumerableExtensions
     }
 
     /// <summary>
+    /// Replaces number of items from a list with items from replace method.
+    /// </summary>
+    /// <typeparam name="T">Type of the elements of items.</typeparam>
+    /// <param name="items">List of items.</param>
+    /// <param name="predicate">The selector for replacements.</param>
+    /// <param name="replace">Returns items which replace the existing ones. The int is the current number of replacements.</param>
+    /// <param name="numberOfReplacements">Number of replaced items.</param>
+    /// <returns></returns>
+    public static IEnumerable<T> Replace<T>(
+        this IEnumerable<T> items,
+        Func<T, bool> predicate,
+        Func<int, T> replace,
+        int numberOfReplacements)
+    {
+        items.ThrowIfNull();
+        replace.ThrowIfNull();
+
+        if (1 > numberOfReplacements) yield break;
+
+        var replaced = 0;
+
+        var it = items.GetEnumerator();
+        bool hasNext;
+
+        while(hasNext = it.MoveNext())
+        {
+            if (replaced >= numberOfReplacements)
+            {
+                yield return it.Current;
+                break;
+            }
+            if (predicate(it.Current))
+            {
+                yield return replace(replaced);
+                replaced++;
+                continue;
+            }
+            yield return it.Current;
+        }
+
+        if(!hasNext) yield break;
+
+        while (it.MoveNext())
+        {
+            yield return it.Current;
+        }
+    }
+
+    /// <summary>
     /// Replaces the items from a list with specified <paramref name="replaceTuples"/> including values with their indices.
     /// </summary>
     /// <typeparam name="T"></typeparam>

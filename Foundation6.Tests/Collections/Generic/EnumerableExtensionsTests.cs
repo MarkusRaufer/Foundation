@@ -1891,7 +1891,7 @@ public class EnumerableExtensionsTests
     }
 
     [Test]
-    public void Replace_Should_ReturnReplacedList_WhenListIsLongerThanMaxReplaceIndexAndUsingPredicate()
+    public void Replace_Should_ReturnReplacedList_When_ListIsLongerThanMaxReplaceIndexAndUsingPredicate()
     {
         var numbers = Enumerable.Range(1, 5);
 
@@ -1903,6 +1903,43 @@ public class EnumerableExtensionsTests
         Assert.AreEqual(3, replaced[2]);
         Assert.AreEqual(40, replaced[3]);
         Assert.AreEqual(5, replaced[4]);
+    }
+
+    [Test]
+    public void Replace_Should_Replaced1Element_When_NumberOfReplacementIs2AndListHasNotEnoughElements()
+    {
+        var numberOfElements = 3;
+        var numbers = Enumerable.Range(1, numberOfElements);
+
+        var replaced = numbers.Replace(x => x % 2 == 0, replaced => 0, 2).ToArray();
+
+        replaced.Length.Should().Be(numberOfElements);
+
+        replaced[0].Should().Be(1);
+        replaced[1].Should().Be(0);
+        replaced[2].Should().Be(3);
+    }
+
+    [Test]
+    public void Replace_Should_Replaced2Elements_When_NumberOfReplacementIs2AndListHasEnoughElements()
+    {
+        var numberOfElements = 10;
+        var numbers = Enumerable.Range(1, numberOfElements);
+
+        var replaced = numbers.Replace(x => x % 2 == 0, replaced => 0, 2).ToArray();
+
+        replaced.Length.Should().Be(numberOfElements);
+
+        replaced[0].Should().Be(1);
+        replaced[1].Should().Be(0);
+        replaced[2].Should().Be(3);
+        replaced[3].Should().Be(0);
+        replaced[4].Should().Be(5);
+        replaced[5].Should().Be(6);
+        replaced[6].Should().Be(7);
+        replaced[7].Should().Be(8);
+        replaced[8].Should().Be(9);
+        replaced[9].Should().Be(10);
     }
 
     [Test]
