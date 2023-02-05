@@ -452,6 +452,7 @@ public static class EnumerableExtensions
     /// <returns></returns>
     public static IEnumerable<T> DistinctPreserveOrdinalPosition<T>(this IEnumerable<T> items)
     {
+        // TODO: Enumerate
         return items.Enumerate()
                     .DistinctBy(tuple => tuple.item)
                     .OrderBy(tuple => tuple.counter)
@@ -533,7 +534,7 @@ public static class EnumerableExtensions
     /// <param name="items"></param>
     /// <param name="seed"></param>
     /// <returns>Returns tuples (item, counter).</returns>
-    public static IEnumerable<(T item, int counter)> Enumerate<T>(this IEnumerable<T> items, int seed = 0)
+    public static IEnumerable<(int counter, T item)> Enumerate<T>(this IEnumerable<T> items, int seed = 0)
     {
         var i = seed;
         return Enumerate(items, (item) => i++);
@@ -547,12 +548,12 @@ public static class EnumerableExtensions
     /// <param name="items"></param>
     /// <param name="createValue"></param>
     /// <returns>Returns a tuple (item, counter).</returns>
-    public static IEnumerable<(T item, TValue counter)> Enumerate<T, TValue>(this IEnumerable<T> items, Func<T, TValue> createValue)
+    public static IEnumerable<(TValue counter, T item)> Enumerate<T, TValue>(this IEnumerable<T> items, Func<T, TValue> createValue)
     {
         createValue.ThrowIfNull();
 
         foreach (var item in items)
-            yield return (item, createValue(item));
+            yield return (createValue(item), item);
     }
 
     /// <summary>
@@ -563,14 +564,14 @@ public static class EnumerableExtensions
     /// <param name="items"></param>
     /// <param name="minMax">Allows also negative numbers.</param>
     /// <returns></returns>
-    public static IEnumerable<(T item, int counter)> Enumerate<T>(this IEnumerable<T> items, int min, int max)
+    public static IEnumerable<(int counter, T item)> Enumerate<T>(this IEnumerable<T> items, int min, int max)
     {
         var i = min;
         foreach (var item in items)
         {
             if (i > max) i = min;
 
-            yield return (item, i);
+            yield return (i, item);
             i++;
         }
     }
@@ -582,7 +583,7 @@ public static class EnumerableExtensions
     /// <param name="items"></param>
     /// <param name="minMax"></param>
     /// <returns></returns>
-    public static IEnumerable<(T item, int counter)> Enumerate<T>(this IEnumerable<T> items, System.Range range)
+    public static IEnumerable<(int counter, T item)> Enumerate<T>(this IEnumerable<T> items, System.Range range)
     {
         if (range.End.IsFromEnd) throw new ArgumentException($"{range.End}.IsFromEnd is not allowed");
 
@@ -591,7 +592,7 @@ public static class EnumerableExtensions
         {
             if (!range.End.IsFromEnd && range.End.Value < i) i = range.Start.Value;
 
-            yield return (item, i);
+            yield return (i, item);
             i++;
         }
     }
@@ -606,13 +607,13 @@ public static class EnumerableExtensions
     /// <param name="createValue1"></param>
     /// <param name="createValue2"></param>
     /// <returns></returns>
-    public static IEnumerable<(T, TValue1, TValue2)> Enumerate<T, TValue1, TValue2>(
+    public static IEnumerable<(TValue1, TValue2, T)> Enumerate<T, TValue1, TValue2>(
         this IEnumerable<T> items,
         Func<T, TValue1> createValue1,
         Func<T, TValue2> createValue2)
     {
         foreach (var item in items)
-            yield return (item, createValue1(item), createValue2(item));
+            yield return (createValue1(item), createValue2(item), item);
     }
 
     /// <summary>
@@ -1630,8 +1631,8 @@ public static class EnumerableExtensions
                      join right in rhsTuples on keySelector(left.item) equals keySelector(right.item)
                      select (left, right);
 
-        var lhsMap = new MultiValueMap<TKey, (T, int)>();
-        var rhsMap = new MultiValueMap<TKey, (T, int)>();
+        var lhsMap = new MultiValueMap<TKey, (int, T)>();
+        var rhsMap = new MultiValueMap<TKey, (int, T)>();
 
         foreach (var (left, right) in tuples)
         {
@@ -1639,7 +1640,7 @@ public static class EnumerableExtensions
             rhsMap.AddUnique(keySelector(right.item), right);
         }
 
-        return (lhsMap.Values.Select(t => t.Item1), rhsMap.Values.Select(t => t.Item1));
+        return (lhsMap.Values.Select(t => t.Item2), rhsMap.Values.Select(t => t.Item2));
     }
 
     /// <summary>
@@ -1649,13 +1650,13 @@ public static class EnumerableExtensions
     /// <param name="lhs"></param>
     /// <param name="rhs"></param>
     /// <returns>matching items with their occurrencies.</returns>
-    public static IEnumerable<((T? item, int count) lhs, (T? item, int count) rhs)> MatchWithOccurrencies<T>(
+    public static IEnumerable<((int counter, T? item) lhs, (int counter, T? item) rhs)> MatchWithOccurrencies<T>(
         this IEnumerable<T?> lhs,
         IEnumerable<T?> rhs)
     {
         lhs.ThrowIfNull();
         rhs.ThrowIfNull();
-
+        //TODO: Enumerate
         var enumeratedLhs = lhs.Select(l => NullableKey.New(l))
                                .Enumerate();
 
@@ -1669,13 +1670,13 @@ public static class EnumerableExtensions
                      (left, right) => (left, right)).ToArray();
 
         
-        var lhsMap = new MultiValueMap<NullableKey<T>, (T?, int)>();
-        var rhsMap = new MultiValueMap<NullableKey<T>, (T?, int)>();
+        var lhsMap = new MultiValueMap<NullableKey<T>, (int, T?)>();
+        var rhsMap = new MultiValueMap<NullableKey<T>, (int, T?)>();
 
         foreach (var (left, right) in tuples)
         {
-            lhsMap.AddUnique(left.item, (left.item.Value, left.counter));
-            rhsMap.AddUnique(right.item, (right.item.Value, right.counter));
+            lhsMap.AddUnique(left.item, (left.counter, left.item.Value));
+            rhsMap.AddUnique(right.item, (right.counter, right.item.Value));
         }
 
         foreach (var pair in lhsMap)
@@ -1683,8 +1684,8 @@ public static class EnumerableExtensions
             var lhsTuples = lhsMap.GetValues(new[] { pair.Key });
             var rhsTuples = rhsMap.GetValues(new[] { pair.Key });
 
-            var leftTuple = (pair.Key.Value, lhsTuples.Count());
-            var rightTuple = (pair.Key.Value, rhsTuples.Count());
+            var leftTuple = (lhsTuples.Count(), pair.Key.Value);
+            var rightTuple = (rhsTuples.Count(), pair.Key.Value);
 
             yield return (leftTuple, rightTuple);
         }
@@ -1699,7 +1700,7 @@ public static class EnumerableExtensions
     /// <param name="rhs"></param>
     /// <param name="keySelector"></param>
     /// <returns></returns>
-    public static IEnumerable<((T item, int count) lhs, (T item, int count) rhs)> MatchWithOccurrencies<T, TKey>(
+    public static IEnumerable<((int counter, T item) lhs, (int counter, T item) rhs)> MatchWithOccurrencies<T, TKey>(
         this IEnumerable<T> lhs,
         IEnumerable<T> rhs,
         Func<T, TKey> keySelector)
@@ -1708,7 +1709,7 @@ public static class EnumerableExtensions
         lhs.ThrowIfNull();
         rhs.ThrowIfNull();
         keySelector.ThrowIfNull();
-
+        //TODO: Enumerate
         var enumeratedLhs = lhs.Enumerate();
         var enumeratedRhs = rhs.Enumerate();
 
@@ -1716,8 +1717,8 @@ public static class EnumerableExtensions
                      join right in enumeratedRhs on keySelector(left.item) equals keySelector(right.item)
                      select (left, right);
 
-        var lhsMap = new MultiValueMap<TKey, (T, int)>();
-        var rhsMap = new MultiValueMap<TKey, (T, int)>();
+        var lhsMap = new MultiValueMap<TKey, (int, T)>();
+        var rhsMap = new MultiValueMap<TKey, (int, T)>();
 
         foreach (var (left, right) in tuples)
         {
@@ -1732,8 +1733,8 @@ public static class EnumerableExtensions
             var lhsTuples = lhsMap.GetValues(new[] { pair.Key });
             var rhsTuples = rhsMap.GetValues(new[] { pair.Key });
 
-            var leftTuple = (pair.Value.Item1, lhsTuples.Count());
-            var rightTuple = (pair.Value.Item1, rhsTuples.Count());
+            var leftTuple = (lhsTuples.Count(), pair.Value.Item2);
+            var rightTuple = (rhsTuples.Count(), pair.Value.Item2);
 
             yield return (leftTuple, rightTuple);
         }
@@ -1850,21 +1851,7 @@ public static class EnumerableExtensions
     }
 
     /// <summary>
-    /// Returns true if the list contains more than one element.
-    /// </summary>
-    /// <typeparam name="T"></typeparam>
-    /// <param name="items"></param>
-    /// <returns></returns>
-    public static bool MoreThanOne<T>(this IEnumerable<T> items)
-    {
-        var it = items.GetEnumerator();
-        if (!it.MoveNext()) return false;
-        if (!it.MoveNext()) return false;
-        return true;
-    }
-
-    /// <summary>
-    /// returns the elements that occure most frequently.
+    /// Returns the elements that occure most frequently.
     /// </summary>
     /// <typeparam name="T"></typeparam>
     /// <typeparam name="TKey"></typeparam>
@@ -1899,17 +1886,6 @@ public static class EnumerableExtensions
         if (null == mostFrequent) return (Enumerable.Empty<T>(), 0);
 
         return (mostFrequent.Select(g => g.First()), itemCount);
-    }
-
-    /// <summary>
-    /// Returns only items that occure more than once.
-    /// </summary>
-    /// <typeparam name="T"></typeparam>
-    /// <param name="items"></param>
-    /// <returns></returns>
-    public static IEnumerable<IGrouping<TKey, T>> MultipleOccurrences<T, TKey>(this IEnumerable<T> items, Func<T, TKey> keySelector)
-    {
-        return items.GroupBy(keySelector).Where(grp => 1 < grp.Count());
     }
 
     /// <summary>
@@ -2068,26 +2044,9 @@ public static class EnumerableExtensions
     /// <returns>Returns all items with their occurrencies.</returns>
     public static IEnumerable<(T value, int quantity)> Occurrencies<T>(this IEnumerable<T> items)
     {
-        var set = new HashSet<Countable<T>>(new NullableEqualityComparer<Countable<T>>(
-                        (x, y) => x.ValueEquals(y), 
-                        x => x.GetValueHashCode()));
-
-        foreach(var item in items)
+        foreach(var group in items.GroupBy(x => x))
         {
-            var countable = Countable.New(item);
-            if (set.TryGetValue(countable, out var existing))
-            {
-                existing.Inc();
-                continue;
-            }
-
-            countable.Inc();
-            set.Add(countable);
-        }
-
-        foreach(var countable in set)
-        {
-            yield return (value: countable.Value, quantity: countable.Count);
+            yield return (value: group.Key, quantity: group.Count());
         }
     }
 
@@ -2299,27 +2258,6 @@ public static class EnumerableExtensions
         while (it.MoveNext())
         {
             yield return it.Current;
-        }
-    }
-
-    public static IEnumerable<TResult> OnFirstSelect<T, TResult>(
-        this IEnumerable<T> items, 
-        Func<T, TResult> onFirst,
-        Func<T, TResult> onRemaining)
-    {
-        onFirst.ThrowIfNull();
-        onRemaining.ThrowIfNull();
-
-        var it = items.ThrowIfNull()
-                      .GetEnumerator();
-
-        if (!it.MoveNext()) yield break;
-
-        yield return onFirst(it.Current);
-
-        while (it.MoveNext())
-        {
-            yield return onRemaining(it.Current);
         }
     }
 
@@ -2616,15 +2554,15 @@ public static class EnumerableExtensions
     /// </summary>
     /// <typeparam name="T"></typeparam>
     /// <param name="items"></param>
-    /// <param name="item"></param>
-    /// <param name="index"></param>
+    /// <param name="index">The position in the list.</param>
+    /// <param name="item">Item that replaces the existing item at a specific index.</param>
     /// <returns></returns>
-    public static IEnumerable<T> Replace<T>(this IEnumerable<T> items, T item, int index)
+    public static IEnumerable<T> Replace<T>(this IEnumerable<T> items, int index, T item)
     {
         items.ThrowIfNull();
         item.ThrowIfNull();
 
-        return Replace(items, new[] {(item, index)}, item => item);
+        return Replace(items, new[] {(index, item) }, item => item);
     }
 
     /// <summary>
@@ -2636,7 +2574,7 @@ public static class EnumerableExtensions
     /// <returns></returns>
     public static IEnumerable<T> Replace<T>(
         this IEnumerable<T> items, 
-        IEnumerable<(T item, int index)> replaceTuples)
+        IEnumerable<(int index, T item)> replaceTuples)
     {
         items.ThrowIfNull();
         replaceTuples.ThrowIfNull();
@@ -2654,14 +2592,14 @@ public static class EnumerableExtensions
     /// <returns></returns>
     public static IEnumerable<TResult> Replace<T, TResult>(
         this IEnumerable<T> items, 
-        Func<T, int, TResult> project)
+        Func<int, T, TResult> project)
     {
         items.ThrowIfNull();
         project.ThrowIfNull();
-
-        foreach (var (item, counter) in items.Enumerate())
+        //TODO: Enumerate
+        foreach (var (counter, item) in items.Enumerate())
         {
-            yield return project(item, counter);
+            yield return project(counter, item);
         }
     }
 
@@ -2676,7 +2614,7 @@ public static class EnumerableExtensions
     /// <returns>A list of TResult items.</returns>
     public static IEnumerable<TResult> Replace<T, TResult>(
         this IEnumerable<T> items,
-        IEnumerable<(T item, int index)> replaceTuples,
+        IEnumerable<(int index, T item)> replaceTuples,
         Func<T, TResult> project)
     {
         items.ThrowIfNull();
@@ -2686,9 +2624,10 @@ public static class EnumerableExtensions
         var orderedTuples = replaceTuples.Where(tuple => 0 <= tuple.index)
                                          .OrderBy(tuple => tuple.index);
 
+        //TODO: Enumerate
         return items.Enumerate()
                     .ZipLeft(orderedTuples,
-                            (lhs, rhs) => lhs.Item2 == rhs.Item2 ? BinarySelection.Right : BinarySelection.Left,
+                            (lhs, rhs) => lhs.Item1 == rhs.Item1 ? BinarySelection.Right : BinarySelection.Left,
                             tuple => project(tuple.item));
     }
 
@@ -3550,7 +3489,7 @@ public static class EnumerableExtensions
     {
         items.ThrowIfNull();
         predicate.ThrowIfNull();
-
+        //TODO: Enumerate
         return items.Enumerate()
                     .Where(tuple => predicate(tuple.item))
                     .Select(tuple => new Ordinal<T> { Position = tuple.counter, Value = tuple.item });

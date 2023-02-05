@@ -411,7 +411,7 @@ public class EnumerableExtensionsTests
 
         Assert.AreEqual(items1.Length, enumerated.Length);
 
-        foreach (var (item, counter) in enumerated)
+        foreach (var (counter, item) in enumerated)
             Assert.AreEqual(item * 2, counter);
     }
 
@@ -422,9 +422,9 @@ public class EnumerableExtensionsTests
 
         var enumerated = items.Enumerate().ToArray();
 
-        Assert.AreEqual(("one", 0), enumerated[0]);
-        Assert.AreEqual(("two", 1), enumerated[1]);
-        Assert.AreEqual(("three", 2), enumerated[2]);
+        Assert.AreEqual((0, "one"), enumerated[0]);
+        Assert.AreEqual((1, "two"), enumerated[1]);
+        Assert.AreEqual((2, "three"), enumerated[2]);
     }
 
     [Test]
@@ -435,9 +435,9 @@ public class EnumerableExtensionsTests
 
         var enumerated = items.Enumerate(item => i++).ToArray();
 
-        Assert.AreEqual(("one",   10), enumerated[0]);
-        Assert.AreEqual(("two",   11), enumerated[1]);
-        Assert.AreEqual(("three", 12), enumerated[2]);
+        Assert.AreEqual((10, "one"), enumerated[0]);
+        Assert.AreEqual((11, "two"), enumerated[1]);
+        Assert.AreEqual((12, "three"), enumerated[2]);
     }
 
     [Test]
@@ -447,16 +447,16 @@ public class EnumerableExtensionsTests
 
         var enumerated = items.Enumerate(min: -1, max: 1).ToArray();
 
-        Assert.AreEqual(("1",  -1), enumerated[0]);
-        Assert.AreEqual(("2",   0), enumerated[1]);
-        Assert.AreEqual(("3",   1), enumerated[2]);
-        Assert.AreEqual(("4",  -1), enumerated[3]);
-        Assert.AreEqual(("5",   0), enumerated[4]);
-        Assert.AreEqual(("6",   1), enumerated[5]);
-        Assert.AreEqual(("7",  -1), enumerated[6]);
-        Assert.AreEqual(("8",   0), enumerated[7]);
-        Assert.AreEqual(("9",   1), enumerated[8]);
-        Assert.AreEqual(("10", -1), enumerated[9]);
+        Assert.AreEqual((-1, "1"), enumerated[0]);
+        Assert.AreEqual(( 0, "2"), enumerated[1]);
+        Assert.AreEqual(( 1, "3"), enumerated[2]);
+        Assert.AreEqual((-1, "4"), enumerated[3]);
+        Assert.AreEqual(( 0, "5"), enumerated[4]);
+        Assert.AreEqual(( 1, "6"), enumerated[5]);
+        Assert.AreEqual((-1, "7"), enumerated[6]);
+        Assert.AreEqual(( 0, "8"), enumerated[7]);
+        Assert.AreEqual(( 1, "9"), enumerated[8]);
+        Assert.AreEqual((-1, "10"), enumerated[9]);
     }
 
     [Test]
@@ -468,16 +468,16 @@ public class EnumerableExtensionsTests
 
         var enumerated = items.Enumerate(10..12).ToArray();
 
-        Assert.AreEqual(("1",  10), enumerated[0]);
-        Assert.AreEqual(("2",  11), enumerated[1]);
-        Assert.AreEqual(("3",  12), enumerated[2]);
-        Assert.AreEqual(("4",  10), enumerated[3]);
-        Assert.AreEqual(("5",  11), enumerated[4]);
-        Assert.AreEqual(("6",  12), enumerated[5]);
-        Assert.AreEqual(("7",  10), enumerated[6]);
-        Assert.AreEqual(("8",  11), enumerated[7]);
-        Assert.AreEqual(("9",  12), enumerated[8]);
-        Assert.AreEqual(("10", 10), enumerated[9]);
+        Assert.AreEqual((10, "1"), enumerated[0]);
+        Assert.AreEqual((11, "2"), enumerated[1]);
+        Assert.AreEqual((12, "3"), enumerated[2]);
+        Assert.AreEqual((10, "4"), enumerated[3]);
+        Assert.AreEqual((11, "5"), enumerated[4]);
+        Assert.AreEqual((12, "6"), enumerated[5]);
+        Assert.AreEqual((10, "7"), enumerated[6]);
+        Assert.AreEqual((11, "8"), enumerated[7]);
+        Assert.AreEqual((12, "9"), enumerated[8]);
+        Assert.AreEqual((10, "10"), enumerated[9]);
     }
 
     [Test]
@@ -487,9 +487,9 @@ public class EnumerableExtensionsTests
 
         var enumerated = items.Enumerate(5).ToArray();
 
-        Assert.AreEqual(("1", 5), enumerated[0]);
-        Assert.AreEqual(("2", 6), enumerated[1]);
-        Assert.AreEqual(("3", 7), enumerated[2]);
+        Assert.AreEqual((5, "1"), enumerated[0]);
+        Assert.AreEqual((6, "2"), enumerated[1]);
+        Assert.AreEqual((7, "3"), enumerated[2]);
     }
 
     [Test]
@@ -1118,23 +1118,6 @@ public class EnumerableExtensionsTests
     }
 
     [Test]
-    public void MultipleOccurrences_Should_Return2Groupings_When_2NumbersOccureMoreThanOnce()
-    {
-        var numbers = new[] { 1, 2, 2, 3, 3, 3, 3, 4 };
-
-        var multiOccurrences = numbers.MultipleOccurrences(x => x).ToArray();
-
-        Assert.AreEqual(2, multiOccurrences.Length);
-
-        Assert.AreEqual(2, multiOccurrences[0].Key);
-        Assert.AreEqual(2, multiOccurrences[0].Count()); // 2 occurrences
-
-        Assert.AreEqual(3, multiOccurrences[1].Key);
-        Assert.AreEqual(4, multiOccurrences[1].Count()); // 4 occurrences
-    }
-
-
-    [Test]
     public void NotOfType_Should_ReturnRightValue_When_SingleMaxValue()
     {
         var values = new object[] { 1, "2", new DateOnly(2022, 3, 5), 4, "5", 6.6 };
@@ -1690,13 +1673,13 @@ public class EnumerableExtensionsTests
         Assert.AreEqual(2, matching.Length);
         {
             var tuple = matching.First(t => t.lhs.item == 1);
-            Assert.AreEqual(1, tuple.lhs.count);
-            Assert.AreEqual(1, tuple.rhs.count);
+            Assert.AreEqual(1, tuple.lhs.counter);
+            Assert.AreEqual(1, tuple.rhs.counter);
         }
         {
             var tuple = matching.First(t => t.lhs.item == 3);
-            Assert.AreEqual(1, tuple.lhs.count);
-            Assert.AreEqual(2, tuple.rhs.count);
+            Assert.AreEqual(1, tuple.lhs.counter);
+            Assert.AreEqual(2, tuple.rhs.counter);
         }
     }
 
@@ -1722,8 +1705,8 @@ public class EnumerableExtensionsTests
         var matching = dates1.MatchWithOccurrencies(dates2, dt => dt.Month).ToArray();
 
         Assert.AreEqual(1, matching.Length);
-        var expectedLhs = (item: new DateTime(2017, 4, 13), count: 1);
-        var expectedRhs = (item: new DateTime(2017, 4, 13), count: 2);
+        var expectedLhs = (counter: 1, item: new DateTime(2017, 4, 13));
+        var expectedRhs = (counter: 2,item: new DateTime(2017, 4, 13));
 
         var tuple = matching[0];
         Assert.AreEqual(expectedLhs, tuple.lhs);
@@ -1752,18 +1735,18 @@ public class EnumerableExtensionsTests
         Assert.AreEqual(3, matching.Length);
         {
             var tuple = matching.First(t => t.lhs.item == null);
-            Assert.AreEqual(1, tuple.lhs.count);
-            Assert.AreEqual(2, tuple.rhs.count);
+            Assert.AreEqual(1, tuple.lhs.counter);
+            Assert.AreEqual(2, tuple.rhs.counter);
         }
         {
             var tuple = matching.First(t => t.lhs.item == 1);
-            Assert.AreEqual(1, tuple.lhs.count);
-            Assert.AreEqual(1, tuple.rhs.count);
+            Assert.AreEqual(1, tuple.lhs.counter);
+            Assert.AreEqual(1, tuple.rhs.counter);
         }
         {
             var tuple = matching.First(t => t.lhs.item == 3);
-            Assert.AreEqual(1, tuple.lhs.count);
-            Assert.AreEqual(2, tuple.rhs.count);
+            Assert.AreEqual(1, tuple.lhs.counter);
+            Assert.AreEqual(2, tuple.rhs.counter);
         }
     }
 
@@ -1824,7 +1807,7 @@ public class EnumerableExtensionsTests
     {
         var numbers = Enumerable.Range(1, 5);
 
-        var modified = numbers.Replace(100, 2).ToArray();
+        var modified = numbers.Replace(2, 100).ToArray();
 
         CollectionAssert.AreEqual(new[] { 1, 2, 100, 4, 5 }, modified);
     }
@@ -1838,7 +1821,7 @@ public class EnumerableExtensionsTests
         var fizz = "Fizz";
         var buzz = "Buzz";
 
-        var all = numbers.Replace((n, index) =>
+        var all = numbers.Replace((index, n) =>
         {
             if (0 == index) return n;
 
@@ -1851,7 +1834,7 @@ public class EnumerableExtensionsTests
             return n;
         }).ToArray();
 
-        foreach(var (item, counter) in all.Enumerate())
+        foreach(var (counter, item) in all.Enumerate())
         {
             if(0 == counter)
             {
@@ -1887,7 +1870,7 @@ public class EnumerableExtensionsTests
         var numbers = Enumerable.Range(1, 5);
 
         // using tuples (value, index)
-        var replaced = numbers.Replace(new[] { (20, 1), (40, 3) }).ToArray();
+        var replaced = numbers.Replace(new[] { (1, 20), (3, 40) }).ToArray();
 
         CollectionAssert.AreEqual(new[] {1, 20, 3, 40, 5}, replaced);
     }
@@ -1897,7 +1880,7 @@ public class EnumerableExtensionsTests
     {
         var numbers = Enumerable.Range(1, 5);
 
-        var replaced = numbers.Replace(new[] { (20, 1), (40, 3) }, n => n.ToString()).ToArray();
+        var replaced = numbers.Replace(new[] { (1, 20), (3, 40) }, n => n.ToString()).ToArray();
 
         Assert.AreEqual(5, replaced.Length);
         Assert.AreEqual("1", replaced[0]);
@@ -1912,7 +1895,7 @@ public class EnumerableExtensionsTests
     {
         var numbers = Enumerable.Range(1, 5);
 
-        var replaced = numbers.Replace((n, _) => 0 == n % 2 ? n * 10 : n).ToArray();
+        var replaced = numbers.Replace((_, n) => 0 == n % 2 ? n * 10 : n).ToArray();
 
         Assert.AreEqual(5, replaced.Length);
         Assert.AreEqual(1, replaced[0]);
@@ -1927,7 +1910,7 @@ public class EnumerableExtensionsTests
     {
         var numbers = Enumerable.Range(1, 5);
 
-        var replaced = numbers.Replace(new[] { (20, 1), (40, 3), (60, 5) }).ToArray();
+        var replaced = numbers.Replace(new[] { (1, 20), (3, 40), (5, 60) }).ToArray();
 
         Assert.AreEqual(5, replaced.Length);
         Assert.AreEqual(1, replaced[0]);
@@ -2315,7 +2298,7 @@ public class EnumerableExtensionsTests
                          .MergeAndSort(x => x, x => int.Parse(re.Match(x).Value))
                          .ToArray();
 
-        foreach (var (item, counter) in all.Enumerate(seed: 1))
+        foreach (var (counter, item) in all.Enumerate(seed: 1))
         {
             var expected = (0 == counter % 2) ? $"even({counter})" : $"odd({counter})";
             Assert.AreEqual(expected, item);
@@ -2338,7 +2321,7 @@ public class EnumerableExtensionsTests
                          .ToArray();
 
 
-        foreach (var (item, counter) in all.Enumerate(seed: 1))
+        foreach (var (counter, item) in all.Enumerate(seed: 1))
         {
             if (0 == counter % 15)
             {
