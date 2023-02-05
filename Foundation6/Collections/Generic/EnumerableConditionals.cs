@@ -313,3 +313,16 @@ public static class EnumerableConditionals
         return items ?? Enumerable.Empty<T>();
     }
 }
+
+public interface IElseIf<T>
+{
+    IEnumerable<T> Else();
+    IEnumerable<T> Else(Action<T> action);
+    IElseIf<T> ElseIf(Func<T, bool> condition, Action<T> action);
+    void EndIf();
+}
+
+public interface IElse<T, TResult>
+{
+    IEnumerable<TResult> Else(Func<T, TResult> map);
+}
