@@ -452,7 +452,6 @@ public static class EnumerableExtensions
     /// <returns></returns>
     public static IEnumerable<T> DistinctPreserveOrdinalPosition<T>(this IEnumerable<T> items)
     {
-        // TODO: Enumerate
         return items.Enumerate()
                     .DistinctBy(tuple => tuple.item)
                     .OrderBy(tuple => tuple.counter)
@@ -1656,7 +1655,7 @@ public static class EnumerableExtensions
     {
         lhs.ThrowIfNull();
         rhs.ThrowIfNull();
-        //TODO: Enumerate
+        
         var enumeratedLhs = lhs.Select(l => NullableKey.New(l))
                                .Enumerate();
 
@@ -1709,7 +1708,7 @@ public static class EnumerableExtensions
         lhs.ThrowIfNull();
         rhs.ThrowIfNull();
         keySelector.ThrowIfNull();
-        //TODO: Enumerate
+        
         var enumeratedLhs = lhs.Enumerate();
         var enumeratedRhs = rhs.Enumerate();
 
@@ -2596,7 +2595,7 @@ public static class EnumerableExtensions
     {
         items.ThrowIfNull();
         project.ThrowIfNull();
-        //TODO: Enumerate
+        
         foreach (var (counter, item) in items.Enumerate())
         {
             yield return project(counter, item);
@@ -2624,7 +2623,6 @@ public static class EnumerableExtensions
         var orderedTuples = replaceTuples.Where(tuple => 0 <= tuple.index)
                                          .OrderBy(tuple => tuple.index);
 
-        //TODO: Enumerate
         return items.Enumerate()
                     .ZipLeft(orderedTuples,
                             (lhs, rhs) => lhs.Item1 == rhs.Item1 ? BinarySelection.Right : BinarySelection.Left,
@@ -3489,7 +3487,7 @@ public static class EnumerableExtensions
     {
         items.ThrowIfNull();
         predicate.ThrowIfNull();
-        //TODO: Enumerate
+        
         return items.Enumerate()
                     .Where(tuple => predicate(tuple.item))
                     .Select(tuple => new Ordinal<T> { Position = tuple.counter, Value = tuple.item });
@@ -3655,6 +3653,67 @@ public static class EnumerableExtensions
         return from firstItem in first
                from secondItem in second
                where comparer(firstItem, secondItem)
+               select resultSelector(firstItem, secondItem);
+    }
+
+    /// <summary>
+    /// Merges two lists. If lhs has more elements than rhs, the lhs elements are returned until the end.
+    /// If rhs has more elements than lhs, the rhs elements are skipped.
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <typeparam name="TResult"></typeparam>
+    /// <param name="lhs"></param>
+    /// <param name="rhs"></param>
+    /// <param name="selector"></param>
+    /// <param name="projection"></param>
+    /// <returns></returns>
+    public static IEnumerable<TResult> ZipLeft<T, TResult>(
+        this IEnumerable<T> lhs,
+        IEnumerable<T> rhs,
+        Func<T, T, BinarySelection> selector,
+        Func<T, TResult> projection)
+    {
+        var itRhs = rhs.GetEnumerator();
+
+        var hasNext = Fused.Value(true).BlowIfChanged();
+
+        var selection = BinarySelection.Right;
+        foreach (var item in lhs)
+        {
+            if(hasNext.Value)
+            {
+                if(BinarySelection.Right == selection) hasNext.Value = itRhs.MoveNext();
+
+                if(hasNext.Value)
+                {
+                    selection = selector(item, itRhs.Current);
+                    
+                    if (BinarySelection.Right == selection)
+                    {
+                        yield return projection(itRhs.Current);
+                        continue;
+                    }
+                }
+            }
+
+            yield return projection(item);
+        }
+    }
+}
+
+public interface IElseIf<T>
+{
+    IEnumerable<T> Else();
+    IEnumerable<T> Else(Action<T> action);
+    IElseIf<T> ElseIf(Func<T, bool> condition, Action<T> action);
+    void EndIf();
+}
+
+public interface IElse<T, TResult>
+{
+    IEnumerable<TResult> Else(Func<T, TResult> map);
+}
+
                select resultSelector(firstItem, secondItem);
     }
 

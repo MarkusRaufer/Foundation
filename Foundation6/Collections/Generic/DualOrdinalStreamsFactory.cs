@@ -26,7 +26,6 @@ public static class DualOrdinalStreamsFactory
 
         var streams = new DualOrdinalStreams<TLeft, TRight>();
 
-        // TODO: Enumerate
         foreach (var (counter, item) in items.Enumerate())
         {
             if (predicate(item))
