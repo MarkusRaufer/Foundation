@@ -1880,14 +1880,14 @@ public class EnumerableExtensionsTests
     {
         var numbers = Enumerable.Range(1, 5);
 
-        var replaced = numbers.Replace(new[] { (1, 20), (3, 40) }, n => n.ToString()).ToArray();
+        var modified = numbers.Replace(new[] { (1, 20), (3, 40) }, n => n.ToString()).ToArray();
 
-        Assert.AreEqual(5, replaced.Length);
-        Assert.AreEqual("1", replaced[0]);
-        Assert.AreEqual("20", replaced[1]);
-        Assert.AreEqual("3", replaced[2]);
-        Assert.AreEqual("40", replaced[3]);
-        Assert.AreEqual("5", replaced[4]);
+        Assert.AreEqual(5, modified.Length);
+        Assert.AreEqual("1", modified[0]);
+        Assert.AreEqual("20", modified[1]);
+        Assert.AreEqual("3", modified[2]);
+        Assert.AreEqual("40", modified[3]);
+        Assert.AreEqual("5", modified[4]);
     }
 
     [Test]
@@ -1895,14 +1895,14 @@ public class EnumerableExtensionsTests
     {
         var numbers = Enumerable.Range(1, 5);
 
-        var replaced = numbers.Replace((_, n) => 0 == n % 2 ? n * 10 : n).ToArray();
+        var modified = numbers.Replace((_, n) => 0 == n % 2 ? n * 10 : n).ToArray();
 
-        Assert.AreEqual(5, replaced.Length);
-        Assert.AreEqual(1, replaced[0]);
-        Assert.AreEqual(20, replaced[1]);
-        Assert.AreEqual(3, replaced[2]);
-        Assert.AreEqual(40, replaced[3]);
-        Assert.AreEqual(5, replaced[4]);
+        Assert.AreEqual(5, modified.Length);
+        Assert.AreEqual(1, modified[0]);
+        Assert.AreEqual(20, modified[1]);
+        Assert.AreEqual(3, modified[2]);
+        Assert.AreEqual(40, modified[3]);
+        Assert.AreEqual(5, modified[4]);
     }
 
     [Test]
@@ -1911,13 +1911,13 @@ public class EnumerableExtensionsTests
         var numberOfElements = 3;
         var numbers = Enumerable.Range(1, numberOfElements);
 
-        var replaced = numbers.Replace(x => x % 2 == 0, replaced => 0, 2).ToArray();
+        var modified = numbers.Replace(x => x % 2 == 0, replaced => 0, 2).ToArray();
 
-        replaced.Length.Should().Be(numberOfElements);
+        modified.Length.Should().Be(numberOfElements);
 
-        replaced[0].Should().Be(1);
-        replaced[1].Should().Be(0);
-        replaced[2].Should().Be(3);
+        modified[0].Should().Be(1);
+        modified[1].Should().Be(0);
+        modified[2].Should().Be(3);
     }
 
     [Test]
@@ -1926,20 +1926,20 @@ public class EnumerableExtensionsTests
         var numberOfElements = 10;
         var numbers = Enumerable.Range(1, numberOfElements);
 
-        var replaced = numbers.Replace(x => x % 2 == 0, replaced => 0, 2).ToArray();
+        var modified = numbers.Replace(x => x % 2 == 0, replaced => 0, numberOfReplacements: 2).ToArray();
 
-        replaced.Length.Should().Be(numberOfElements);
+        modified.Length.Should().Be(numberOfElements);
 
-        replaced[0].Should().Be(1);
-        replaced[1].Should().Be(0);
-        replaced[2].Should().Be(3);
-        replaced[3].Should().Be(0);
-        replaced[4].Should().Be(5);
-        replaced[5].Should().Be(6);
-        replaced[6].Should().Be(7);
-        replaced[7].Should().Be(8);
-        replaced[8].Should().Be(9);
-        replaced[9].Should().Be(10);
+        modified[0].Should().Be(1);
+        modified[1].Should().Be(0);
+        modified[2].Should().Be(3);
+        modified[3].Should().Be(0);
+        modified[4].Should().Be(5);
+        modified[5].Should().Be(6);
+        modified[6].Should().Be(7);
+        modified[7].Should().Be(8);
+        modified[8].Should().Be(9);
+        modified[9].Should().Be(10);
     }
 
     [Test]

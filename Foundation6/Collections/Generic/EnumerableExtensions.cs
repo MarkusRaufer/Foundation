@@ -9,193 +9,6 @@ using System.Text;
 
 public static class EnumerableExtensions
 {
-    private class ElseIf<T> : IElseIf<T>
-    {
-        private readonly IEnumerable<T> _items;
-
-        public ElseIf(IEnumerable<T> items)
-        {
-            _items = items.ThrowIfNull();
-        }
-
-        public IEnumerable<T> Else() => _items;
-
-        public IEnumerable<T> Else(Action<T> action)
-        {
-            foreach (var item in _items)
-            {
-                action(item);
-                yield return item;
-            }
-        }
-
-        public void EndIf()
-        {
-            foreach (var _ in Else())
-            {
-            }
-        }
-
-        IElseIf<T> IElseIf<T>.ElseIf(Func<T, bool> condition, Action<T> action)
-        {
-            return _items.If(condition, action);
-        }
-    }
-
-    private class ElseResult<T, TResult> : IElse<T, TResult>
-    {
-        private readonly IEnumerable<T> _items;
-        private readonly Func<T, bool> _predicate;
-        private readonly Func<T, TResult> _mapIf;
-
-        public ElseResult(
-            IEnumerable<T> items,
-            Func<T, bool> predicate,
-            Func<T, TResult> mapIf)
-        {
-            _items = items.ThrowIfNull();
-            _predicate = predicate.ThrowIfNull();
-            _mapIf = mapIf.ThrowIfNull();
-        }
-
-        public IEnumerable<TResult> Else(Func<T, TResult> map)
-        {
-            foreach (var item in _items)
-            {
-                yield return _predicate(item) ? _mapIf(item) : map(item);
-            }
-        }
-    }
-
-    /// <summary>
-    /// Adds an item if the list is empty.
-    /// </summary>
-    /// <typeparam name="T"></typeparam>
-    /// <param name="items"></param>
-    /// <param name="item"></param>
-    /// <returns></returns>
-    public static IEnumerable<T> AddIfEmpty<T>(this IEnumerable<T> items, Func<T> factory)
-    {
-        factory.ThrowIfNull();
-
-        var it = items.GetEnumerator();
-        if (!it.MoveNext())
-        {
-            yield return factory();
-        }
-        else
-        {
-            yield return it.Current;
-
-            while (it.MoveNext()) yield return it.Current;
-        }
-    }
-
-    /// <summary>
-    /// Executes action after every item except the last one.
-    /// </summary>
-    /// <typeparam name="T"></typeparam>
-    /// <param name="items"></param>
-    /// <param name="action"></param>
-    /// <returns></returns>
-    /// <exception cref="ArgumentNullException"></exception>
-    public static IEnumerable<T> AfterEach<T>(this IEnumerable<T> items, Action action)
-    {
-        action.ThrowIfNull();
-
-        var it = items.GetEnumerator();
-        var next = it.MoveNext();
-        while (next)
-        {
-            yield return it.Current;
-
-            next = it.MoveNext();
-            if (next)
-                action();
-        }
-    }
-
-    /// <summary>
-    /// Executes action after every item except the last one.
-    /// </summary>
-    /// <typeparam name="T"></typeparam>
-    /// <param name="items"></param>
-    /// <param name="action">The parameter is the item before the action.</param>
-    /// <returns>List of items</returns>
-    public static IEnumerable<T> AfterEach<T>(this IEnumerable<T> items, Action<T> action)
-    {
-        action.ThrowIfNull();
-
-        var it = items.GetEnumerator();
-        var next = it.MoveNext();
-        while (next)
-        {
-            var prevItem = it.Current;
-            yield return prevItem;
-
-            next = it.MoveNext();
-            if (next)
-                action(prevItem);
-        }
-    }
-
-    /// <summary>
-    /// Executes action after first item except there is no second item.
-    /// </summary>
-    /// <typeparam name="T">The type of the items</typeparam>
-    /// <param name="items">List of items</param>
-    /// <param name="action">The action which is executed after the first item.</param>
-    /// <returns></returns>
-    public static IEnumerable<T> AfterFirst<T>(this IEnumerable<T> items, Action action)
-    {
-        action.ThrowIfNull();
-
-        var it = items.ThrowIfNull()
-                      .GetEnumerator();
-
-        if (!it.MoveNext()) yield break;
-        var first = it.Current;
-        yield return first;
-
-        if (!it.MoveNext()) yield break;
-        action();
-        yield return it.Current;
-
-        while (it.MoveNext())
-        {
-            yield return it.Current;
-        }
-    }
-
-    /// <summary>
-    /// Executes action after first item only if there is a second item.
-    /// </summary>
-    /// <typeparam name="T">Type of item</typeparam>
-    /// <param name="items">List of items</param>
-    /// <param name="action">The action which is executed after the first item.
-    /// The argument is the first item.</param>
-    /// <returns></returns>
-    public static IEnumerable<T> AfterFirst<T>(this IEnumerable<T> items, Action<T> action)
-    {
-        action.ThrowIfNull();
-
-        var it = items.ThrowIfNull()
-                      .GetEnumerator();
-
-        if (!it.MoveNext()) yield break;
-        var first = it.Current;
-        yield return first;
-
-        if (!it.MoveNext()) yield break;
-        action(first);
-        yield return it.Current;
-
-        while (it.MoveNext())
-        {
-            yield return it.Current;
-        }
-    }
-
     /// <summary>
     /// Aggregates elements like standard LINQ.
     /// The first element is taken as seed and can be transformed.
@@ -513,17 +326,6 @@ public static class EnumerableExtensions
         {
             if (!set.Add(item)) yield return item;
         }
-    }
-
-    /// <summary>
-    /// Returns an empty enumerable if items is null.
-    /// </summary>
-    /// <typeparam name="T"></typeparam>
-    /// <param name="items"></param>
-    /// <returns></returns>
-    public static IEnumerable<T> EmptyIfNull<T>(this IEnumerable<T> items)
-    {
-        return items ?? Enumerable.Empty<T>();
     }
 
     /// <summary>
@@ -1008,97 +810,6 @@ public static class EnumerableExtensions
         }
 
         while (hasNext && it.MoveNext())
-        {
-            yield return it.Current;
-        }
-    }
-
-    public static IElseIf<T> If<T>(
-        this IEnumerable<T> items,
-        Func<T, bool> predicate,
-        Action<T> action)
-    {
-        predicate.ThrowIfNull();
-        action.ThrowIfNull();
-
-        var @else = Enumerable.Empty<T>();
-
-        foreach (var item in items)
-        {
-            if (predicate(item))
-            {
-                action(item);
-                continue;
-            }
-            @else = @else.Append(item);
-        }
-        return new ElseIf<T>(@else);
-    }
-
-    public static IElse<T, TResult> If<T, TResult>(
-        this IEnumerable<T> items,
-        Func<T, bool> predicate, 
-        Func<T, TResult> map)
-    {
-        predicate.ThrowIfNull();
-        map.ThrowIfNull();
-
-        return new ElseResult<T, TResult>(items, predicate, map);
-    }
-
-    /// <summary>
-    /// Returns rhs if rhs is empty.
-    /// </summary>
-    /// <typeparam name="T"></typeparam>
-    /// <param name="lhs"></param>
-    /// <param name="rhs"></param>
-    /// <returns></returns>
-    public static IEnumerable<T> IfEmpty<T>(this IEnumerable<T> lhs, IEnumerable<T> rhs)
-    {
-        rhs.ThrowIfNull();
-
-        var lIt = lhs.GetEnumerator();
-        if (!lIt.MoveNext())
-        {
-            foreach (var r in rhs)
-            {
-                yield return r;
-            }
-            yield break;
-        }
-
-        yield return lIt.Current;
-
-        while (lIt.MoveNext())
-        {
-            yield return lIt.Current;
-        }
-    }
-
-    /// <summary>
-    /// If lhs is empty it returns the items from factory otherwise items.
-    /// </summary>
-    /// <typeparam name="T"></typeparam>
-    /// <param name="items"></param>
-    /// <param name="whenEmpty"></param>
-    /// <returns></returns>
-    public static IEnumerable<T> IfEmpty<T>(this IEnumerable<T> items, Func<IEnumerable<T>> whenEmpty)
-    {
-        whenEmpty.ThrowIfNull();
-
-        var it = items.GetEnumerator();
-        if (!it.MoveNext())
-        {
-            foreach (var x in whenEmpty())
-            {
-                yield return x;
-            }
-            yield break;
-        }
-
-        yield return it.Current;
-
-        while (it.MoveNext())
         {
             yield return it.Current;
         }
@@ -2108,239 +1819,6 @@ public static class EnumerableExtensions
     }
 
     /// <summary>
-    /// Calls action on each element.
-    /// </summary>
-    /// <typeparam name="T"></typeparam>
-    /// <param name="items"></param>
-    /// <param name="action"></param>
-    /// <returns></returns>
-    public static IEnumerable<T> OnEach<T>(this IEnumerable<T> items, Action<T> action)
-    {
-        action.ThrowIfNull();
-
-        foreach (var item in items.ThrowIfNull())
-        {
-            action(item);
-            yield return item;
-        }
-    }
-
-    /// <summary>
-    /// Calls action if items is empty.
-    /// </summary>
-    /// <typeparam name="T"></typeparam>
-    /// <param name="items"></param>
-    /// <param name="action"></param>
-    /// <returns></returns>
-    public static IEnumerable<T> OnEmpty<T>(this IEnumerable<T> items, Action action)
-    {
-        action.ThrowIfNull();
-
-        var it = items.ThrowIfNull()
-                      .GetEnumerator();
-
-        if (!it.MoveNext())
-        {
-            action();
-            yield break;
-        }
-        yield return it.Current;
-
-        while (it.MoveNext())
-        {
-            yield return it.Current;
-        }
-    }
-
-    /// <summary>
-    /// If list is empty onEmpty is called. After returning the single value the iteration stops.
-    /// If the list is not empty it behaves as normal IEnumerable<typeparamref name="T"/>
-    /// </summary>
-    /// <typeparam name="T">Type of items.</typeparam>
-    /// <param name="items">List of items.</param>
-    /// <param name="onEmpty">Factory method which is called if list of items is empty.</param>
-    /// <returns>List of items.</returns>
-    public static IEnumerable<T> OnEmpty<T>(this IEnumerable<T> items, Func<T> onEmpty)
-    {
-        onEmpty.ThrowIfNull();
-
-        var it = items.ThrowIfNull()
-                      .GetEnumerator();
-
-        if (!it.MoveNext())
-        {
-            yield return onEmpty();
-            yield break;
-        }
-        yield return it.Current;
-
-        while (it.MoveNext())
-        {
-            yield return it.Current;
-        }
-    }
-
-    /// <summary>
-    /// Returns a value if list is empty. After returning the single value the iteration stops.
-    /// If the list is not empty it behaves as normal IEnumerable<typeparamref name="T"/>
-    /// </summary>
-    /// <typeparam name="T">Type of items.</typeparam>
-    /// <typeparam name="TResult">Type of returned items.</typeparam>
-    /// <param name="items">List of items.</param>
-    /// <param name="onEmpty">Is called if list is empty.</param>
-    /// <param name="onNotEmpty">Is called if list is not empty.</param>
-    /// <returns>List of items.</returns>
-    public static IEnumerable<TResult> OnEmpty<T, TResult>(this IEnumerable<T> items, Func<TResult> onEmpty, Func<T, TResult> onNotEmpty)
-    {
-        onEmpty.ThrowIfNull();
-        onNotEmpty.ThrowIfNull();
-
-        var it = items.ThrowIfNull()
-                      .GetEnumerator();
-
-        if (!it.MoveNext())
-        {
-            yield return onEmpty();
-            yield break;
-        }
-        yield return onNotEmpty(it.Current);
-
-        while (it.MoveNext())
-        {
-            yield return onNotEmpty(it.Current);
-        }
-    }
-
-    /// <summary>
-    /// Calls action on first item.
-    /// </summary>
-    /// <typeparam name="T"></typeparam>
-    /// <param name="items"></param>
-    /// <param name="action"></param>
-    /// <returns></returns>
-    public static IEnumerable<T> OnFirst<T>(this IEnumerable<T> items, Action action)
-    {
-        action.ThrowIfNull();
-
-        var it = items.ThrowIfNull()
-                      .GetEnumerator();
-
-        if (!it.MoveNext()) yield break;
-        action();
-        yield return it.Current;
-
-        while (it.MoveNext())
-        {
-            yield return it.Current;
-        }
-    }
-
-    /// <summary>
-    /// Is called on first item.
-    /// </summary>
-    /// <typeparam name="T">Type of items.</typeparam>
-    /// <param name="items">List of items</param>
-    /// <param name="action">Is called on first item.</param>
-    /// <returns></returns>
-    public static IEnumerable<T> OnFirst<T>(this IEnumerable<T> items, Action<T> action)
-    {
-        action.ThrowIfNull();
-
-        var it = items.ThrowIfNull()
-                      .GetEnumerator();
-
-        if (!it.MoveNext()) yield break;
-
-        action(it.Current);
-        yield return it.Current;
-
-        while (it.MoveNext())
-        {
-            yield return it.Current;
-        }
-    }
-
-    /// <summary>
-    /// Calls action on last item.
-    /// </summary>
-    /// <typeparam name="T"></typeparam>
-    /// <param name="items"></param>
-    /// <param name="action"></param>
-    /// <returns></returns>
-    public static IEnumerable<T> OnLast<T>(this IEnumerable<T> items, Action action)
-    {
-        action.ThrowIfNull();
-
-        var it = items.ThrowIfNull()
-                      .GetEnumerator();
-
-        if (it.MoveNext())
-        {
-            while (true)
-            {
-                yield return it.Current;
-                if (!it.MoveNext())
-                {
-                    action();
-                    yield break;
-                }
-            }
-        }
-    }
-
-    /// <summary>
-    /// Calls action on last item.
-    /// </summary>
-    /// <typeparam name="T"></typeparam>
-    /// <param name="items"></param>
-    /// <param name="action"></param>
-    /// <returns></returns>
-    public static IEnumerable<T> OnLast<T>(this IEnumerable<T> items, Action<T> action)
-    {
-        action.ThrowIfNull();
-
-        var it = items.ThrowIfNull()
-                      .GetEnumerator();
-
-        if (it.MoveNext())
-        {
-            while (true)
-            {
-                var last = it.Current;
-                yield return last;
-                if (!it.MoveNext())
-                {
-                    action(last);
-                    yield break;
-                }
-            }
-        }
-    }
-
-    /// <summary>
-    /// Calls action when reached an index during iteration.
-    /// </summary>
-    /// <typeparam name="T"></typeparam>
-    /// <param name="items"></param>
-    /// <param name="index"></param>
-    /// <param name="action"></param>
-    /// <returns></returns>
-    public static IEnumerable<T> OnNth<T>(this IEnumerable<T> items, int index, Action<T> action)
-    {
-        action.ThrowIfNull();
-
-        var counter = 0;
-        foreach (var item in items.ThrowIfNull())
-        {
-            if (index == counter)
-                action(item);
-
-            yield return item;
-            counter++;
-        }
-    }
-
-    /// <summary>
     /// Returns adjacent items as tuples.
     /// </summary>
     /// <typeparam name="T"></typeparam>
@@ -2728,34 +2206,37 @@ public static class EnumerableExtensions
     }
 
     /// <summary>
-    /// Returns items only if all projections do have a value (are Option.Some).
+    /// Returns items only if all items have a valid predicate.
     /// </summary>
     /// <typeparam name="T"></typeparam>
     /// <typeparam name="TResult"></typeparam>
     /// <param name="items"></param>
     /// <param name="project"></param>
-    /// <returns>Returns an empty list if not all projections are Option.Some.</returns>
+    /// <returns>Returns an empty list if not all items have a valid predicate.</returns>
     public static IEnumerable<TResult> SelectAll<T, TResult>(
-        this IEnumerable<T> items, 
-        Func<T, Option<TResult>> project)
+        this IEnumerable<T> items,
+        Func<T, bool> predicate,
+        Func<T, TResult> project)
     {
+        predicate.ThrowIfNull();
         project.ThrowIfNull();
 
-        var results = Enumerable.Empty<TResult>();
-        var notAllItems = false;
-
+        var all = true;
         foreach (var item in items.ThrowIfNull())
         {
-            var opt = project(item);
-            if (opt.IsNone)
+            if(!predicate(item))
             {
-                notAllItems = true;
+                all = false;
                 break;
             }
-            results = results.Append(opt.OrThrow());
         }
 
-        return notAllItems ? Enumerable.Empty<TResult>() : results;
+        if (!all) yield break;
+
+        foreach (var item in items)
+        {
+            yield return project(item);
+        }
     }
 
     /// <summary>
@@ -2810,9 +2291,10 @@ public static class EnumerableExtensions
     /// <returns></returns>
     public static IEnumerable<T> SelectSome<T>(this IEnumerable<Option<T>> items)
     {
-        return items.ThrowIfNull()
-                    .Where(item => item.IsSome)
-                    .Select(opt => opt.OrThrow());
+        foreach(var item in items)
+        {
+            if (item.TryGet(out var value)) yield return value;
+        }
     }
 
     /// <summary>
@@ -2822,7 +2304,7 @@ public static class EnumerableExtensions
     /// <param name="items"></param>
     /// <param name="predicate"></param>
     /// <returns></returns>
-    public static Option<T> SingleAsOpt<T>(this IEnumerable<T> items)
+    public static Option<T> SingleAsOption<T>(this IEnumerable<T> items)
     {
         var it = items.ThrowIfNull()
                       .GetEnumerator();
@@ -3295,120 +2777,6 @@ public static class EnumerableExtensions
     }
 
     /// <summary>
-    /// Throws an ArgumentNullException when an element is null.
-    /// Use this method only for value objects with small collections because the check is done in an eager way.
-    /// Don't use <see cref="ThrowIfElementNull"/> for general collections because of performance reasons and also to keep the collection lazy. 
-    /// Attention: This method runs into an endless loop when using with a generator!
-    /// </summary>
-    /// <typeparam name="T"></typeparam>
-    /// <param name="items"></param>
-    /// <returns></returns>
-    /// <exception cref="ArgumentNullException"></exception>
-    public static IEnumerable<T> ThrowIfElementNull<T>(this IEnumerable<T> items)
-    {
-        return items.Any(x => null == x) ? throw new ArgumentNullException(nameof(items)) : items;
-    }
-
-    /// <summary>
-    /// Throws an ArgumentNullException if items is empty.
-    /// </summary>
-    /// <typeparam name="T"></typeparam>
-    /// <param name="items"></param>
-    /// <returns></returns>
-    public static IEnumerable<T> ThrowIfEmpty<T>(this IEnumerable<T> items, [CallerArgumentExpression("items")] string name = "")
-    {
-        return ThrowIfEmpty(items, () => new ArgumentOutOfRangeException(name));
-    }
-
-    /// <summary>
-    /// Throws an Exception if items is empty.
-    /// </summary>
-    /// <typeparam name="T"></typeparam>
-    /// <param name="items"></param>
-    /// <param name="exceptionFactory"></param>
-    /// <returns></returns>
-    public static IEnumerable<T> ThrowIfEmpty<T>(this IEnumerable<T> items, Func<Exception> exceptionFactory)
-    {
-        if (!items.Any())
-        {
-            var exception = exceptionFactory() ?? throw new ArgumentNullException("returned null", nameof(exceptionFactory));
-            throw exception;
-        }
-        return items;
-    }
-
-    /// <summary>
-    /// Throws an Exception if items is null.
-    /// </summary>
-    /// <typeparam name="T"></typeparam>
-    /// <param name="items"></param>
-    /// <param name="name"></param>
-    /// <returns></returns>
-    public static IEnumerable<T> ThrowIfNull<T>(this IEnumerable<T> items, [CallerArgumentExpression("items")] string name = "")
-    {
-        return ThrowIfNull(items, () => new ArgumentNullException(name));
-    }
-
-    /// <summary>
-    /// Throws an Exception if items is null.
-    /// </summary>
-    /// <typeparam name="T"></typeparam>
-    /// <param name="items"></param>
-    /// <param name="exceptionFactory">This creates an exception when items is null.</param>
-    /// <returns></returns>
-    public static IEnumerable<T> ThrowIfNull<T>(this IEnumerable<T> items, Func<Exception> exceptionFactory)
-    {
-        if (items is null) throw exceptionFactory() ?? throw new ArgumentNullException("returned null", nameof(exceptionFactory));
-        
-        return items;
-    }
-
-    /// <summary>
-    /// Throws an Exception if items is null or empty.
-    /// </summary>
-    /// <typeparam name="T"></typeparam>
-    /// <param name="items"></param>
-    /// <param name="name"></param>
-    /// <returns></returns>
-    public static IEnumerable<T> ThrowIfNullOrEmpty<T>(this IEnumerable<T> items, [CallerArgumentExpression("items")] string name = "")
-    {
-        return items.ThrowIfNull()
-                    .ThrowIfEmpty();
-    }
-
-    /// <summary>
-    /// Throws an Exception if items is null or empty.
-    /// </summary>
-    /// <typeparam name="T"></typeparam>
-    /// <param name="items"></param>
-    /// <param name="exceptionFactory"></param>
-    /// <returns></returns>
-    /// <exception cref="ArgumentException"></exception>
-    public static IEnumerable<T> ThrowIfNullOrEmpty<T>(this IEnumerable<T> items, Func<Exception> exceptionFactory)
-    {
-        exceptionFactory.ThrowIfNull();
-
-        return items.ThrowIfNull(exceptionFactory)
-                    .ThrowIfEmpty(exceptionFactory);
-    }
-
-    /// <summary>
-    /// Returns <paramref name="numberOfElements"/> if items contains exactly <paramref name="numberOfElements"/> or throws an excption.
-    /// </summary>
-    /// <typeparam name="T"></typeparam>
-    /// <param name="items"></param>
-    /// <param name="numberOfElements"></param>
-    /// <returns></returns>
-    /// <exception cref="ArgumentException">is thrown when number of elements differs from  <paramref name="numberOfElements"/></exception>
-    public static IEnumerable<T> ThrowIfNumberNotExact<T>(this IEnumerable<T> items, int numberOfElements)
-    {
-        if (!items.TakeExact(numberOfElements).Any()) 
-            throw new ArgumentException($"items does not have exact {numberOfElements} elements");
-
-        return items;
-    }
-
-    /// <summary>
     /// Makes the enumerable interruptible. This can be used for nested foreach loops.
     /// </summary>
     /// <typeparam name="T"></typeparam>
@@ -3418,17 +2786,6 @@ public static class EnumerableExtensions
     public static IEnumerable<T> ToBreakable<T>(this IEnumerable<T> items, ref ObservableValue<bool> stop)
     {
         return new BreakableEnumerable<T>(items.ThrowIfNull(), ref stop);
-    }
-
-    /// <summary>
-    /// Returns an empty enumerable if items is null.
-    /// </summary>
-    /// <typeparam name="T"></typeparam>
-    /// <param name="items"></param>
-    /// <returns></returns>
-    public static IEnumerable<T> ToEmptyIfNull<T>(this IEnumerable<T>? items)
-    {
-        return items ?? Enumerable.Empty<T>();
     }
 
     public static IMultiValueMap<TKey, T> ToMultiValueMap<T, TKey>(this IEnumerable<T> items, Func<T, TKey> keySelector)
