@@ -17,6 +17,14 @@ public static class EnumerableTransformations
         return new BreakableEnumerable<T>(items.ThrowIfNull(), ref stop);
     }
 
+    /// <summary>
+    /// Creates a <see cref="IMultiValueMap{TKey, TValue}"/> from an enumerable.
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <typeparam name="TKey"></typeparam>
+    /// <param name="items"></param>
+    /// <param name="keySelector"></param>
+    /// <returns></returns>
     public static IMultiValueMap<TKey, T> ToMultiValueMap<T, TKey>(this IEnumerable<T> items, Func<T, TKey> keySelector)
         where TKey : notnull
     {
@@ -42,6 +50,16 @@ public static class EnumerableTransformations
         return dictionary;
     }
 
+    /// <summary>
+    /// Creates from a list with duplicate keys (n : m => relationship) a list with unique keys and multiple values (1 : n => relationship).
+    /// </summary>
+    /// <typeparam name="TSource"></typeparam>
+    /// <typeparam name="TLhs"></typeparam>
+    /// <typeparam name="TRhs"></typeparam>
+    /// <param name="source"></param>
+    /// <param name="lhsSelector"></param>
+    /// <param name="rhsSelector"></param>
+    /// <returns></returns>
     public static IEnumerable<KeyValuePair<TLhs, IEnumerable<TRhs>>> ToOneToMany<TSource, TLhs, TRhs>(
         this IEnumerable<TSource> source,
         Func<TSource, TLhs> lhsSelector,
@@ -65,7 +83,7 @@ public static class EnumerableTransformations
     }
 
     /// <summary>
-    /// Normalizes a one to many collection to one to one.
+    /// Normalizes a one to many collection (n : m => relationship) to one to one (1 : n => relationship).
     /// 
     /// A -> [1, 2, 3]
     /// B -> [4, 5]
@@ -102,13 +120,13 @@ public static class EnumerableTransformations
     }
 
     /// <summary>
-    /// Creates optional items from items.
+    /// Transforms items from T to Option<TResult>. If T could not transformed to TResult a Option.None is returned.
     /// </summary>
     /// <typeparam name="T"></typeparam>
     /// <param name="items"></param>
     /// <param name="project"></param>
     /// <returns></returns>
-    public static IEnumerable<Option<TResult>> ToOptionals<T, TResult>(
+    public static IEnumerable<Option<TResult>> ToOptions<T, TResult>(
         this IEnumerable<T> items,
         Func<T, Option<TResult>> project)
     {
@@ -156,12 +174,5 @@ public static class EnumerableTransformations
     {
         items.ThrowIfNull();
         return new ReadOnlyCollection<T>(items, count);
-    }
-
-    public static string[] ToStringArray<T>(this IEnumerable<T> enumerable)
-    {
-        return enumerable.ThrowIfNull()
-                         .Select(item => item.ToStringOrEmpty())
-                         .ToArray();
     }
 }
