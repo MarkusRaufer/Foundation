@@ -13,7 +13,8 @@ public static class ArrayValue
 }
 
 /// <summary>
-/// This is an immutable array that compares each element on <see cref="Equals(ArrayValue{T})"/>.
+/// This is an immutable array that acts like a value. ArrayValue compares each element and its position on <see cref="Equals(ArrayValue{T})"/>.
+/// <see cref="GetHashCode"/> considers all elements and their position.
 /// That enables the comparison of two arrays.
 /// </summary>
 /// <typeparam name="T"></typeparam>
