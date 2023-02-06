@@ -131,11 +131,11 @@ public static class EnumerableConditionals
     }
 
     /// <summary>
-    /// Returns rhs if rhs is empty.
+    /// Returns alternative elements if enumerable is empty..
     /// </summary>
     /// <typeparam name="T"></typeparam>
-    /// <param name="lhs"></param>
-    /// <param name="rhs"></param>
+    /// <param name="lhs">if not empty this elements are the result</param>
+    /// <param name="rhs">Alternative elements are the result if lhs is empty.</param>
     /// <returns></returns>
     public static IEnumerable<T> IfEmpty<T>(this IEnumerable<T> lhs, IEnumerable<T> rhs)
     {
@@ -160,11 +160,11 @@ public static class EnumerableConditionals
     }
 
     /// <summary>
-    /// If lhs is empty it returns the items from factory otherwise items.
+    /// If lhs is empty it returns the items from <see cref="whenEmpty"/> otherwise items.
     /// </summary>
     /// <typeparam name="T"></typeparam>
     /// <param name="items"></param>
-    /// <param name="whenEmpty"></param>
+    /// <param name="whenEmpty">Is called when items is empty.</param>
     /// <returns></returns>
     public static IEnumerable<T> IfEmpty<T>(this IEnumerable<T> items, Func<IEnumerable<T>> whenEmpty)
     {
@@ -189,7 +189,7 @@ public static class EnumerableConditionals
     }
 
     /// <summary>
-    /// Throws an ArgumentNullException when an element is null.
+    /// Throws an ArgumentNullException if an element of the enumerable is null.
     /// Use this method only for value objects with small collections because the check is done in an eager way.
     /// Don't use <see cref="ThrowIfElementNull"/> for general collections because of performance reasons and also to keep the collection lazy. 
     /// Attention: This method runs into an endless loop when using with a generator!
@@ -204,7 +204,7 @@ public static class EnumerableConditionals
     }
 
     /// <summary>
-    /// Throws an ArgumentNullException if items is empty.
+    /// Throws an ArgumentNullException if the enumerable is empty.
     /// </summary>
     /// <typeparam name="T"></typeparam>
     /// <param name="items"></param>

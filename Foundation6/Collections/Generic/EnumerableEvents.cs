@@ -115,6 +115,24 @@ public static class EnumerableEvents
     /// <param name="items"></param>
     /// <param name="action"></param>
     /// <returns></returns>
+    public static IEnumerable<T> OnEach<T>(this IEnumerable<T> items, Action action)
+    {
+        action.ThrowIfNull();
+
+        foreach (var item in items.ThrowIfNull())
+        {
+            action();
+            yield return item;
+        }
+    }
+
+    /// <summary>
+    /// Calls action on each element.
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <param name="items"></param>
+    /// <param name="action"></param>
+    /// <returns></returns>
     public static IEnumerable<T> OnEach<T>(this IEnumerable<T> items, Action<T> action)
     {
         action.ThrowIfNull();
