@@ -363,7 +363,7 @@ public static class EnumerableEvents
     }
 
     /// <summary>
-    /// Calls action when reached one of the indices during iteration.
+    /// Calls action when reached the indices during iteration.
     /// </summary>
     /// <typeparam name="T"></typeparam>
     /// <param name="items"></param>
