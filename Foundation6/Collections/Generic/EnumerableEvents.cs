@@ -1,5 +1,8 @@
 ﻿namespace Foundation.Collections.Generic;
 
+/// <summary>
+/// Extends IEnumerable with LINQ like events.
+/// </summary>
 public static class EnumerableEvents
 {
 
@@ -353,6 +356,31 @@ public static class EnumerableEvents
         {
             if (index == counter)
                 action(item);
+
+            yield return item;
+            counter++;
+        }
+    }
+
+    /// <summary>
+    /// Calls action when reached one of the indices during iteration.
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <param name="items"></param>
+    /// <param name="indices"></param>
+    /// <param name="action"></param>
+    /// <returns></returns>
+    public static IEnumerable<T> OnNths<T>(this IEnumerable<T> items, IEnumerable<int> indices, Action<int, T> action)
+    {
+        action.ThrowIfNull();
+
+        var counter = 0;
+        var idx = indices.ToArray();
+
+        foreach (var item in items.ThrowIfNull())
+        {
+            if (idx.Contains(counter))
+                action(counter, item);
 
             yield return item;
             counter++;
