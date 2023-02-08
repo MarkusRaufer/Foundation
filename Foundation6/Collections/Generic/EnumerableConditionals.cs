@@ -188,6 +188,52 @@ public static class EnumerableConditionals
         }
     }
 
+    public static IEnumerable<T> IfMoreOrEqualThan<T>(this IEnumerable<T> items, int numberOfItems)
+    {
+        var it = items.ThrowIfNull().GetEnumerator();
+        if (0 >= numberOfItems) yield break;
+
+        var minimum = new List<T>();
+        while (it.MoveNext())
+        {
+            minimum.Add(it.Current);
+            if (minimum.Count == numberOfItems) break;
+        }
+
+        if (0 == minimum.Count || minimum.Count < numberOfItems) yield break;
+
+        foreach (var item in minimum)
+            yield return item;
+
+        while (it.MoveNext())
+        {
+            yield return it.Current;
+        }
+    }
+
+    public static IEnumerable<T> IfMoreThan<T>(this IEnumerable<T> items, int numberOfItems)
+    {
+        var it = items.ThrowIfNull().GetEnumerator();
+        if (0 >= numberOfItems) yield break;
+
+        var minimum = new List<T>();
+        while(it.MoveNext())
+        {
+            minimum.Add(it.Current);
+            if (minimum.Count > numberOfItems) break;
+        }
+
+        if (0 == minimum.Count) yield break;
+
+        foreach (var item in minimum)
+            yield return item;
+
+        while (it.MoveNext())
+        {
+            yield return it.Current;
+        }
+    }
+
     /// <summary>
     /// Throws an ArgumentNullException if an element of the enumerable is null.
     /// Use this method only for value objects with small collections because the check is done in an eager way.

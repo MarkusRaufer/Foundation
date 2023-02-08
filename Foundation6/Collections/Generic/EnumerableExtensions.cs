@@ -956,6 +956,23 @@ public static class EnumerableExtensions
     }
 
     /// <summary>
+    /// The ignored item does not appear in the result.
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <param name="items"></param>
+    /// <param name="ignoredItem">The item which is filtered.</param>
+    /// <returns></returns>
+    public static IEnumerable<T> Ignore<T>(this IEnumerable<T> items, T ignoredItem)
+    {
+        foreach (var item in items.ThrowIfNull())
+        {
+            if (item.EqualsNullable(ignoredItem)) continue;
+
+            yield return item;
+        }
+    }
+
+    /// <summary>
     /// Only items withing the range are returned. If the position is greater than the range end it stops.
     /// </summary>
     /// <typeparam name="T"></typeparam>

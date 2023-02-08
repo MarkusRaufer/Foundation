@@ -653,78 +653,6 @@ public class EnumerableExtensionsTests
     }
 
     [Test]
-    public void If_Should_ExecuteAction_When_Predicate_IsTrue()
-    {
-        {
-            var items = Enumerable.Range(1, 6);
-            var ifItems = new List<int>();
-
-            var elseItems = items.If(item => item < 4, ifItems.Add)
-                                 .Else()
-                                 .ToArray();
-
-            CollectionAssert.AreEqual(Enumerable.Range(1, 3), ifItems);
-            CollectionAssert.AreEqual(Enumerable.Range(4, 3), elseItems);
-        }
-        {
-            var items = Enumerable.Range(1, 6);
-            var ifItems = new List<int>();
-
-            var elseIfItems = new List<int>();
-            var elseItems = items.If(item => item < 3, ifItems.Add)
-                                 .ElseIf(item => item < 5, elseIfItems.Add)
-                                 .Else()
-                                 .ToArray();
-
-            CollectionAssert.AreEqual(Enumerable.Range(1, 2), ifItems);
-            CollectionAssert.AreEqual(Enumerable.Range(3, 2), elseIfItems);
-            CollectionAssert.AreEqual(Enumerable.Range(5, 2), elseItems);
-        }
-
-        {
-            var items = Enumerable.Range(1, 6);
-            var ifItems = new List<int>();
-            var elseIfItems = new List<int>();
-
-            items.If(item => item < 3, ifItems.Add)
-                 .ElseIf(item => item < 5, elseIfItems.Add)
-                 .EndIf();
-
-            CollectionAssert.AreEqual(Enumerable.Range(1, 2), ifItems);
-            CollectionAssert.AreEqual(Enumerable.Range(3, 2), elseIfItems);
-        }
-    }
-
-    [Test]
-    public void If_Should_ReturnMappedValues_When_Predicate_IsTrue()
-    {
-        {
-            var numbers = Enumerable.Range(1, 6);
-
-            var actual = numbers.If(n => n % 2 == 0, n => n * 10)
-                                .Else(n => n).ToArray();
-
-            var expected = new[] { 1, 20, 3, 40, 5, 60 };
-
-            Assert.AreEqual(expected.Length, actual.Length);
-            Assert.AreEqual(expected[0], actual[0]);
-            Assert.AreEqual(expected[1], actual[1]);
-            Assert.AreEqual(expected[2], actual[2]);
-            Assert.AreEqual(expected[3], actual[3]);
-            Assert.AreEqual(expected[4], actual[4]);
-            Assert.AreEqual(expected[5], actual[5]);
-        }
-
-        {
-            var numbers = Enumerable.Range(1, 6);
-
-            var strings = numbers.If(n => 3 > n, n => n.ToString())
-                                 .Else(n => $"{n * 10}").ToArray();
-
-        }
-    }
-
-    [Test]
     public void Ignore_Should_Ignore_Items_When_Match_On_Indices()
     {
         var numbers = Enumerable.Range(0, 10);
@@ -2206,26 +2134,6 @@ public class EnumerableExtensionsTests
         Assert.AreEqual(2, foundNumbers.Length);
         Assert.AreEqual(2, foundNumbers[0]);
         Assert.AreEqual(5, foundNumbers[1]);
-    }
-
-    [Test]
-    public void ThrowIfNumberNotExact_Should_ReturnNumberOfElements_When_ExactNumberOfElements_Exist()
-    {
-        var numberOfElems = 10;
-        var numbers = Enumerable.Range(1, numberOfElems);
-
-        var exactNumberOfElems = numbers.ThrowIfNumberNotExact(numberOfElems).ToArray();
-        Assert.AreEqual(numberOfElems, exactNumberOfElems.Length);
-    }
-
-    [Test]
-    public void ThrowIfNumberNotExact_Should_ThrowException_When_NumberOfElements_IsDifferent()
-    {
-        var numberOfElems = 10;
-        var numbers = Enumerable.Range(1, numberOfElems).ToArray();
-
-        Assert.Throws<ArgumentException>(() => numbers.ThrowIfNumberNotExact(numberOfElems - 1).ToArray());
-        Assert.Throws<ArgumentException>(() => numbers.ThrowIfNumberNotExact(numberOfElems + 1).ToArray());
     }
 
     [Test]
