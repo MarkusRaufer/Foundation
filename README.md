@@ -1,4 +1,6 @@
-# Foundation
+<!--![Logo](Logo.png)  ![FontLogo](FontLogo.png)-->
+
+<img src="Logo.png" width="200" alt="Logo"/> <img src="FontLogo.png" alt="FontLogo">
 
 **Foundation** is an extension framework to **.NET**.
 
