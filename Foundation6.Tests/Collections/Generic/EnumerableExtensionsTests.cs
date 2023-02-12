@@ -621,35 +621,33 @@ public class EnumerableExtensionsTests
     }
 
     [Test]
-    public void HasNelements_Should_ReturnFalse_When_LessElementsInListAsNumberOfElements()
+    public void HasAtLeast_Should_ReturnFalse_When_LessElementsInListAsNumberOfElements()
     {
         var numbers = new[] { 1, 2 };
-        var has3Elements = false;
-        void action()
-        {
-            has3Elements = true;
-        }
 
-        var result = numbers.HasNelements(3, action).ToArray();
-        
-        has3Elements.Should().BeFalse();
-        result.Length.Should().Be(2);
+        var result = numbers.HasAtLeast(3);
+
+        result.Should().BeFalse();
     }
 
     [Test]
-    public void HasNelements_Should_ReturnTrue_When_NumberOfElementsInList()
+    public void HasAtLeast_Should_ReturnTrue_When_NumberOfElementsInListIsEqual()
     {
         var numbers = new[] { 1, 2, 3 };
-        var has3Elements = false;
-        void action()
-        {
-            has3Elements = true;
-        }
 
-        var result = numbers.HasNelements(2, action).ToArray();
+        var result = numbers.HasAtLeast(3);
 
-        has3Elements.Should().BeTrue();
-        result.Length.Should().Be(3);
+        result.Should().BeTrue();
+    }
+
+    [Test]
+    public void HasAtLeast_Should_ReturnTrue_When_NumberOfElementsInListIsGreater()
+    {
+        var numbers = new[] { 1, 2, 3 };
+ 
+        var result = numbers.HasAtLeast(2);
+
+        result.Should().BeTrue();
     }
 
     [Test]

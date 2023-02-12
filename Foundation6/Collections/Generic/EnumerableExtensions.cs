@@ -781,38 +781,27 @@ public static class EnumerableExtensions
     }
 
     /// <summary>
-    /// Calls action if items has <see cref="=numberOfElements"/>.
+    /// Returns if the list has at least numberOfElements.
     /// </summary>
     /// <typeparam name="T">Type of list elements.</typeparam>
     /// <param name="items">List of items.</param>
     /// <param name="numberOfElements">The number of elements</param>
     /// <param name="action">action which is called if numberOfElements is reached.</param>
     /// <returns></returns>
-    public static IEnumerable<T> HasNelements<T>(this IEnumerable<T> items, int numberOfElements, Action action)
+    public static bool HasAtLeast<T>(this IEnumerable<T> items, int numberOfElements)
     {
-        action.ThrowIfNull();
-        numberOfElements.ThrowIfOutOfRange(() => 0 > numberOfElements);
+        if (0 > numberOfElements) return false;
 
-        int counter = 1;
-        var it = items.GetEnumerator();
-        var hasNext = false;
-        while(hasNext = it.MoveNext())
+        int counter = 0;
+        var it = items.ThrowIfNull().GetEnumerator();
+        while(it.MoveNext())
         {
-            yield return it.Current;
-            
-            if (counter == numberOfElements)
-            {
-                action();
-                break;
-            }
-
             counter++;
+
+            if (counter >= numberOfElements) break;
         }
 
-        while (hasNext && it.MoveNext())
-        {
-            yield return it.Current;
-        }
+        return counter >= numberOfElements;
     }
 
     /// <summary>

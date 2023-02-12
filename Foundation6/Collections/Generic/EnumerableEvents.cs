@@ -351,14 +351,26 @@ public static class EnumerableEvents
     {
         action.ThrowIfNull();
 
+        var it = items.ThrowIfNull().GetEnumerator();
         var counter = 0;
-        foreach (var item in items.ThrowIfNull())
+        bool hasNext;
+        while (hasNext = it.MoveNext())
         {
             if (index == counter)
-                action(item);
+            {
+                action(it.Current);
+                break;
+            }
 
-            yield return item;
+            yield return it.Current;
             counter++;
+        }
+
+        if (!hasNext) yield break;
+
+        while(it.MoveNext())
+        {
+            yield return it.Current;
         }
     }
 
