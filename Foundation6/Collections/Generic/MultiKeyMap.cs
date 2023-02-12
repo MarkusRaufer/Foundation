@@ -128,18 +128,6 @@ namespace Foundation.Collections.Generic
 
         IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
 
-        public bool Remove(TKey key)
-        {
-            if (!_keys.TryGetValues(key, out var tuples)) return false;
-
-            foreach(var tuple in tuples)
-            {
-                _values.Remove(tuple);
-            }
-
-            return true;
-        }
-
         public IEnumerable<TKey> GetKeys(IEnumerable<TValue> values)
         {
             var valueArr = values.ToArray();
@@ -160,6 +148,19 @@ namespace Foundation.Collections.Generic
                 if(_values.TryGetValue(tuple, out var value))
                     yield return value;
             }
+        }
+
+        public bool Remove(TKey key)
+        {
+            if (!_keys.TryGetValues(key, out var tuples)) return false;
+
+            foreach (var tuple in tuples.ToArray())
+            {
+                _keys.Remove(tuple.Key, tuple);
+                _values.Remove(tuple);
+            }
+
+            return true;
         }
 
         public bool Remove(KeyValuePair<TKey, TValue> item)
@@ -184,7 +185,7 @@ namespace Foundation.Collections.Generic
 
             foreach(var tuple in remove)
             {
-                _keys.Remove(Pair.New(item.Key, tuple));
+                _keys.Remove(item.Key, tuple);
             }
 
             return removed;
