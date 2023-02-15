@@ -50,11 +50,12 @@ namespace Foundation.Benchmark
             return _lhs.ExceptWithDuplicatesSorted(_rhs).ToArray();
         }
 
-        [Benchmark]
-        public int[] ExceptWithDuplicatesSorted_WithComparer()
-        {
-            return _lhs.ExceptWithDuplicatesSorted(_rhs, _comparer).ToArray();
-        }
+
+        //[Benchmark]
+        //public int[] ExceptWithDuplicatesSorted_WithComparer()
+        //{
+        //    return _lhs.ExceptWithDuplicatesSorted(_rhs, _comparer).ToArray();
+        //}
 
         //[Benchmark]
         //public int[] SymmetricDifference()

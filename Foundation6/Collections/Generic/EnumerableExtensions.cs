@@ -2,9 +2,13 @@
 
 using Foundation;
 using Foundation.ComponentModel;
+using System;
 using System.ComponentModel;
+using System.Data;
+using System.Net.Http.Headers;
 //using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
 using System.Text;
 
 public static class EnumerableExtensions
@@ -283,7 +287,7 @@ public static class EnumerableExtensions
         if (null == items) throw new ArgumentNullException(nameof(items));
 
         var set = new HashSet<T>();
-        foreach(var item in items)
+        foreach (var item in items)
         {
             if (!set.Add(item)) yield return item;
         }
@@ -476,7 +480,7 @@ public static class EnumerableExtensions
         lhsKeySelector.ThrowIfNull();
         rhsKeySelector.ThrowIfNull();
         resultSelector.ThrowIfNull();
-        
+
         var hashedRhs = new HashSet<TKey>(rhs.Select(rhsKeySelector));
         return lhs.Where(l => !hashedRhs.Contains(lhsKeySelector(l))).Select(resultSelector);
     }
@@ -492,21 +496,32 @@ public static class EnumerableExtensions
     /// <returns></returns>
     public static IEnumerable<T> ExceptWithDuplicates<T>(this IEnumerable<T> lhs, IEnumerable<T> rhs)
     {
-        var lhsMap = new MultiValueMap<NullableKey<T>, T>();
-        lhs.ForEach(x => lhsMap.Add(NullableKey.New(x), x));
-
-        var rhsMap = new MultiValueMap<NullableKey<T>, T>();
-        rhs.ForEach(x => rhsMap.Add(NullableKey.New(x), x));
-
-        foreach (var left in lhsMap)
+        var right = new Dictionary<NullableKey<T>, (int l, int r)>();
+        foreach (var r in rhs)
         {
-            if (rhsMap.TryGetValue(left.Key, out T? right))
+            var key = NullableKey.New(r);
+            if (right.TryGetValue(key, out var tuple))
             {
-                rhsMap.Remove(left.Key, right!);
+                tuple.r++;
+                right[key] = tuple;
                 continue;
             }
 
-            yield return left.Value;
+            right[key] = (0, 1);
+        }
+
+        foreach (var left in lhs)
+        {
+            var key = NullableKey.New(left);
+            if (right.TryGetValue(key, out var tuple))
+            {
+                tuple.l++;
+                right[key] = tuple;
+
+                if (tuple.l <= tuple.r) continue;
+            }
+
+            yield return left;
         }
     }
 
@@ -522,87 +537,47 @@ public static class EnumerableExtensions
     public static IEnumerable<T> ExceptWithDuplicatesSorted<T>(this IEnumerable<T> lhs, IEnumerable<T> rhs)
         where T : IComparable<T>
     {
-        var lhsList = lhs.ToArray();
-        var rhsList = rhs.ToArray();
-        Array.Sort(lhsList);
-        Array.Sort(rhsList);
-
-        var index = 0;
-        var length = rhsList.Length;
-        var notInRhs = false;
-        T? prev = default;
-
-        foreach (var left in lhsList.OnFirst(x => prev = x))
+        var lhsArray = lhs.ToArray();
+        var rhsArray = rhs.ToArray();
+        Array.Sort(lhsArray);
+        Array.Sort(rhsArray);
+        
+        var rhsMaxIndex = rhsArray.Length - 1;
+        var rhsIndex = 0;
+        for(var i = 0; i < lhsArray.Length; i++)
         {
-            if (!prev.EqualsNullable(left))
+            var left = lhsArray[i];
+            if(rhsIndex > rhsMaxIndex)
             {
-                notInRhs = false;
-                index = 0;
-                length = rhsList.Length;
+                yield return left;
+                continue;
             }
 
-            if (!notInRhs)
+            var right = rhsArray[rhsIndex];
+            
+            var compare = left.CompareTo(right);
+            if(-1 == compare)
             {
-                var foundIndex = Array.BinarySearch(rhsList, index, length, left);
-                if (-1 < foundIndex)
-                {
-                    index = foundIndex + 1;
-                    length = rhsList.Length - index;
-
-                    prev = left;
-                    continue;
-                }
-                notInRhs = true;
+                yield return left;
+                continue;
             }
-            prev = left;
-            yield return left;
-        }
-    }
-
-    /// <summary>
-    /// Returns all elements from <paramref name="lhs"/> which are not in <paramref name="rhs"/> including duplicates.
-    /// </summary>
-    /// <typeparam name="T"></typeparam>
-    /// <param name="lhs"></param>
-    /// <param name="rhs"></param>
-    /// <param name="comparer"></param>
-    /// <returns></returns>
-    public static IEnumerable<T> ExceptWithDuplicatesSorted<T>(this IEnumerable<T> lhs, IEnumerable<T> rhs, IComparer<T> comparer)
-    {
-        var lhsList = lhs.ToArray();
-        var rhsList = rhs.ToArray();
-        Array.Sort(lhsList, comparer);
-        Array.Sort(rhsList, comparer);
-
-        var index = 0;
-        var length = rhsList.Length;
-        var notInRhs = false;
-        T? prev = default;
-
-        foreach (var left in lhsList.OnFirst(x => prev = x))
-        {
-            if (!prev.EqualsNullable(left))
+            if(0 == compare)
             {
-                notInRhs = false;
-                index = 0;
-                length = rhsList.Length;
+                rhsIndex++;
+                continue;
             }
 
-            if (!notInRhs)
+            do
             {
-                var foundIndex = Array.BinarySearch(rhsList, index, length, left);
-                if (-1 < foundIndex)
-                {
-                    index = foundIndex + 1;
-                    length = rhsList.Length - index;
+                rhsIndex++;
+                if (rhsIndex > rhsMaxIndex) break;
 
-                    prev = left;
-                    continue;
-                }
-                notInRhs = true;
-            }
-            prev = left;
-            yield return left;
+                right = rhsArray[rhsIndex];
+
+                compare = left.CompareTo(right);
+                if (0 == compare) rhsIndex++;
+
+            } while (1 > compare);
         }
     }
 
@@ -1214,8 +1189,6 @@ public static class EnumerableExtensions
         if (null == lhs) return null == rhs;
         if (null == rhs) return false;
 
-        if(typeof(T).ImplementsGenericInterface(typeof(IComparable<T>)))
-            return !lhs.SymmetricDifference(rhs, retainDuplicates: true).Any();
         return !lhs.SymmetricDifference(rhs, retainDuplicates: true).Any();
     }
 
@@ -2514,35 +2487,6 @@ public static class EnumerableExtensions
         }
 
         return lhs.ExceptWithDuplicatesSorted(rhs).Concat(rhs.ExceptWithDuplicatesSorted(lhs));
-    }
-
-    /// <summary>
-    /// Returns the symmetric difference of two lists.
-    /// </summary>
-    /// <typeparam name="T"></typeparam>
-    /// <param name="lhs"></param>
-    /// <param name="rhs"></param>
-    /// <param name="comparer"></param>
-    /// <param name="retainDuplicates">If true then duplicates are taken into account.</param>
-    /// <returns></returns>
-    public static IEnumerable<T> SymmetricDifferenceSorted<T>(
-        this IEnumerable<T> lhs,
-        IEnumerable<T> rhs,
-        IComparer<T> comparer,
-        bool retainDuplicates = false)
-    {
-        lhs.ThrowIfNull();
-        rhs.ThrowIfNull();
-        comparer.ThrowIfNull();
-
-        if (!retainDuplicates)
-        {
-            var set = new HashSet<T>(lhs);
-            set.SymmetricExceptWith(rhs);
-            return set;
-        }
-
-        return lhs.ExceptWithDuplicatesSorted(rhs, comparer).Concat(rhs.ExceptWithDuplicatesSorted(lhs, comparer));
     }
 
     /// <summary>
