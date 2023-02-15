@@ -73,7 +73,5 @@ public interface IReadOnlyMultiValueMap<TKey, TValue> : IEnumerable<KeyValuePair
     /// </summary>
     public int KeyCount { get; }
 
-    bool TryGetValue(TKey key, [MaybeNullWhen(false)] out TValue? value);
-
     bool TryGetValues(TKey key, out IEnumerable<TValue> values);
 }

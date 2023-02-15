@@ -58,7 +58,7 @@ namespace Foundation.Collections.Generic
             }
             set
             {
-                if (!((IDictionary<TKey, KeyTuple>)_keys).TryGetValue(key, out var tuple))
+                if (!_keys.TryGetValue(key, out var tuple))
                     tuple = new KeyTuple(key, 0);
 
                 _values[tuple] = value;
@@ -143,7 +143,7 @@ namespace Foundation.Collections.Generic
         {
             foreach(var key in keys)
             {
-                if (!((IDictionary<TKey, KeyTuple>)_keys).TryGetValue(key, out var tuple)) continue;
+                if (!_keys.TryGetValue(key, out var tuple)) continue;
 
                 if(_values.TryGetValue(tuple, out var value))
                     yield return value;
@@ -193,7 +193,7 @@ namespace Foundation.Collections.Generic
 
         public bool TryGetValue(TKey key, [MaybeNullWhen(false)] out TValue value)
         {
-            if (!((IDictionary<TKey, KeyTuple>)_keys).TryGetValue(key, out var tuple))
+            if (!_keys.TryGetValue(key, out var tuple))
             {
                 value = default;
                 return false;

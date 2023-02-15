@@ -143,7 +143,7 @@ public class ObservableMultiMapDecorator<TKey, TValue>
     public bool RemoveValue(TValue value, IEnumerable<TKey> keys) => _map.RemoveValue(value, keys);
 
     public bool TryGetValue(TKey key, [MaybeNullWhen(false)] out TValue value)
-        => ((IReadOnlyMultiValueMap<TKey, TValue>)_map).TryGetValue(key, out value);
+        => _map.TryGetValue(key, out value);
 
     public bool TryGetValues(TKey key, out IEnumerable<TValue> values) => _map.TryGetValues(key, out values);
 
