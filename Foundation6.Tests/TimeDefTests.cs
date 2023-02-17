@@ -22,11 +22,8 @@ namespace Foundation
                         TimeDef.FromDay(day));
 
             //2016.07.18
-            var sut2 = new TimeDef.And(
-                        new TimeDef.And(
-                            TimeDef.FromYear(year),
-                            TimeDef.FromMonth(month)),
-                        TimeDef.FromDay(day));
+            var sut2 = TimeDef.ChainByAnd(TimeDef.FromYear(year), 
+                                          TimeDef.FromMonth(month));
 
             var result = sut1.Equals(sut2);
             Assert.IsTrue(result);

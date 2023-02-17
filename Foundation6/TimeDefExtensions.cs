@@ -29,6 +29,13 @@ public static class TimeDefExtensions
         yield return union.Rhs;
     }
 
+    /// <summary>
+    /// Chains timeDefs by a binary TimeDef.
+    /// </summary>
+    /// <param name="timeDefs"></param>
+    /// <param name="binaryOperationFactory"></param>
+    /// <returns></returns>
+    /// <exception cref="ArgumentOutOfRangeException"></exception>
     public static TimeDef Chain(this IEnumerable<TimeDef> timeDefs, Func<TimeDef, TimeDef, TimeDef> binaryOperationFactory)
     {
         binaryOperationFactory.ThrowIfNull();
@@ -46,11 +53,21 @@ public static class TimeDefExtensions
         return lhs;
     }
 
+    /// <summary>
+    /// Chains timeDefs by And.
+    /// </summary>
+    /// <param name="timeDefs"></param>
+    /// <returns></returns>
     public static TimeDef ChainByAnd(this IEnumerable<TimeDef> timeDefs)
     {
         return Chain(timeDefs, (l, r) => new TimeDef.And(l, r));
     }
 
+    /// <summary>
+    /// Chains timeDefs by Or.
+    /// </summary>
+    /// <param name="timeDefs"></param>
+    /// <returns></returns>
     public static TimeDef ChainByOr(this IEnumerable<TimeDef> timeDefs)
     {
         return Chain(timeDefs, (l, r) => new TimeDef.Or(l, r));

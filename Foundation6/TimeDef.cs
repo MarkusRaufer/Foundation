@@ -31,8 +31,18 @@ public abstract record TimeDef
 
     #region factory methods
 
+    /// <summary>
+    /// Chains timeDefs by And.
+    /// </summary>
+    /// <param name="timeDefs"></param>
+    /// <returns></returns>
     public static TimeDef ChainByAnd(params TimeDef[] timeDefs) => timeDefs.ChainByAnd();
 
+    /// <summary>
+    /// Chains timeDefs by Or.
+    /// </summary>
+    /// <param name="timeDefs"></param>
+    /// <returns></returns>
     public static TimeDef ChainByOr(params TimeDef[] timeDefs) => timeDefs.ChainByOr();
 
     public static TimeDef FromDate(int year, int month, int day)
