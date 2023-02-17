@@ -151,6 +151,29 @@ public static class EnumerableExtensions
         return search.Overlaps(lhs);
     }
 
+    /// <summary>
+    /// compares to lists of integers.
+    /// </summary>
+    /// <param name="lhs"></param>
+    /// <param name="rhs"></param>
+    /// <returns></returns>
+    public static int CompareTo(this IEnumerable<int> lhs, IEnumerable<int> rhs)
+    {
+        var lhsArray = lhs.ToArray();
+        var rhsArray = rhs.ToArray();
+        Array.Sort(lhsArray);
+        Array.Sort(rhsArray);
+
+        var i = 0;
+        var j = 0;
+        for(; i < lhsArray.Length && j < rhsArray.Length; i++, j++)
+        {
+            var cmp = lhsArray[i].CompareTo(rhsArray[j]);
+            if (0 != cmp) return cmp;
+        }
+
+        return i.CompareTo(j);
+    }
 
     /// <summary>
     /// Correlates to lists by a selector.

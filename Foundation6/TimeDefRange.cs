@@ -8,7 +8,7 @@ public class TimeDefRange : TimeDefVisitor
     {
         ArgumentNullException.ThrowIfNull(td);
 
-        if (Greatest.IsNone || Greatest.OrThrow().Compare(td) == -1)
+        if (!Greatest.TryGet(out var timeDef) || timeDef.CompareTo(td) == -1)
             Greatest = Option.Some(td);
 
         return true;
@@ -16,7 +16,7 @@ public class TimeDefRange : TimeDefVisitor
 
     protected bool SetSmallest(TimeDef td)
     {
-        if (Smallest.IsNone || Smallest.OrThrow().Compare(td) == 1)
+        if (!Smallest.TryGet(out var timeDef) || timeDef.CompareTo(td) == 1)
             Smallest = Option.Some(td);
 
         return true;

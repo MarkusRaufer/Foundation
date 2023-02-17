@@ -1,5 +1,6 @@
 ﻿using Foundation.Collections.Generic;
 using Microsoft.VisualBasic;
+using System.Linq;
 
 namespace Foundation;
 
@@ -122,13 +123,73 @@ public static class TimeDefExtensions
         };
     }
 
-    public static int Compare(this TimeDef lhs, TimeDef rhs)
+    public static bool IsBinaryTimeDef(this TimeDef timedef)
     {
-        var leftWeight = TimeDefHelper.ChronologicalOrderWeight(lhs);
-        var rightWeight = TimeDefHelper.ChronologicalOrderWeight(rhs);
-        if (leftWeight < rightWeight) return -1;
-        if (leftWeight > rightWeight) return 1;
-        return 0;
+        return timedef switch
+        {
+            TimeDef.And or
+            TimeDef.Difference or
+            TimeDef.Or or
+            TimeDef.Union => true,
+            _ => false
+        };
+    }
+
+    public static bool IsQuantityTimeDef(this TimeDef timedef)
+    {
+        return timedef switch
+        {
+            TimeDef.Days or
+            TimeDef.Hours or
+            TimeDef.Minutes or
+            TimeDef.Weeks or
+            TimeDef.Months or
+            TimeDef.Years => true,
+            _ => false
+        };
+    }
+
+    public static bool IsSpanTimeDef(this TimeDef timedef)
+    {
+        return timedef switch
+        {
+            TimeDef.DateSpan or
+            TimeDef.DateTimeSpan or
+            TimeDef.Timespan => true,
+            _ => false
+        };
+    }
+
+    public static bool IsValueCollectionTimeDef(this TimeDef timedef)
+    {
+        return timedef switch
+        {
+            TimeDef.Day or
+            TimeDef.Hour or
+            TimeDef.Minute or
+            TimeDef.Weekday or
+            TimeDef.WeekOfMonth or
+            TimeDef.Month or
+            TimeDef.Year => true,
+            _ => false
+        };
+    }
+
+    public static bool IsValueTimeDef(this TimeDef timedef)
+    {
+        return timedef switch
+        {
+            TimeDef.DateSpan or
+            TimeDef.DateTimeSpan or
+            TimeDef.Days or
+            TimeDef.Hours or
+            TimeDef.Minutes or
+            TimeDef.Timespan or
+            TimeDef.Weeks or
+            TimeDef.Months or
+            TimeDef.Years => true,
+            _ => false
+        };
     }
 }
 

@@ -1,4 +1,6 @@
-﻿namespace Foundation
+﻿using System.Runtime.CompilerServices;
+
+namespace Foundation
 {
     public static class DateOnlyExtensions
     {
@@ -6,6 +8,12 @@
         {
             return DateOnly.FromDateTime(date.ToDateTime().Add(span));
         }
+
+        public static TimeSpan Subtract(this DateOnly date, DateOnly subtract)
+            => TimeSpan.FromDays(date.DayNumber - subtract.DayNumber);
+
+        public static DateOnly Subtract(this DateOnly date, TimeSpan span)
+            => DateOnly.FromDateTime(date.ToDateTime().Subtract(span));
 
         public static DateTime ToDateTime(this DateOnly date)
         {

@@ -2,6 +2,8 @@
 
 public static class TimeOnlyExtensions
 {
+    public static TimeSpan Subtract(this TimeOnly time, TimeOnly subtract) => TimeSpan.FromTicks(time.Ticks - subtract.Ticks);
+    
     public static TimeOnly Subtract(this TimeOnly time, TimeSpan span) => new(time.Ticks - span.Ticks);
 
     public static DateTime ToDateTime(this TimeOnly time)

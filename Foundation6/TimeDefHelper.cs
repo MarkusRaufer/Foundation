@@ -1,4 +1,6 @@
-﻿namespace Foundation;
+﻿using static Foundation.TimeDef;
+
+namespace Foundation;
 
 public static class TimeDefHelper
 {
@@ -6,56 +8,71 @@ public static class TimeDefHelper
     {
         return timedef switch
         {
-            TimeDef.Minute or TimeDef.Minutes or TimeDef.Timespan => 0,
-            TimeDef.Hour or TimeDef.Hours => 1,
-            TimeDef.Day or TimeDef.Days => 2,
-            TimeDef.Weekday or TimeDef.WeekOfMonth or TimeDef.Weeks => 3,
-            TimeDef.Month or TimeDef.Months => 4,
-            TimeDef.Year or TimeDef.Years => 5,
-            _ => 6
+            Minute => 0,
+            Minutes => 1,
+            Hour => 2,
+            Hours => 3,
+            Timespan => 4,
+            Day => 5,
+            Days => 6,
+            Weekday => 7,
+            WeekOfMonth => 8,
+            Weeks => 9,
+            TimeDef.Month => 10,
+            Months => 11,
+            Year => 12,
+            Years => 13,
+            Difference => 14,
+            Union => 15,
+            Or => 16,
+            And => 17,
+            _ => throw new NotImplementedException($"{timedef}")
         };
     }
 
-    public static int Compare(TimeDef lhs, TimeDef rhs)
-    {
-        var lhsWeight = ValueTimeDefSortOrderWeight(lhs);
-        var rhsWeight = ValueTimeDefSortOrderWeight(rhs);
+    //public static int Compare(TimeDef lhs, TimeDef rhs)
+    //{
+    //    var lhsWeight = ValueTimeDefSortOrderWeight(lhs);
+    //    var rhsWeight = ValueTimeDefSortOrderWeight(rhs);
 
-        return lhsWeight.CompareTo(rhsWeight);
-    }
+    //    return lhsWeight.CompareTo(rhsWeight);
+    //}
 
-    public static bool IsSpanTimeDef(TimeDef timedef)
+    public static TimeSpan GetValueOfSpanTimeDef(TimeDef timedef)
     {
         return timedef switch
         {
-            TimeDef.DateSpan or
-            TimeDef.DateTimeSpan or
-            TimeDef.Timespan => true,
-            _ => false
+            DateSpan td => td.To.Subtract(td.From),
+            DateTimeSpan td => td.To.Subtract(td.From),
+            Timespan td => td.To.Subtract(td.From),
+            _ => TimeSpan.Zero
         };
     }
 
-    public static bool IsValueTimeDef(TimeDef timedef)
+    public static object GetValueOfValueTimeDef(TimeDef timedef)
     {
         return timedef switch
         {
-            TimeDef.DateSpan or
-            TimeDef.DateTimeSpan or
-            TimeDef.Day or
-            TimeDef.Days or
-            TimeDef.Hour or
-            TimeDef.Hours or
-            TimeDef.Minute or
-            TimeDef.Minutes or
-            TimeDef.Timespan or
-            TimeDef.Weekday or
-            TimeDef.WeekOfMonth or
-            TimeDef.Weeks or
-            TimeDef.Month or
-            TimeDef.Months or
-            TimeDef.Year or
-            TimeDef.Years => true,
-            _ => false
+            DateSpan td => td.To.Subtract(td.From),
+            DateTimeSpan td => td.To.Subtract(td.From),
+            QuantityTimeDef td => td.Quantity,
+            Timespan td => td.To.Subtract(td.From),
+            _ => 0
+        };
+    }
+
+    public static IEnumerable<int> GetValuesOfValueCollectionTimeDef(TimeDef timedef)
+    {
+        return timedef switch
+        {
+            Day td => td.DaysOfMonth,
+            Hour td => td.HoursOfDay,
+            Minute td => td.MinutesOfHour,
+            TimeDef.Month td => td.MonthsOfYear.Cast<int>(),
+            Weekday td => td.DaysOfWeek.Cast<int>(),
+            WeekOfMonth td => td.Week.Append((int)td.WeekStartsWith),
+            Year td => td.YearsOfPeriod,
+            _ => Enumerable.Empty<int>()
         };
     }
 

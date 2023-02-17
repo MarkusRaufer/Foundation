@@ -2,31 +2,38 @@
 
 using Foundation.Collections.Generic;
 using System.Diagnostics;
+using static Foundation.TimeDef;
 
 public abstract record TimeDef
 {
+    #region abstracts
+    public abstract record BinaryTimeDef(TimeDef Lhs, TimeDef Rhs) : TimeDef;
+    public abstract record QuantityTimeDef(int Quantity) : TimeDef;
+    public abstract record SpanTimeDef<T>(T From, T To) : TimeDef;
+    #endregion abstracts
+
     #region time definitions
-    public sealed record And(TimeDef Lhs, TimeDef Rhs) : TimeDef;
-    public sealed record DateSpan(DateOnly From, DateOnly To) : TimeDef;
-    public sealed record DateTimeSpan(DateTime From, DateTime To) : TimeDef;
+    public sealed record And(TimeDef Lhs, TimeDef Rhs) : BinaryTimeDef(Lhs, Rhs);
+    public sealed record DateSpan(DateOnly From, DateOnly To) : SpanTimeDef<DateOnly>(From, To);
+    public sealed record DateTimeSpan(DateTime From, DateTime To) : SpanTimeDef<DateTime>(From, To);
     public sealed record Day(NonEmptyUniqueValues<int> DaysOfMonth) : TimeDef;
-    public sealed record Days(int Quantity) : TimeDef;
-    public sealed record Difference(TimeDef Lhs, TimeDef Rhs) : TimeDef;
+    public sealed record Days(int Quantity) : QuantityTimeDef(Quantity);
+    public sealed record Difference(TimeDef Lhs, TimeDef Rhs) : BinaryTimeDef(Lhs, Rhs);
     public sealed record Hour(NonEmptyUniqueValues<int> HoursOfDay) : TimeDef;
-    public sealed record Hours(int Quantity) : TimeDef;
+    public sealed record Hours(int Quantity) : QuantityTimeDef(Quantity);
     public sealed record Minute(NonEmptyUniqueValues<int> MinutesOfHour) : TimeDef;
-    public sealed record Minutes(int Quantity) : TimeDef;
+    public sealed record Minutes(int Quantity) : QuantityTimeDef(Quantity);
     public sealed record Month(NonEmptyUniqueValues<Foundation.Month> MonthsOfYear) : TimeDef;
-    public sealed record Months(int Quantity) : TimeDef;
+    public sealed record Months(int Quantity) : QuantityTimeDef(Quantity);
     public sealed record Not(TimeDef TimeDef) : TimeDef;
-    public sealed record Or(TimeDef Lhs, TimeDef Rhs) : TimeDef;
-    public sealed record Timespan(TimeOnly From, TimeOnly To) : TimeDef;
-    public sealed record Union(TimeDef Lhs, TimeDef Rhs) : TimeDef;
+    public sealed record Or(TimeDef Lhs, TimeDef Rhs) : BinaryTimeDef(Lhs, Rhs);
+    public sealed record Timespan(TimeOnly From, TimeOnly To) : SpanTimeDef<TimeOnly>(From, To);
+    public sealed record Union(TimeDef Lhs, TimeDef Rhs) : BinaryTimeDef(Lhs, Rhs);
     public sealed record Weekday(NonEmptyUniqueValues<DayOfWeek> DaysOfWeek) : TimeDef;
     public sealed record WeekOfMonth(DayOfWeek WeekStartsWith, NonEmptyUniqueValues<int> Week) : TimeDef;
-    public sealed record Weeks(int Quantity, DayOfWeek WeekStartsWith) : TimeDef;
+    public sealed record Weeks(int Quantity, DayOfWeek WeekStartsWith) : QuantityTimeDef(Quantity);
     public sealed record Year(NonEmptyUniqueValues<int> YearsOfPeriod) : TimeDef;
-    public sealed record Years(int Quantity) : TimeDef;
+    public sealed record Years(int Quantity) : QuantityTimeDef(Quantity);
     #endregion time defintions
 
     #region factory methods

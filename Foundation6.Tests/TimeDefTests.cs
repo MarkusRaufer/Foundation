@@ -1,4 +1,5 @@
-﻿using NUnit.Framework;
+﻿using Foundation.Collections.Generic;
+using NUnit.Framework;
 using System;
 using System.Linq;
 
@@ -23,7 +24,8 @@ namespace Foundation
 
             //2016.07.18
             var sut2 = TimeDef.ChainByAnd(TimeDef.FromYear(year), 
-                                          TimeDef.FromMonth(month));
+                                          TimeDef.FromMonth(month),
+                                          TimeDef.FromDay(day));
 
             var result = sut1.Equals(sut2);
             Assert.IsTrue(result);
