@@ -1,34 +1,39 @@
 ﻿namespace Foundation;
 
 using Foundation.Collections.Generic;
+using System.Diagnostics;
 
 public abstract record TimeDef
 {
     #region time definitions
-    public record And(TimeDef Lhs, TimeDef Rhs) : TimeDef;
-    public record DateSpan(DateOnly From, DateOnly To) : TimeDef;
-    public record DateTimeSpan(DateTime From, DateTime To) : TimeDef;
-    public record Day(NonEmptyUniqueValues<int> DayOfMonth) : TimeDef;
-    public record Days(int Quantity) : TimeDef;
-    public record Difference(TimeDef Lhs, TimeDef Rhs) : TimeDef;
-    public record Hour(NonEmptyUniqueValues<int> HourOfDay) : TimeDef;
-    public record Hours(int Quantity) : TimeDef;
-    public record Minute(NonEmptyUniqueValues<int> MinuteOfHour) : TimeDef;
-    public record Minutes(int Quantity) : TimeDef;
-    public record Month(NonEmptyUniqueValues<Foundation.Month> MonthOfYear) : TimeDef;
-    public record Months(int Quantity) : TimeDef;
-    public record Not(TimeDef TimeDef) : TimeDef;
-    public record Or(TimeDef Lhs, TimeDef Rhs) : TimeDef;
-    public record Timespan(TimeOnly From, TimeOnly To) : TimeDef;
-    public record Union(TimeDef Lhs, TimeDef Rhs) : TimeDef;
-    public record Weekday(NonEmptyUniqueValues<DayOfWeek> DayOfWeek) : TimeDef;
-    public record WeekOfMonth(DayOfWeek WeekStartsWith, NonEmptyUniqueValues<int> Week) : TimeDef;
-    public record Weeks(int Quantity, DayOfWeek WeekStartsWith) : TimeDef;
-    public record Year(NonEmptyUniqueValues<int> YearOfDate) : TimeDef;
-    public record Years(int Quantity) : TimeDef;
+    public sealed record And(TimeDef Lhs, TimeDef Rhs) : TimeDef;
+    public sealed record DateSpan(DateOnly From, DateOnly To) : TimeDef;
+    public sealed record DateTimeSpan(DateTime From, DateTime To) : TimeDef;
+    public sealed record Day(NonEmptyUniqueValues<int> DaysOfMonth) : TimeDef;
+    public sealed record Days(int Quantity) : TimeDef;
+    public sealed record Difference(TimeDef Lhs, TimeDef Rhs) : TimeDef;
+    public sealed record Hour(NonEmptyUniqueValues<int> HoursOfDay) : TimeDef;
+    public sealed record Hours(int Quantity) : TimeDef;
+    public sealed record Minute(NonEmptyUniqueValues<int> MinutesOfHour) : TimeDef;
+    public sealed record Minutes(int Quantity) : TimeDef;
+    public sealed record Month(NonEmptyUniqueValues<Foundation.Month> MonthsOfYear) : TimeDef;
+    public sealed record Months(int Quantity) : TimeDef;
+    public sealed record Not(TimeDef TimeDef) : TimeDef;
+    public sealed record Or(TimeDef Lhs, TimeDef Rhs) : TimeDef;
+    public sealed record Timespan(TimeOnly From, TimeOnly To) : TimeDef;
+    public sealed record Union(TimeDef Lhs, TimeDef Rhs) : TimeDef;
+    public sealed record Weekday(NonEmptyUniqueValues<DayOfWeek> DaysOfWeek) : TimeDef;
+    public sealed record WeekOfMonth(DayOfWeek WeekStartsWith, NonEmptyUniqueValues<int> Week) : TimeDef;
+    public sealed record Weeks(int Quantity, DayOfWeek WeekStartsWith) : TimeDef;
+    public sealed record Year(NonEmptyUniqueValues<int> YearsOfPeriod) : TimeDef;
+    public sealed record Years(int Quantity) : TimeDef;
     #endregion time defintions
 
     #region factory methods
+
+    public static TimeDef ChainByAnd(params TimeDef[] timeDefs) => timeDefs.ChainByAnd();
+
+    public static TimeDef ChainByOr(params TimeDef[] timeDefs) => timeDefs.ChainByOr();
 
     public static TimeDef FromDate(int year, int month, int day)
     {
@@ -41,7 +46,7 @@ public abstract record TimeDef
         var dtMonth = FromMonth(month);
         var dtDay = FromDay(day);
 
-        return new And(new And(dtYear, dtMonth), dtDay);
+        return ChainByAnd(dtYear, dtMonth, dtDay);
     }
 
     public static TimeDef FromDateOnly(DateOnly date)
@@ -56,8 +61,8 @@ public abstract record TimeDef
         var day = new Day(new[] { dateTime.Day });
         var hour = new Hour(new[] { dateTime.Hour });
         var minute = new Minute(new[] { dateTime.Minute });
-
-        return new And(new And(new And(new And(year, month), day), hour), minute);
+        
+        return ChainByAnd(year, month, day, hour, minute);
     }
 
     public static TimeDef FromDay(params int[] day)

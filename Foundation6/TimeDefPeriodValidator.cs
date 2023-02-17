@@ -62,7 +62,7 @@ namespace Foundation
 
         protected override bool VisitDay(TimeDef.Day td)
         {
-            var result = td.DayOfMonth.All(day => _period.ContainsDay(day));
+            var result = td.DaysOfMonth.All(day => _period.ContainsDay(day));
             _results[nameof(TimeDef.Day)] = result;
 
             return result;
@@ -78,7 +78,7 @@ namespace Foundation
 
         protected override bool VisitHour(TimeDef.Hour td)
         {
-            var result = td.HourOfDay.All(hour => _period.ContainsHour(hour));
+            var result = td.HoursOfDay.All(hour => _period.ContainsHour(hour));
             _results[nameof(TimeDef.Hour)] = result;
 
             return result;
@@ -94,7 +94,7 @@ namespace Foundation
 
         protected override bool VisitMinute(TimeDef.Minute td)
         {
-            var result = td.MinuteOfHour.All(minute => _period.ContainsMinute(minute));
+            var result = td.MinutesOfHour.All(minute => _period.ContainsMinute(minute));
             _results[nameof(TimeDef.Minute)] = result;
 
             return result;
@@ -110,7 +110,7 @@ namespace Foundation
 
         protected override bool VisitMonth(TimeDef.Month td)
         {
-            var result = td.MonthOfYear.All(month => _period.ContainsMonth((int)month));
+            var result = td.MonthsOfYear.All(month => _period.ContainsMonth((int)month));
             _results[nameof(TimeDef.Month)] = result;
 
             return result;
@@ -134,7 +134,7 @@ namespace Foundation
 
         protected override bool VisitWeekday(TimeDef.Weekday td)
         {
-            var result = td.DayOfWeek.All(weekday => _period.ContainsWeekday(weekday));
+            var result = td.DaysOfWeek.All(weekday => _period.ContainsWeekday(weekday));
             _results[nameof(TimeDef.Weekday)] = result;
 
             return result;
@@ -150,7 +150,7 @@ namespace Foundation
 
         protected override bool VisitYear(TimeDef.Year td)
         {
-            var result = td.YearOfDate.All(year => _period.ContainsYear(year));
+            var result = td.YearsOfPeriod.All(year => _period.ContainsYear(year));
             _results[nameof(TimeDef.Year)] = result;
 
             return result;

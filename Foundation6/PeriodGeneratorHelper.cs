@@ -51,7 +51,7 @@ public class PeriodGeneratorHelper
 
     public static IPeriodGenerator Day(TimeDef.Day day)
     {
-        return Day(day.DayOfMonth.ToArray());
+        return Day(day.DaysOfMonth.ToArray());
     }
 
     public static IPeriodGenerator Days(int days)
@@ -79,7 +79,7 @@ public class PeriodGeneratorHelper
 
     public static IPeriodGenerator Hour(TimeDef.Hour hour)
     {
-        return Hour(hour.HourOfDay.ToArray());
+        return Hour(hour.HoursOfDay.ToArray());
     }
 
     public static IPeriodGenerator Hours(int hours)
@@ -107,7 +107,7 @@ public class PeriodGeneratorHelper
 
     public static IPeriodGenerator Minute(TimeDef.Minute minute)
     {
-        return Minute(minute.MinuteOfHour.ToArray());
+        return Minute(minute.MinutesOfHour.ToArray());
     }
 
     public static IPeriodGenerator Minutes(int minutes)
@@ -136,7 +136,7 @@ public class PeriodGeneratorHelper
 
     public static IPeriodGenerator Month(TimeDef.Month month)
     {
-        return Month(month.MonthOfYear.ToArray());
+        return Month(month.MonthsOfYear.ToArray());
     }
 
     public static IPeriodGenerator Months(int months)
@@ -244,7 +244,7 @@ public class PeriodGeneratorHelper
 
     public static IPeriodGenerator Weekday(TimeDef.Weekday weekday)
     {
-        return Weekday(weekday.DayOfWeek.ToArray());
+        return Weekday(weekday.DaysOfWeek.ToArray());
     }
 
     public static IPeriodGenerator Weeks(int weeks, DayOfWeek start)
@@ -278,7 +278,7 @@ public class PeriodGeneratorHelper
 
     public static IPeriodGenerator Year(TimeDef.Year year)
     {
-        return Year(year.YearOfDate.ToArray());
+        return Year(year.YearsOfPeriod.ToArray());
     }
 
     public static IPeriodGenerator Years(int years)
