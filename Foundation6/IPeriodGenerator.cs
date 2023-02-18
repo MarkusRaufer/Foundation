@@ -4,4 +4,3 @@ public interface IPeriodGenerator
 {
     IEnumerable<Period> GeneratePeriods(Period period);
 }
-

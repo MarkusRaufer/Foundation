@@ -39,9 +39,9 @@ public abstract record TimeDef
     #region factory methods
 
     /// <summary>
-    /// Chains timeDefs by And.
+    /// Chains a list of <see cref="TimeDef"/> by <see cref="TimeDef.And"/>.
     /// </summary>
-    /// <param name="timeDefs"></param>
+    /// <param name="timeDefs">TimeDef list to chain by <see cref="TimeDef.And"/></param>
     /// <returns></returns>
     public static TimeDef ChainByAnd(params TimeDef[] timeDefs) => timeDefs.ChainByAnd();
 
@@ -73,11 +73,11 @@ public abstract record TimeDef
 
     public static TimeDef FromDateTime(DateTime dateTime)
     {
-        var year = new Year(new[] { dateTime.Year });
-        var month = new Month(new[] { (Foundation.Month)dateTime.Month });
-        var day = new Day(new[] { dateTime.Day });
-        var hour = new Hour(new[] { dateTime.Hour });
-        var minute = new Minute(new[] { dateTime.Minute });
+        var year = FromYear(dateTime.Year);
+        var month = FromMonth((Foundation.Month)dateTime.Month);
+        var day = FromDay(dateTime.Day);
+        var hour = FromHour(dateTime.Hour);
+        var minute = FromMinute(dateTime.Minute);
         
         return ChainByAnd(year, month, day, hour, minute);
     }
@@ -89,11 +89,23 @@ public abstract record TimeDef
         return new Day(day);
     }
 
+    public static TimeDef FromDay(System.Range range)
+    {
+        var days = range.ToEnumerable();
+        return FromDay(days.ToArray());
+    }
+
     public static TimeDef FromHour(params int[] hour)
     {
         if (hour.Any(h => h is < 0 or > 23)) throw new ArgumentOutOfRangeException(nameof(hour), "must be between [0..23]");
 
         return new Hour(hour);
+    }
+
+    public static TimeDef FromHour(System.Range range)
+    {
+        var hours = range.ToEnumerable();
+        return FromHour(hours.ToArray());
     }
 
     public static TimeDef FromMinute(params int[] minute)
@@ -103,9 +115,20 @@ public abstract record TimeDef
         return new Minute(minute);
     }
 
+    public static TimeDef FromMinute(System.Range range)
+    {
+        var minutes = range.ToEnumerable();
+        return FromMinute(minutes.ToArray());
+    }
+
     public static TimeDef FromMonth(params Foundation.Month[] month)
     {
         return new Month(month);
+    }
+
+    public static TimeDef FromMonth(params int[] month)
+    {
+        return new Month(month.Cast<Foundation.Month>().ToArray());
     }
 
     public static TimeDef FromTime(int hour, int minute)
@@ -137,6 +160,12 @@ public abstract record TimeDef
     public static TimeDef FromYear(params int[] year)
     {
         return new Year(year);
+    }
+
+    public static TimeDef FromYear(System.Range range)
+    {
+        var years = range.ToEnumerable();
+        return new Year(years.ToArray());
     }
 
     # endregion factory methods

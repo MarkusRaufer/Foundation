@@ -20,6 +20,40 @@ public static class RangeExtensions
 
         return true;
     }
+
+    public static int[] ToArray(this System.Range range)
+    {
+        var start = range.Start.IsFromEnd ? 0 : range.Start.Value;
+        
+        range.End.ThrowIfOutOfRange(() => range.End.IsFromEnd);
+        var end = range.End.Value;
+
+        var numberOfElements = end - start;
+
+        var arr = new int[numberOfElements];
+        var index = 0;
+        var maxIndex = numberOfElements - 1;
+
+        for (var i = start; index <= maxIndex; i++, index++)
+        {
+            arr[index] = i;
+        }
+
+        return arr;
+    }
+
+    /// <summary>
+    /// Returns a list of integers.
+    /// </summary>
+    /// <param name="range"></param>
+    /// <returns></returns>
+    public static IEnumerable<int> ToEnumerable(this System.Range range)
+    {
+        var start = range.Start.IsFromEnd ? 0 : range.Start.Value;
+        var end = range.End.IsFromEnd ? int.MaxValue : range.End.Value;
+        for(var i = start; i <= end; i++)
+            yield return i;
+    }
 }
 
 public class RangeIntEnumerator

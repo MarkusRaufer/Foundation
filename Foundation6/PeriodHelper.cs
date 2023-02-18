@@ -1,9 +1,32 @@
 ﻿namespace Foundation;
 
 using Foundation.Collections.Generic;
+using static Foundation.TimeDef;
 
 public class PeriodHelper
 {
+    public static IEnumerable<Period> Chop(Period period, TimeDef td)
+    {
+        return td switch
+        {
+            Day _ => period.Days(),
+            Days _ => period.Days(),
+            Hour _ => period.Hours(),
+            Hours _ => period.Hours(),
+            Minute _ => period.Minutes(),
+            Minutes _ => period.Minutes(),
+            TimeDef.Month _ => period.Months(),
+            Months _ => period.Months(),
+            Timespan _ => period.Minutes(),
+            Weekday _ => period.Days(),
+            WeekOfMonth _ => period.Weeks(),
+            Weeks _ => period.Weeks(),
+            Year _ => period.Years(),
+            Years _ => period.Years(),
+            _ => Enumerable.Empty<Period>()
+        };
+    }
+
     public static int Compare(Period lhs, Period rhs, bool emptyIsSmaller = true)
     {
         if (lhs < rhs)

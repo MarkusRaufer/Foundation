@@ -1,4 +1,6 @@
-﻿namespace Foundation;
+﻿using static Foundation.TimeDef;
+
+namespace Foundation;
 
 public class PeriodGenerator : IPeriodGenerator
 {
@@ -23,22 +25,56 @@ public class PeriodGenerator : IPeriodGenerator
 
         return range.Smallest.OrThrow() switch
         {
-            TimeDef.Day _ => period.Days(),
-            TimeDef.Days _ => period.Days(),
-            TimeDef.Hour _ => period.Hours(),
-            TimeDef.Hours _ => period.Hours(),
-            TimeDef.Minute _ => period.Minutes(),
-            TimeDef.Minutes _ => period.Minutes(),
+            Day _ => period.Days(),
+            Days _ => period.Days(),
+            Hour _ => period.Hours(),
+            Hours _ => period.Hours(),
+            Minute _ => period.Minutes(),
+            Minutes _ => period.Minutes(),
             TimeDef.Month _ => period.Months(),
-            TimeDef.Months _ => period.Months(),
-            TimeDef.Timespan _ => period.Minutes(),
-            TimeDef.Weekday _ => period.Days(),
-            TimeDef.WeekOfMonth _ => period.Weeks(),
-            TimeDef.Weeks _ => period.Weeks(),
-            TimeDef.Year _ => period.Years(),
-            TimeDef.Years _ => period.Years(),
+            Months _ => period.Months(),
+            Timespan _ => period.Minutes(),
+            Weekday _ => period.Days(),
+            WeekOfMonth _ => period.Weeks(),
+            Weeks _ => period.Weeks(),
+            Year _ => period.Years(),
+            Years _ => period.Years(),
             _ => Enumerable.Empty<Period>()
         };
     }
 }
 
+public class PeriodGenerator2
+{
+    public IEnumerable<Period> GeneratePeriods<T>(SpanTimeDef<T> span, Period? limit = null)
+    {
+        if(span is SpanTimeDef<DateOnly> dateSpan)
+        {
+            var period = Period.New(dateSpan.From, dateSpan.To);
+            return period.Days();
+        }
+
+        if(span is SpanTimeDef<DateTime> dateTimeSpan)
+        {
+            var period = Period.New(dateTimeSpan.From, dateTimeSpan.To);
+            return period.Days();
+        }
+
+        if (span is SpanTimeDef<TimeOnly> timeSpan)
+        {
+            if(null == limit) return Enumerable.Empty<Period>();
+
+
+            var period = Period.New(timeSpan.From, timeSpan.To);
+
+            var range = new TimeDefRange();
+            range.Visit(timeSpan);
+
+            if (!range.Smallest.TryGet(out var smallest)) return Enumerable.Empty<Period>();
+
+            return PeriodHelper.Chop(limit.Value, smallest);
+        }
+
+        return Enumerable.Empty<Period>();
+    }
+}

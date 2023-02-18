@@ -1,5 +1,4 @@
 ﻿using Foundation.Collections.Generic;
-using System.Runtime.InteropServices;
 
 namespace Foundation;
 
@@ -30,12 +29,7 @@ public static class TimeDefCompareExtensions
             return qLeft.CompareTo(qRight);
         }
 
-        if (lhs.IsSpanTimeDef())
-        {
-            var spanLeft = TimeDefHelper.GetValueOfSpanTimeDef(lhs);
-            var spanRight = TimeDefHelper.GetValueOfSpanTimeDef(rhs);
-            return spanLeft.CompareTo(spanRight);
-        }
+        if (lhs.IsSpanTimeDef()) return lhs.CompareSpanTimeDefs(rhs);
 
         if (lhs.IsValueCollectionTimeDef())
         {
@@ -48,7 +42,6 @@ public static class TimeDefCompareExtensions
         {
             var binRight = (TimeDef.BinaryTimeDef)rhs;
             return binLeft.CompareTo(binRight);
-
         }
         return 0;
     }
@@ -113,7 +106,6 @@ public static class TimeDefCompareExtensions
 
         var leftWeeks = lhs as TimeDef.Weeks;
         var rightWeeks = rhs as TimeDef.Weeks;
-        if (null == leftWeeks && null != rightWeeks) return 0;
 
         if(null != leftWeeks && null != rightWeeks) return leftWeeks.WeekStartsWith.CompareTo(rightWeeks.WeekStartsWith);
         

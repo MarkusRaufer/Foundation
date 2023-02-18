@@ -222,6 +222,21 @@ public static class ObjectExtensions
         return outOfRangePredicate() ? throw new ArgumentOutOfRangeException(paramName) : obj.ThrowIfNull();
     }
 
+    [return: NotNull]
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static T ThrowIfOutOfRange<T>(
+        this T obj,
+        Func<bool> outOfRangePredicate,
+        Func<string> message,
+        [CallerArgumentExpression("obj")] string paramName = "")
+    {
+        message.ThrowIfNull();
+
+        if (outOfRangePredicate()) throw new ArgumentOutOfRangeException(paramName, message());
+        
+        return obj.ThrowIfNull();
+    }
+
     /// <summary>
     /// Throws ArgumentOutOfRangeException if outOfRangePredicate returns true.
     /// </summary>
