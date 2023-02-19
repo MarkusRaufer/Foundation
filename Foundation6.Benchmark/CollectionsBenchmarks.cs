@@ -1,5 +1,6 @@
 ﻿using BenchmarkDotNet.Attributes;
 using Foundation.Collections.Generic;
+using System;
 using System.Collections.Immutable;
 
 namespace Foundation.Benchmark
@@ -7,40 +8,55 @@ namespace Foundation.Benchmark
     [MemoryDiagnoser(false)]
     public class CollectionsBenchMarks
     {
-        private int[]? _values;
+        private Random _random = new Random(100);
+        private int[] _values;
 
-        [Params(100)]
+        public CollectionsBenchMarks()
+        {
+            _values = SetupRandomValues();
+        }
+
+        [Params(1000)]
         public int NumberOfItems;
 
-        [GlobalSetup]
-        public void Setup()
-        {
-            _values = Enumerable.Range(1, NumberOfItems).ToArray();
-            //foreach (var i in Enumerable.Range(1, NumberOfItems))
-            //    _list.Add(i);
-        }
+
+        //[GlobalSetup]
+        //public void Setup()
+        //{
+        //}
 
         //[GlobalCleanup]
         //public void Cleanup()
         //{
         //}
 
-        [Benchmark]
-        public EquatableHashSet<int> EquatableHashSet()
+        private int[] SetupRandomValues(int min = 1)
         {
-            return new EquatableHashSet<int>(_values!);
+            var max = NumberOfItems + 1;
+            return Enumerable.Range(1, NumberOfItems).Select(_ => _random.Next(min, max)).ToArray();
+        }
+        
+        private int[] SetupSortedValues(int min = 1)
+        {
+            return Enumerable.Range(min, NumberOfItems).ToArray();
         }
 
-        [Benchmark]
-        public ImmutableHashSet<int> ImmutableHashSet()
-        {
-            return _values!.ToImmutableHashSet();
-        }
+        //[Benchmark]
+        //public EquatableHashSet<int> EquatableHashSet()
+        //{
+        //    return new EquatableHashSet<int>(_values!);
+        //}
 
-        [Benchmark]
-        public UniqueValues<int> UniqueOnlyHashSet()
-        {
-            return new UniqueValues<int>(_values!);
-        }
+        //[Benchmark]
+        //public ImmutableHashSet<int> ImmutableHashSet()
+        //{
+        //    return _values!.ToImmutableHashSet();
+        //}
+
+        //[Benchmark]
+        //public UniqueValues<int> UniqueOnlyHashSet()
+        //{
+        //    return new UniqueValues<int>(_values!);
+        //}
     }
 }
