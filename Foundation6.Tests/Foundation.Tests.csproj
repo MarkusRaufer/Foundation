@@ -18,6 +18,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\Foundation.Algorithms\Foundation.Algorithms.csproj" />
     <ProjectReference Include="..\Foundation6.TestUtil\Foundation.TestUtil.csproj" />
     <ProjectReference Include="..\Foundation6\Foundation.csproj" />
   </ItemGroup>

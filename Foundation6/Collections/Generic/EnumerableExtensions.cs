@@ -2472,6 +2472,61 @@ public static class EnumerableExtensions
                     .Shuffle(random);
     }
 
+    public static IEnumerable<T> Swap<T>(this IEnumerable<T> items, int lhsIndex, int rhsIndex)
+    {
+        lhsIndex.ThrowIfOutOfRange(() => 0 > lhsIndex);
+        rhsIndex.ThrowIfOutOfRange(() => 0 > rhsIndex);
+
+        var (min, max) = Foundation.MathExt.MinMax(lhsIndex, rhsIndex);
+
+        var swappedItems = Enumerable.Empty<T>();
+
+        var minItem = Option.None<T>();
+
+        var lhs = Enumerable.Empty<T>();
+
+        var enumerated = items.Enumerate();
+
+        var it = enumerated.GetEnumerator();
+        bool swapped = false;
+        while(it.MoveNext())
+        {
+            var (counter, item) = it.Current;
+
+            if(!swapped)
+            {
+                if (minItem.IsNone)
+                {
+                    if (counter == min)
+                    {
+                        minItem = Option.Some(item);
+                        lhs = swappedItems;
+                        swappedItems = Enumerable.Empty<T>();
+                        continue;
+                    }
+                }
+                else
+                {
+                    if (counter == max)
+                    {
+                        var rhs = swappedItems.Append(minItem.OrThrow());
+                        lhs = lhs.Append(item);
+                        swappedItems = lhs.Concat(rhs);
+                        swapped = true;
+                        continue;
+                    }
+                }
+            }
+
+            swappedItems = swappedItems.Append(item);
+        }
+
+        foreach(var item in swappedItems)
+        {
+            yield return item;
+        }
+    }
+
     /// <summary>
     /// Returns the symmetric difference of two lists.
     /// </summary>

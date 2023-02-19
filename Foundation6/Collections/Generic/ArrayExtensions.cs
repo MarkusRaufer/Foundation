@@ -48,6 +48,13 @@ public static class ArrayExtensions
             : (Option.Some(sorted[halfIndex]), Option.None<T>());
     }
 
+    public static void Swap<T>(this T[] items, int lhsIndex, int rhsIndex)
+    {
+        var temp = items[lhsIndex];
+        items[lhsIndex] = items[rhsIndex];
+        items[rhsIndex] = temp;
+    }
+
     public static bool EqualsArray<T>(this T[] lhs, T[] rhs)
     {
         if (lhs is null) return rhs is null;

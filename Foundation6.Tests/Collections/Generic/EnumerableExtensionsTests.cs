@@ -1955,6 +1955,18 @@ public class EnumerableExtensionsTests
         Assert.AreEqual(5, odd[2]);
     }
 
+    [Test]
+    public void Swap()
+    {
+        var count = 10;
+        var numbers = Enumerable.Range(1, count);
+
+        var swapped = numbers.Swap(2, 6).ToArray();
+
+        var expected = new[] { 1, 2, 7, 4, 5, 6, 3, 8, 9, 10 };
+        swapped.Should().HaveCount(count);
+        swapped.Should().BeEquivalentTo(expected);
+    }
 
     [Test]
     public void Slice_Should_ReturnListOf5Enumerables_When_ListWith10ElemsAndLength2()
