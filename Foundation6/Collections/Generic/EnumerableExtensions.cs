@@ -2477,7 +2477,7 @@ public static class EnumerableExtensions
         lhsIndex.ThrowIfOutOfRange(() => 0 > lhsIndex);
         rhsIndex.ThrowIfOutOfRange(() => 0 > rhsIndex);
 
-        var (min, max) = Foundation.MathExt.MinMax(lhsIndex, rhsIndex);
+        var (min, max) = MathExt.MinMax(lhsIndex, rhsIndex);
 
         var swappedItems = Enumerable.Empty<T>();
 
