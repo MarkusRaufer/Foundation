@@ -4,6 +4,35 @@ using Foundation.Collections.Generic;
 
 public static class RandomExtensions
 {
+    public static T GetItem<T>(this Random random, T[] items)
+    {
+        random.ThrowIfNull();
+        items.ThrowIfNull();
+        items.ThrowIfOutOfRange(() => 0 == items.Length, () => $"{nameof(items)} must contain at least one element");
+
+        var min = 0;
+        var max = items.Length - 1;
+        
+        var index = random.Next(min, max);
+        return items[index];
+    }
+
+    public static IEnumerable<T> GetItems<T>(this Random random, T[] items, int length)
+    {
+        random.ThrowIfNull();
+        items.ThrowIfNull();
+        length.ThrowIfOutOfRange(() => 0 > length, $"length must be a positive number");
+
+        var min = 0;
+        var max = items.Length - 1;
+
+        for(var i = 0; i < length; i++)
+        {
+            var index = random.Next(min, max);
+            yield return items[index];
+        }
+    }
+
     public static IEnumerable<int> IntegersWithoutDuplicates(this Random random, int min, int max)
     {
         if (null == random) throw new ArgumentNullException(nameof(random));

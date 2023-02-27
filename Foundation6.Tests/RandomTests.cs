@@ -1,4 +1,5 @@
-﻿using Foundation.Collections.Generic;
+﻿using FluentAssertions;
+using Foundation.Collections.Generic;
 using NUnit.Framework;
 using System;
 using System.Linq;
@@ -8,6 +9,53 @@ namespace Foundation;
 [TestFixture]
 public class RandomTests
 {
+    [Test]
+    public void GetItem_Should_ReturnOneValue_When_ArrayHasValues()
+    {
+        var rnd = new Random(1);
+        var numbers = Enumerable.Range(1, 5).ToArray();
+
+        var randomSelected = rnd.GetItem(numbers);
+
+        numbers.Should().Contain(randomSelected);
+    }
+
+    [Test]
+    public void GetItem_Should_ThrowException_When_ArrayIsEmpty()
+    {
+        var rnd = new Random(1);
+
+        Action act = () => rnd.GetItem(new int[0]);
+
+        act.Should().Throw<ArgumentOutOfRangeException>();
+    }
+
+    [Test]
+    public void GetItems_Should_Return10Values_When_LengthIs10AndArrayHasSizeOf5()
+    {
+        var rnd = new Random(1);
+        var count = 5;
+
+        var numbers = Enumerable.Range(1, count).ToArray();
+
+        var randomSelected = rnd.GetItems(numbers, count * 2).ToArray();
+
+        randomSelected.Length.Should().Be(count * 2);
+    }
+
+    [Test]
+    public void GetItems_Should_Return5Values_When_LengthIs5AndArrayHasSizeOf10()
+    {
+        var rnd = new Random(1);
+        var count = 10;
+
+        var numbers = Enumerable.Range(1, count).ToArray();
+
+        var randomSelected = rnd.GetItems(numbers, count / 2).ToArray();
+
+        randomSelected.Length.Should().Be(count / 2);
+    }
+
     [Test]
     public void NextDateTime_Should_ReturnTheSameDateTime_When_CalledOnce()
     {
@@ -75,7 +123,7 @@ public class RandomTests
         {
             var random1 = new Random(seed);
             var random2 = new Random(seed);
-
+            
             var guids1 = For.Collect(() => random1.NextGuid()).Take(numberOfGuids).ToArray();
             var guids2 = For.Collect(() => random2.NextGuid()).Take(numberOfGuids).ToArray();
 
