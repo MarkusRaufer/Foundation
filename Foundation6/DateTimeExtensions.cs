@@ -69,7 +69,7 @@ public static class DateTimeExtensions
     /// <param name="lhs"></param>
     /// <param name="rhs"></param>
     /// <returns></returns>
-    public static bool ValueObjectEquals(this DateTime lhs, DateTime rhs)
+    public static bool ValueEquals(this DateTime lhs, DateTime rhs)
     {
         if (lhs.Kind != rhs.Kind) return false;
         return lhs.Equals(rhs);
@@ -144,6 +144,11 @@ public static class DateTimeExtensions
     public static DateTime Truncate(this DateTime date, long resolution)
     {
         return new DateTime(date.Ticks - (date.Ticks % resolution), date.Kind);
+    }
+
+    public static DateTime TruncateMinutes(this DateTime dt)
+    {
+        return new DateTime(dt.Year, dt.Month, dt.Day, dt.Hour, 0, 0, 0, dt.Kind);
     }
 
     public static DateTime TruncateMilliseconds(this DateTime dt)

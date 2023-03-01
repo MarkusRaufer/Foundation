@@ -42,7 +42,7 @@ public sealed class Event<TDelegate> : IDisposable
 
     public IDisposable Subscribe(TDelegate @delegate)
     {
-        var disposable = new Disposable(() => _subscribtions.Value.Remove(@delegate));
+        var disposable = new Disposable(() => Unsubscribe(@delegate));
 
         if (Contains(@delegate)) return disposable;
 

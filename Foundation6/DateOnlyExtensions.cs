@@ -1,6 +1,4 @@
-﻿using System.Runtime.CompilerServices;
-
-namespace Foundation
+﻿namespace Foundation
 {
     public static class DateOnlyExtensions
     {

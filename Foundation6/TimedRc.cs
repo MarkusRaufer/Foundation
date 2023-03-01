@@ -70,7 +70,7 @@ public class TimedRc<T>
 
         if (!_rc.Equals(other._rc)) return false;
 
-        return Timestamp.ValueObjectEquals(other.Timestamp);
+        return Timestamp.ValueEquals(other.Timestamp);
     }
 
     /// <summary>
