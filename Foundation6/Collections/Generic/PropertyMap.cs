@@ -9,7 +9,7 @@ namespace Foundation.Collections.Generic
     /// <summary>
     /// A map with properties (string, object) that can handle hierarchical properties.
     /// </summary>
-    public class PropertyMap : PropertyMap<PropertyChangedEvent>
+    public class PropertyMap : PropertyMap<PropertyValueChangedEvent<Guid, object, PropertyValueChanged<object>>>
     {
         public PropertyMap(char pathSeparator = '/') : base(pathSeparator)
         {
@@ -19,21 +19,21 @@ namespace Foundation.Collections.Generic
         {
         }
 
-        public override void HandleEvent(PropertyChangedEvent propertyChanged)
+        public override void HandleEvent(PropertyValueChangedEvent<Guid, object, PropertyValueChanged<object>> propertyChanged)
         {
             if (null == propertyChanged) return;
 
-            switch (propertyChanged.ChangedState)
+            switch (propertyChanged.PropertyChanged.ChangedState)
             {
-                case PropertyChangedState.Added: Add(propertyChanged.Name, propertyChanged.Value); break;
-                case PropertyChangedState.Removed: Remove(propertyChanged.Name); break;
-                case PropertyChangedState.Replaced: this[propertyChanged.Name] = propertyChanged.Value!; break;
+                case PropertyChangedState.Added: Add(propertyChanged.PropertyChanged.PropertyName, propertyChanged.PropertyChanged.Value); break;
+                case PropertyChangedState.Removed: Remove(propertyChanged.PropertyChanged.PropertyName); break;
+                case PropertyChangedState.Replaced: this[propertyChanged.PropertyChanged.PropertyName] = propertyChanged.PropertyChanged.Value!; break;
             };
         }
 
-        protected override PropertyChangedEvent CreateChangedEvent(string propertyName, object? value, PropertyChangedState state)
+        protected override PropertyValueChangedEvent<Guid, object, PropertyValueChanged<object>> CreateChangedEvent(string propertyName, object? value, PropertyChangedState state)
         {
-            return new PropertyChangedEvent(propertyName, value, state);
+            return new PropertyValueChangedEvent<Guid, object, PropertyValueChanged<object>>(Guid.NewGuid(), new PropertyValueChanged<object>(propertyName, state, value));
         }
     }
 

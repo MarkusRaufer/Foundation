@@ -150,7 +150,7 @@ public struct NamedId<T>
         if (info.GetValue(nameof(_value), typeof(T)) is not T value)
             throw new ArgumentNullException(nameof(_value));
 
-        _name = name.ThrowIfNullOrEmpty();
+        _name = name;
         _value = value;
 
         _hashCode = System.HashCode.Combine(_name, _value);
@@ -204,6 +204,7 @@ public struct NamedId<T>
 
     public void GetObjectData(SerializationInfo info, StreamingContext context)
     {
+        info.AddValue(nameof(_name), _name);
         info.AddValue(nameof(_value), _value);
     }
 

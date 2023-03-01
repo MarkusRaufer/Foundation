@@ -11,11 +11,6 @@ public static class DateTimeExtensions
         return DateTimeHelper.GetDaysOfYear(dateTime.Year);
     }
 
-    public static bool IsEmpty(this DateTime dt)
-    {
-        return Empty.Equals(dt);
-    }
-
     public static DateTime EndOfDay(this DateTime dateTime)
     {
         return new DateTime(dateTime.Year, dateTime.Month, dateTime.Day, 0, 0, 0, dateTime.Kind).AddDays(1);
@@ -63,18 +58,6 @@ public static class DateTimeExtensions
         return new DateTime(dt.Year + 1, 1, 1, 0, 0, 0, dt.Kind);
     }
 
-    /// <summary>
-    /// Compares values and <see cref="DateTime.Kind"/>.
-    /// </summary>
-    /// <param name="lhs"></param>
-    /// <param name="rhs"></param>
-    /// <returns></returns>
-    public static bool ValueEquals(this DateTime lhs, DateTime rhs)
-    {
-        if (lhs.Kind != rhs.Kind) return false;
-        return lhs.Equals(rhs);
-    }
-
     public static DateTime FirstDayOfWeek(this DateTime dateTime)
     {
         var culture = Thread.CurrentThread.CurrentCulture;
@@ -99,6 +82,11 @@ public static class DateTimeExtensions
     public static DateTime FirstDayOfWeek(this DateTime dateTime, CultureInfo culture)
     {
         return FirstDayOfWeek(dateTime, culture.DateTimeFormat.FirstDayOfWeek);
+    }
+
+    public static bool IsEmpty(this DateTime dt)
+    {
+        return Empty.Equals(dt);
     }
 
     /// <summary>
@@ -159,6 +147,18 @@ public static class DateTimeExtensions
     public static DateTime TruncateSeconds(this DateTime dt)
     {
         return new DateTime(dt.Year, dt.Month, dt.Day, dt.Hour, dt.Minute, 0, dt.Kind);
+    }
+
+    /// <summary>
+    /// Compares values and <see cref="DateTime.Kind"/>.
+    /// </summary>
+    /// <param name="lhs"></param>
+    /// <param name="rhs"></param>
+    /// <returns></returns>
+    public static bool ValueEquals(this DateTime lhs, DateTime rhs)
+    {
+        if (lhs.Kind != rhs.Kind) return false;
+        return lhs.Equals(rhs);
     }
 }
 

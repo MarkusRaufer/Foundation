@@ -4,7 +4,7 @@ using Foundation.ComponentModel;
 using System.Collections.Generic;
 
 public class TypedPropertyMap<TObjectType> 
-    : PropertyMap<TObjectType, PropertyChangedEvent<TObjectType>>
+    : PropertyMap<TObjectType, ObjectPropertyValueChanged<TObjectType, object>>
     where TObjectType : notnull
 {
     public TypedPropertyMap(
@@ -22,7 +22,7 @@ public class TypedPropertyMap<TObjectType>
     {
     }
 
-    public override void HandleEvent(PropertyChangedEvent<TObjectType> propertyChanged)
+    public override void HandleEvent(ObjectPropertyValueChanged<TObjectType, object> propertyChanged)
     {
         if (null == propertyChanged) return;
 
@@ -30,15 +30,15 @@ public class TypedPropertyMap<TObjectType>
 
         switch (propertyChanged.ChangedState)
         {
-            case PropertyChangedState.Added: Add(propertyChanged.Name, propertyChanged.Value); break;
-            case PropertyChangedState.Removed: Remove(propertyChanged.Name); break;
-            case PropertyChangedState.Replaced: this[propertyChanged.Name] = propertyChanged.Value!; break;
+            case PropertyChangedState.Added: Add(propertyChanged.PropertyName, propertyChanged.Value); break;
+            case PropertyChangedState.Removed: Remove(propertyChanged.PropertyName); break;
+            case PropertyChangedState.Replaced: this[propertyChanged.PropertyName] = propertyChanged.Value!; break;
         };
     }
 
-    protected override PropertyChangedEvent<TObjectType> CreateChangedEvent(string propertyName, object? value, PropertyChangedState state)
+    protected override ObjectPropertyValueChanged<TObjectType, object> CreateChangedEvent(string propertyName, object? value, PropertyChangedState state)
     {
-        return new PropertyChangedEvent<TObjectType>(ObjectType, propertyName, value, state);
+        return new ObjectPropertyValueChanged<TObjectType, object>(ObjectType, propertyName, value, state);
     }
 }
 

@@ -6,16 +6,16 @@ public class TypedIdPropertyMap<TId> : TypedIdPropertyMap<string, TId>
     where TId : notnull
 {
     public TypedIdPropertyMap(
-        string objectType, 
-        KeyValue<string, TId> identifier, 
+        string objectType,
+        KeyValuePair<string, TId> identifier, 
         char pathSeparator = '/') 
         : base(objectType, identifier, pathSeparator)
     {
     }
 
     public TypedIdPropertyMap(
-        string objectType, 
-        KeyValue<string, TId> identifier, 
+        string objectType,
+        KeyValuePair<string, TId> identifier, 
         SortedDictionary<string, object> dictionary, 
         char pathSeparator = '/') 
         : base(objectType, identifier, dictionary, pathSeparator)
@@ -24,29 +24,34 @@ public class TypedIdPropertyMap<TId> : TypedIdPropertyMap<string, TId>
 }
 
 public class TypedIdPropertyMap<TObjectType, TId>   
-    : IdPropertyMap<TObjectType, TId, EntityChangedEvent<TObjectType, TId>>
+    : IdPropertyMap<TObjectType, TId, EntityPropertyValueChanged<Guid, TId, TObjectType, object, PropertyValueChanged<object>>>
     where TId : notnull
     where TObjectType : notnull
 {
     public TypedIdPropertyMap(
-        TObjectType objectType, 
-        KeyValue<string, TId> identifier, 
+        TObjectType objectType,
+        KeyValuePair<string, TId> identifier, 
         char pathSeparator = '/') 
         : base(objectType, identifier, pathSeparator)
     {
     }
 
     public TypedIdPropertyMap(
-        TObjectType objectType, 
-        KeyValue<string, TId> identifier,
+        TObjectType objectType,
+        KeyValuePair<string, TId> identifier,
         SortedDictionary<string, object> dictionary, 
         char pathSeparator = '/') 
         : base(objectType, identifier, dictionary, pathSeparator)
     {
     }
 
-    protected override EntityChangedEvent<TObjectType, TId> CreateChangedEvent(string propertyName, object? value, PropertyChangedState state)
+    public override void HandleEvent(EntityPropertyValueChanged<Guid, TId, TObjectType, object, PropertyValueChanged<object>> @event)
     {
-        return new (ObjectType, Identifier, new PropertyChangedEvent(propertyName, value, state));
+        throw new NotImplementedException();
+    }
+
+    protected override EntityPropertyValueChanged<Guid, TId, TObjectType, object, PropertyValueChanged<object>> CreateChangedEvent(string propertyName, object? value, PropertyChangedState state)
+    {
+        return new (Guid.NewGuid(), Id, ObjectType, new PropertyValueChanged<object>(propertyName, state, value));
     }
 }

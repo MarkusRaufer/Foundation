@@ -114,10 +114,10 @@ public class OneOf<T1, T2> : IEquatable<OneOf<T1, T2>>
     }
 
     /// <summary>
-    /// Invokes the the action that matches the type of <see cref="Value"/>.
+    /// Invokes an action only if the selected type matches the specific type.
     /// </summary>
-    /// <param name="onT1"></param>
-    /// <param name="onT2"></param>
+    /// <param name="onT1">Is called if the selected type is of type T1.</param>
+    /// <param name="onT2">Is called if the selected type is of type T2.</param>
     /// <returns></returns>
     public bool Invoke(
         Action<T1> onT1,
@@ -126,12 +126,23 @@ public class OneOf<T1, T2> : IEquatable<OneOf<T1, T2>>
         return Invoke(onT1) || Invoke(onT2);
     }
 
+    /// <summary>
+    /// Returns true is the selected type if of type T.
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <returns></returns>
     public bool IsOfType<T>() => SelectedType == typeof(T);
 
     public T1? Item1 { get; }
 
     public T2? Item2 { get; }
 
+    /// <summary>
+    /// Returns the index of the selected item.
+    /// 0: nothing selected
+    /// 1: Item1 selected
+    /// 2: Item2 selected
+    /// </summary>
     public int ItemIndex { get; protected set; }
 
     public virtual bool TryGet<T>(out T? value)

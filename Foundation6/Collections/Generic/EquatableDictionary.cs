@@ -90,7 +90,7 @@ public class EquatableDictionary<TKey, TValue>
 
     public void Add(KeyValuePair<TKey, TValue> keyValue)
     {
-        keyValue.ThrowIfEmpty();
+        keyValue.ThrowIfKeyIsNull();
 
         _keyValues.Add(keyValue);
 

@@ -4,43 +4,56 @@ using System.Diagnostics.CodeAnalysis;
 namespace Foundation.Collections.Generic
 {
     public class IdPropertyMap<TId>
-        : IdPropertyMap<TId, EntityChangedEvent<TId>>
+        : IdPropertyMap<TId, EntityPropertyValueChanged<Guid, TId, object, PropertyValueChanged<object>>>
         , IIdPropertyMap<TId>
         where TId : notnull
     {
         public IdPropertyMap(
-            KeyValue<string, TId> identifier,
+            KeyValuePair<string, TId> identifier,
             char pathSeparator = '/')
             : base(identifier, pathSeparator)
         {
         }
 
         public IdPropertyMap(
-            KeyValue<string, TId> identifier,
+            KeyValuePair<string, TId> identifier,
             SortedDictionary<string, object> dictionary,
             char pathSeparator = '/')
             : base(identifier, dictionary, pathSeparator)
         {
         }
 
-        protected override EntityChangedEvent<TId> CreateChangedEvent(string propertyName, object? value, PropertyChangedState state)
+        public override void HandleEvent(EntityPropertyValueChanged<Guid, TId, object, PropertyValueChanged<object>> @event)
         {
-            return new EntityChangedEvent<TId>(Identifier, new PropertyChangedEvent(propertyName, value, state));
+            @event.ThrowIfNull();
+
+            if (!Identifier.Equals(@event.EntityId)) return;
+
+            switch (@event.PropertyChanged.ChangedState)
+            {
+                case PropertyChangedState.Added: Add(@event.PropertyChanged.PropertyName, @event.PropertyChanged.Value); break;
+                case PropertyChangedState.Removed: Remove(@event.PropertyChanged.PropertyName); break;
+                case PropertyChangedState.Replaced: this[@event.PropertyChanged.PropertyName] = @event.PropertyChanged.Value!; break;
+            };
+        }
+        protected override EntityPropertyValueChanged<Guid, TId, object, PropertyValueChanged<object>> CreateChangedEvent(string propertyName, object? value, PropertyChangedState state)
+        {
+            return new EntityPropertyValueChanged<Guid, TId, object, PropertyValueChanged<object>>(Guid.NewGuid(), Id, new PropertyValueChanged<object>(propertyName, state, value));
         }
     }
 
-   
+
 
     public abstract class IdPropertyMap<TObjectType, TId, TEvent>
         : IdPropertyMap<TId, TEvent>
         , IIdPropertyMap<TObjectType, TId>
         , IEquatable<IIdPropertyMap<TObjectType, TId>>
         where TId : notnull
-        where TEvent: IIndexedIdentifiable<string, TId>, IPropertyChangedContainer, ITypedObject<TObjectType>
+        where TEvent : IEntityEvent<Guid, TId>, ITypedObject<TObjectType>
     {
         public IdPropertyMap(
             TObjectType objectType,
-            KeyValue<string, TId> identifier,
+            KeyValuePair<string, TId> identifier,
             char pathSeparator = '/')
             : base(identifier, pathSeparator)
         {
@@ -49,7 +62,7 @@ namespace Foundation.Collections.Generic
 
         public IdPropertyMap(
             TObjectType objectType,
-            KeyValue<string, TId> identifier,
+            KeyValuePair<string, TId> identifier,
             SortedDictionary<string, object> dictionary,
             char pathSeparator = '/')
             : base(identifier, dictionary, pathSeparator)
@@ -61,21 +74,14 @@ namespace Foundation.Collections.Generic
 
         public bool Equals(IIdPropertyMap<TObjectType, TId>? other)
         {
-            return null != other 
-                && base.Equals(other) 
+            return null != other
+                && base.Equals(other)
                 && ObjectType!.Equals(other.ObjectType);
         }
 
         public override int GetHashCode() => System.HashCode.Combine(ObjectType, Identifier);
 
-        public override void HandleEvent(TEvent @event)
-        {
-            @event.ThrowIfNull();
-
-            if (!ObjectType!.Equals(@event.ObjectType)) return;
-
-            base.HandleEvent(@event);
-        }
+        public abstract override void HandleEvent(TEvent @event);
 
         public TObjectType ObjectType { get; }
 
@@ -86,22 +92,22 @@ namespace Foundation.Collections.Generic
         : PropertyMap<TEvent>
         , IIdPropertyMap<TId>
         where TId : notnull
-        where TEvent : IIndexedIdentifiable<string, TId>, IPropertyChangedContainer
+        where TEvent : IEntityEvent<Guid, TId>
     {
         public IdPropertyMap(
-            KeyValue<string, TId> identifier,
+            KeyValuePair<string, TId> identifier,
             char pathSeparator = '/')
             : this(identifier, new SortedDictionary<string, object>(), pathSeparator)
         {
         }
 
         public IdPropertyMap(
-            KeyValue<string, TId> identifier,
+            KeyValuePair<string, TId> identifier,
             SortedDictionary<string, object> dictionary,
             char pathSeparator = '/')
             : base(dictionary, pathSeparator)
         {
-            Identifier = identifier.ThrowIfEmpty();
+            Identifier = identifier.ThrowIfKeyIsNullOrWhiteSpace();
         }
 
         public override object this[string key]
@@ -127,23 +133,11 @@ namespace Foundation.Collections.Generic
             }
         }
 
-        public override void HandleEvent(TEvent @event)
-        {
-            @event.ThrowIfNull();
-
-            if (!Identifier.Equals(@event.Identifier)) return;
-
-            switch (@event.PropertyChanged.ChangedState)
-            {
-                case PropertyChangedState.Added: Add(@event.PropertyChanged.Name, @event.PropertyChanged.Value); break;
-                case PropertyChangedState.Removed: Remove(@event.PropertyChanged.Name); break;
-                case PropertyChangedState.Replaced: this[@event.PropertyChanged.Name] = @event.PropertyChanged.Value!; break;
-            };
-        }
+        public abstract override void HandleEvent(TEvent @event);
 
         public TId Id => Identifier.Value;
 
-        public KeyValue<string, TId> Identifier { get; }
+        public KeyValuePair<string, TId> Identifier { get; }
 
         public override string ToString() => $"{Identifier}";
 
