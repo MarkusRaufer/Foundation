@@ -126,6 +126,8 @@ public class OneOf<T1, T2> : IEquatable<OneOf<T1, T2>>
         return Invoke(onT1) || Invoke(onT2);
     }
 
+    public bool IsOfType<T>() => SelectedType == typeof(T);
+
     public T1? Item1 { get; }
 
     public T2? Item2 { get; }
@@ -137,14 +139,14 @@ public class OneOf<T1, T2> : IEquatable<OneOf<T1, T2>>
         switch(ItemIndex)
         {
             case 1:
-                if (Item1 is T1 t1 && t1 is T t1Value)
+                if (Item1 is T t1Value)
                 {
                     value = t1Value;
                     return true;
                 }
                 break;
             case 2:
-                if (Item2 is T2 t2 && t2 is T t2Value)
+                if (Item2 is T t2Value)
                 {
                     value = t2Value;
                     return true;
@@ -265,7 +267,7 @@ public class OneOf<T1, T2, T3>
     {
         if (3 == ItemIndex)
         {
-            if (Item3 is T3 t3 && t3 is T t)
+            if (Item3 is T t)
             {
                 value = t;
                 return true;
@@ -389,7 +391,7 @@ public class OneOf<T1, T2, T3, T4> : OneOf<T1, T2, T3>
     {
         if(4 == ItemIndex)
         {
-            if (Item4 is T4 t4 && t4 is T t)
+            if (Item4 is T t)
             {
                 value = t;
                 return true;
@@ -522,7 +524,7 @@ public class OneOf<T1, T2, T3, T4, T5> : OneOf<T1, T2, T3, T4>
     {
         if (5 == ItemIndex)
         {
-            if (Item5 is T5 t5 && t5 is T t)
+            if (Item5 is T t)
             {
                 value = t;
                 return true;

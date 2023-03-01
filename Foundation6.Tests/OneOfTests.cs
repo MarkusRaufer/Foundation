@@ -1,4 +1,5 @@
-﻿using NUnit.Framework;
+﻿using FluentAssertions;
+using NUnit.Framework;
 using System;
 
 namespace Foundation
@@ -90,6 +91,22 @@ namespace Foundation
             sut.Invoke((int i) => value = i, (double _) => value = 20);
 
             Assert.AreEqual(expected, value);
+        }
+
+        [Test]
+        public void IsOfType_Should_ExecuteMatchingAction_When_UsingMultipleActions()
+        {
+            var expected = "myValue";
+
+            var sut = new OneOf<int, string>(expected);
+
+            var isInt = sut.IsOfType<int>();
+            var isDouble = sut.IsOfType<double>();
+            var isString = sut.IsOfType<string>();
+
+            isInt.Should().BeFalse();
+            isDouble.Should().BeFalse();
+            isString.Should().BeTrue();
         }
 
         [Test]
