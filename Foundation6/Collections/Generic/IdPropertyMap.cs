@@ -1,25 +1,18 @@
 ﻿using Foundation.ComponentModel;
-using System.Diagnostics.CodeAnalysis;
 
 namespace Foundation.Collections.Generic
 {
     public class IdPropertyMap<TId>
         : IdPropertyMap<TId, EntityPropertyValueChanged<Guid, TId, object, PropertyValueChanged<object>>>
-        , IIdPropertyMap<TId>
+        , IIdPropertyMap<TId, EntityPropertyValueChanged<Guid, TId, object, PropertyValueChanged<object>>>
         where TId : notnull
     {
-        public IdPropertyMap(
-            KeyValuePair<string, TId> identifier,
-            char pathSeparator = '/')
-            : base(identifier, pathSeparator)
+        public IdPropertyMap(TId id) : base(id)
         {
         }
 
-        public IdPropertyMap(
-            KeyValuePair<string, TId> identifier,
-            SortedDictionary<string, object> dictionary,
-            char pathSeparator = '/')
-            : base(identifier, dictionary, pathSeparator)
+        public IdPropertyMap(TId id, EquatableSortedDictionary<string, object> dictionary)
+            : base(id, dictionary)
         {
         }
 
@@ -27,7 +20,7 @@ namespace Foundation.Collections.Generic
         {
             @event.ThrowIfNull();
 
-            if (!Identifier.Equals(@event.EntityId)) return;
+            if (!Id.Equals(@event.EntityId)) return;
 
             switch (@event.PropertyChanged.ChangedState)
             {
@@ -46,110 +39,48 @@ namespace Foundation.Collections.Generic
 
     public abstract class IdPropertyMap<TObjectType, TId, TEvent>
         : IdPropertyMap<TId, TEvent>
-        , IIdPropertyMap<TObjectType, TId>
-        , IEquatable<IIdPropertyMap<TObjectType, TId>>
+        , IIdPropertyMap<TObjectType, TId, TEvent>
         where TId : notnull
         where TEvent : IEntityEvent<Guid, TId>, ITypedObject<TObjectType>
     {
-        public IdPropertyMap(
-            TObjectType objectType,
-            KeyValuePair<string, TId> identifier,
-            char pathSeparator = '/')
-            : base(identifier, pathSeparator)
+        public IdPropertyMap(TObjectType objectType, TId id)
+            : this(objectType, id, new EquatableSortedDictionary<string, object>())
+        {
+        }
+
+        public IdPropertyMap(TObjectType objectType, TId id, EquatableSortedDictionary<string, object> dictionary)
+            : base(id, dictionary)
         {
             ObjectType = objectType.ThrowIfNull();
         }
-
-        public IdPropertyMap(
-            TObjectType objectType,
-            KeyValuePair<string, TId> identifier,
-            SortedDictionary<string, object> dictionary,
-            char pathSeparator = '/')
-            : base(identifier, dictionary, pathSeparator)
-        {
-            ObjectType = objectType.ThrowIfNull();
-        }
-
-        public override bool Equals(object? obj) => Equals(obj as IIdPropertyMap<TObjectType, TId>);
-
-        public bool Equals(IIdPropertyMap<TObjectType, TId>? other)
-        {
-            return null != other
-                && base.Equals(other)
-                && ObjectType!.Equals(other.ObjectType);
-        }
-
-        public override int GetHashCode() => System.HashCode.Combine(ObjectType, Identifier);
 
         public abstract override void HandleEvent(TEvent @event);
 
         public TObjectType ObjectType { get; }
 
-        public override string ToString() => $"{ObjectType}, {Identifier}";
+        public override string ToString() => $"{ObjectType}, {Id}";
     }
 
     public abstract class IdPropertyMap<TId, TEvent>
         : PropertyMap<TEvent>
-        , IIdPropertyMap<TId>
+        , IIdPropertyMap<TId, TEvent>
         where TId : notnull
         where TEvent : IEntityEvent<Guid, TId>
     {
-        public IdPropertyMap(
-            KeyValuePair<string, TId> identifier,
-            char pathSeparator = '/')
-            : this(identifier, new SortedDictionary<string, object>(), pathSeparator)
+        public IdPropertyMap(TId id) : this(id, new EquatableSortedDictionary<string, object>())
         {
         }
 
-        public IdPropertyMap(
-            KeyValuePair<string, TId> identifier,
-            SortedDictionary<string, object> dictionary,
-            char pathSeparator = '/')
-            : base(dictionary, pathSeparator)
+        public IdPropertyMap(TId id, EquatableSortedDictionary<string, object> dictionary)
+            : base(dictionary)
         {
-            Identifier = identifier.ThrowIfKeyIsNullOrWhiteSpace();
-        }
-
-        public override object this[string key]
-        {
-            get
-            {
-                if (Identifier.Key == key)
-                    return Identifier.Value;
-
-                return base[key];
-            }
-            set
-            {
-                if (Identifier.Key == key) return;
-
-                var exists = ContainsKey(key);
-                base[key] = value;
-
-                var state = exists ? PropertyChangedState.Replaced : PropertyChangedState.Added;
-
-                var @event = CreateChangedEvent(key, value, state);
-                AddEvent(@event);
-            }
+            Id = id;
         }
 
         public abstract override void HandleEvent(TEvent @event);
 
-        public TId Id => Identifier.Value;
+        public TId Id { get; }
 
-        public KeyValuePair<string, TId> Identifier { get; }
-
-        public override string ToString() => $"{Identifier}";
-
-        public override bool TryGetValue(string key, [MaybeNullWhen(false)] out object value)
-        {
-            if (Identifier.Key == key)
-            {
-                value = Identifier.Value;
-                return true;
-            }
-
-            return base.TryGetValue(key, out value);
-        }
+        public override string ToString() => $"{Id}";
     }
 }

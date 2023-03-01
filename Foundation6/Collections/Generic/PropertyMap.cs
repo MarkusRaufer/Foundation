@@ -11,11 +11,11 @@ namespace Foundation.Collections.Generic
     /// </summary>
     public class PropertyMap : PropertyMap<PropertyValueChangedEvent<Guid, object, PropertyValueChanged<object>>>
     {
-        public PropertyMap(char pathSeparator = '/') : base(pathSeparator)
+        public PropertyMap() : base()
         {
         }
 
-        public PropertyMap(SortedDictionary<string, object> dictionary, char pathSeparator = '/') : base(dictionary, pathSeparator)
+        public PropertyMap(EquatableSortedDictionary<string, object> dictionary) : base(dictionary)
         {
         }
 
@@ -45,32 +45,35 @@ namespace Foundation.Collections.Generic
     /// <typeparam name="TEvent"></typeparam>
     public abstract class PropertyMap<TObjectType, TEvent>
         : PropertyMap<TEvent>
-        , IPropertyMap<TObjectType>
-        , IEquatable<IPropertyMap<TObjectType>>
+        , IPropertyMap<TObjectType, TEvent>
+        , IEquatable<PropertyMap<TObjectType, TEvent>>
         where TEvent : ITypedObject<TObjectType>
+        where TObjectType : notnull
     {
-        public PropertyMap(TObjectType objectType, char pathSeparator = '/')
-            : this(objectType, new SortedDictionary<string, object>(), pathSeparator)
+        public PropertyMap(TObjectType objectType)
+            : this(objectType, new EquatableSortedDictionary<string, object>())
         {
         }
 
         public PropertyMap(
             TObjectType objectType,
-            SortedDictionary<string, object> dictionary, 
-            char pathSeparator = '/')
-            : base(dictionary, pathSeparator)
+            EquatableSortedDictionary<string, object> properties)
+            : base(properties)
         {
             ObjectType = objectType.ThrowIfNull();
         }
 
-        public override bool Equals(object? obj) => base.Equals(obj);
+        public override bool Equals(object? obj) => Equals(obj as PropertyMap<TObjectType, TEvent>);
         
-        public bool Equals(IPropertyMap<TObjectType>? other)
+        public bool Equals(PropertyMap<TObjectType, TEvent>? other)
         {
-            return null != other && ObjectType!.Equals(other.ObjectType);
+            return null != other && ObjectType.Equals(other.ObjectType) && base.Equals(other);
         }
 
-        public override int GetHashCode() => System.HashCode.Combine(ObjectType);
+        public override int GetHashCode() => HashCode.CreateBuilder()
+                                                     .AddObject(ObjectType)
+                                                     .AddHashCode(base.GetHashCode())
+                                                     .GetHashCode();
 
         [NotNull]
         public TObjectType ObjectType { get; }
@@ -79,60 +82,46 @@ namespace Foundation.Collections.Generic
     }
 
     /// <summary>
-    /// A map with properties (string, object) that can handle hierarchical properties.
+    /// A map with properties (string, object).
     /// </summary>
     public abstract class PropertyMap<TEvent> 
-        : IPropertyMap
-        , IEventHandler<TEvent>
-        , IEventProvider<TEvent>
+        : IPropertyMap<TEvent>
+        , IEquatable<PropertyMap<TEvent>>
     {
-        private readonly IDictionary<string, object> _dictionary;
+        private readonly EquatableSortedDictionary<string, object> _properties;
         private readonly IList<TEvent> _events;
-        private readonly IMultiValueMap<string, string> _keys;
 
-        protected PropertyMap(char pathSeparator = '/')
-            : this(new SortedDictionary<string, object>(), pathSeparator)
+        protected PropertyMap() : this(new EquatableSortedDictionary<string, object>())
         {
         }
 
-        protected PropertyMap(SortedDictionary<string, object> dictionary, char pathSeparator = '/')
+        protected PropertyMap(EquatableSortedDictionary<string, object> properties)
         {
-            dictionary.ThrowIfNull();
-
-            _dictionary = dictionary;
-            PathSeparator = pathSeparator;
-
-            _keys = new MultiValueMap<string, string>();
+            _properties = properties.ThrowIfNull();
             _events = new List<TEvent>();
         }
 
         public virtual object this[string key]
         {
-            get => _dictionary[key];
+            get => _properties[key];
             set
             {
-                var exists = _dictionary.ContainsKey(key);
-                _dictionary[key] = value;
+                var exists = ContainsKey(key);
+                _properties[key] = value;
 
                 var state = exists ? PropertyChangedState.Replaced : PropertyChangedState.Added;
-                _events.Add(CreateChangedEvent(key, value, state));
+                AddEvent(CreateChangedEvent(key, value, state));
             }
         }
 
         public void Add(string key, object? value)
         {
-            _dictionary.Add(key, value!);
-            AddToKeys(key);
-
-            AddEvent(CreateChangedEvent(key, value, PropertyChangedState.Added));
+            this[key] = value!;
         }
 
         public void Add(KeyValuePair<string, object> item)
         {
-            _dictionary.Add(item);
-            AddToKeys(item.Key);
-
-            AddEvent(CreateChangedEvent(item.Key, item.Value, PropertyChangedState.Added));
+            Add(item.Key, item.Value);
         }
 
         protected void AddEvent(TEvent @event)
@@ -140,139 +129,73 @@ namespace Foundation.Collections.Generic
             _events.Add(@event);
         }
 
-        private void AddToKeys(string key)
+        public void Clear()
         {
-            var splitted = key.Split(new[] { PathSeparator }, StringSplitOptions.RemoveEmptyEntries);
-            if (2 > splitted.Length) return;
-
-            var keyPart = new StringBuilder();
-            var last = splitted.Last();
-
-            foreach (var token in splitted.Take(splitted.Length - 1)
-                .AfterEach(() => keyPart.Append(PathSeparator)))
-            {
-                keyPart.Append(token);
-            }
-            _keys.Add(keyPart.ToString(), last);
+            ClearEvents();
         }
 
-        public void Clear() => _dictionary.Clear();
         public void ClearEvents() => _events.Clear();
 
-        public bool Contains(KeyValuePair<string, object> item) => _dictionary.Contains(item);
+        public bool Contains(KeyValuePair<string, object> item) => _properties.Contains(item);
 
-        public bool ContainsKey(string key) => _dictionary.ContainsKey(key);
+        public bool ContainsKey(string key) => _properties.ContainsKey(key);
 
         public void CopyTo(KeyValuePair<string, object>[] array, int arrayIndex)
         {
-            _dictionary.CopyTo(array, arrayIndex);
+            _properties.CopyTo(array, arrayIndex);
         }
 
         protected abstract TEvent CreateChangedEvent(string propertyName, object? value, PropertyChangedState state);
 
-        public int Count => _dictionary.Count;
+        public int Count => _properties.Count;
+
+        public override bool Equals(object? obj) => Equals(obj as PropertyMap<TEvent>);
+        public bool Equals(PropertyMap<TEvent>? other)
+        {
+            return null != other && _properties.Equals(other._properties);
+        }
 
         public IEnumerable<TEvent> Events => _events;
 
-        IEnumerator IEnumerable.GetEnumerator() => _dictionary.GetEnumerator();
+        IEnumerator IEnumerable.GetEnumerator() => _properties.GetEnumerator();
 
-        public IEnumerator<KeyValuePair<string, object>> GetEnumerator() => _dictionary.GetEnumerator();
+        public IEnumerator<KeyValuePair<string, object>> GetEnumerator() => _properties.GetEnumerator();
+
+        public override int GetHashCode() => _properties.GetHashCode();
 
         public IEnumerable<KeyValuePair<string, Type?>> PropertyTypes
             => this.Select(kvp => new KeyValuePair<string, Type?>(kvp.Key, kvp.Value?.GetType()));
-
-        public virtual IEnumerable<object> GetValues(string key)
-        {
-            if (_dictionary.TryGetValue(key, out object? value))
-            {
-                yield return value;
-                yield break;
-            }
-
-            if (_keys.TryGetValues(key, out IEnumerable<string> subkeys))
-            {
-                foreach (var subkey in subkeys)
-                {
-                    var compositeKey = $"{key}{PathSeparator}{subkey}";
-                    if (_dictionary.TryGetValue(compositeKey, out value))
-                        yield return value;
-                }
-            }
-        }
 
         public abstract void HandleEvent(TEvent @event);
 
         public bool HasEvents => 0 < _events.Count;
 
-        public bool IsReadOnly => _dictionary.IsReadOnly;
+        public bool IsReadOnly => _properties.IsReadOnly;
 
-        public ICollection<string> Keys => _dictionary.Keys;
-
-        public char PathSeparator { get; }
-
-        public IEnumerable<KeyValuePair<string, object>> PropertiesStartWith(string name)
-        {
-            foreach (var key in _dictionary.Keys)
-            {
-                if (key.StartsWith(name))
-                    yield return new KeyValuePair<string, object>(key, _dictionary[key]);
-            }
-        }
+        public ICollection<string> Keys => _properties.Keys;
 
         public bool Remove(string key)
         {
-            var removed = _dictionary.Remove(key);
-            _events.Add(CreateChangedEvent(key, null, PropertyChangedState.Removed));
+            var exists = _properties.TryGetValue(key, out var value);
+
+            var removed = _properties.Remove(key);
+
+            if (exists && removed) _events.Add(CreateChangedEvent(key, value, PropertyChangedState.Removed));
 
             return removed;
         }
 
         public bool Remove(KeyValuePair<string, object> item)
         {
-            var removed = _dictionary.Remove(item);
-            _events.Add(CreateChangedEvent(item.Key, item.Value, PropertyChangedState.Removed));
+            var removed = _properties.Remove(item);
+
+            if(removed) _events.Add(CreateChangedEvent(item.Key, item.Value, PropertyChangedState.Removed));
 
             return removed;
         }
 
-        /// <summary>
-        /// Contains all properties which key does not contain a PathSeparator
-        /// </summary>
-        public IEnumerable<KeyValuePair<string, object>> RootProperties
-        {
-            get
-            {
-                foreach (var key in _dictionary.Keys)
-                {
-                    if (!key.Contains(PathSeparator))
-                        yield return new KeyValuePair<string, object>(key, _dictionary[key]);
-                }
-            }
-        }
+        public virtual bool TryGetValue(string key, [MaybeNullWhen(false)] out object value) => _properties.TryGetValue(key, out value);
 
-        public virtual bool TryGetValue(string key, [MaybeNullWhen(false)] out object value)
-        {
-            if(_dictionary.TryGetValue(key, out value)) return true;
-            
-            if(_keys.TryGetValues(key, out IEnumerable<string> subkeys))
-            {
-                var values = new List<object>();
-                foreach(var subkey in subkeys)
-                {
-                    if (_dictionary.TryGetValue(subkey, out value))
-                        values.Add(value);
-                }
-                if(0 < values.Count)
-                {
-                    value = values;
-                    return true;
-                }
-            }
-            value = default;
-            return false;
-        }
-
-
-        public ICollection<object> Values => _dictionary.Values;
+        public ICollection<object> Values => _properties.Values;
     }
 }

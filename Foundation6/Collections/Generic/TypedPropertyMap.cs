@@ -1,24 +1,17 @@
 ﻿namespace Foundation.Collections.Generic;
 
 using Foundation.ComponentModel;
-using System.Collections.Generic;
 
 public class TypedPropertyMap<TObjectType> 
     : PropertyMap<TObjectType, ObjectPropertyValueChanged<TObjectType, object>>
     where TObjectType : notnull
 {
-    public TypedPropertyMap(
-        TObjectType objectType, 
-        char pathSeparator = '/') 
-        : base(objectType, pathSeparator)
+    public TypedPropertyMap(TObjectType objectType) : base(objectType)
     {
     }
 
-    public TypedPropertyMap(
-        TObjectType objectType,
-        SortedDictionary<string, object> dictionary, 
-        char pathSeparator = '/') 
-        : base(objectType, dictionary, pathSeparator)
+    public TypedPropertyMap(TObjectType objectType, EquatableSortedDictionary<string, object> dictionary) 
+        : base(objectType, dictionary)
     {
     }
 
