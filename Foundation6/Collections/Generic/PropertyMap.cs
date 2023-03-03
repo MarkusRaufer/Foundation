@@ -131,6 +131,7 @@ namespace Foundation.Collections.Generic
 
         public void Clear()
         {
+            _properties.Clear();
             ClearEvents();
         }
 
