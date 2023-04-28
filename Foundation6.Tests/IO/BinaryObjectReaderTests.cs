@@ -42,15 +42,15 @@ namespace Foundation.IO
 
             {
                 var keyValues = reader.ReadKeyValues(stream).ToArray();
-                Assert.IsTrue(properties(person1).IsEqualToSet(keyValues));
+                Assert.IsTrue(properties(person1).EqualsCollection(keyValues));
             }
             {
                 var keyValues = reader.ReadKeyValues(stream).ToArray();
-                Assert.IsTrue(properties(person2).IsEqualToSet(keyValues));
+                Assert.IsTrue(properties(person2).EqualsCollection(keyValues));
             }
             {
                 var keyValues = reader.ReadKeyValues(stream).ToArray();
-                Assert.IsTrue(properties(person1).IsEqualToSet(keyValues));
+                Assert.IsTrue(properties(person1).EqualsCollection(keyValues));
             }
         }
     }

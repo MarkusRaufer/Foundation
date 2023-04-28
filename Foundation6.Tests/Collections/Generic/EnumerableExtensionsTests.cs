@@ -804,8 +804,8 @@ public class EnumerableExtensionsTests
         var items1 = new[] { 1, 2, 3, 2, 1 };
         var items2 = new[] { 2, 3, 2, 1, 2 };
 
-        Assert.IsFalse(items1.IsEqualToSet(items2));
-        Assert.IsFalse(items2.IsEqualToSet(items1));
+        Assert.IsFalse(items1.EqualsCollection(items2));
+        Assert.IsFalse(items2.EqualsCollection(items1));
     }
 
     [Test]
@@ -814,8 +814,8 @@ public class EnumerableExtensionsTests
         var items1 = Enumerable.Range(0, 5);
         var items2 = Enumerable.Range(0, 5);
 
-        Assert.IsTrue(items1.IsEqualToSet(items2));
-        Assert.IsTrue(items2.IsEqualToSet(items1));
+        Assert.IsTrue(items1.EqualsCollection(items2));
+        Assert.IsTrue(items2.EqualsCollection(items1));
     }
 
     [Test]
@@ -824,8 +824,8 @@ public class EnumerableExtensionsTests
         var items1 = new[] { 1, 2, 3, 2 };
         var items2 = new[] { 2, 3, 2, 1 };
 
-        Assert.IsTrue(items1.IsEqualToSet(items2));
-        Assert.IsTrue(items2.IsEqualToSet(items1));
+        Assert.IsTrue(items1.EqualsCollection(items2));
+        Assert.IsTrue(items2.EqualsCollection(items1));
     }
 
     [Test]
@@ -834,8 +834,8 @@ public class EnumerableExtensionsTests
         var items1 = Enumerable.Range(0, 5);
         var items2 = Enumerable.Range(0, 5);
 
-        Assert.IsTrue(items1.IsEqualToSet(items2));
-        Assert.IsTrue(items2.IsEqualToSet(items1));
+        Assert.IsTrue(items1.EqualsCollection(items2));
+        Assert.IsTrue(items2.EqualsCollection(items1));
     }
 
     [Test]
@@ -844,8 +844,8 @@ public class EnumerableExtensionsTests
         var items1 = Enumerable.Range(0, 5);
         var items2 = Enumerable.Range(0, 6);
 
-        Assert.IsFalse(items1.IsEqualToSet(items2));
-        Assert.IsFalse(items2.IsEqualToSet(items1));
+        Assert.IsFalse(items1.EqualsCollection(items2));
+        Assert.IsFalse(items2.EqualsCollection(items1));
     }
 
     [Test]
@@ -903,9 +903,9 @@ public class EnumerableExtensionsTests
 
         Assert.AreEqual(3, kCombinations.Length);
 
-        Assert.IsTrue(kCombinations.Any(g => g.IsEqualToSet(new[] { 1, 2 })));
-        Assert.IsTrue(kCombinations.Any(g => g.IsEqualToSet(new[] { 1, 3 })));
-        Assert.IsTrue(kCombinations.Any(g => g.IsEqualToSet(new[] { 2, 3 })));
+        Assert.IsTrue(kCombinations.Any(g => g.EqualsCollection(new[] { 1, 2 })));
+        Assert.IsTrue(kCombinations.Any(g => g.EqualsCollection(new[] { 1, 3 })));
+        Assert.IsTrue(kCombinations.Any(g => g.EqualsCollection(new[] { 2, 3 })));
     }
 
     [Test]
@@ -917,12 +917,12 @@ public class EnumerableExtensionsTests
 
         Assert.AreEqual(6, kCombinations.Length);
 
-        Assert.IsTrue(kCombinations.Any(g => g.IsEqualToSet(new[] { 1, 1 })));
-        Assert.IsTrue(kCombinations.Any(g => g.IsEqualToSet(new[] { 1, 2 })));
-        Assert.IsTrue(kCombinations.Any(g => g.IsEqualToSet(new[] { 1, 3 })));
-        Assert.IsTrue(kCombinations.Any(g => g.IsEqualToSet(new[] { 2, 2 })));
-        Assert.IsTrue(kCombinations.Any(g => g.IsEqualToSet(new[] { 2, 3 })));
-        Assert.IsTrue(kCombinations.Any(g => g.IsEqualToSet(new[] { 3, 3 })));
+        Assert.IsTrue(kCombinations.Any(g => g.EqualsCollection(new[] { 1, 1 })));
+        Assert.IsTrue(kCombinations.Any(g => g.EqualsCollection(new[] { 1, 2 })));
+        Assert.IsTrue(kCombinations.Any(g => g.EqualsCollection(new[] { 1, 3 })));
+        Assert.IsTrue(kCombinations.Any(g => g.EqualsCollection(new[] { 2, 2 })));
+        Assert.IsTrue(kCombinations.Any(g => g.EqualsCollection(new[] { 2, 3 })));
+        Assert.IsTrue(kCombinations.Any(g => g.EqualsCollection(new[] { 3, 3 })));
     }
 
     [Test]
@@ -1491,9 +1491,9 @@ public class EnumerableExtensionsTests
 
         Assert.AreEqual(3, permutations.Length);
 
-        Assert.IsTrue(permutations.Any(g => g.IsEqualToSet(new[] { 1 })));
-        Assert.IsTrue(permutations.Any(g => g.IsEqualToSet(new[] { 2 })));
-        Assert.IsTrue(permutations.Any(g => g.IsEqualToSet(new[] { 3 })));
+        Assert.IsTrue(permutations.Any(g => g.EqualsCollection(new[] { 1 })));
+        Assert.IsTrue(permutations.Any(g => g.EqualsCollection(new[] { 2 })));
+        Assert.IsTrue(permutations.Any(g => g.EqualsCollection(new[] { 3 })));
     }
 
     [Test]
@@ -1505,15 +1505,15 @@ public class EnumerableExtensionsTests
 
         Assert.AreEqual(9, permutations.Length);
 
-        Assert.IsTrue(permutations.Any(g => g.IsEqualToSet(new[] { 1, 1 })));
-        Assert.IsTrue(permutations.Any(g => g.IsEqualToSet(new[] { 1, 2 })));
-        Assert.IsTrue(permutations.Any(g => g.IsEqualToSet(new[] { 1, 3 })));
-        Assert.IsTrue(permutations.Any(g => g.IsEqualToSet(new[] { 2, 1 })));
-        Assert.IsTrue(permutations.Any(g => g.IsEqualToSet(new[] { 2, 2 })));
-        Assert.IsTrue(permutations.Any(g => g.IsEqualToSet(new[] { 2, 3 })));
-        Assert.IsTrue(permutations.Any(g => g.IsEqualToSet(new[] { 3, 1 })));
-        Assert.IsTrue(permutations.Any(g => g.IsEqualToSet(new[] { 3, 2 })));
-        Assert.IsTrue(permutations.Any(g => g.IsEqualToSet(new[] { 3, 3 })));
+        Assert.IsTrue(permutations.Any(g => g.EqualsCollection(new[] { 1, 1 })));
+        Assert.IsTrue(permutations.Any(g => g.EqualsCollection(new[] { 1, 2 })));
+        Assert.IsTrue(permutations.Any(g => g.EqualsCollection(new[] { 1, 3 })));
+        Assert.IsTrue(permutations.Any(g => g.EqualsCollection(new[] { 2, 1 })));
+        Assert.IsTrue(permutations.Any(g => g.EqualsCollection(new[] { 2, 2 })));
+        Assert.IsTrue(permutations.Any(g => g.EqualsCollection(new[] { 2, 3 })));
+        Assert.IsTrue(permutations.Any(g => g.EqualsCollection(new[] { 3, 1 })));
+        Assert.IsTrue(permutations.Any(g => g.EqualsCollection(new[] { 3, 2 })));
+        Assert.IsTrue(permutations.Any(g => g.EqualsCollection(new[] { 3, 3 })));
     }
 
     [Test]
@@ -1523,12 +1523,12 @@ public class EnumerableExtensionsTests
 
         var permutations = numbers.Permutations(2, false).ToArray();
 
-        Assert.IsTrue(permutations.Any(g => g.IsEqualToSet(new[] { 1, 2 })));
-        Assert.IsTrue(permutations.Any(g => g.IsEqualToSet(new[] { 1, 3 })));
-        Assert.IsTrue(permutations.Any(g => g.IsEqualToSet(new[] { 2, 1 })));
-        Assert.IsTrue(permutations.Any(g => g.IsEqualToSet(new[] { 2, 3 })));
-        Assert.IsTrue(permutations.Any(g => g.IsEqualToSet(new[] { 3, 1 })));
-        Assert.IsTrue(permutations.Any(g => g.IsEqualToSet(new[] { 3, 2 })));
+        Assert.IsTrue(permutations.Any(g => g.EqualsCollection(new[] { 1, 2 })));
+        Assert.IsTrue(permutations.Any(g => g.EqualsCollection(new[] { 1, 3 })));
+        Assert.IsTrue(permutations.Any(g => g.EqualsCollection(new[] { 2, 1 })));
+        Assert.IsTrue(permutations.Any(g => g.EqualsCollection(new[] { 2, 3 })));
+        Assert.IsTrue(permutations.Any(g => g.EqualsCollection(new[] { 3, 1 })));
+        Assert.IsTrue(permutations.Any(g => g.EqualsCollection(new[] { 3, 2 })));
     }
 
     [Test]
@@ -1713,7 +1713,7 @@ public class EnumerableExtensionsTests
             var subset = numbers.RandomSubset(6).ToArray();
 
             Assert.AreEqual(5, subset.Length);
-            Assert.IsTrue(subset.IsEqualToSet(numbers));
+            Assert.IsTrue(subset.EqualsCollection(numbers));
         }
     }
 
@@ -1911,7 +1911,7 @@ public class EnumerableExtensionsTests
         var shuffled = items.Shuffle().ToArray();
 
         Assert.IsFalse(shuffled.SequenceEqual(items));
-        Assert.IsTrue(EnumerableExtensions.IsEqualToSet(items, shuffled));
+        Assert.IsTrue(EnumerableExtensions.EqualsCollection(items, shuffled));
     }
 
     [Test]

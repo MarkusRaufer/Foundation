@@ -445,6 +445,21 @@ public static class EnumerableExtensions
     }
 
     /// <summary>
+    /// Returns true, if all elements of lhs appear in rhs and the number of items and their occurrency are same.
+    /// Positions can be different.
+    /// </summary>
+    /// <param name="lhs"></param>
+    /// <param name="rhs"></param>
+    /// <typeparam name="T"></typeparam>
+    public static bool EqualsCollection<T>(this IEnumerable<T> lhs, IEnumerable<T> rhs)
+    {
+        if (null == lhs) return null == rhs;
+        if (null == rhs) return false;
+
+        return !lhs.SymmetricDifference(rhs, retainDuplicates: true).Any();
+    }
+
+    /// <summary>
     /// Returns all lhs elements which are not in rhs. The comparision is made between the TKey values.
     /// </summary>
     /// <typeparam name="T"></typeparam>
@@ -1198,21 +1213,6 @@ public static class EnumerableExtensions
         }
 
         return true;
-    }
-
-    /// <summary>
-    /// Returns true, if all elements of lhs appear in rhs and the number of items and their occurrency are same.
-    /// Positions can be different.
-    /// </summary>
-    /// <param name="lhs"></param>
-    /// <param name="rhs"></param>
-    /// <typeparam name="T"></typeparam>
-    public static bool IsEqualToSet<T>(this IEnumerable<T> lhs, IEnumerable<T> rhs)
-    {
-        if (null == lhs) return null == rhs;
-        if (null == rhs) return false;
-
-        return !lhs.SymmetricDifference(rhs, retainDuplicates: true).Any();
     }
 
     /// <summary>

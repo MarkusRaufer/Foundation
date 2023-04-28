@@ -59,7 +59,7 @@ public readonly struct CollectionValue<T>
     {
         if (IsEmpty) return null == other || 0 == other.Length;
 
-        return null != other && _values.IsEqualToSet(other);
+        return null != other && _values.EqualsCollection(other);
     }
 
     public bool Equals(CollectionValue<T> other)
@@ -69,7 +69,7 @@ public readonly struct CollectionValue<T>
 
         if (GetHashCode() != other.GetHashCode()) return false;
 
-        return _values.IsEqualToSet(other._values);
+        return _values.EqualsCollection(other._values);
     }
 
     public IEnumerator<T> GetEnumerator() => IsEmpty ? Enumerable.Empty<T>().GetEnumerator() : _values.GetEnumerator<T>();

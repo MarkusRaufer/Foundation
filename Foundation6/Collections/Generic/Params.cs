@@ -45,7 +45,7 @@ public struct Params<T>
     {
         if (IsEmpty) return other.IsEmpty;
 
-        return !other.IsEmpty && _values.IsEqualToSet(other._values);
+        return !other.IsEmpty && _values.EqualsCollection(other._values);
     }
 
     public IEnumerator<T> GetEnumerator() => _values.GetEnumerator();
