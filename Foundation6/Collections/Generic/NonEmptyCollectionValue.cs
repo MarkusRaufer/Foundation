@@ -3,7 +3,7 @@
 using System.Collections;
 using System.Diagnostics.CodeAnalysis;
 
-public static class NonEmptyBagValue
+public static class NonEmptyCollectionValue
 {
     public static NonEmptyBagValue<T> New<T>(params T[] values)
     {
@@ -12,7 +12,7 @@ public static class NonEmptyBagValue
 }
 
 /// <summary>
-/// This is an immutable unordered collection that considers the equality of each element on <see cref="Equals(NonEmptyBagValue{T})"/>.
+/// Immutable unordered collection that considers the equality of each element on <see cref="Equals(NonEmptyBagValue{T}). The collection must not be empty."/>.
 /// </summary>
 /// <typeparam name="T"></typeparam>
 public readonly struct NonEmptyBagValue<T>
@@ -35,7 +35,7 @@ public readonly struct NonEmptyBagValue<T>
         _hashCode = HashCode.FromOrderedObjects(_values);
     }
 
-    public static implicit operator NonEmptyBagValue<T>(T[] array) => NonEmptyBagValue.New(array);
+    public static implicit operator NonEmptyBagValue<T>(T[] array) => NonEmptyCollectionValue.New(array);
 
     public static implicit operator T[](NonEmptyBagValue<T> array) => array._values;
 
