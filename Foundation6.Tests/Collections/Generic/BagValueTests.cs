@@ -12,7 +12,7 @@ public class BagValueTests
     {
         var array = new int[] { 1, 2, 3 };
 
-        BagValue<int> sut = array;
+        CollectionValue<int> sut = array;
 
         Assert.IsTrue(array.SequenceEqual(sut));
     }
@@ -22,7 +22,7 @@ public class BagValueTests
     {
         var ints = new int[] { 1, 2, 3 };
 
-        bool method(BagValue<int> sut)
+        bool method(CollectionValue<int> sut)
         {
             return ints.SequenceEqual(sut);
         }
@@ -35,7 +35,7 @@ public class BagValueTests
     {
         var array = new int[] { 1, 2, 3 };
 
-        int[] ints = BagValue.New(array);
+        int[] ints = CollectionValue.New(array);
 
         Assert.IsTrue(array.SequenceEqual(ints));
     }
@@ -48,8 +48,8 @@ public class BagValueTests
 
         Assert.IsFalse(arr1.Equals(arr2));
 
-        var eqArr1 = BagValue.New(arr1);
-        var eqArr2 = BagValue.New(arr2);
+        var eqArr1 = CollectionValue.New(arr1);
+        var eqArr2 = CollectionValue.New(arr2);
 
         Assert.IsTrue(eqArr1.Equals(eqArr2));
     }
@@ -62,8 +62,8 @@ public class BagValueTests
 
         Assert.IsFalse(arr1.Equals(arr2));
 
-        var eqArr1 = BagValue.New(arr1);
-        var eqArr2 = BagValue.New(arr2);
+        var eqArr1 = CollectionValue.New(arr1);
+        var eqArr2 = CollectionValue.New(arr2);
 
         Assert.IsTrue(eqArr1.Equals(eqArr2));
     }
@@ -71,8 +71,8 @@ public class BagValueTests
     [Test]
     public void GetHashCode_Should_ReturnSameHashCode_When_SameSizes_SameValues_DifferentPositions()
     {
-        var eqArr1 = BagValue.New(1, 2, 3);
-        var eqArr2 = BagValue.New(3, 2, 1);
+        var eqArr1 = CollectionValue.New(1, 2, 3);
+        var eqArr2 = CollectionValue.New(3, 2, 1);
 
         Assert.AreEqual(eqArr1.GetHashCode(), eqArr2.GetHashCode());
     }
@@ -80,8 +80,8 @@ public class BagValueTests
     [Test]
     public void GetHashCode_Should_ReturnSameHashCode_When_SameSizes_SameValues_SamePositions()
     {
-        var eqArr1 = BagValue.New(1, 2, 3);
-        var eqArr2 = BagValue.New(1, 2, 3);
+        var eqArr1 = CollectionValue.New(1, 2, 3);
+        var eqArr2 = CollectionValue.New(1, 2, 3);
 
         Assert.AreEqual(eqArr1.GetHashCode(), eqArr2.GetHashCode());
     }

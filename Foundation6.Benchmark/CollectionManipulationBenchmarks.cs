@@ -7,7 +7,6 @@ namespace Foundation.Benchmark
     [MemoryDiagnoser]
     public class CollectionManipulationBenchmarks
     {
-        private readonly Bag<int> _bag = new();
         private readonly Collection<int> _collection = new();
         //private readonly List<int> _list = new();
 
@@ -17,18 +16,8 @@ namespace Foundation.Benchmark
         [IterationCleanup]
         public void Cleanup()
         {
-            _bag.Clear();
             _collection?.Clear();
             //_list.Clear();
-        }
-
-        [Benchmark]
-        public int Bag_Add()
-        {
-            foreach (var i in Enumerable.Range(1, NumberOfIterations))
-                _bag.Add(i);
-
-            return _bag.Count;
         }
 
         [Benchmark]
