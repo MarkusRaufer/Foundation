@@ -16,23 +16,23 @@ public abstract record TimeDef
     public sealed record And(TimeDef Lhs, TimeDef Rhs) : BinaryTimeDef(Lhs, Rhs);
     public sealed record DateSpan(DateOnly From, DateOnly To) : SpanTimeDef<DateOnly>(From, To);
     public sealed record DateTimeSpan(DateTime From, DateTime To) : SpanTimeDef<DateTime>(From, To);
-    public sealed record Day(NonEmptyUniqueValues<int> DaysOfMonth) : TimeDef;
+    public sealed record Day(NonEmptySetValue<int> DaysOfMonth) : TimeDef;
     public sealed record Days(int Quantity) : QuantityTimeDef(Quantity);
     public sealed record Difference(TimeDef Lhs, TimeDef Rhs) : BinaryTimeDef(Lhs, Rhs);
-    public sealed record Hour(NonEmptyUniqueValues<int> HoursOfDay) : TimeDef;
+    public sealed record Hour(NonEmptySetValue<int> HoursOfDay) : TimeDef;
     public sealed record Hours(int Quantity) : QuantityTimeDef(Quantity);
-    public sealed record Minute(NonEmptyUniqueValues<int> MinutesOfHour) : TimeDef;
+    public sealed record Minute(NonEmptySetValue<int> MinutesOfHour) : TimeDef;
     public sealed record Minutes(int Quantity) : QuantityTimeDef(Quantity);
-    public sealed record Month(NonEmptyUniqueValues<Foundation.Month> MonthsOfYear) : TimeDef;
+    public sealed record Month(NonEmptySetValue<Foundation.Month> MonthsOfYear) : TimeDef;
     public sealed record Months(int Quantity) : QuantityTimeDef(Quantity);
     public sealed record Not(TimeDef TimeDef) : TimeDef;
     public sealed record Or(TimeDef Lhs, TimeDef Rhs) : BinaryTimeDef(Lhs, Rhs);
     public sealed record Timespan(TimeOnly From, TimeOnly To) : SpanTimeDef<TimeOnly>(From, To);
     public sealed record Union(TimeDef Lhs, TimeDef Rhs) : BinaryTimeDef(Lhs, Rhs);
-    public sealed record Weekday(NonEmptyUniqueValues<DayOfWeek> DaysOfWeek) : TimeDef;
-    public sealed record WeekOfMonth(DayOfWeek WeekStartsWith, NonEmptyUniqueValues<int> Week) : TimeDef;
+    public sealed record Weekday(NonEmptySetValue<DayOfWeek> DaysOfWeek) : TimeDef;
+    public sealed record WeekOfMonth(DayOfWeek WeekStartsWith, NonEmptySetValue<int> Week) : TimeDef;
     public sealed record Weeks(int Quantity, DayOfWeek WeekStartsWith) : QuantityTimeDef(Quantity);
-    public sealed record Year(NonEmptyUniqueValues<int> YearsOfPeriod) : TimeDef;
+    public sealed record Year(NonEmptySetValue<int> YearsOfPeriod) : TimeDef;
     public sealed record Years(int Quantity) : QuantityTimeDef(Quantity);
     #endregion time defintions
 
