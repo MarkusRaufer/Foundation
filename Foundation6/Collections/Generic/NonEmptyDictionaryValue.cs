@@ -13,7 +13,7 @@ public static class NonEmptyDictionaryValue
 }
 
 /// <summary>
-/// This immutable dictionary considers the equality of all keys and values <see cref="Equals"/>.
+/// Immutable dictionary that considers the equality of all keys and values <see cref="Equals"/>.The dictionary must not be empty.
 /// The position of the elements are ignored.
 /// </summary>
 /// <typeparam name="TKey"></typeparam>
