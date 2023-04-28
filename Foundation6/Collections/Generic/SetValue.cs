@@ -4,8 +4,8 @@ using System.Diagnostics.CodeAnalysis;
 namespace Foundation.Collections.Generic;
 
 /// <summary>
-/// Immutable unordered collection that includes only unique values and considers the equality and number of all elements <see cref="Equals"/>. 
-/// The position of the elements are ignored.
+/// Immutable set that considers the equality and number of all elements <see cref="Equals"/>. 
+/// By definition a set only includes unique values. The position of the elements are ignored.
 /// </summary>
 public static class SetValue
 {
