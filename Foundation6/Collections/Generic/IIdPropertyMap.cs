@@ -1,6 +1,4 @@
-﻿using Foundation.ComponentModel;
-
-namespace Foundation.Collections.Generic
+﻿namespace Foundation.Collections.Generic
 {
     /// <summary>
     /// Identifiable IPropertyMap.
