@@ -5,7 +5,7 @@ using System.Linq;
 namespace Foundation.Collections.Generic;
 
 [TestFixture]
-public class BagValueTests
+public class CollectionValueTests
 {
     [Test]
     public void Cast_Should_ImplicitlyCastToEquatableArray_When_CastFrom_Array_To_EquatableArray()

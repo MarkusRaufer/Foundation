@@ -4,7 +4,7 @@ using System;
 namespace Foundation.Collections.Generic
 {
     [TestFixture]
-    public class UniqueValuesTests
+    public class SetValueTests
     {
         [Test]
         public void Ctor_Should_Have3Items_When_4ItemsAddedWithOneDuplicate()

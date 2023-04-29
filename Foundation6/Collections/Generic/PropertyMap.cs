@@ -9,7 +9,7 @@ namespace Foundation.Collections.Generic
     /// <summary>
     /// A map with properties (string, object) that can handle hierarchical properties.
     /// </summary>
-    public class PropertyMap : PropertyMap<PropertyValueChangedEvent<Guid, object, PropertyValueChanged<object>>>
+    public class PropertyMap : PropertyMap<PropertyChanged>
     {
         public PropertyMap() : base()
         {
@@ -19,66 +19,37 @@ namespace Foundation.Collections.Generic
         {
         }
 
-        public override void HandleEvent(PropertyValueChangedEvent<Guid, object, PropertyValueChanged<object>> propertyChanged)
+        public override void HandleEvent(PropertyChanged propertyChanged)
         {
             if (null == propertyChanged) return;
 
-            switch (propertyChanged.PropertyChanged.ChangedState)
+            if(propertyChanged is PropertyValueChanged valueChanged)
             {
-                case PropertyChangedState.Added: Add(propertyChanged.PropertyChanged.PropertyName, propertyChanged.PropertyChanged.Value); break;
-                case PropertyChangedState.Removed: Remove(propertyChanged.PropertyChanged.PropertyName); break;
-                case PropertyChangedState.Replaced: this[propertyChanged.PropertyChanged.PropertyName] = propertyChanged.PropertyChanged.Value!; break;
+                switch (valueChanged.ActionState)
+                {
+                    case CollectionActionState.Added: Add(valueChanged.PropertyName, valueChanged.Value); break;
+                    case CollectionActionState.Replaced: this[valueChanged.PropertyName] = valueChanged.Value!; break;
+                };
+
+                return;
+            }
+            switch (propertyChanged.ActionState)
+            {
+                case CollectionActionState.Removed: Remove(propertyChanged.PropertyName); break;
             };
         }
 
-        protected override PropertyValueChangedEvent<Guid, object, PropertyValueChanged<object>> CreateChangedEvent(string propertyName, object? value, PropertyChangedState state)
+        protected override PropertyChanged CreateChangedEvent(string propertyName, object? value, CollectionActionState state)
         {
-            return new PropertyValueChangedEvent<Guid, object, PropertyValueChanged<object>>(Guid.NewGuid(), new PropertyValueChanged<object>(propertyName, state, value));
+            return state switch
+            {
+                CollectionActionState.Added => new PropertyValueChanged(propertyName, state, value),
+                CollectionActionState.Removed => new PropertyChanged(propertyName, state),
+                CollectionActionState.Replaced => new PropertyValueChanged(propertyName, state, value),
+                _ => throw new NotImplementedException($"{state}")
+
+            };
         }
-    }
-
-
-    /// <summary>
-    /// A map with properties (string, object) that can handle hierarchical properties.
-    /// </summary>
-    /// <typeparam name="TObjectType">With this information you can distinguish maps.</typeparam>
-    /// <typeparam name="TEvent"></typeparam>
-    public abstract class PropertyMap<TObjectType, TEvent>
-        : PropertyMap<TEvent>
-        , IPropertyMap<TObjectType, TEvent>
-        , IEquatable<PropertyMap<TObjectType, TEvent>>
-        where TEvent : ITypedObject<TObjectType>
-        where TObjectType : notnull
-    {
-        public PropertyMap(TObjectType objectType)
-            : this(objectType, new EquatableSortedDictionary<string, object>())
-        {
-        }
-
-        public PropertyMap(
-            TObjectType objectType,
-            EquatableSortedDictionary<string, object> properties)
-            : base(properties)
-        {
-            ObjectType = objectType.ThrowIfNull();
-        }
-
-        public override bool Equals(object? obj) => Equals(obj as PropertyMap<TObjectType, TEvent>);
-        
-        public bool Equals(PropertyMap<TObjectType, TEvent>? other)
-        {
-            return null != other && ObjectType.Equals(other.ObjectType) && base.Equals(other);
-        }
-
-        public override int GetHashCode() => HashCode.CreateBuilder()
-                                                     .AddObject(ObjectType)
-                                                     .AddHashCode(base.GetHashCode())
-                                                     .GetHashCode();
-
-        [NotNull]
-        public TObjectType ObjectType { get; }
-
-        public override string ToString() => $"{ObjectType}";
     }
 
     /// <summary>
@@ -109,7 +80,7 @@ namespace Foundation.Collections.Generic
                 var exists = ContainsKey(key);
                 _properties[key] = value;
 
-                var state = exists ? PropertyChangedState.Replaced : PropertyChangedState.Added;
+                var state = exists ? CollectionActionState.Replaced : CollectionActionState.Added;
                 AddEvent(CreateChangedEvent(key, value, state));
             }
         }
@@ -146,7 +117,7 @@ namespace Foundation.Collections.Generic
             _properties.CopyTo(array, arrayIndex);
         }
 
-        protected abstract TEvent CreateChangedEvent(string propertyName, object? value, PropertyChangedState state);
+        protected abstract TEvent CreateChangedEvent(string propertyName, object? value, CollectionActionState state);
 
         public int Count => _properties.Count;
 
@@ -181,7 +152,7 @@ namespace Foundation.Collections.Generic
 
             var removed = _properties.Remove(key);
 
-            if (exists && removed) _events.Add(CreateChangedEvent(key, value, PropertyChangedState.Removed));
+            if (exists && removed) _events.Add(CreateChangedEvent(key, value, CollectionActionState.Removed));
 
             return removed;
         }
@@ -190,10 +161,12 @@ namespace Foundation.Collections.Generic
         {
             var removed = _properties.Remove(item);
 
-            if(removed) _events.Add(CreateChangedEvent(item.Key, item.Value, PropertyChangedState.Removed));
+            if(removed) _events.Add(CreateChangedEvent(item.Key, item.Value, CollectionActionState.Removed));
 
             return removed;
         }
+
+        public override string ToString() => $"{string.Join(',', _properties)}";
 
         public virtual bool TryGetValue(string key, [MaybeNullWhen(false)] out object value) => _properties.TryGetValue(key, out value);
 

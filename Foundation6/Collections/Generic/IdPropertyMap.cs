@@ -3,8 +3,8 @@
 namespace Foundation.Collections.Generic
 {
     public class IdPropertyMap<TId>
-        : IdPropertyMap<TId, EntityPropertyValueChanged<Guid, TId, object, PropertyValueChanged<object>>>
-        , IIdPropertyMap<TId, EntityPropertyValueChanged<Guid, TId, object, PropertyValueChanged<object>>>
+        : IdPropertyMap<TId, EntityChanged<Guid, TId, PropertyValueChanged>>
+        , IIdPropertyMap<TId, EntityChanged<Guid, TId, PropertyValueChanged>>
         where TId : notnull
     {
         public IdPropertyMap(TId id) : base(id)
@@ -16,54 +16,29 @@ namespace Foundation.Collections.Generic
         {
         }
 
-        public override void HandleEvent(EntityPropertyValueChanged<Guid, TId, object, PropertyValueChanged<object>> @event)
+        public override void HandleEvent(EntityChanged<Guid, TId, PropertyValueChanged> @event)
         {
             @event.ThrowIfNull();
 
             if (!Id.Equals(@event.EntityId)) return;
 
-            switch (@event.PropertyChanged.ChangedState)
+            switch (@event.ChangedState.ActionState)
             {
-                case PropertyChangedState.Added: Add(@event.PropertyChanged.PropertyName, @event.PropertyChanged.Value); break;
-                case PropertyChangedState.Removed: Remove(@event.PropertyChanged.PropertyName); break;
-                case PropertyChangedState.Replaced: this[@event.PropertyChanged.PropertyName] = @event.PropertyChanged.Value!; break;
+                case CollectionActionState.Added: Add(@event.ChangedState.PropertyName, @event.ChangedState.Value); break;
+                case CollectionActionState.Removed: Remove(@event.ChangedState.PropertyName); break;
+                case CollectionActionState.Replaced: this[@event.ChangedState.PropertyName] = @event.ChangedState.Value!; break;
             };
         }
-        protected override EntityPropertyValueChanged<Guid, TId, object, PropertyValueChanged<object>> CreateChangedEvent(string propertyName, object? value, PropertyChangedState state)
+        protected override EntityChanged<Guid, TId, PropertyValueChanged> CreateChangedEvent(string propertyName, object? value, CollectionActionState actionState)
         {
-            return new EntityPropertyValueChanged<Guid, TId, object, PropertyValueChanged<object>>(Guid.NewGuid(), Id, new PropertyValueChanged<object>(propertyName, state, value));
+            return new (Guid.NewGuid(), Id, new PropertyValueChanged(propertyName, actionState, value));
         }
-    }
-
-
-
-    public abstract class IdPropertyMap<TObjectType, TId, TEvent>
-        : IdPropertyMap<TId, TEvent>
-        , IIdPropertyMap<TObjectType, TId, TEvent>
-        where TId : notnull
-        where TEvent : IEntityEvent<Guid, TId>, ITypedObject<TObjectType>
-    {
-        public IdPropertyMap(TObjectType objectType, TId id)
-            : this(objectType, id, new EquatableSortedDictionary<string, object>())
-        {
-        }
-
-        public IdPropertyMap(TObjectType objectType, TId id, EquatableSortedDictionary<string, object> dictionary)
-            : base(id, dictionary)
-        {
-            ObjectType = objectType.ThrowIfNull();
-        }
-
-        public abstract override void HandleEvent(TEvent @event);
-
-        public TObjectType ObjectType { get; }
-
-        public override string ToString() => $"{ObjectType}, {Id}";
     }
 
     public abstract class IdPropertyMap<TId, TEvent>
         : PropertyMap<TEvent>
         , IIdPropertyMap<TId, TEvent>
+        , IEquatable<IIdentifiable<TId>>
         where TId : notnull
         where TEvent : IEntityEvent<Guid, TId>
     {
@@ -77,10 +52,16 @@ namespace Foundation.Collections.Generic
             Id = id;
         }
 
+        public override bool Equals(object? obj) => Equals(obj as IIdentifiable<TId>);
+
+        public bool Equals(IIdentifiable<TId>? other) => null != other && Id.Equals(other.Id);
+
+        public override int GetHashCode() => Id.GetHashCode();
+
         public abstract override void HandleEvent(TEvent @event);
 
         public TId Id { get; }
 
-        public override string ToString() => $"{Id}";
+        public override string ToString() => $"Id: {Id}, {base.ToString()}";
     }
 }

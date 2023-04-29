@@ -2,36 +2,60 @@
 
 using Foundation.ComponentModel;
 
-public class TypedPropertyMap<TObjectType> 
-    : PropertyMap<TObjectType, ObjectPropertyValueChanged<TObjectType, object>>
-    where TObjectType : notnull
+public class TypedPropertyMap 
+    : TypedPropertyMap<string, ObjectPropertyValueChanged>
 {
-    public TypedPropertyMap(TObjectType objectType) : base(objectType)
+    public TypedPropertyMap(string objectType) : base(objectType)
     {
     }
 
-    public TypedPropertyMap(TObjectType objectType, EquatableSortedDictionary<string, object> dictionary) 
+    public TypedPropertyMap(string objectType, EquatableSortedDictionary<string, object> dictionary) 
         : base(objectType, dictionary)
     {
     }
 
-    public override void HandleEvent(ObjectPropertyValueChanged<TObjectType, object> propertyChanged)
+    protected override ObjectPropertyValueChanged CreateChangedEvent(string propertyName, object? value, CollectionActionState state)
+    {
+        return new ObjectPropertyValueChanged(ObjectType, propertyName, value, state);
+    }
+
+    public override void HandleEvent(ObjectPropertyValueChanged propertyChanged)
     {
         if (null == propertyChanged) return;
 
         if (!ObjectType.Equals(propertyChanged.ObjectType)) return;
 
-        switch (propertyChanged.ChangedState)
+        switch (propertyChanged.ActionState)
         {
-            case PropertyChangedState.Added: Add(propertyChanged.PropertyName, propertyChanged.Value); break;
-            case PropertyChangedState.Removed: Remove(propertyChanged.PropertyName); break;
-            case PropertyChangedState.Replaced: this[propertyChanged.PropertyName] = propertyChanged.Value!; break;
+            case CollectionActionState.Added: Add(propertyChanged.PropertyName, propertyChanged.Value); break;
+            case CollectionActionState.Removed: Remove(propertyChanged.PropertyName); break;
+            case CollectionActionState.Replaced: this[propertyChanged.PropertyName] = propertyChanged.Value!; break;
         };
     }
+}
 
-    protected override ObjectPropertyValueChanged<TObjectType, object> CreateChangedEvent(string propertyName, object? value, PropertyChangedState state)
+public abstract class TypedPropertyMap<TObjectType, TEvent>
+    : PropertyMap<TEvent>
+    , ITypedObject<TObjectType>
+    where TObjectType : notnull
+{
+    public TypedPropertyMap(TObjectType objectType)
+        : this(objectType, new EquatableSortedDictionary<string, object>())
     {
-        return new ObjectPropertyValueChanged<TObjectType, object>(ObjectType, propertyName, value, state);
     }
+
+    public TypedPropertyMap(TObjectType objectType, EquatableSortedDictionary<string, object> dictionary)
+        : base(dictionary)
+    {
+        ObjectType = objectType.ThrowIfNull();
+    }
+
+    protected override abstract TEvent CreateChangedEvent(string propertyName, object? value, CollectionActionState state);
+
+    public override abstract void HandleEvent(TEvent @event);
+
+    public TObjectType ObjectType { get; }
+
+    public override string ToString() => $"{nameof(ObjectType)}: {ObjectType}, {base.ToString()}";
 }
 
