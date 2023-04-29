@@ -1,19 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿namespace Foundation.ComponentModel;
 
-namespace Foundation.ComponentModel;
-
-public interface IEntityChanged<TEventId, TEntityId, TPropertyChanged>
-    : IEntityEvent<TEventId, TEntityId>
+public interface IEntityChanged<TEventId, TEntityId, TChangedState> : IEntityEvent<TEventId, TEntityId>
     where TEntityId : notnull
 {
+    TChangedState ChangedState { get; }
 }
 
-public interface IEntityChanged<TEventId, TEntityId, TObjectType, TPropertyChanged>
-    : IEntityChanged<TEventId, TEntityId, TPropertyChanged>
+public interface IEntityChanged<TEventId, TObjectType, TEntityId, TChangedState>
+    : IEntityChanged<TEventId, TEntityId, TChangedState>
     , ITypedObject<TObjectType>
     where TEntityId : notnull
 {

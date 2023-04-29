@@ -1,25 +1,7 @@
 ﻿namespace Foundation.ComponentModel;
 
-public class EventBase<TEventId> 
-    : IEvent<TEventId>
-    , IEquatable<IEvent<TEventId>>
+public abstract record EventBase<TEventId>(TEventId EventId) : IEvent<TEventId> where TEventId : notnull;
+
+public abstract record EventBase<TEventId, TCommandId>(TEventId EventId, TCommandId CommandId) : IEvent<TEventId>
     where TEventId : notnull
-{
-    public EventBase(TEventId eventId)
-    {
-        EventId = eventId;
-    }
-
-    public bool Equals(IEvent<TEventId>? other)
-    {
-        return null != other && EventId.Equals(other.EventId);
-    }
-
-    public TEventId EventId { get; }
-
-    public override bool Equals(object? obj) => Equals(obj as IEvent<TEventId>);
-
-    public override int GetHashCode() => EventId.GetHashCode();
-
-    public override string ToString() => $"{nameof(EventId)}: {EventId}";
-}
+    where TCommandId : notnull;

@@ -3,6 +3,6 @@
 public record ObjectPropertyChanged<TObjectType>(
     TObjectType ObjectType,
     string PropertyName,
-    PropertyChangedState ChangedState)
-    : PropertyChanged(PropertyName, ChangedState)
+    CollectionActionState ActionState)
+    : PropertyChanged(PropertyName, ActionState)
     , IObjectPropertyChanged<TObjectType>;
