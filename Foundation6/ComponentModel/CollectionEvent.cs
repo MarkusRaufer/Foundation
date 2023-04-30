@@ -1,4 +1,4 @@
 ﻿namespace Foundation.ComponentModel;
 
-public record struct CollectionEvent<T>(CollectionChangedState State, T? Element);
+public record struct CollectionEvent<T>(CollectionActionState State, T? Element);
 

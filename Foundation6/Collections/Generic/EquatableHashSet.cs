@@ -83,7 +83,7 @@ public class EquatableHashSet<T>
         {
             _hashCode = CreateHashCode();
 
-            CollectionChanged?.Publish(new { State = CollectionChangedState.ElementAdded, Element = item });
+            CollectionChanged?.Publish(new { State = CollectionActionState.Added, Element = item });
             return true;
         }
 
@@ -96,7 +96,7 @@ public class EquatableHashSet<T>
 
         _hashCode = CreateHashCode();
 
-        CollectionChanged?.Publish(new { State = CollectionChangedState.CollectionCleared });
+        CollectionChanged?.Publish(new { State = CollectionActionState.Cleared });
     }
 
     public Event<Action<CollectionEvent<T>>> CollectionChanged { get; private set; }
@@ -151,7 +151,7 @@ public class EquatableHashSet<T>
         if (base.Remove(item))
         {
             _hashCode = CreateHashCode();
-            CollectionChanged?.Publish(new { State = CollectionChangedState.ElementRemoved, Element = item });
+            CollectionChanged?.Publish(new { State = CollectionActionState.Removed, Element = item });
             return true;
         }
         return false;

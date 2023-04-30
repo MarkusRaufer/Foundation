@@ -60,7 +60,7 @@ public class EquatableCollection<T>
 
         _hashCode = CreateHashCode();
 
-        CollectionChanged.Publish(new { State = CollectionChangedState.ElementAdded, Element = item });
+        CollectionChanged.Publish(new { State = CollectionActionState.Added, Element = item });
     }
 
     public void Clear()
@@ -68,7 +68,7 @@ public class EquatableCollection<T>
         _collection.Clear();
         _hashCode = CreateHashCode();
 
-        CollectionChanged.Publish(new { State = CollectionChangedState.CollectionCleared });
+        CollectionChanged.Publish(new { State = CollectionActionState.Cleared });
     }
 
     public Event<Action<CollectionEvent<T>>> CollectionChanged { get; private set; }
@@ -136,7 +136,7 @@ public class EquatableCollection<T>
         {
             _hashCode = CreateHashCode();
 
-            CollectionChanged.Publish(new { State = CollectionChangedState.ElementRemoved, Element = item });
+            CollectionChanged.Publish(new { State = CollectionActionState.Removed, Element = item });
         }
         return removed;
     }

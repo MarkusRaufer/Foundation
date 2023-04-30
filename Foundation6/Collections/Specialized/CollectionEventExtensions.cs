@@ -9,10 +9,10 @@ namespace Foundation.Collections.Specialized
         {
             return @event.State switch
             {
-                CollectionChangedState.CollectionCleared => new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Reset),
-                CollectionChangedState.ElementAdded => new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Add, @event.Element),
-                CollectionChangedState.ElementRemoved => new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Remove, @event.Element),
-                CollectionChangedState.ElementReplaced => new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Replace, @event.Element),
+                CollectionActionState.Added => new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Add, @event.Element),
+                CollectionActionState.Cleared => new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Reset),
+                CollectionActionState.Removed => new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Remove, @event.Element),
+                CollectionActionState.Replaced => new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Replace, @event.Element),
                 _ => throw new NotImplementedException()
             };
         }
