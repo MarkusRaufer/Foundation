@@ -775,30 +775,6 @@ public class EnumerableExtensionsTests
     }
 
     [Test]
-    public void IsInAscendingOrder_Should_ReturnFalse_When_AllowEqualFalseAndItemsIncludeEqualValues()
-    {
-        var items = new int[] { 1, 2, 2, 3, 4 };
-        
-        items.IsInAscendingOrder().Should().BeFalse();
-    }
-
-    [Test]
-    public void IsInAscendingOrder_Should_ReturnTrue_When_AllowEqualFalseAndAllItemsAreInAscendingOrder()
-    {
-        var items = Enumerable.Range(0, 5);
-
-        items.IsInAscendingOrder().Should().BeTrue();
-    }
-
-    [Test]
-    public void IsInAscendingOrder_Should_ReturnTrue_When_AllowEqualTrueAndItemsIncludeEqualValues()
-    {
-        var items = new int[] { 1, 2, 2, 3, 4 };
-
-        items.IsInAscendingOrder(allowEqual: true).Should().BeTrue();
-    }
-
-    [Test]
     public void IsEqualToSet_Should_ReturnFalse_When_Items_SameNumberOfElementsAndDifferentOccrencies()
     {
         var items1 = new[] { 1, 2, 3, 2, 1 };
@@ -846,52 +822,6 @@ public class EnumerableExtensionsTests
 
         Assert.IsFalse(items1.EqualsCollection(items2));
         Assert.IsFalse(items2.EqualsCollection(items1));
-    }
-
-    [Test]
-    public void IsInAscendingOrder_ShouldReturnFalse_When_ValuesAreNotAscending()
-    {
-        var numbers = new[] { 4, 3, 7, 9 };
-
-        numbers.IsInAscendingOrder().Should().BeFalse();
-    }
-
-    [Test]
-    public void IsInAscendingOrder_ShouldReturnFalse_When_ValuesAreNotAscending_And_CompareIsUsed()
-    {
-        var numbers = new[] { 4, 3, 7, 9 };
-
-        numbers.IsInAscendingOrder((a, b) =>
-        {
-            if (a < b) return CompareResult.Smaller;
-            if (a > b) return CompareResult.Greater;
-            return CompareResult.Equal;
-        }).Should().BeFalse();
-    }
-
-    [Test]
-    public void IsInAscendingOrder_ShouldReturnTrue_When_ValuesAreAscending_And_CompareIsUsed()
-    {
-        {
-            var numbers = Enumerable.Range(1, 5);
-
-            Assert.IsTrue(numbers.IsInAscendingOrder((a, b) =>
-            {
-                if (a < b) return CompareResult.Smaller;
-                if (a > b) return CompareResult.Greater;
-                return CompareResult.Equal;
-            }));
-        }
-        {
-            var numbers = new[] { 3, 4, 4, 7, 9 };
-
-            Assert.IsTrue(numbers.IsInAscendingOrder((a, b) =>
-            {
-                if (a < b) return CompareResult.Smaller;
-                if (a > b) return CompareResult.Greater;
-                return CompareResult.Equal;
-            }));
-        }
     }
 
     [Test]

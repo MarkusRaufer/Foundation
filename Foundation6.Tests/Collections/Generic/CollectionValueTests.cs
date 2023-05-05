@@ -1,4 +1,5 @@
-﻿using NUnit.Framework;
+﻿using FluentAssertions;
+using NUnit.Framework;
 using System;
 using System.Linq;
 
@@ -8,91 +9,111 @@ namespace Foundation.Collections.Generic;
 public class CollectionValueTests
 {
     [Test]
-    public void Cast_Should_ImplicitlyCastToEquatableArray_When_CastFrom_Array_To_EquatableArray()
+    public void Cast_Should_ImplicitlyCastArrayToCollectionValue_When_AssigningTo_CollectionValue()
     {
-        var array = new int[] { 1, 2, 3 };
+        {
+            CollectionValue<int> sut = new int[] { };
+            
+            sut.Should().NotBeNull();
+            sut.Count.Should().Be(0);
+        }
+        {
+            var array = new int[] { 1, 2, 3 };
 
-        CollectionValue<int> sut = array;
+            CollectionValue<int> sut = array;
 
-        Assert.IsTrue(array.SequenceEqual(sut));
+            sut.Should().NotBeNull();
+            sut.Count.Should().Be(array.Length);
+        }
     }
 
     [Test]
-    public void Cast_Should_ImplicitlyCastToEquatableArray_When_EquatableBagIsMethodArgument()
+    public void Cast_Should_HaveTheValuesOfArray_When_Calling_Method()
     {
-        var ints = new int[] { 1, 2, 3 };
+        var numbers = new int[] { 1, 2, 3 };
 
         bool method(CollectionValue<int> sut)
         {
-            return ints.SequenceEqual(sut);
+            return numbers.SequenceEqual(sut);
         }
 
-        Assert.IsTrue(method(ints));
+        method(numbers).Should().BeTrue();
     }
 
     [Test]
-    public void Cast_Should_ImplicitlyCastToArray_When_CastFrom_EquatableBag_To_Array()
+    public void Cast_Should_ImplicitlyCastToArray_When_AssigningCollectionValueToArray()
     {
         var array = new int[] { 1, 2, 3 };
 
-        int[] ints = CollectionValue.New(array);
+        int[] numbers = CollectionValue.New(array);
 
-        Assert.IsTrue(array.SequenceEqual(ints));
+        array.SequenceEqual(numbers).Should().BeTrue();
     }
 
     [Test]
-    public void Equals_Should_ReturnFalse_When_SameSize_SameValues_DifferentPositions_OfElementsAreSame()
+    public void Equals_Should_ReturnTrue_When_SameSize_SameValues_DifferentPositions_OfElements()
     {
         var arr1 = new int[] { 1, 2, 3 };
         var arr2 = new int[] { 3, 2, 1 };
 
-        Assert.IsFalse(arr1.Equals(arr2));
+        arr1.Equals(arr2).Should().BeFalse();
 
-        var eqArr1 = CollectionValue.New(arr1);
-        var eqArr2 = CollectionValue.New(arr2);
+        var sut1 = CollectionValue.New(arr1);
+        var sut2 = CollectionValue.New(arr2);
 
-        Assert.IsTrue(eqArr1.Equals(eqArr2));
+        sut1.Equals(sut2).Should().BeTrue();
     }
 
     [Test]
-    public void Equals_Should_ReturnTrue_When_SameSize_SameValues_SamePositions_OfElementsAreSame()
+    public void Equals_Should_ReturnTrue_When_SameSize_SameValues_SamePositions_OfElements()
     {
         var arr1 = new int[] { 1, 2, 3 };
         var arr2 = new int[] { 1, 2, 3 };
 
-        Assert.IsFalse(arr1.Equals(arr2));
+        arr1.Equals(arr2).Should().BeFalse();
 
-        var eqArr1 = CollectionValue.New(arr1);
-        var eqArr2 = CollectionValue.New(arr2);
+        var sut1 = CollectionValue.New(arr1);
+        var sut2 = CollectionValue.New(arr2);
 
-        Assert.IsTrue(eqArr1.Equals(eqArr2));
+        sut1.Equals(sut2).Should().BeTrue();
     }
 
     [Test]
-    public void GetHashCode_Should_ReturnSameHashCode_When_SameSizes_SameValues_DifferentPositions()
+    public void GetHashCode_Should_ReturnSameHashCode_When_SameSizes_SameValues_DifferentPositions_OfElements()
     {
-        var eqArr1 = CollectionValue.New(1, 2, 3);
-        var eqArr2 = CollectionValue.New(3, 2, 1);
+        var sut1 = CollectionValue.New(1, 2, 3);
+        var sut2 = CollectionValue.New(3, 2, 1);
 
-        Assert.AreEqual(eqArr1.GetHashCode(), eqArr2.GetHashCode());
+        sut1.GetHashCode().Should().Be(sut2.GetHashCode());
     }
 
     [Test]
-    public void GetHashCode_Should_ReturnSameHashCode_When_SameSizes_SameValues_SamePositions()
+    public void GetHashCode_Should_ReturnSameHashCode_When_SameSizes_SameValues_SamePositions_OfElements()
     {
-        var eqArr1 = CollectionValue.New(1, 2, 3);
-        var eqArr2 = CollectionValue.New(1, 2, 3);
+        var sut1 = CollectionValue.New(1, 2, 3);
+        var sut2 = CollectionValue.New(1, 2, 3);
 
-        Assert.AreEqual(eqArr1.GetHashCode(), eqArr2.GetHashCode());
+        sut1.GetHashCode().Should().Be(sut2.GetHashCode());
     }
 
     [Test]
-    public void New_Should_ReturnAnEquatableArrayWith3Elements_When_ArrayArgumentHas3Elements()
+    public void New_Should_ReturnCollectionValue_When_Called()
     {
         var array = new int[] { 1, 2, 3 };
 
-        var eqArray = ArrayValue.New(array);
+        var sut = CollectionValue.New(array);
 
-        Assert.AreEqual(array.Length, eqArray.Length);
+        sut.Should().NotBeNull();
+    }
+
+    [Test]
+    public void New_Should_ReturnCollectionValueWith3Elements_When_ArrayArgumentHas3Elements()
+    {
+        var array = new int[] { 1, 2, 3 };
+
+        var sut = CollectionValue.New(array);
+
+        sut.Count.Should().Be(array.Length);
+        sut.SequenceEqual(array).Should().BeTrue();
     }
 }

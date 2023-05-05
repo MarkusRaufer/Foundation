@@ -1216,34 +1216,6 @@ public static class EnumerableExtensions
     }
 
     /// <summary>
-    /// Returns true if items is null or empty.
-    /// </summary>
-    /// <typeparam name="T"></typeparam>
-    /// <param name="items"></param>
-    /// <returns></returns>
-    public static bool IsNullOrEmpty<T>(this IEnumerable<T>? items)
-    {
-        if (items == null) return true;
-        return !items.Any();
-    }
-
-    /// <summary>
-    /// Checks if <paramref name="rhs"/> is a subset of <paramref name="lhs"/>.
-    /// </summary>
-    /// <typeparam name="T"></typeparam>
-    /// <param name="lhs"></param>
-    /// <param name="rhs"></param>
-    /// <returns></returns>
-    public static bool IsSubsetOf<T>(this IEnumerable<T> lhs, IEnumerable<T> rhs)
-    {
-        rhs.ThrowIfNull();
-
-        var search = new HashSet<T>(lhs);
-        return search.IsSubsetOf(rhs);
-
-    }
-
-    /// <summary>
     /// Iterates to all items. Can be used to iterate all items without using memory.
     /// </summary>
     /// <typeparam name="T"></typeparam>

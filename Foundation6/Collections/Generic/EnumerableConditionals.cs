@@ -1,4 +1,5 @@
-﻿using System.Runtime.CompilerServices;
+﻿using System.ComponentModel;
+using System.Runtime.CompilerServices;
 
 namespace Foundation.Collections.Generic;
 
@@ -131,6 +132,23 @@ public static class EnumerableConditionals
     }
 
     /// <summary>
+    /// If items is empty <paramref name="whenEmpty"/> is called otherwise <paramref name="whenNotEmpty"/>.
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <typeparam name="TResult"></typeparam>
+    /// <param name="items"></param>
+    /// <param name="whenNotEmpty"></param>
+    /// <param name="whenEmpty"></param>
+    /// <returns></returns>
+    public static TResult IfAny<T, TResult>(
+        this IEnumerable<T> items,
+        Func<IEnumerable<T>, TResult> whenNotEmpty,
+        Func<IEnumerable<T>, TResult> whenEmpty)
+    {
+        return items.Any() ? whenNotEmpty(items) : whenEmpty(items);
+    }
+
+    /// <summary>
     /// Returns alternative elements if enumerable is empty..
     /// </summary>
     /// <typeparam name="T"></typeparam>
@@ -160,10 +178,10 @@ public static class EnumerableConditionals
     }
 
     /// <summary>
-    /// If lhs is empty it returns the items from <see cref="whenEmpty"/> otherwise items.
+    /// If items is empty <paramref name="whenEmpty" /> otherwise items are returned.
     /// </summary>
     /// <typeparam name="T"></typeparam>
-    /// <param name="items"></param>
+    /// <param name="items">List of items.</param>
     /// <param name="whenEmpty">Is called when items is empty.</param>
     /// <returns></returns>
     public static IEnumerable<T> IfEmpty<T>(this IEnumerable<T> items, Func<IEnumerable<T>> whenEmpty)
@@ -186,6 +204,23 @@ public static class EnumerableConditionals
         {
             yield return it.Current;
         }
+    }
+
+    /// <summary>
+    /// If items is empty <paramref name="whenEmpty"/> is called otherwise <paramref name="whenNotEmpty"/>
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <typeparam name="TResult"></typeparam>
+    /// <param name="items"></param>
+    /// <param name="whenEmpty"></param>
+    /// <param name="whenNotEmpty"></param>
+    /// <returns></returns>
+    public static TResult IfEmpty<T, TResult>(
+        this IEnumerable<T> items,
+        Func<IEnumerable<T>, TResult> whenEmpty,
+        Func<IEnumerable<T>, TResult> whenNotEmpty)
+    {
+        return items.Any() ? whenNotEmpty(items) : whenEmpty(items);
     }
 
     public static IEnumerable<T> IfMoreOrEqualThan<T>(this IEnumerable<T> items, int numberOfItems)
@@ -232,6 +267,33 @@ public static class EnumerableConditionals
         {
             yield return it.Current;
         }
+    }
+
+    /// <summary>
+    /// Returns true if items is null or empty.
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <param name="items"></param>
+    /// <returns></returns>
+    public static bool IsNullOrEmpty<T>(this IEnumerable<T>? items)
+    {
+        if (items == null) return true;
+        return !items.Any();
+    }
+
+    /// <summary>
+    /// Checks if <paramref name="rhs"/> is a subset of <paramref name="lhs"/>.
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <param name="lhs"></param>
+    /// <param name="rhs"></param>
+    /// <returns></returns>
+    public static bool IsSubsetOf<T>(this IEnumerable<T> lhs, IEnumerable<T> rhs)
+    {
+        rhs.ThrowIfNull();
+
+        var search = new HashSet<T>(lhs);
+        return search.IsSubsetOf(rhs);
     }
 
     /// <summary>

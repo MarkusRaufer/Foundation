@@ -5,46 +5,46 @@ using System.Diagnostics.CodeAnalysis;
 
 public static class NonEmptyCollectionValue
 {
-    public static NonEmptyBagValue<T> New<T>(params T[] values)
+    public static NonEmptyCollectionValue<T> New<T>(params T[] values)
     {
-        return new NonEmptyBagValue<T>(values);
+        return new NonEmptyCollectionValue<T>(values);
     }
 }
 
 /// <summary>
-/// Immutable unordered collection that considers the equality of each element on <see cref="Equals(NonEmptyBagValue{T}). The collection must not be empty."/>.
+/// Immutable unordered collection that considers the equality of each element on <see cref="Equals(NonEmptyCollectionValue{T}). The collection must not be empty."/>.
 /// </summary>
 /// <typeparam name="T"></typeparam>
-public readonly struct NonEmptyBagValue<T>
+public readonly struct NonEmptyCollectionValue<T>
     : ICloneable
     , IReadOnlyCollection<T>
-    , IEquatable<NonEmptyBagValue<T>>
+    , IEquatable<NonEmptyCollectionValue<T>>
     , IEquatable<T[]>
 {
     private readonly int _hashCode;
     private readonly T[] _values;
 
-    public NonEmptyBagValue(IEnumerable<T> values)
+    public NonEmptyCollectionValue(IEnumerable<T> values)
         : this(values.ToArray())
     {
 
     }
-    public NonEmptyBagValue(T[] values)
+    public NonEmptyCollectionValue(T[] values)
     {
         _values = values.ThrowIfNullOrEmpty();
         _hashCode = HashCode.FromOrderedObjects(_values);
     }
 
-    public static implicit operator NonEmptyBagValue<T>(T[] array) => NonEmptyCollectionValue.New(array);
+    public static implicit operator NonEmptyCollectionValue<T>(T[] array) => NonEmptyCollectionValue.New(array);
 
-    public static implicit operator T[](NonEmptyBagValue<T> array) => array._values;
+    public static implicit operator T[](NonEmptyCollectionValue<T> array) => array._values;
 
-    public static bool operator ==(NonEmptyBagValue<T> left, NonEmptyBagValue<T> right)
+    public static bool operator ==(NonEmptyCollectionValue<T> left, NonEmptyCollectionValue<T> right)
     {
         return left.Equals(right);
     }
 
-    public static bool operator !=(NonEmptyBagValue<T> left, NonEmptyBagValue<T> right)
+    public static bool operator !=(NonEmptyCollectionValue<T> left, NonEmptyCollectionValue<T> right)
     {
         return !(left == right);
     }
@@ -60,7 +60,7 @@ public readonly struct NonEmptyBagValue<T>
             : new ArrayValue<T>((T[])_values.Clone());
     }
 
-    public override bool Equals([NotNullWhen(true)] object? obj) => obj is NonEmptyBagValue<T> other && Equals(other);
+    public override bool Equals([NotNullWhen(true)] object? obj) => obj is NonEmptyCollectionValue<T> other && Equals(other);
 
     public bool Equals(T[]? other)
     {
@@ -69,7 +69,7 @@ public readonly struct NonEmptyBagValue<T>
         return null != other && _values.EqualsCollection(other);
     }
 
-    public bool Equals(NonEmptyBagValue<T> other)
+    public bool Equals(NonEmptyCollectionValue<T> other)
     {
         if (IsEmpty) return other.IsEmpty;
         if (other.IsEmpty) return false;
