@@ -269,6 +269,65 @@ public static class EnumerableConditionals
         }
     }
 
+
+    /// <summary>
+    /// Returns true if all items are in an ascending order.
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <param name="items"></param>
+    /// <param name="allowEqual">if true equal values return true otherwise false.</param>
+    /// <returns></returns>
+    public static bool IsInAscendingOrder<T>(this IEnumerable<T> items, bool allowEqual = false)
+        where T : IComparable<T>
+    {
+        items.ThrowIfNull();
+
+        var it = items.GetEnumerator();
+
+        if (!it.MoveNext()) return true;
+
+        var prev = it.Current;
+        while (it.MoveNext())
+        {
+            var compare = prev.CompareTo(it.Current);
+
+            var isAscending = allowEqual ? 1 > compare : -1 == compare;
+            if (!isAscending) return false;
+
+            prev = it.Current;
+        }
+
+        return true;
+    }
+
+    /// <summary>
+    /// Returns true if all items are in an ascending order.
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <param name="items"></param>
+    /// <param name="compare"></param>
+    /// <returns></returns>
+    public static bool IsInAscendingOrder<T>(this IEnumerable<T> items, Func<T, T, CompareResult> compare)
+    {
+        items.ThrowIfNull();
+        compare.ThrowIfNull();
+
+        var it = items.GetEnumerator();
+
+        if (!it.MoveNext()) return true;
+
+        var prev = it.Current;
+        while (it.MoveNext())
+        {
+            if (CompareResult.Greater == compare(prev, it.Current))
+                return false;
+
+            prev = it.Current;
+        }
+
+        return true;
+    }
+
     /// <summary>
     /// Returns true if items is null or empty.
     /// </summary>

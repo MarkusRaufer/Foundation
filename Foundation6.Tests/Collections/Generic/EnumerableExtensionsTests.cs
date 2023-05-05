@@ -493,6 +493,56 @@ public class EnumerableExtensionsTests
     }
 
     [Test]
+    public void EqualsCollection_Should_ReturnFalse_When_Items_SameNumberOfElementsAndDifferentOccrencies()
+    {
+        var items1 = new[] { 1, 2, 3, 2, 1 };
+        var items2 = new[] { 2, 3, 2, 1, 2 };
+
+        Assert.IsFalse(items1.EqualsCollection(items2));
+        Assert.IsFalse(items2.EqualsCollection(items1));
+    }
+
+    [Test]
+    public void EqualsCollection_Should_ReturnTrue_When_SameNumberOfElementsAndSameOrder()
+    {
+        var items1 = Enumerable.Range(0, 5);
+        var items2 = Enumerable.Range(0, 5);
+
+        Assert.IsTrue(items1.EqualsCollection(items2));
+        Assert.IsTrue(items2.EqualsCollection(items1));
+    }
+
+    [Test]
+    public void EqualsCollection_Should_ReturnTrue_When_Items_SameNumberOfElementsAndDifferentOrder()
+    {
+        var items1 = new[] { 1, 2, 3, 2 };
+        var items2 = new[] { 2, 3, 2, 1 };
+
+        Assert.IsTrue(items1.EqualsCollection(items2));
+        Assert.IsTrue(items2.EqualsCollection(items1));
+    }
+
+    [Test]
+    public void EqualsCollection_Should_ReturnTrue_When_Items_SameNumberOfElementsAndSameOrder()
+    {
+        var items1 = Enumerable.Range(0, 5);
+        var items2 = Enumerable.Range(0, 5);
+
+        Assert.IsTrue(items1.EqualsCollection(items2));
+        Assert.IsTrue(items2.EqualsCollection(items1));
+    }
+
+    [Test]
+    public void EqualsCollection_Should_ReturnFalse_When_DifferentNumberOfElements()
+    {
+        var items1 = Enumerable.Range(0, 5);
+        var items2 = Enumerable.Range(0, 6);
+
+        Assert.IsFalse(items1.EqualsCollection(items2));
+        Assert.IsFalse(items2.EqualsCollection(items1));
+    }
+
+    [Test]
     public void ExceptBy()
     
     {
@@ -772,56 +822,6 @@ public class EnumerableExtensionsTests
             var expected = new[] { 1, 4, 3, 5 };
             CollectionAssert.AreEqual(expected, newItems);
         }
-    }
-
-    [Test]
-    public void IsEqualToSet_Should_ReturnFalse_When_Items_SameNumberOfElementsAndDifferentOccrencies()
-    {
-        var items1 = new[] { 1, 2, 3, 2, 1 };
-        var items2 = new[] { 2, 3, 2, 1, 2 };
-
-        Assert.IsFalse(items1.EqualsCollection(items2));
-        Assert.IsFalse(items2.EqualsCollection(items1));
-    }
-
-    [Test]
-    public void IsEqualToSet_Should_ReturnTrue_When_SameNumberOfElementsAndSameOrder()
-    {
-        var items1 = Enumerable.Range(0, 5);
-        var items2 = Enumerable.Range(0, 5);
-
-        Assert.IsTrue(items1.EqualsCollection(items2));
-        Assert.IsTrue(items2.EqualsCollection(items1));
-    }
-
-    [Test]
-    public void IsEqualToSet_Should_ReturnTrue_When_Items_SameNumberOfElementsAndDifferentOrder()
-    {
-        var items1 = new[] { 1, 2, 3, 2 };
-        var items2 = new[] { 2, 3, 2, 1 };
-
-        Assert.IsTrue(items1.EqualsCollection(items2));
-        Assert.IsTrue(items2.EqualsCollection(items1));
-    }
-
-    [Test]
-    public void IsEqualToSet_Should_ReturnTrue_When_Items_SameNumberOfElementsAndSameOrder()
-    {
-        var items1 = Enumerable.Range(0, 5);
-        var items2 = Enumerable.Range(0, 5);
-
-        Assert.IsTrue(items1.EqualsCollection(items2));
-        Assert.IsTrue(items2.EqualsCollection(items1));
-    }
-
-    [Test]
-    public void IsEqualToSet_Should_ReturnFalse_When_DifferentNumberOfElements()
-    {
-        var items1 = Enumerable.Range(0, 5);
-        var items2 = Enumerable.Range(0, 6);
-
-        Assert.IsFalse(items1.EqualsCollection(items2));
-        Assert.IsFalse(items2.EqualsCollection(items1));
     }
 
     [Test]
