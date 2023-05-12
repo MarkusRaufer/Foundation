@@ -2087,7 +2087,7 @@ public static class EnumerableExtensions
     }
 
     /// <summary>
-    /// Enable you to do folds like <see cref="=Aggregate"/>, while collecting the intermediate results.
+    /// Enables you to do folds like <see cref="=Aggregate"/>, while collecting the intermediate results.
     /// This is equivalent to the Scala scanLeft function.
     /// </summary>
     /// <typeparam name="T">Type of an item</typeparam>
@@ -2110,7 +2110,7 @@ public static class EnumerableExtensions
     }
 
     /// <summary>
-    /// Enable you to do folds like <see cref="=Aggregate"/>, while collecting the intermediate results.
+    /// Enables you to do folds like <see cref="=Aggregate"/>, while collecting the intermediate results.
     /// This is equivalent to the Scala scanRight function.
     /// </summary>
     /// <typeparam name="T">Type of an item</typeparam>
@@ -2225,6 +2225,32 @@ public static class EnumerableExtensions
         {
             if (item.TryGet(out var value)) yield return value;
         }
+    }
+
+    /// <summary>
+    /// Returns true if lhs and rhs has the same size and all values in the same order.
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <param name="lhs"></param>
+    /// <param name="rhs"></param>
+    /// <param name="equals"></param>
+    /// <returns></returns>
+    public static bool SequenceEqual<T>(this IEnumerable<T> lhs, IEnumerable<T> rhs, Func<T, T, bool> equals)
+    {
+        var itLhs = lhs.GetEnumerator();
+        var itRhs = rhs.GetEnumerator();
+
+        while(itLhs.MoveNext())
+        {
+            var hasNext = itRhs.MoveNext();
+            if (!hasNext) return false;
+
+            var l = itLhs.Current;
+            var r = itRhs.Current;
+            if(!equals(l, r)) return false;
+        }
+
+        return !itRhs.MoveNext();
     }
 
     /// <summary>

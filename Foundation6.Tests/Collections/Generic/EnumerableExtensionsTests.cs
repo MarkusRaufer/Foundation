@@ -63,6 +63,8 @@ public class EnumerableExtensionsTests
         public string? NickName { get; set; }
     }
 
+    private record Person(string Name, int Age);
+
     // ReSharper disable InconsistentNaming
 
     [Test]
@@ -1914,6 +1916,42 @@ public class EnumerableExtensionsTests
                              .ToArray();
 
         scanned.Should().BeEquivalentTo(new int[] { 15, 14, 12, 9, 5, 0 });
+    }
+
+    [Test]
+    public void SequenceEqual_Should_ReturnFalse_When_ListsAreDifferent_RhsHasShorterLength()
+    {
+        var names = Enumerable.Range(10, 5).Select(x => x.ToString());
+        var ages = Enumerable.Range(18, 5);
+
+        var persons1 = names.Zip(ages).Select(tuple => new Person(tuple.Item1, tuple.Item2));
+        var persons2 = names.Zip(ages).Select(tuple => new Person(tuple.Item1, tuple.Item2)).Take(2);
+
+        Assert.IsFalse(persons1.SequenceEqual(persons2, (l, r) => l.Name == r.Name && l.Age == r.Age));
+    }
+
+    [Test]
+    public void SequenceEqual_Should_ReturnFalse_When_ListsAreDifferent_RhsHasLargerLength()
+    {
+        var names = Enumerable.Range(10, 5).Select(x => x.ToString());
+        var ages = Enumerable.Range(18, 5);
+
+        var persons1 = names.Zip(ages).Select(tuple => new Person(tuple.Item1, tuple.Item2)).Take(2);
+        var persons2 = names.Zip(ages).Select(tuple => new Person(tuple.Item1, tuple.Item2));
+
+        Assert.IsFalse(persons1.SequenceEqual(persons2, (l, r) => l.Name == r.Name && l.Age == r.Age));
+    }
+    
+    [Test]
+    public void SequenceEqual_Should_ReturnTrue_When_ListsAreSame()
+    {
+        var names = Enumerable.Range(10, 5).Select(x => x.ToString());
+        var ages = Enumerable.Range(18, 5);
+
+        var persons1 = names.Zip(ages).Select(tuple => new Person(tuple.Item1, tuple.Item2));
+        var persons2 = names.Zip(ages).Select(tuple => new Person(tuple.Item1, tuple.Item2));
+
+        Assert.IsTrue(persons1.SequenceEqual(persons2, (l, r) => l.Name == r.Name && l.Age == r.Age));
     }
 
     [Test]
