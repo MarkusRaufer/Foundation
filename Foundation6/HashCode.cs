@@ -76,7 +76,7 @@ public static class HashCode
             return AddObjects(pairs);
         }
 
-        public HashCodeBuilder AddObjects(IEnumerable<object> objects)
+        public HashCodeBuilder AddObjects(IEnumerable<object?> objects)
         {
             if (null == objects) return this;
 
@@ -198,6 +198,11 @@ public static class HashCode
                               .GetHashCode();
     }
 
+    /// <summary>
+    /// Creates a hash code from ordered hash codes.
+    /// </summary>
+    /// <param name="hashCodes">An unordered list of hash codes.</param>
+    /// <returns></returns>
     public static int FromOrderedHashCode(params int[] hashCodes)
     {
         if (0 == hashCodes.Length) return 0;
@@ -207,11 +212,22 @@ public static class HashCode
         return FromHashCodes(hashCodes);
     }
 
+    /// <summary>
+    /// Creates a hash code from a list of ordered hash codes.
+    /// </summary>
+    /// <param name="hashCodes">An unordered list of hash codes.</param>
+    /// <returns></returns>
     public static int FromOrderedHashCodes(IEnumerable<int> hashCodes)
     {
         return FromOrderedHashCode(hashCodes.ToArray());
     }
 
+    /// <summary>
+    /// Creates a hash code from ordered hash codes.
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <param name="objects">An unordered list of objects.</param>
+    /// <returns></returns>
     public static int FromOrderedObject<T>(params T[] objects)
     {
         if (0 == objects.Length) return 0;
@@ -219,6 +235,12 @@ public static class HashCode
         return FromOrderedHashCodes(objects.Select(o => o.GetNullableHashCode()));
     }
 
+    /// <summary>
+    /// Creates a hash code from a list of ordered hash codes.
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <param name="objects">An unordered list of objects.</param>
+    /// <returns></returns>
     public static int FromOrderedObjects<T>(IEnumerable<T> objects)
     {
         return FromOrderedObject(objects.ToArray());
