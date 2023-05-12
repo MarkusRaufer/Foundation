@@ -1861,6 +1861,15 @@ public static class EnumerableExtensions
                                (t1, t2) => t1.Concat(new T[] { t2 }));
     }
 
+    /// <summary>
+    /// Creates permutations of two lists.
+    /// </summary>
+    /// <typeparam name="T1">Type of elements of first list.</typeparam>
+    /// <typeparam name="T2">Type of elements of second list.</typeparam>
+    /// <param name="lhs">first list.</param>
+    /// <param name="rhs">second list.</param>
+    /// <param name="repetitions">if true the permutations can include repetitions otherwise not.</param>
+    /// <returns></returns>
     public static IEnumerable<(T1, T2)> Permutations<T1, T2>(
         this IEnumerable<T1> lhs, 
         IEnumerable<T2> rhs, 
