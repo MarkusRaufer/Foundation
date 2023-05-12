@@ -40,15 +40,9 @@ public class LambdaEqualityComparer<T> : EqualityComparer<T>
             return x.Equals(y);
         };
 
-    public override bool Equals(T? x, T? y)
-    {
-        return _equals(x, y);
-    }
+    public override bool Equals(T? x, T? y) => _equals(x, y);
 
-    public override int GetHashCode([DisallowNull] T obj)
-    {
-        return _hashCodeFunc(obj);
-    }
+    public override int GetHashCode([DisallowNull] T obj) => _hashCodeFunc(obj);
 }
 
 public class LambdaEqualityComparer<T, TKey> : IEqualityComparer<T>
@@ -77,8 +71,5 @@ public class LambdaEqualityComparer<T, TKey> : IEqualityComparer<T>
         return eq;
     }
 
-    public int GetHashCode([DisallowNull] T obj)
-    {
-        return _hashCodeFunc(_selector(obj));
-    }
+    public int GetHashCode([DisallowNull] T obj) => _hashCodeFunc(_selector(obj));
 }
