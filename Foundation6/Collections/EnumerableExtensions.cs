@@ -212,6 +212,90 @@ public static class EnumerableExtensions
         }
     }
 
+    public static IEnumerable<IEnumerable<object>> Permutations(this IEnumerable<IEnumerable<object>> lists)
+    {
+        if (!lists.Any()) return new object[][] { Array.Empty<object>() };
+
+        var firstList = lists.First().ToArray();
+        var remainingLists = lists.Skip(1).ToArray();
+
+        var withoutFirstList = Permutations(remainingLists);
+
+        var permutations = new List<IEnumerable<object>>();
+
+        foreach (var lhs in firstList)
+        {
+            foreach (var permutationWithoutFirst in withoutFirstList)
+            {
+                var rhs = permutationWithoutFirst.ToArray();
+
+                var permutation = new object[1 + rhs.Length];
+                permutation[0] = lhs;
+
+                if (rhs.Length > 0) Array.Copy(rhs, 0, permutation, 1, rhs.Length);
+
+                permutations.Add(permutation);
+            }
+        }
+
+        return permutations;
+    }
+
+    public static object[][] PermutationsArrays(this object[][] lists)
+    {
+        if (lists.Length == 0)
+        {
+            return new object[][] { Array.Empty<object>() };
+        }
+
+        var firstList = lists.First();
+        var remainingLists = lists.Skip(1).ToArray();
+        var permutationsWithoutFirstList = PermutationsArrays(remainingLists);
+
+        var permutations = new List<object[]>();
+
+        foreach (var item in firstList)
+        {
+            foreach (var permutationWithoutFirstList in permutationsWithoutFirstList)
+            {
+                var permutation = new object[1 + permutationWithoutFirstList.Length];
+                permutation[0] = item;
+                if (permutationWithoutFirstList.Length > 0)
+                    Array.Copy(permutationWithoutFirstList, 0, permutation, 1, permutationWithoutFirstList.Length);
+
+                permutations.Add(permutation);
+            }
+        }
+
+        return permutations.ToArray();
+    }
+
+    public static List<List<object>> PermutationsLists(this List<List<object>> lists)
+    {
+        if (lists.Count == 0)
+        {
+            return new List<List<object>> { new List<object>() };
+        }
+
+        var firstList = lists.First();
+        var remainingLists = lists.Skip(1).ToList();
+        var permutationsWithoutFirstList = PermutationsLists(remainingLists);
+
+        var permutations = new List<List<object>>();
+
+        foreach (var item in firstList)
+        {
+            foreach (var permutationWithoutFirstList in permutationsWithoutFirstList)
+            {
+                var permutation = new List<object> { item };
+                permutation.AddRange(permutationWithoutFirstList);
+                permutations.Add(permutation);
+            }
+        }
+
+        return permutations;
+    }
+
     /// <summary>
     /// Returns all items that are not null.
     /// </summary>
