@@ -459,6 +459,14 @@ public static class EnumerableExtensions
         return !lhs.SymmetricDifference(rhs, retainDuplicates: true).Any();
     }
 
+    public static bool EqualsCollection<T>(this IEnumerable<T> lhs, IEnumerable<T> rhs, Func<T, T, bool> equal)
+    {
+        if (null == lhs) return null == rhs;
+        if (null == rhs) return false;
+
+        return !lhs.SymmetricDifference(rhs, retainDuplicates: true).Any();
+    }
+
     /// <summary>
     /// Returns all lhs elements which are not in rhs. The comparision is made between the TKey values.
     /// </summary>
@@ -535,6 +543,52 @@ public static class EnumerableExtensions
     public static IEnumerable<T> ExceptWithDuplicates<T>(this IEnumerable<T> lhs, IEnumerable<T> rhs)
     {
         var right = new Dictionary<NullableKey<T>, (int l, int r)>();
+        foreach (var r in rhs)
+        {
+            var key = NullableKey.New(r);
+            if (right.TryGetValue(key, out var tuple))
+            {
+                tuple.r++;
+                right[key] = tuple;
+                continue;
+            }
+
+            right[key] = (0, 1);
+        }
+
+        foreach (var left in lhs)
+        {
+            var key = NullableKey.New(left);
+            if (right.TryGetValue(key, out var tuple))
+            {
+                tuple.l++;
+                right[key] = tuple;
+
+                if (tuple.l <= tuple.r) continue;
+            }
+
+            yield return left;
+        }
+    }
+
+    /// <summary>
+    /// Returns all elements from <paramref name="lhs"/> which are not in <paramref name="rhs"/> including duplicates.
+    /// The smaller list should be rhs.
+    /// </summary>
+    /// <typeparam name="T">The type of the elements.</typeparam>
+    /// <typeparam name="TKey">The type of the selector value which is used for comparison.</typeparam>
+    /// <param name="lhs"></param>
+    /// <param name="rhs"></param>
+    /// <param name="selector"></param>
+    /// <returns></returns>
+    public static IEnumerable<T> ExceptWithDuplicates<T, TKey>(
+        this IEnumerable<T> lhs,
+        IEnumerable<T> rhs,
+        Func<T, TKey?> selector)
+    {
+        TKey? nullableSelector(NullableKey<T> x) => null == x.Value ? default : selector(x.Value);
+
+        var right = new Dictionary<NullableKey<T>, (int l, int r)>(new LambdaEqualityComparer<NullableKey<T>, TKey>(nullableSelector));
         foreach (var r in rhs)
         {
             var key = NullableKey.New(r);
@@ -1515,64 +1569,6 @@ public static class EnumerableExtensions
     }
 
     /// <summary>
-    /// Filters null items. 
-    /// </summary>
-    /// <typeparam name="T"></typeparam>
-    /// <param name="items"></param>
-    /// <returns></returns>
-    public static IEnumerable<T> NotNull<T>(this IEnumerable<T?>? items)
-    {
-        if (null == items) yield break;
-
-        foreach(var item in items)
-        {
-            if (null == item) continue;
-
-            yield return item;
-        }
-    }
-
-    /// <summary>
-    /// Returns all items not of type <paramref name="types"/>.
-    /// </summary>
-    /// <typeparam name="T"></typeparam>
-    /// <typeparam name="TResult"></typeparam>
-    /// <param name="items"></param>
-    /// <param name="selector"></param>
-    /// <param name="types"></param>
-    /// <returns></returns>
-    public static IEnumerable<T> NotOfType<T>(this IEnumerable<T> items, params Type[] types)
-    {
-        return items.NotOfType(x => x, types);
-    }
-
-    /// <summary>
-    /// Returns all items not of type <paramref name="types"/>.
-    /// </summary>
-    /// <typeparam name="T"></typeparam>
-    /// <typeparam name="TResult"></typeparam>
-    /// <param name="items"></param>
-    /// <param name="selector"></param>
-    /// <param name="types"></param>
-    /// <returns></returns>
-    public static IEnumerable<TResult> NotOfType<T, TResult>(
-        this IEnumerable<T> items,
-        Func<T, TResult> selector,
-        params Type[] types)
-    {
-        foreach (var item in items.ThrowIfNull())
-        {
-            if (null == item) continue;
-
-            var itemType = item.GetType();
-
-            if (types.Any(t => t.Equals(itemType) || t.IsAssignableFrom(itemType))) continue;
-
-            yield return selector(item);
-        }
-    }
-
-    /// <summary>
     /// Returns the item on a specific index.
     /// </summary>
     /// <typeparam name="T"></typeparam>
@@ -1650,19 +1646,6 @@ public static class EnumerableExtensions
     }
 
     /// <summary>
-    /// Returns all items whose type matches with a list of types.
-    /// </summary>
-    /// <typeparam name="T"></typeparam>
-    /// <typeparam name="TResult"></typeparam>
-    /// <param name="items"></param>
-    /// <param name="types"></param>
-    /// <returns></returns>
-    public static IEnumerable<T> OfType<T, TResult>(this IEnumerable<T> items, params Type[] types)
-    {
-        return items.OfType(x => x, types);
-    }
-
-    /// <summary>
     /// Returns all items with their occurrencies.
     /// </summary>
     /// <typeparam name="T">Item type</typeparam>
@@ -1711,6 +1694,26 @@ public static class EnumerableExtensions
     }
 
     /// <summary>
+    /// Returns all items whose type matches with a list of types.
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <typeparam name="TResult"></typeparam>
+    /// <param name="items"></param>
+    /// <param name="types"></param>
+    /// <returns></returns>
+    public static IEnumerable<T> OfType<T>(this IEnumerable<T> items, params Type[] types)
+    {
+        foreach (var item in items.ThrowIfNull())
+        {
+            if (null == item) continue;
+
+            var type = item.GetType();
+            if (types.Any(t => t.Equals(type) || t.IsAssignableFrom(type)))
+                yield return item;
+        }
+    }
+
+    /// <summary>
     /// Returns all items of type <paramref name="types"/>.
     /// </summary>
     /// <typeparam name="T"></typeparam>
@@ -1724,14 +1727,7 @@ public static class EnumerableExtensions
         Func<T, TResult> selector, 
         params Type[] types)
     {
-        foreach (var item in items.ThrowIfNull())
-        {
-            if (null == item) continue;
-
-            var type = item.GetType();
-            if (types.Any(t => t.Equals(type) || t.IsAssignableFrom(type)))
-                yield return selector(item);
-        }
+        return items.OfType(types).Select(selector);
     }
 
     /// <summary>
@@ -1863,6 +1859,15 @@ public static class EnumerableExtensions
         return Permutations(items, length - 1)
                     .SelectMany(t => items.Where(o => !t.Contains(o)),
                                (t1, t2) => t1.Concat(new T[] { t2 }));
+    }
+
+    public static IEnumerable<(T1, T2)> Permutations<T1, T2>(
+        this IEnumerable<T1> lhs, 
+        IEnumerable<T2> rhs, 
+        bool repetitions = true)
+    {
+        var tuples = lhs.SelectMany(l => rhs, (l, r) => (l, r));
+        return repetitions ? tuples : tuples.Distinct();
     }
 
     /// <summary>
@@ -2462,6 +2467,32 @@ public static class EnumerableExtensions
         }
 
         return lhs.ExceptWithDuplicates(rhs).Concat(rhs.ExceptWithDuplicates(lhs));
+    }
+
+    /// <summary>
+    /// Returns the symmetric difference of two lists.
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <typeparam name="TKey">The type of the selector value.</typeparam>
+    /// <param name="lhs"></param>
+    /// <param name="rhs"></param>
+    /// <param name="selector">Selects the value of each item to compare.</param>
+    /// <param name="retainDuplicates"></param>
+    /// <returns></returns>
+    public static IEnumerable<T> SymmetricDifference<T, TKey>(
+        this IEnumerable<T> lhs,
+        IEnumerable<T> rhs,
+        Func<T, TKey?> selector,
+        bool retainDuplicates = false)
+    {
+        if (!retainDuplicates)
+        {
+            var set = new HashSet<T>(lhs, new LambdaEqualityComparer<T, TKey>(selector));
+            set.SymmetricExceptWith(rhs);
+            return set;
+        }
+
+        return lhs.ExceptWithDuplicates(rhs, selector).Concat(rhs.ExceptWithDuplicates(lhs, selector));
     }
 
     public static IEnumerable<T> SymmetricDifferenceSorted<T>(

@@ -98,6 +98,54 @@ public static class EnumerableConditionals
         return items ?? Enumerable.Empty<T>();
     }
 
+    /// <summary>
+    /// Returns true if items include all types.
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <param name="items"></param>
+    /// <param name="includeAssignableTypes">If false only exact types are considered.</param>
+    /// <param name="types">The types to be searched.</param>
+    /// <returns></returns>
+    public static bool ExistsType<T>(this IEnumerable<T> items, bool includeAssignableTypes, params Type[] types)
+    {
+        items = items.ThrowIfNull();
+        types.ThrowIfOutOfRange(() => types.Length == 0);
+
+        var search = types.ToList();
+
+        Func<Type, Type, Type?> checkType = includeAssignableTypes ? ofType : ofExactType;
+
+        foreach (var item in items)
+        {
+            if (null == item) continue;
+
+            var type = item.GetType();
+            var checkedtype = search.Select(x => checkType(x, type)).FirstOrDefault(x => null != x);
+
+            if (null != checkedtype)
+            {
+                search.Remove(checkedtype);
+
+                if (0 == search.Count) return true;
+            }
+        }
+
+        static Type? ofExactType(Type lhs, Type rhs)
+        {
+            return lhs.Equals(rhs) ? lhs : null;
+        }
+
+        static Type? ofType(Type lhs, Type rhs)
+        {
+            var exactType = ofExactType(lhs, rhs);
+            if (null != exactType) return exactType;
+
+            return lhs.IsAssignableFrom(rhs) ? lhs : null;
+        }
+
+        return false;
+    }
+
     public static IElseIf<T> If<T>(
         this IEnumerable<T> items,
         Func<T, bool> predicate,
@@ -353,6 +401,64 @@ public static class EnumerableConditionals
 
         var search = new HashSet<T>(lhs);
         return search.IsSubsetOf(rhs);
+    }
+
+    /// <summary>
+    /// Filters null items. 
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <param name="items"></param>
+    /// <returns></returns>
+    public static IEnumerable<T> NotNull<T>(this IEnumerable<T?> items)
+    {
+        if (null == items) yield break;
+
+        foreach (var item in items)
+        {
+            if (null == item) continue;
+
+            yield return item;
+        }
+    }
+
+    /// <summary>
+    /// Returns all items not of type <paramref name="types"/>.
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <typeparam name="TResult"></typeparam>
+    /// <param name="items"></param>
+    /// <param name="selector"></param>
+    /// <param name="types"></param>
+    /// <returns></returns>
+    public static IEnumerable<T> NotOfType<T>(this IEnumerable<T> items, params Type[] types)
+    {
+        return items.NotOfType(x => x, types);
+    }
+
+    /// <summary>
+    /// Returns all items not of type <paramref name="types"/>.
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <typeparam name="TResult"></typeparam>
+    /// <param name="items"></param>
+    /// <param name="selector"></param>
+    /// <param name="types"></param>
+    /// <returns></returns>
+    public static IEnumerable<TResult> NotOfType<T, TResult>(
+        this IEnumerable<T> items,
+        Func<T, TResult> selector,
+        params Type[] types)
+    {
+        foreach (var item in items.ThrowIfNull())
+        {
+            if (null == item) continue;
+
+            var itemType = item.GetType();
+
+            if (types.Any(t => t.Equals(itemType) || t.IsAssignableFrom(itemType))) continue;
+
+            yield return selector(item);
+        }
     }
 
     /// <summary>

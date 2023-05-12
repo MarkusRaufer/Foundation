@@ -337,6 +337,23 @@ public class EnumerableExtensionsTests
         CollectionAssert.AreEqual(new[] { 1, 1, 2, 2, 3 }, diff);
     }
 
+
+    [Test]
+    public void SymmetricDifference_Should_Return3DateTimes1Doublet_When_Using_Selector_And_RetainDuplicates()
+    {
+        DateTime date(int day) => new DateTime(2020, 5, day);
+
+        var dates1 = new DateTime[] { date(1), date(2), date(1), date(3), date(4) };
+        var dates2 = new DateTime[] { date(1), date(2), date(3), date(5) };
+
+        var result = dates1.SymmetricDifference(dates2, x => x.Day, true).ToArray();
+
+        Assert.AreEqual(3, result.Length);
+        Assert.AreEqual(date(1), result[0]);
+        Assert.AreEqual(date(4), result[1]);
+        Assert.AreEqual(date(5), result[2]);
+    }
+
     [Test]
     public void Duplicates_DistinctIsFalse_WithMultipleDuplicateValues()
     {
@@ -600,6 +617,51 @@ public class EnumerableExtensionsTests
 
         var expected = new[] { 1, 3 };
         Assert.IsTrue(expected.SequenceEqual(result));
+    }
+
+    [Test]
+    public void ExceptWithDuplicates_Should_Return2DateTimes1Doublet_When_Using_Selector_LhsHasDuplicates()
+    {
+        DateTime date(int day) => new DateTime(2020, 5, day);
+
+        var dates1 = new DateTime[] { date(1), date(2), date(1), date(3), date(4) };
+        var dates2 = new DateTime[] { date(1), date(2), date(3) };
+
+        var result = dates1.ExceptWithDuplicates(dates2, x => x.Day).ToArray();
+
+        Assert.AreEqual(2, result.Length);
+        Assert.AreEqual(date(1), result[0]);
+        Assert.AreEqual(date(4), result[1]);
+    }
+
+    [Test]
+    public void ExceptWithDuplicates_Should_Return2Strings1Doublet_When_Using_Selector_LhsHasDuplicates()
+    {
+        DateTime date(int day) => new DateTime(2020, 5, day);
+
+        var dates1 = new string?[] 
+        { 
+            date(1).ToString(),
+            date(2).ToString(),
+            default,
+            date(1).ToString(),
+            date(3).ToString(),
+            date(4).ToString()
+        };
+
+        var dates2 = new string?[] 
+        {
+            date(1).ToString(),
+            date(2).ToString(),
+            date(3).ToString()
+        };
+
+        var result = dates1.ExceptWithDuplicates(dates2, x => null == x ? 0 : DateTime.Parse(x).Day).ToArray();
+
+        Assert.AreEqual(3, result.Length);
+        Assert.AreEqual(null, result[0]);
+        Assert.AreEqual(date(1).ToString(), result[1]);
+        Assert.AreEqual(date(4).ToString(), result[2]);
     }
 
     [Test]
@@ -912,6 +974,171 @@ public class EnumerableExtensionsTests
 
         Assert.AreEqual(new DateTime(2017, 4, 1), lhsFound);
         Assert.AreEqual(new DateTime(2020, 4, 1), rhsFound);
+    }
+
+    [Test]
+    public void Match_Should_ReturnValues_When_ItemsMatch()
+    {
+        var lhs = new[] { 3, 2, 2, 1 };
+        var rhs = new[] { 1, 3, 4, 3 };
+
+        var (l, r) = lhs.Match(rhs, x => x);
+
+        var lhsMatch = l.OrderBy(x => x).ToArray();
+        Assert.AreEqual(2, lhsMatch.Length);
+
+        {
+            Assert.AreEqual(1, lhsMatch[0]);
+            Assert.AreEqual(3, lhsMatch[1]);
+        }
+
+        var rhsMatch = r.OrderBy(x => x).ToArray();
+
+        Assert.AreEqual(3, rhsMatch.Length);
+        {
+            Assert.AreEqual(1, rhsMatch[0]);
+            Assert.AreEqual(3, rhsMatch[1]);
+            Assert.AreEqual(3, rhsMatch[2]);
+        }
+    }
+
+    [Test]
+    public void Match_Should_ReturnValues_When_ItemsMatchKey()
+    {
+        var dates1 = new List<DateTime>
+        {
+           new DateTime(2017, 4, 13),
+           new DateTime(2017, 5,  2),
+           new DateTime(2017, 9,  3),
+           new DateTime(2018, 7,  1),
+        };
+
+        var dates2 = new List<DateTime>
+        {
+            new DateTime(2015, 4, 29),
+            new DateTime(2019, 2,  5),
+            new DateTime(2019, 6,  1),
+            new DateTime(2020, 4,  1)
+        };
+
+        var (lhs, rhs) = dates1.Match(dates2, dt => new { dt.Month });
+
+        var lhsFound = lhs.Single();
+        Assert.AreEqual(new DateTime(2017, 4, 13), lhsFound);
+
+        var rhsFound = rhs.ToArray();
+        Assert.AreEqual(2, rhsFound.Length);
+
+        Assert.AreEqual(new DateTime(2015, 4, 29), rhsFound[0]);
+        Assert.AreEqual(new DateTime(2020, 4, 1), rhsFound[1]);
+    }
+
+    [Test]
+    public void MatchWithOccurrencies_Should_ReturnValuesWithTheirOccurrencies_When_ItemsMatch()
+    {
+        var lhs = new[] { 3, 2, 2, 1 };
+        var rhs = new[] { 1, 3, 4, 3 };
+
+        var matching = lhs.MatchWithOccurrencies(rhs).ToArray();
+
+        Assert.AreEqual(2, matching.Length);
+        {
+            var tuple = matching.First(t => t.lhs.item == 1);
+            Assert.AreEqual(1, tuple.lhs.counter);
+            Assert.AreEqual(1, tuple.rhs.counter);
+        }
+        {
+            var tuple = matching.First(t => t.lhs.item == 3);
+            Assert.AreEqual(1, tuple.lhs.counter);
+            Assert.AreEqual(2, tuple.rhs.counter);
+        }
+    }
+
+    [Test]
+    public void MatchWithOccurrencies_Should_ReturnValuesWithTheirOccurrencies_When_KeysMatch()
+    {
+        var dates1 = new List<DateTime>
+        {
+           new DateTime(2017, 4, 13),
+           new DateTime(2017, 5,  2),
+           new DateTime(2017, 9,  3),
+           new DateTime(2018, 7,  1)
+        };
+
+        var dates2 = new List<DateTime>
+        {
+            new DateTime(2015, 4, 29),
+            new DateTime(2019, 2,  5),
+            new DateTime(2019, 6,  1),
+            new DateTime(2020, 4,  1)
+        };
+
+        var matching = dates1.MatchWithOccurrencies(dates2, dt => dt.Month).ToArray();
+
+        Assert.AreEqual(1, matching.Length);
+        var expectedLhs = (counter: 1, item: new DateTime(2017, 4, 13));
+        var expectedRhs = (counter: 2, item: new DateTime(2017, 4, 13));
+
+        var tuple = matching[0];
+        Assert.AreEqual(expectedLhs, tuple.lhs);
+        Assert.AreEqual(expectedRhs, tuple.rhs);
+    }
+
+    [Test]
+    public void MatchWithOccurrencies_Should_NotReturnValues_When_ItemsDonotMatch()
+    {
+        var lhs = new[] { 1, 2, 3 };
+        var rhs = new[] { 4, 5, 6 };
+
+        var matching = lhs.MatchWithOccurrencies(rhs).ToArray();
+
+        Assert.AreEqual(0, matching.Length);
+    }
+
+    [Test]
+    public void MatchWithOccurrencies_Should_ReturnValuesWithTheirOccurrencies_When_ItemsMatchIncludingNullValues()
+    {
+        var lhs = new int?[] { 3, 2, null, 2, 1 };
+        var rhs = new int?[] { 1, null, 3, 4, null, 3 };
+
+        var matching = lhs.MatchWithOccurrencies(rhs).ToArray();
+
+        Assert.AreEqual(3, matching.Length);
+        {
+            var tuple = matching.First(t => t.lhs.item == null);
+            Assert.AreEqual(1, tuple.lhs.counter);
+            Assert.AreEqual(2, tuple.rhs.counter);
+        }
+        {
+            var tuple = matching.First(t => t.lhs.item == 1);
+            Assert.AreEqual(1, tuple.lhs.counter);
+            Assert.AreEqual(1, tuple.rhs.counter);
+        }
+        {
+            var tuple = matching.First(t => t.lhs.item == 3);
+            Assert.AreEqual(1, tuple.lhs.counter);
+            Assert.AreEqual(2, tuple.rhs.counter);
+        }
+    }
+
+    [Test]
+    public void MaxBy()
+    {
+        var items = new string[] { "A", "ABC", "AB", "ABCD" };
+
+        var max = items.MaxBy((a, b) => a.Length > b.Length ? 1 : -1);
+
+        Assert.AreEqual("ABCD", max);
+    }
+
+    [Test]
+    public void MinBy()
+    {
+        var items = new string[] { "A", "ABC", "AB", "ABCD" };
+
+        var min = items.MinBy((a, b) => a.Length > b.Length ? 1 : -1);
+
+        Assert.AreEqual("A", min);
     }
 
     [Test]
@@ -1462,168 +1689,24 @@ public class EnumerableExtensionsTests
     }
 
     [Test]
-    public void Match_Should_ReturnValues_When_ItemsMatch()
+    public void Permutations_Should_Return2Permutations_When_Using2Lists()
     {
-        var lhs = new[] { 3, 2, 2, 1 };
-        var rhs = new[] { 1, 3, 4, 3 };
+        var numbers = Enumerable.Range(1, 3);
+        var strings = Enumerable.Range(1, 3).Select(x => x.ToString());
 
-        var (l, r) = lhs.Match(rhs, x => x);
+        var permutations = numbers.Permutations(strings).ToArray();
 
-        var lhsMatch = l.OrderBy(x => x).ToArray();
-        Assert.AreEqual(2, lhsMatch.Length);
+        Assert.AreEqual(9, permutations.Length);
 
-        {
-            Assert.AreEqual(1, lhsMatch[0]);
-            Assert.AreEqual(3, lhsMatch[1]);
-        }
-
-        var rhsMatch = r.OrderBy(x => x).ToArray();
-
-        Assert.AreEqual(3, rhsMatch.Length);
-        {
-            Assert.AreEqual(1, rhsMatch[0]);
-            Assert.AreEqual(3, rhsMatch[1]);
-            Assert.AreEqual(3, rhsMatch[2]);
-        }
-    }
-
-    [Test]
-    public void Match_Should_ReturnValues_When_ItemsMatchKey()
-    {
-        var dates1 = new List<DateTime>
-        {
-           new DateTime(2017, 4, 13),
-           new DateTime(2017, 5,  2),
-           new DateTime(2017, 9,  3),
-           new DateTime(2018, 7,  1),
-        };
-
-        var dates2 = new List<DateTime>
-        {
-            new DateTime(2015, 4, 29),
-            new DateTime(2019, 2,  5),
-            new DateTime(2019, 6,  1),
-            new DateTime(2020, 4,  1)
-        };
-
-        var (lhs, rhs) = dates1.Match(dates2, dt => new { dt.Month });
-
-        var lhsFound = lhs.Single();
-        Assert.AreEqual(new DateTime(2017, 4, 13), lhsFound);
-
-        var rhsFound = rhs.ToArray();
-        Assert.AreEqual(2, rhsFound.Length);
-
-        Assert.AreEqual(new DateTime(2015, 4, 29), rhsFound[0]);
-        Assert.AreEqual(new DateTime(2020, 4,  1), rhsFound[1]);
-    }
-
-    [Test]
-    public void MatchWithOccurrencies_Should_ReturnValuesWithTheirOccurrencies_When_ItemsMatch()
-    {
-        var lhs = new [] { 3, 2, 2, 1 };
-        var rhs = new [] { 1, 3, 4, 3 };
-
-        var matching = lhs.MatchWithOccurrencies(rhs).ToArray();
-
-        Assert.AreEqual(2, matching.Length);
-        {
-            var tuple = matching.First(t => t.lhs.item == 1);
-            Assert.AreEqual(1, tuple.lhs.counter);
-            Assert.AreEqual(1, tuple.rhs.counter);
-        }
-        {
-            var tuple = matching.First(t => t.lhs.item == 3);
-            Assert.AreEqual(1, tuple.lhs.counter);
-            Assert.AreEqual(2, tuple.rhs.counter);
-        }
-    }
-
-    [Test]
-    public void MatchWithOccurrencies_Should_ReturnValuesWithTheirOccurrencies_When_KeysMatch()
-    {
-        var dates1 = new List<DateTime>
-        {
-           new DateTime(2017, 4, 13),
-           new DateTime(2017, 5,  2),
-           new DateTime(2017, 9,  3),
-           new DateTime(2018, 7,  1)
-        };
-
-        var dates2 = new List<DateTime>
-        {
-            new DateTime(2015, 4, 29),
-            new DateTime(2019, 2,  5),
-            new DateTime(2019, 6,  1),
-            new DateTime(2020, 4,  1)
-        };
-
-        var matching = dates1.MatchWithOccurrencies(dates2, dt => dt.Month).ToArray();
-
-        Assert.AreEqual(1, matching.Length);
-        var expectedLhs = (counter: 1, item: new DateTime(2017, 4, 13));
-        var expectedRhs = (counter: 2,item: new DateTime(2017, 4, 13));
-
-        var tuple = matching[0];
-        Assert.AreEqual(expectedLhs, tuple.lhs);
-        Assert.AreEqual(expectedRhs, tuple.rhs);
-    }
-
-    [Test]
-    public void MatchWithOccurrencies_Should_NotReturnValues_When_ItemsDonotMatch()
-    {
-        var lhs = new[] { 1, 2, 3 };
-        var rhs = new[] { 4, 5, 6 };
-
-        var matching = lhs.MatchWithOccurrencies(rhs).ToArray();
-
-        Assert.AreEqual(0, matching.Length);
-    }
-
-    [Test]
-    public void MatchWithOccurrencies_Should_ReturnValuesWithTheirOccurrencies_When_ItemsMatchIncludingNullValues()
-    {
-        var lhs = new int?[] { 3, 2, null, 2, 1 };
-        var rhs = new int?[] { 1, null, 3, 4, null, 3 };
-
-        var matching = lhs.MatchWithOccurrencies(rhs).ToArray();
-
-        Assert.AreEqual(3, matching.Length);
-        {
-            var tuple = matching.First(t => t.lhs.item == null);
-            Assert.AreEqual(1, tuple.lhs.counter);
-            Assert.AreEqual(2, tuple.rhs.counter);
-        }
-        {
-            var tuple = matching.First(t => t.lhs.item == 1);
-            Assert.AreEqual(1, tuple.lhs.counter);
-            Assert.AreEqual(1, tuple.rhs.counter);
-        }
-        {
-            var tuple = matching.First(t => t.lhs.item == 3);
-            Assert.AreEqual(1, tuple.lhs.counter);
-            Assert.AreEqual(2, tuple.rhs.counter);
-        }
-    }
-
-    [Test]
-    public void MaxBy()
-    {
-        var items = new string[] { "A", "ABC", "AB", "ABCD" };
-
-        var max = items.MaxBy((a, b) => a.Length > b.Length ? 1 : -1);
-
-        Assert.AreEqual("ABCD", max);
-    }
-
-    [Test]
-    public void MinBy()
-    {
-        var items = new string[] { "A", "ABC", "AB", "ABCD" };
-
-        var min = items.MinBy((a, b) => a.Length > b.Length ? 1 : -1);
-
-        Assert.AreEqual("A", min);
+        Assert.AreEqual((1, "1"), permutations[0]);
+        Assert.AreEqual((1, "2"), permutations[1]);
+        Assert.AreEqual((1, "3"), permutations[2]);
+        Assert.AreEqual((2, "1"), permutations[3]);
+        Assert.AreEqual((2, "2"), permutations[4]);
+        Assert.AreEqual((2, "3"), permutations[5]);
+        Assert.AreEqual((3, "1"), permutations[6]);
+        Assert.AreEqual((3, "2"), permutations[7]);
+        Assert.AreEqual((3, "3"), permutations[8]);
     }
 
     [Test]
