@@ -21,6 +21,13 @@ public static class EnumerableEx
             yield return value;
         }
     }
+
+    public static IEnumerable<char> Range(char min, char max)
+    {
+        for (var i = min; i <= max; i++)
+            yield return i;
+    }
+
     public static IEnumerable<int> Range(int min, int max)
     {
         for (var i = min; i <= max; i++)
