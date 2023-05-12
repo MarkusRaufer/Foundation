@@ -225,6 +225,8 @@ public static class EnumerableExtensions
 
         foreach (var item in items)
         {
+            if(null == item) continue;
+
             var type = item.GetType();
             if (types.Any(t => t.Equals(type) || t.IsAssignableFrom(type)))
                 yield return item;
