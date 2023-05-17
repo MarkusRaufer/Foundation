@@ -23,6 +23,21 @@ public static class ExpressionHelper
         return AreEqual(lhs.Flatten(), rhs.Flatten());
     }
 
+    public static bool AreEqual(LambdaExpression lhs, LambdaExpression rhs, bool includeParameterNames = false)
+    {
+        lhs.ThrowIfNull();
+        rhs.ThrowIfNull();
+
+        var parameters = includeParameterNames
+            ? lhs.Parameters.Select(x => x.Type).SequenceEqual(rhs.Parameters.Select(x => x.Type))
+            : lhs.Parameters.Select(x => x.Type).SequenceEqual(rhs.Parameters.Select(x => x.Type));
+
+        return lhs.ReturnType == rhs.ReturnType
+            && lhs.Type == rhs.Type
+            && lhs.Parameters.SequenceEqual(rhs.Parameters)
+            && AreEqual(lhs.Body, rhs.Body);
+
+    }
     public static bool AreEqual(MemberExpression lhs, MemberExpression rhs)
     {
         lhs.ThrowIfNull();
@@ -31,10 +46,12 @@ public static class ExpressionHelper
         return lhs.Member.Equals(rhs.Member);
     }
 
-    public static bool AreEqual(ParameterExpression lhs, ParameterExpression rhs)
+    public static bool AreEqual(ParameterExpression lhs, ParameterExpression rhs, bool includeParameterNames = false)
     {
         lhs.ThrowIfNull();
         rhs.ThrowIfNull();
+
+        if (includeParameterNames && lhs.Name != rhs.Name) return false;
 
         return lhs.Type == rhs.Type;
     }
@@ -65,7 +82,7 @@ public static class ExpressionHelper
             {
                 if (l is not LambdaExpression lhsLambda || r is not LambdaExpression rhsLambda) return false;
 
-                if (!lhsLambda.ReturnType.Equals(rhsLambda.ReturnType)) return false;
+                if (!AreEqual(lhsLambda, rhsLambda)) return false;
 
                 continue;
             }

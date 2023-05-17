@@ -13,5 +13,10 @@ namespace Foundation.Linq.Expressions
                 _ => null,
             };
         }
+
+        public static bool IsPredicate(this LambdaExpression lambda)
+        {
+            return lambda.ReturnType == typeof(bool);
+        }
     }
 }

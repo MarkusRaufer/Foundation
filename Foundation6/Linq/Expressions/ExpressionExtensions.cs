@@ -1,4 +1,6 @@
-﻿using System.Linq.Expressions;
+﻿using Foundation.Collections.Generic;
+using System.Linq.Expressions;
+using System.Runtime.InteropServices;
 
 namespace Foundation.Linq.Expressions;
 
@@ -34,14 +36,19 @@ public static class ExpressionExtensions
         };
     }
 
-    public static bool EqualsToExpression(this LambdaExpression lhs, LambdaExpression rhs)
+    public static bool EqualsToExpression(this LambdaExpression lhs, LambdaExpression rhs, bool considerParameterName = false)
     {
         if(null == lhs) return null == rhs;
+
+        Func<ParameterExpression, ParameterExpression, bool> equal = considerParameterName
+        ? (ParameterExpression left, ParameterExpression right) => left.Name == right.Name && left.Type == right.Type
+        : (ParameterExpression left, ParameterExpression right) => left.Type == right.Type;
+        
         return null != rhs
             && lhs.NodeType == rhs.NodeType
             && lhs.Type == rhs.Type
             && lhs.ReturnType == rhs.ReturnType
-            && lhs.Parameters.Select(x => x.Type).SequenceEqual(rhs.Parameters.Select(x => x.Type))
+            && lhs.Parameters.SequenceEqual(rhs.Parameters, (l, r) => equal(l, r))
             && EqualsToExpression(lhs.Body, rhs.Body);
     }
 
@@ -139,44 +146,34 @@ public static class ExpressionExtensions
                                             expression.Operand.GetExpressionHashCode());
     }
 
-    //public static Type? GetDataType(this Expression expression)
-    //{
-    //    return expression switch
-    //    {
-    //        ConstantExpression constant => constant.Type,
-    //        MemberExpression member => member.Member.ReflectedType,
-    //        ParameterExpression parameter => parameter.Type,
-    //        UnaryExpression unary => unary.Type,
-    //        _ => expression.GetType(),
-    //    };
-    //}
+    public static bool IsConvert(this Expression expression)
+    {
+        return expression.NodeType == ExpressionType.Convert;
+    }
 
-    //public static ParameterExpression? GetParameter(this Expression expression)
-    //{
-    //    return expression switch
-    //    {
-    //        ParameterExpression parameter => parameter,
-    //        MemberExpression member => member.Expression as ParameterExpression,
-    //        _ => null,
-    //    };
-    //}
+    public static bool IsPredicate(this Expression expression)
+    {
+        return expression is LambdaExpression lambda
+            && lambda.Body is BinaryExpression binaryExpression
+            && binaryExpression.IsPredicate();
+    }
 
-    //public static bool IsConvert(this Expression expression)
-    //{
-    //    return expression.NodeType == ExpressionType.Convert;
-    //}
+    public static bool IsTerminal(this Expression expression)
+    {
+        if(isTerminalNode(expression)) return true;
 
-    //public static bool IsPredicate(this Expression expression)
-    //{
-    //    return expression is LambdaExpression lambda
-    //        && lambda.Body is BinaryExpression binaryExpression
-    //        && binaryExpression.IsPredicate();
-    //}
+        if (expression is not BinaryExpression binary) return false;
 
-    //public static bool IsTerminal(this Expression expression)
-    //{
-    //    return expression.NodeType == ExpressionType.Constant
-    //        || expression.NodeType == ExpressionType.MemberAccess
-    //        || expression.NodeType == ExpressionType.Parameter;
-    //}
+        return isTerminalNode(binary.Left) && isTerminalNode(binary.Right);
+
+        static bool isTerminalNode(Expression exp) => exp.NodeType switch
+        {
+            ExpressionType.Constant or
+            ExpressionType.MemberAccess or
+            ExpressionType.Parameter => true,
+            ExpressionType.Convert => exp is UnaryExpression unary && isTerminalNode(unary.Operand),
+            ExpressionType.Modulo => exp is BinaryExpression be && isTerminalNode(be.Left) && isTerminalNode(be.Right),
+            _ => false
+        };
+    }
 }

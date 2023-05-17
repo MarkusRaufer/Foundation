@@ -1,13 +1,23 @@
 ﻿using FluentAssertions;
+using FluentAssertions.Execution;
 using NUnit.Framework;
 using System;
 using System.Linq.Expressions;
+using System.Reflection;
 
 namespace Foundation.Linq.Expressions;
 
 [TestFixture]
 public class ExpressionExtensionsTests
 {
+    private enum Gender
+    {
+        Female,
+        Male
+    };
+
+    private record Person(string Name, Gender Gender, int Age);
+
     [Test]
     public void GetExpressionHashCode_Should_ReturnDifferentHashCodes_When_UsingBinaryExpressionIsEqual_DifferentParameterTypes()
     {
@@ -108,5 +118,25 @@ public class ExpressionExtensionsTests
         var hashCode2 = Expression.Parameter(typeof(string), "a").GetExpressionHashCode(false);
 
         hashCode1.Should().Be(hashCode2);
+    }
+
+    [Test]
+    public void IsTerminal_Should_ReturnTrue_When_Expression_ContainsConvert_BinaryExpressionLeftAndRightAreTerminal()
+    {
+        Expression<Func<Person, bool>> expression = p => p.Gender == Gender.Male;
+        var lambda = expression as LambdaExpression;
+
+        Assert.IsTrue(lambda.Body.IsTerminal());
+    }
+
+    [Test]
+    public void IsTerminal_Should_ReturnTrue_When_Expression_ContainsModulo_BinaryExpressionLeftAndRightAreTerminal()
+    {
+        Expression<Func<Person, bool>> expression = p => p.Gender == Gender.Male && p.Age % 2 == 0;
+        var lambda = expression as LambdaExpression;
+
+        var binary = (BinaryExpression)lambda.Body;
+        Assert.IsTrue(binary.Left.IsTerminal());
+        Assert.IsTrue(binary.Right.IsTerminal());
     }
 }
