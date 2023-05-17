@@ -6,6 +6,29 @@ namespace Foundation.Collections.Generic;
 public static class EnumerableTransformations
 {
     /// <summary>
+    /// Transforms an enumerable of enumerables into an array of arrays.
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <param name="lists"></param>
+    /// <returns></returns>
+    public static T[][] ToArrayOfArrays<T>(this IEnumerable<IEnumerable<T>> lists)
+    {
+        return lists.ToArrays().ToArray();
+    }
+
+    /// <summary>
+    /// Transforms a list of enumerables into a list of arrays.
+    /// </summary>
+    /// <typeparam name="T">Type of the enumerable elements.</typeparam>
+    /// <param name="lists">List of enumerables</param>
+    /// <returns></returns>
+    public static IEnumerable<T[]> ToArrays<T>(this IEnumerable<IEnumerable<T>> lists)
+    {
+        foreach(var list in lists)
+            yield return list.ToArray();
+    }
+
+    /// <summary>
     /// Makes the enumerable interruptible. This can be used for nested foreach loops.
     /// </summary>
     /// <typeparam name="T"></typeparam>

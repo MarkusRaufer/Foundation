@@ -212,7 +212,7 @@ public static class EnumerableExtensions
         }
     }
 
-    public static IEnumerable<IEnumerable<object>> Permutations(this IEnumerable<IEnumerable<object>> lists)
+    public static IEnumerable<object[]> Permutations(this IEnumerable<IEnumerable<object>> lists)
     {
         if (!lists.Any()) return new object[][] { Array.Empty<object>() };
 
@@ -221,7 +221,7 @@ public static class EnumerableExtensions
 
         var withoutFirstList = Permutations(remainingLists);
 
-        var permutations = new List<IEnumerable<object>>();
+        var permutations = new List<object[]>();
 
         foreach (var lhs in firstList)
         {
