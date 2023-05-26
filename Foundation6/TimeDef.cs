@@ -1,8 +1,6 @@
 ﻿namespace Foundation;
 
 using Foundation.Collections.Generic;
-using System.Diagnostics;
-using static Foundation.TimeDef;
 
 public abstract record TimeDef
 {

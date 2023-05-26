@@ -19,7 +19,8 @@
     /// <typeparam name="TObjectType">The object type.</typeparam>
     /// <typeparam name="TEvent">The type of the changed event.</typeparam>
     public interface IIdPropertyMap<TObjectType, TId, TEvent>
-        : IPropertyMap<TObjectType, TEvent>
+        : IIdPropertyMap<TId, TEvent>
+        , IPropertyMap<TObjectType, TEvent>
         where TId : notnull
     {
     }
