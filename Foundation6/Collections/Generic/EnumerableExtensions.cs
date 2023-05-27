@@ -1879,6 +1879,35 @@ public static class EnumerableExtensions
         return repetitions ? tuples : tuples.Distinct();
     }
 
+    public static IEnumerable<T[]> Permutations<T>(this IEnumerable<IEnumerable<T>> lists)
+    {
+        if (!lists.Any()) return new T[][] { Array.Empty<T>() };
+
+        var firstList = lists.First().ToArray();
+        var remainingLists = lists.Skip(1).ToArray();
+
+        var withoutFirstList = Permutations(remainingLists);
+
+        var permutations = new List<T[]>();
+
+        foreach (var lhs in firstList)
+        {
+            foreach (var permutationWithoutFirst in withoutFirstList)
+            {
+                var rhs = permutationWithoutFirst.ToArray();
+
+                var permutation = new T[1 + rhs.Length];
+                permutation[0] = lhs;
+
+                if (rhs.Length > 0) Array.Copy(rhs, 0, permutation, 1, rhs.Length);
+
+                permutations.Add(permutation);
+            }
+        }
+
+        return permutations;
+    }
+
     /// <summary>
     /// Inserts an item at the beginning only if the list is not empty.
     /// </summary>
