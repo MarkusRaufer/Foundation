@@ -3,7 +3,7 @@
 /// <summary>
 /// Typed identifier.
 /// </summary>
-public struct Id
+public readonly struct Id
     : IComparable
     , IComparable<Id>
     , IEquatable<Id>
@@ -101,7 +101,7 @@ public struct Id
 /// Typed identifier. Boxing happens with value.
 /// </summary>
 /// <typeparam name="TEntity"></typeparam>
-public struct Id<TEntity>
+public readonly struct Id<TEntity>
     : IComparable
     , IComparable<Id<TEntity>>
     , IEquatable<Id<TEntity>>
