@@ -14,6 +14,9 @@ namespace Foundation.Linq.Expressions
             };
         }
 
+        public static IEnumerable<Type> GetUniqueParameterTypes(this LambdaExpression lambda)
+            => lambda.Parameters.Select(x => x.Type).Distinct();
+        
         public static bool IsPredicate(this LambdaExpression lambda)
         {
             return lambda.ReturnType == typeof(bool);
