@@ -1,11 +1,31 @@
 ﻿namespace Foundation.Collections.Generic;
 
+using System.Data;
 using System.Runtime.CompilerServices;
 using Foundation;
 using Foundation.Collections.Generic;
 
 public static class ArrayExtensions
 {
+    /// <summary>
+    /// Creates a new array and appends <paramref name="elem"/> to the new array.
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <param name="array"></param>
+    /// <param name="elem"></param>
+    /// <returns></returns>
+    public static T[] Append<T>(this T[] array, T elem)
+    {
+        array.ThrowIfNull();
+
+        var newValues = new T[array.Length + 1];
+        newValues[array.Length] = elem;
+
+        Array.Copy(array, 0, newValues, 0, array.Length);
+
+        return newValues;
+    }
+
     public static IEnumerable<T> AsEnumerable<T>(params T[] items)
     {
         return items;
@@ -106,6 +126,39 @@ public static class ArrayExtensions
     public static IEnumerable<int> IndexesOf<T>(this T[] array, params T[] selectors)
     {
         return array.IndexesOf((IEnumerable<T>)selectors);
+    }
+
+    /// <summary>
+    /// Creates a new array and copies all values from array and inserts value at a specific index.
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <param name="array"></param>
+    /// <param name="value"></param>
+    /// <param name="index"></param>
+    /// <returns></returns>
+    public static T[] InsertAt<T>(this T[] array, T value, int index)
+    {
+        index.ThrowIfOutOfRange(() => index < 0 || index > array.Length);
+
+        var newArray = new T[array.Length + 1];
+
+        if (0 == index)
+        {
+            Array.Copy(array, 0, newArray, 1, array.Length);
+        }
+        else if (index == array.Length)
+        {
+            Array.Copy(array, newArray, array.Length);
+        }
+        else
+        {
+            Array.Copy(array, 0, newArray, 0, index);
+            Array.Copy(array, index, newArray, index + 1, array.Length - index);
+        }
+
+        newArray[index] = value;
+
+        return newArray;
     }
 
     /// <summary>

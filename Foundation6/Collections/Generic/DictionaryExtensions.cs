@@ -5,6 +5,29 @@ namespace Foundation.Collections.Generic;
 public static  class DictionaryExtensions
 {
     /// <summary>
+    /// Intersects the keys of lhs with the keys of rhs.
+    /// </summary>
+    /// <typeparam name="TKey"></typeparam>
+    /// <typeparam name="TValue"></typeparam>
+    /// <typeparam name="TResult"></typeparam>
+    /// <param name="lhs"></param>
+    /// <param name="rhs"></param>
+    /// <param name="selector">Expects the common key followed by the lhs value and rhs value.</param>
+    /// <returns></returns>
+    public static IEnumerable<TResult> IntersectBy<TKey, TValue, TResult>(
+    this IDictionary<TKey, TValue> lhs,
+    IEnumerable<KeyValuePair<TKey, TValue>> rhs,
+    Func<TKey, TValue, TValue, TResult> selector)
+    {
+        foreach (var right in rhs)
+        {
+            if (!lhs.TryGetValue(right.Key, out TValue? lhsValue)) continue;
+
+            yield return selector(right.Key, lhsValue, right.Value);
+        }
+    }
+
+    /// <summary>
     /// Returns true if all keys with their values of lhs and rhs are equal.
     /// </summary>
     /// <typeparam name="TKey"></typeparam>
@@ -67,6 +90,29 @@ public static  class DictionaryExtensions
         dictionary.Remove(key);
         return Option.Some(Pair.New(key, value));
     }
+
+    /// <summary>
+    /// Replaces the values of lhs with the values of rhs if the key exists in lhs. 
+    /// </summary>
+    /// <typeparam name="TKey"></typeparam>
+    /// <typeparam name="TValue"></typeparam>
+    /// <param name="lhs"></param>
+    /// <param name="rhs"></param>
+    /// <returns></returns>
+    public static IDictionary<TKey, TValue> Replace<TKey, TValue>(
+        this IDictionary<TKey, TValue> lhs,
+        IEnumerable<KeyValuePair<TKey, TValue>> rhs)
+    {
+        foreach(var right in rhs)
+        {
+            if (!lhs.ContainsKey(right.Key)) continue;
+
+            lhs[right.Key] = right.Value;
+        }
+
+        return lhs;
+    }
+
 
     public static IDictionary<TKey, TValue> ThrowIfEmpty<TKey, TValue>(this IDictionary<TKey, TValue> dictionary, [CallerArgumentExpression("dictionary")] string paramName = "")
         => 0 < dictionary.Count

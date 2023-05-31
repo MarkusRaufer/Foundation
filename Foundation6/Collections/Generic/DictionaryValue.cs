@@ -14,6 +14,14 @@ public static class DictionaryValue
     public static DictionaryValue<TKey, TValue> New<TKey, TValue>(IDictionary<TKey, TValue> dictionary)
         where TKey : notnull
         => new(dictionary);
+
+    public static DictionaryValue<TKey, TValue> NewWith<TKey, TValue>(
+        this DictionaryValue<TKey, TValue> dictionaryValue,
+        IEnumerable<KeyValuePair<TKey, TValue>> replacements)
+        where TKey : notnull
+    {
+        return dictionaryValue.Replace(replacements).ToDictionaryValue();
+    }
 }
 
 /// <summary>

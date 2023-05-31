@@ -1,4 +1,5 @@
 ﻿using Foundation.ComponentModel;
+using System.Runtime.CompilerServices;
 using System.Text;
 
 namespace Foundation.Collections.Generic;
@@ -39,6 +40,10 @@ public static class EnumerableTransformations
     {
         return new BreakableEnumerable<T>(items.ThrowIfNull(), ref stop);
     }
+
+    public static DictionaryValue<TKey, TValue> ToDictionaryValue<TKey, TValue>(
+        this IEnumerable<KeyValuePair<TKey, TValue>> items) where TKey : notnull
+        => DictionaryValue.New(items);
 
     /// <summary>
     /// Creates a <see cref="IMultiValueMap{TKey, TValue}"/> from an enumerable.
