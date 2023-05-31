@@ -23,10 +23,28 @@ public class ResultTests
     }
 
     [Test]
+    public void OkOrThrow_Should_ReturnAValue_When_IsOKIsTrue()
+    { 
+        var value = 5;
+        var sut = Result.Ok<int>(value);
+
+        Assert.AreEqual(value, sut.OkOrThrow());
+    }
+
+    [Test]
+    public void OkOrThrow_Should_ThrowAnException_When_IsOKIsFalse()
+    {
+        var sut = Result.Error<int>(new ArgumentOutOfRangeException());
+
+        Assert.Throws<ArgumentOutOfRangeException>(() => sut.OkOrThrow());
+    }
+
+    [Test]
     public void Ok_Should_IsOkTrue_When_UsedWithValue()
     {
         var value = 5;
         var sut = Result.Ok<int, string>(value);
+
         Assert.True(sut.IsOk);
         Assert.AreEqual(value, sut.ToOk());
     }

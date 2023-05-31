@@ -74,6 +74,40 @@
         }
 
         /// <summary>
+        /// If IsOk is true it returns the Ok value otherwise it throws an exception.
+        /// </summary>
+        /// <typeparam name="TOk">The value if IsOk is true.</typeparam>
+        /// <typeparam name="TError">The exception which is thrown when IsOk is false.</typeparam>
+        /// <param name="result"></param>
+        /// <returns></returns>
+        /// <exception cref="ArgumentException"></exception>
+        public static TOk OkOrThrow<TOk>(this Result<TOk, Exception> result)
+        {
+            if (result.TryGetOk(out TOk? ok)) return ok;
+
+            if (result.TryGetError(out Exception? error)) throw error;
+
+            throw new ArgumentException($"invalid {result}");
+        }
+
+        /// <summary>
+        /// If IsOk is true it returns the Ok value otherwise it throws an exception.
+        /// </summary>
+        /// <typeparam name="TOk">The value if IsOk is true.</typeparam>
+        /// <typeparam name="TError">The exception which is thrown when IsOk is false.</typeparam>
+        /// <param name="result"></param>
+        /// <param name="error"></param>
+        /// <returns></returns>
+        public static TOk OkOrThrow<TOk>(this Result<TOk, Exception> result, Func<Exception> error)
+        {
+            error.ThrowIfNull();
+
+            if (result.TryGetOk(out TOk? ok)) return ok;
+
+            throw error();
+        }
+
+        /// <summary>
         /// If result contains an error an error is returned otherwise an exception is thrown.
         /// </summary>
         /// <typeparam name="TOk"></typeparam>
@@ -115,7 +149,7 @@
         {
             if (result.TryGetOk(out TOk? ok)) return ok!;
 
-            throw new ArgumentException($"{nameof(result)} does not contains an error");
+            throw new ArgumentException($"{nameof(result)} does not contains a value");
         }
 
         /// <summary>
