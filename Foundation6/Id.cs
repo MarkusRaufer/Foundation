@@ -61,6 +61,8 @@ public readonly struct Id
 
     public bool IsEmpty => EntityType is null;
 
+    public static Id New() => New(Guid.NewGuid());
+
     public static Id New<TValue>(TValue value)
          where TValue : struct, IComparable, IComparable<TValue>, IEquatable<TValue>, IFormattable
         => New(typeof(object), value);

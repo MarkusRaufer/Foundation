@@ -8,6 +8,21 @@ namespace Foundation.Collections.Generic
     public class ArrayExtensionsTests
     {
         [Test]
+        public void Append_Should_ReturnANewArray_When_InsertAt_Last_Position()
+        {
+            var numbers = Enumerable.Range(1, 5).ToArray();
+
+            var actual = numbers.Append(6);
+
+            Assert.AreEqual(numbers.Length + 1, actual.Length);
+
+            for (int i = 0, j = 1; i < actual.Length; i++, j++)
+            {
+                Assert.AreEqual(j, actual[i]);
+            }
+        }
+
+        [Test]
         public void AverageMedian_ShouldReturnMedian_WhenUsingConverter()
         {
             //odd number of elements
@@ -88,6 +103,48 @@ namespace Foundation.Collections.Generic
 
             Assert.AreEqual(1, indexes[0]);
             Assert.AreEqual(4, indexes[1]);
+        }
+
+        [Test]
+        public void InsertAt_Should_ReturnANewArray_When_InsertAt_1st_Position()
+        {
+            var numbers = Enumerable.Range(2, 5).ToArray();
+
+            var inserted = numbers.InsertAt(1, 0);
+
+            Assert.AreEqual(numbers.Length + 1, inserted.Length);
+            for (int i = 0, j = 1; i < inserted.Length; i++, j++)
+            {
+                Assert.AreEqual(j, inserted[i]);
+            }
+        }
+
+        [Test]
+        public void InsertAt_Should_ReturnANewArray_When_InsertAt_Last_Position()
+        {
+            var numbers = Enumerable.Range(1, 5).ToArray();
+
+            var inserted = numbers.InsertAt(6, 5);
+
+            Assert.AreEqual(numbers.Length + 1, inserted.Length);
+            for (int i = 0, j = 1; i < inserted.Length; i++, j++)
+            {
+                Assert.AreEqual(j, inserted[i]);
+            }
+        }
+
+        [Test]
+        public void InsertAt_Should_ReturnANewArray_When_InsertAt_Middle_Position()
+        {
+            var numbers = new int[] { 1, 2, 4, 5 };
+
+            var inserted = numbers.InsertAt(3, 2);
+
+            Assert.AreEqual(numbers.Length + 1, inserted.Length);
+            for (int i = 0, j = 1; i < inserted.Length; i++, j++)
+            {
+                Assert.AreEqual(j, inserted[i]);
+            }
         }
     }
 }

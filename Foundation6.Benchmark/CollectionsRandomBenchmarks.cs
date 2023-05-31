@@ -6,12 +6,12 @@ using System.Collections.Immutable;
 namespace Foundation.Benchmark
 {
     [MemoryDiagnoser(false)]
-    public class CollectionsBenchMarks
+    public class CollectionsRandomBenchmarks
     {
         private Random _random = new Random(100);
         private int[] _values;
 
-        public CollectionsBenchMarks()
+        public CollectionsRandomBenchmarks()
         {
             _values = SetupRandomValues();
         }

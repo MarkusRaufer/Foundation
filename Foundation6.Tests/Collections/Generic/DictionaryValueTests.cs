@@ -1,5 +1,7 @@
-﻿using NUnit.Framework;
+﻿using FluentAssertions;
+using NUnit.Framework;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Foundation.Collections.Generic;
 
@@ -25,7 +27,6 @@ public class DictionaryValueTests
 
         var sut1 = new DictionaryValue<string, object>(keyValues1);
         var sut2 = DictionaryValue.New(keyValues2);
-
 
         Assert.AreNotEqual(sut1, sut2);
         Assert.AreNotEqual(sut1.GetHashCode(), sut2.GetHashCode());
@@ -101,5 +102,32 @@ public class DictionaryValueTests
 
         Assert.AreEqual(sut1, sut2);
         Assert.AreEqual(sut1.GetHashCode(), sut2.GetHashCode());
+    }
+
+    [Test]
+    public void NewWith_Should_ReturnDictionaryWithNewValues_When_ReplacementsHaveNewValues()
+    {
+        var keyValues1 = new Dictionary<string, object>
+        {
+            { "one", 1 },
+            { "two", 2 },
+            { "three", 3 }
+        };
+
+        var keyValues2 = new Dictionary<string, object>
+        {
+            { "one", 10 },
+            { "two", 2 },
+            { "four", 40 }
+        };
+
+        var sut = new DictionaryValue<string, object>(keyValues1);
+
+        var sut2 = sut.NewWith(keyValues2);
+
+        sut2.Count.Should().Be(sut.Count);
+        sut2.Should().Contain(new KeyValuePair<string, object>("one", 10));
+        sut2.Should().Contain(new KeyValuePair<string, object>("two", 2));
+        sut2.Should().Contain(new KeyValuePair<string, object>("three", 3));
     }
 }

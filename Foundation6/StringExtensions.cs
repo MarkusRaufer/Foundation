@@ -2,6 +2,7 @@
 
 using Foundation.Buffers;
 using Foundation.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.Runtime.CompilerServices;
@@ -276,13 +277,16 @@ public static class StringExtensions
     /// <param name="str"></param>
     /// <param name="repeat"></param>
     /// <returns></returns>
-    public static string Repeat(this string str, int quantity)
+    public static string Repeat(this string text, uint n)
     {
-        var sb = new StringBuilder();
-        for(var i=0; i< quantity; i++)
-            sb.Append(str);
+        var textAsSpan = text.AsSpan();
+        var span = new Span<char>(new char[textAsSpan.Length * (int)n]);
+        for (var i = 0; i < n; i++)
+        {
+            textAsSpan.CopyTo(span.Slice(i * textAsSpan.Length, textAsSpan.Length));
+        }
 
-        return sb.ToString();
+        return span.ToString();
     }
 
     public static IEnumerable<string> SplitAtIndex(this string str, params int[] indexes)
