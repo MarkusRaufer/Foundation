@@ -128,7 +128,7 @@ public static class ObjectExtensions
     public static int GetInstanceHashCode(this object? obj) => RuntimeHelpers.GetHashCode(obj);
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static int GetNullableHashCode(this object? obj) => (null == obj) ? 0 : obj.GetHashCode();
+    public static int GetNullableHashCode(this object? obj) => (obj is null) ? 0 : obj.GetHashCode();
 
     /// <summary>
     /// Checks if an object is of a generic type.
