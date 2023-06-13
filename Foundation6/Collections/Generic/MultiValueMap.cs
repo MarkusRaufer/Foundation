@@ -5,16 +5,13 @@ using System.Diagnostics.CodeAnalysis;
 
 /// <summary>
 /// Dictionary that supports multiple values per key.
-/// It is used for 1 to many relations.
+/// It is used for 1 to many relations. 
 /// </summary>
 /// <typeparam name="TKey"></typeparam>
 /// <typeparam name="TValue"></typeparam>
-public class MultiValueMap<TKey, TValue> : IMultiValueMap<TKey, TValue>
+public class MultiValueMap<TKey, TValue> : MultiValueMap<TKey, TValue, ICollection<TValue>>
     where TKey : notnull
 {
-    private readonly IDictionary<TKey, ICollection<TValue>> _dictionary;
-    private readonly Func<ICollection<TValue>> _valueCollectionFactory;
-
     public MultiValueMap() : this(new Dictionary<TKey, ICollection<TValue>>(), () => new List<TValue>())
     {
     }
@@ -56,6 +53,42 @@ public class MultiValueMap<TKey, TValue> : IMultiValueMap<TKey, TValue>
     public MultiValueMap(
         IDictionary<TKey, ICollection<TValue>> dictionary,
         Func<ICollection<TValue>> valueCollectionFactory)
+        : base(dictionary, valueCollectionFactory)
+    {
+    }
+}
+
+public class MultiValueMap<TKey, TValue, TCollection> : IMultiValueMap<TKey, TValue>
+    where TKey : notnull
+    where TCollection : ICollection<TValue>
+{
+    private readonly IDictionary<TKey, TCollection> _dictionary;
+    private readonly Func<TCollection> _valueCollectionFactory;
+
+
+    public MultiValueMap(Func<TCollection> valueCollectionFactory)
+        : this(new Dictionary<TKey, TCollection>(), valueCollectionFactory)
+    {
+    }
+
+    public MultiValueMap(int capacity, Func<TCollection> valueCollectionFactory)
+        : this(new Dictionary<TKey, TCollection>(capacity), valueCollectionFactory)
+    {
+    }
+
+    public MultiValueMap(IEqualityComparer<TKey> comparer, Func<TCollection> valueCollectionFactory)
+        : this(new Dictionary<TKey, TCollection>(comparer), valueCollectionFactory)
+    {
+    }
+
+    public MultiValueMap(int capasity, IEqualityComparer<TKey> comparer, Func<TCollection> valueCollectionFactory)
+        : this(new Dictionary<TKey, TCollection>(capasity, comparer), valueCollectionFactory)
+    {
+    }
+
+    public MultiValueMap(
+        IDictionary<TKey, TCollection> dictionary,
+        Func<TCollection> valueCollectionFactory)
     {
         _dictionary = dictionary.ThrowIfNull();
         _valueCollectionFactory = valueCollectionFactory.ThrowIfNull();
@@ -65,7 +98,7 @@ public class MultiValueMap<TKey, TValue> : IMultiValueMap<TKey, TValue>
 
     public void Add(TKey key, TValue value)
     {
-        if (!_dictionary.TryGetValue(key, out ICollection<TValue>? values))
+        if (!_dictionary.TryGetValue(key, out TCollection? values))
         {
             values = _valueCollectionFactory();
             _dictionary.Add(key, values);
@@ -83,7 +116,7 @@ public class MultiValueMap<TKey, TValue> : IMultiValueMap<TKey, TValue>
     /// <param name="value"></param>
     public void AddSingle(TKey key, TValue value)
     {
-        if (!_dictionary.TryGetValue(key, out ICollection<TValue>? values))
+        if (!_dictionary.TryGetValue(key, out TCollection? values))
         {
             values = _valueCollectionFactory();
             values.Add(value);
@@ -98,7 +131,7 @@ public class MultiValueMap<TKey, TValue> : IMultiValueMap<TKey, TValue>
 
     public bool AddUnique(TKey key, TValue value, bool replaceExisting = false)
     {
-        if (!_dictionary.TryGetValue(key, out ICollection<TValue>? values))
+        if (!_dictionary.TryGetValue(key, out TCollection? values))
         {
             values = _valueCollectionFactory();
             values.Add(value);
@@ -134,7 +167,7 @@ public class MultiValueMap<TKey, TValue> : IMultiValueMap<TKey, TValue>
     /// <returns></returns>
     public bool Contains(TKey key, TValue value)
     {
-        if (_dictionary.TryGetValue(key, out ICollection<TValue>? values))
+        if (_dictionary.TryGetValue(key, out TCollection? values))
             return values.Contains(value);
 
         return false;
@@ -262,7 +295,7 @@ public class MultiValueMap<TKey, TValue> : IMultiValueMap<TKey, TValue>
 
         foreach (var key in keys)
         {
-            if (_dictionary.TryGetValue(key, out ICollection<TValue>? values))
+            if (_dictionary.TryGetValue(key, out TCollection? values))
                 yield return new KeyValuePair<TKey, IEnumerable<TValue>>(key, values);
         }
     }
@@ -270,7 +303,7 @@ public class MultiValueMap<TKey, TValue> : IMultiValueMap<TKey, TValue>
 
     public IEnumerable<TValue> GetValues(TKey key)
     {
-        if (!_dictionary.TryGetValue(key, out ICollection<TValue>? values)) yield break;
+        if (!_dictionary.TryGetValue(key, out TCollection? values)) yield break;
         foreach (var value in values)
         {
             yield return value;
@@ -301,7 +334,7 @@ public class MultiValueMap<TKey, TValue> : IMultiValueMap<TKey, TValue>
     /// <returns></returns>
     public int GetValuesCount(TKey key)
     {
-        if (_dictionary.TryGetValue(key, out ICollection<TValue>? values))
+        if (_dictionary.TryGetValue(key, out TCollection? values))
             return values.Count;
 
         return 0;
@@ -325,7 +358,7 @@ public class MultiValueMap<TKey, TValue> : IMultiValueMap<TKey, TValue>
 
     public virtual bool Remove(TKey key, TValue value)
     {
-        if (_dictionary.TryGetValue(key, out ICollection<TValue>? values))
+        if (_dictionary.TryGetValue(key, out TCollection? values))
         {
             var removed = values.Remove(value);
             if (!values.Any())
@@ -364,7 +397,7 @@ public class MultiValueMap<TKey, TValue> : IMultiValueMap<TKey, TValue>
         var removed = Fused.Value(false).BlowIfChanged();
         foreach (var key in keys)
         {
-            if (!_dictionary.TryGetValue(key, out ICollection<TValue>? values)) continue;
+            if (!_dictionary.TryGetValue(key, out TCollection? values)) continue;
 
             if (values.Remove(value))
             {
@@ -381,7 +414,7 @@ public class MultiValueMap<TKey, TValue> : IMultiValueMap<TKey, TValue>
 #pragma warning disable CS8767
     public bool TryGetValue(TKey key, [MaybeNullWhen(false)] out TValue? value)
     {
-        if (_dictionary.TryGetValue(key, out ICollection<TValue>? values))
+        if (_dictionary.TryGetValue(key, out TCollection? values))
         {
             if (0 < values.Count)
             {
@@ -403,7 +436,7 @@ public class MultiValueMap<TKey, TValue> : IMultiValueMap<TKey, TValue>
     /// <returns></returns>
     public bool TryGetValues(TKey key, out IEnumerable<TValue> values)
     {
-        if (_dictionary.TryGetValue(key, out ICollection<TValue>? vals))
+        if (_dictionary.TryGetValue(key, out TCollection? vals))
         {
             values = vals;
             return true;
@@ -424,4 +457,3 @@ public class MultiValueMap<TKey, TValue> : IMultiValueMap<TKey, TValue>
     /// </summary>
     public ICollection<TValue> Values => GetFlattenedValues(Array.Empty<TKey>()).ToList();
 }
-
