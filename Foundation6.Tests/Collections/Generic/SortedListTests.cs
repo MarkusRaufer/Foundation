@@ -122,6 +122,19 @@ public class SortedListTests
     }
 
     [Test]
+    public void GetViewBetween_Should_Return3And7_When_LowerIs2AndUpperIs8()
+    {
+        var sut = new SortedList<int> { 1, 3, 7, 9 };
+
+        var view = sut.GetViewBetween(2, 8);
+
+        view.Count.Should().Be(2);
+
+        view[0].Should().Be(3);
+        view[1].Should().Be(7);
+    }
+
+    [Test]
     public void GetViewBetween_Should_Return3And7_When_LowerIs3AndUpperIs7()
     {
         var sut = new SortedList<int> { 1, 3, 7, 9 };

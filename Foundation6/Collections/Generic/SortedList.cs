@@ -51,6 +51,12 @@ public class SortedList<T>
 
     IEnumerator IEnumerable.GetEnumerator() => _list.GetEnumerator();
 
+    /// <summary>
+    /// Creates a shallow copy of a range of elements of the <see cref="SortedList{T}"/>.
+    /// </summary>
+    /// <param name="index">Start index.</param>
+    /// <param name="count">Number of elements</param>
+    /// <returns></returns>
     public SortedList<T> GetRange(int index, int count)
     {
         return new SortedList<T>
@@ -59,6 +65,12 @@ public class SortedList<T>
         };
     }
 
+    /// <summary>
+    /// Returns a view of a subset in a <see cref="SortedList{T}"/>.
+    /// </summary>
+    /// <param name="lowerValue">If the lowerValue is smaller than the minimum value, the first element is taken.</param>
+    /// <param name="upperValue">If the upperValue is greater than the maximum value, the last element is taken.</param>
+    /// <returns></returns>
     public SortedList<T> GetViewBetween(T? lowerValue, T? upperValue)
     {
         var lowerIndex = 0;
@@ -77,7 +89,13 @@ public class SortedList<T>
             var index = _list.BinarySearch(upper);
             if (0 > index) index = ~index;
 
-            if (index < upperIndex) upperIndex = index;
+            if (index <= upperIndex)
+            {
+                upperIndex = index;
+
+                var valueAtIndex = _list[upperIndex];
+                if (!upper.Equals(valueAtIndex)) --upperIndex;
+            }
         }
 
         return GetRange(lowerIndex, (upperIndex - lowerIndex) + 1);
