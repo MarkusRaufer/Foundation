@@ -1,15 +1,18 @@
 ﻿namespace Foundation;
 
-public class GuidNamedIdFactory : IIdFactory<NamedId>
+public class GuidNamedIdFactory 
+    : IIdFactory<NamedId>
+    , IIdentifiableFactory<string>
 {
-    private readonly string _name;
     public GuidNamedIdFactory(string name)
     {
-        _name = name.ThrowIfNullOrEmpty();
+        FactoryId = name.ThrowIfNullOrEmpty();
     }
 
-    public NamedId CreateId()
+    public string FactoryId { get; }
+
+    public NamedId NewId()
     {
-        return NamedId.New(_name, (IComparable)Guid.NewGuid());
+        return NamedId.New(FactoryId, (IComparable)Guid.NewGuid());
     }
 }

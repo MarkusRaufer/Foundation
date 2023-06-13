@@ -2,5 +2,5 @@
 
 public interface IIdFactory<TId>
 {
-    TId CreateId();
+    TId NewId();
 }

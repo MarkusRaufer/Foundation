@@ -16,7 +16,7 @@ public class IdFactory : IIdFactory<Id>, IResetable
         _passed = false;
     }
 
-    public Id CreateId()
+    public Id NewId()
     {
         if(!_passed)
         {

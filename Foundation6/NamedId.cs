@@ -104,13 +104,13 @@ public readonly struct NamedId
     public static NamedId<T> New<T>(string name, T value) where T : struct, IComparable<T>, IEquatable<T>
         => new(name, value);
 
-    public override string ToString() => $"{_value}";
+    public override string ToString() => $"{_name}:{_value}";
 
     public string ToString(string? format, IFormatProvider? formatProvider)
     {
         var provider = formatProvider ?? CultureInfo.InvariantCulture;
 
-        return string.IsNullOrEmpty(format) ? $"{_value}" : string.Format(provider, format, _value);
+        return string.IsNullOrEmpty(format) ? $"{_name}:{_value}" : string.Format(provider, format, _value);
     }
 }
 
@@ -210,13 +210,13 @@ public struct NamedId<T>
 
     public bool IsEmpty => !_isInitialized;
 
-    public override string ToString() => $"{_name}: {_value}";
+    public override string ToString() => $"{_name}:{_value}";
 
     public string ToString(string? format, IFormatProvider? formatProvider)
     {
         var provider = formatProvider ?? CultureInfo.InvariantCulture;
 
-        return string.IsNullOrEmpty(format) ? $"{_name}: {_value}" : string.Format(provider, format, _value);
+        return string.IsNullOrEmpty(format) ? $"{_name}:{_value}" : string.Format(provider, format, _value);
     }
 }
 
