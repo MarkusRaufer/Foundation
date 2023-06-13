@@ -267,7 +267,7 @@ public class FixedKeysMultiMap<TKey, TValue> : IReadOnlyMultiValueMap<TKey, TVal
     /// <param name="key"></param>
     /// <param name="values"></param>
     /// <returns></returns>
-    public bool TryGetValues(TKey key, out IEnumerable<TValue> values)
+    public bool TryGetValues(TKey key, out ICollection<TValue>? values)
     {
         if (_dictionary.TryGetValue(key, out ICollection<TValue>? vals))
         {
@@ -275,7 +275,7 @@ public class FixedKeysMultiMap<TKey, TValue> : IReadOnlyMultiValueMap<TKey, TVal
             return true;
         }
 
-        values = Enumerable.Empty<TValue>();
+        values = default;
         return false;
     }
 

@@ -171,7 +171,7 @@ namespace Foundation
             var sut = new OneOf<int, double>(expected);
 
             Assert.IsFalse(sut.TryGet(out double _));
-            Assert.IsFalse(sut.TryGet(out string _));
+            Assert.IsFalse(sut.TryGet(out string? _));
         }
 
         [Test]

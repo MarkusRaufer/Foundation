@@ -1,9 +1,17 @@
 namespace Foundation.Collections.Generic;
 
 public interface IMultiValueMap<TKey, TValue>
-    : IDictionary<TKey, TValue>
+    : IMultiValueMap<TKey, TValue, ICollection<TValue>>
     , IReadOnlyMultiValueMap<TKey, TValue>
     where TKey : notnull
+{
+}
+
+public interface IMultiValueMap<TKey, TValue, TValueCollection>
+    : IDictionary<TKey, TValue>
+    , IReadOnlyMultiValueMap<TKey, TValue, TValueCollection>
+    where TKey : notnull
+    where TValueCollection : IEnumerable<TValue>
 {
     /// <summary>
     /// Adds a single value to the key. If a value exists for this key, it will be removed before.

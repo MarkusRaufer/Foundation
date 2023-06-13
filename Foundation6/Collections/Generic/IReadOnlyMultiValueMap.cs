@@ -1,9 +1,14 @@
 namespace Foundation.Collections.Generic;
 
-using System.Diagnostics.CodeAnalysis;
-
-public interface IReadOnlyMultiValueMap<TKey, TValue> : IEnumerable<KeyValuePair<TKey, TValue>>
+public interface IReadOnlyMultiValueMap<TKey, TValue> : IReadOnlyMultiValueMap<TKey, TValue, ICollection<TValue>>
     where TKey : notnull
+{
+}
+
+public interface IReadOnlyMultiValueMap<TKey, TValue, TValueCollection> 
+    : IEnumerable<KeyValuePair<TKey, TValue>>
+    where TKey : notnull
+    where TValueCollection : IEnumerable<TValue>
 {
     /// <summary>
     /// Checks if key value pair exists.
@@ -73,5 +78,5 @@ public interface IReadOnlyMultiValueMap<TKey, TValue> : IEnumerable<KeyValuePair
     /// </summary>
     public int KeyCount { get; }
 
-    bool TryGetValues(TKey key, out IEnumerable<TValue> values);
+    bool TryGetValues(TKey key, out TValueCollection? values);
 }
