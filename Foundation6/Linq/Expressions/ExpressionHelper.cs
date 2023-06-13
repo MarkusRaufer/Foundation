@@ -5,16 +5,6 @@ namespace Foundation.Linq.Expressions;
 
 public static class ExpressionHelper
 {
-    public static bool AreEqual(ConstantExpression lhs, ConstantExpression rhs)
-    {
-        lhs.ThrowIfNull();
-        rhs.ThrowIfNull();
-
-        if (lhs.Value is null) return rhs.Value is null;
-
-        return lhs.Value.Equals(rhs.Value);
-    }
-
     public static bool AreEqual(Expression lhs, Expression rhs)
     {
         lhs.ThrowIfNull();
@@ -23,38 +13,21 @@ public static class ExpressionHelper
         return AreEqual(lhs.Flatten(), rhs.Flatten());
     }
 
-    public static bool AreEqual(LambdaExpression lhs, LambdaExpression rhs, bool includeParameterNames = false)
-    {
-        lhs.ThrowIfNull();
-        rhs.ThrowIfNull();
+    //public static bool AreEqual(LambdaExpression lhs, LambdaExpression rhs, bool includeParameterNames = false)
+    //{
+    //    lhs.ThrowIfNull();
+    //    rhs.ThrowIfNull();
 
-        var parameters = includeParameterNames
-            ? lhs.Parameters.Select(x => x.Type).SequenceEqual(rhs.Parameters.Select(x => x.Type))
-            : lhs.Parameters.Select(x => x.Type).SequenceEqual(rhs.Parameters.Select(x => x.Type));
+    //    var parameters = includeParameterNames
+    //        ? lhs.Parameters.Select(x => x.Type).SequenceEqual(rhs.Parameters.Select(x => x.Type))
+    //        : lhs.Parameters.Select(x => x.Type).SequenceEqual(rhs.Parameters.Select(x => x.Type));
 
-        return lhs.ReturnType == rhs.ReturnType
-            && lhs.Type == rhs.Type
-            && lhs.Parameters.SequenceEqual(rhs.Parameters)
-            && AreEqual(lhs.Body, rhs.Body);
+    //    return lhs.ReturnType == rhs.ReturnType
+    //        && lhs.Type == rhs.Type
+    //        && lhs.Parameters.SequenceEqual(rhs.Parameters)
+    //        && AreEqual(lhs.Body, rhs.Body);
 
-    }
-    public static bool AreEqual(MemberExpression lhs, MemberExpression rhs)
-    {
-        lhs.ThrowIfNull();
-        rhs.ThrowIfNull();
-
-        return lhs.Member.Equals(rhs.Member);
-    }
-
-    public static bool AreEqual(ParameterExpression lhs, ParameterExpression rhs, bool includeParameterNames = false)
-    {
-        lhs.ThrowIfNull();
-        rhs.ThrowIfNull();
-
-        if (includeParameterNames && lhs.Name != rhs.Name) return false;
-
-        return lhs.Type == rhs.Type;
-    }
+    //}
 
     public static bool AreEqual(IEnumerable<Expression> lhs, IEnumerable<Expression> rhs)
     {
@@ -128,25 +101,6 @@ public static class ExpressionHelper
         };
     }
 
-    public static bool AreSame(MemberExpression lhs, MemberExpression rhs)
-    {
-        lhs.ThrowIfNull();
-        rhs.ThrowIfNull();
-
-        if (lhs.Expression is not ParameterExpression l
-         || rhs.Expression is not ParameterExpression r) return false;
-
-        return AreEqual(lhs, rhs) && l.Type == r.Type && l.Name == r.Name;
-    }
-
-    public static bool AreSame(ParameterExpression lhs, ParameterExpression rhs)
-    {
-        lhs.ThrowIfNull();
-        rhs.ThrowIfNull();
-
-        return AreEqual(lhs, rhs) && lhs.Name == rhs.Name;
-    }
-
     public static bool AreSameTerminators(Expression lhs, Expression rhs)
     {
         return AreEqualTerminators(lhs, rhs, true);
@@ -175,30 +129,6 @@ public static class ExpressionHelper
     public static int CreateHashCode(IEnumerable<Expression> expressions)
     {
         return HashCode.FromOrderedHashCode(expressions.Select(x => x.GetExpressionHashCode()).ToArray());
-    }
-
-    public static int CreateHashCode(this ConstantExpression expression)
-    {
-        return null == expression.Value ? 0 : expression.Value.GetHashCode();
-    }
-
-    public static int CreateHashCode(this MemberExpression expression)
-    {
-        return HashCode.FromObject(expression.Member, expression.Type);
-    }
-
-    public static int CreateHashCode(this ParameterExpression expression, bool ignoreName = false)
-    {
-        return ignoreName ? expression.Type.GetHashCode()
-                          : System.HashCode.Combine(expression.Type, expression.Name);
-    }
-
-    public static int CreateHashCode(this UnaryExpression expression)
-    {
-        var builder = HashCode.CreateBuilder();
-        builder.AddObject<object>(expression.Type, expression.NodeType);
-        builder.AddHashCode(CreateHashCode(expression.Operand));
-        return builder.GetHashCode();
     }
 
     //public static IEnumerable<(int hashcode, Expression expression)> CreateHashCodeTuples(
