@@ -1,6 +1,8 @@
 ﻿using FluentAssertions;
 using NUnit.Framework;
+using System;
 using System.Collections.Generic;
+using System.Linq.Expressions;
 
 namespace Foundation.Collections.Generic;
 
@@ -104,6 +106,32 @@ public class SortedListTests
         sut[1].Should().Be(2);
         sut[2].Should().Be(3);
         sut[3].Should().Be(7);
+    }
+
+    [Test]
+    public void FindAll_Should_Return7And9_When_LambdaParameterIsGreater3()
+    {
+        var sut = new SortedList<int> { 1, 3, 7, 9 };
+
+        var numbers = sut.FindAll((int x) => x > 3);
+
+        numbers.Count.Should().Be(2);
+
+        numbers[0].Should().Be(7);
+        numbers[1].Should().Be(9);
+    }
+
+    [Test]
+    public void FindAll_Should_Return1And7_When_LambdaParameterIs3Or7()
+    {
+        var sut = new SortedList<int> { 1, 3, 7, 9 };
+
+        var numbers = sut.FindAll((int x) => x == 1 || x == 7);
+
+        numbers.Count.Should().Be(2);
+
+        numbers[0].Should().Be(1);
+        numbers[1].Should().Be(7);
     }
 
     [Test]
