@@ -1,6 +1,7 @@
 ﻿using BenchmarkDotNet.Attributes;
 using Foundation.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Runtime.CompilerServices;
 
 namespace Foundation.Benchmark
 {
@@ -9,22 +10,23 @@ namespace Foundation.Benchmark
     {
         //private readonly Collection<int> _collection = new();
         //private readonly List<int> _list = new();
+        private readonly SortedList<int> _sortedList = new();
 
         public const int NumberOfIterations = 10000;
 
         //[Params(10, 5000, 9000)]
         //public int Search { get; set; }
 
-        //public static IEnumerable<int> Values => Enumerable.Range(1, NumberOfIterations);
+        public static IEnumerable<int> Values => Enumerable.Range(1, NumberOfIterations);
 
-        public static DictionaryValue<int, string> KeyValues
-            => DictionaryValue.New(Enumerable.Range(1, NumberOfIterations)
-                                             .Select(x => new KeyValuePair<int, string>(x, x.ToString())));
+        //public static DictionaryValue<int, string> KeyValues
+        //    => DictionaryValue.New(Enumerable.Range(1, NumberOfIterations)
+        //                                     .Select(x => new KeyValuePair<int, string>(x, x.ToString())));
 
-        public static IEnumerable<KeyValuePair<int, string>> Replacements
-            => Enumerable.Range(1, NumberOfIterations)
-                         .Where(x => x % 2 == 0)
-                         .Select(x => new KeyValuePair<int, string>(x, x.ToString()));
+        //public static IEnumerable<KeyValuePair<int, string>> Replacements
+        //    => Enumerable.Range(1, NumberOfIterations)
+        //                 .Where(x => x % 2 == 0)
+        //                 .Select(x => new KeyValuePair<int, string>(x, x.ToString()));
 
         [GlobalSetup]
         public void Setup()
@@ -34,6 +36,11 @@ namespace Foundation.Benchmark
 
             //foreach (var i in Enumerable.Range(1, NumberOfIterations))
             //    _list.Add(i);
+
+            foreach (var value in Values)
+            {
+                _sortedList.Add(value);
+            }
         }
 
         [GlobalCleanup]
@@ -41,6 +48,7 @@ namespace Foundation.Benchmark
         {
             //_collection.Clear();
             //_list.Clear();
+            _sortedList.Clear();
         }
 
         //[Benchmark]
@@ -54,5 +62,17 @@ namespace Foundation.Benchmark
         //{
         //    return _list.Contains(Search);
         //}
+
+        //[Benchmark]
+        //public bool SortedList_Contains()
+        //{
+        //    return _sortedList.Contains(Search);
+        //}
+
+        [Benchmark]
+        public SortedList<int> SortedList_GetViewBetween()
+        {
+            return _sortedList.GetViewBetween(4000, 5000);
+        }
     }
 }
