@@ -9,9 +9,9 @@ public static class BinaryExpressionExtensions
         if (null == lhs) return null == rhs;
 
         return lhs.NodeType == rhs.NodeType
-            && EqualityComparer<object>.Default.Equals(lhs.Type, rhs.Type)
-            && EqualityComparer<object>.Default.Equals(lhs.Left, rhs.Left)
-            && EqualsToExpression(lhs, rhs);
+            && lhs.Type == rhs.Type
+            && lhs.Left.EqualsToExpression(rhs.Left)
+            && lhs.Right.EqualsToExpression(rhs.Right);
     }
 
     public static int GetExpressionHashCode(this BinaryExpression expression)

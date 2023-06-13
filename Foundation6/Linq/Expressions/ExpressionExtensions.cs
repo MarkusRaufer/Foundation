@@ -8,12 +8,12 @@ public static class ExpressionExtensions
     {
         return lhs switch
         {
-            BinaryExpression l => rhs is BinaryExpression r && EqualsToExpression(l, r),
-            ConstantExpression l => rhs is ConstantExpression r && EqualsToExpression(l, r),
-            LambdaExpression l => rhs is LambdaExpression r && EqualsToExpression(l, r),
-            MemberExpression l => rhs is MemberExpression r && EqualsToExpression(l, r),
-            ParameterExpression l => rhs is ParameterExpression r && EqualsToExpression(l, r),
-            UnaryExpression l => rhs is UnaryExpression r && EqualsToExpression(l, r),
+            BinaryExpression l => rhs is BinaryExpression r && l.EqualsToExpression(r),
+            ConstantExpression l => rhs is ConstantExpression r && l.EqualsToExpression(r),
+            LambdaExpression l => rhs is LambdaExpression r && l.EqualsToExpression(r),
+            MemberExpression l => rhs is MemberExpression r && l.EqualsToExpression(r),
+            ParameterExpression l => rhs is ParameterExpression r && l.EqualsToExpression(r),
+            UnaryExpression l => rhs is UnaryExpression r && l.EqualsToExpression(r),
             _ => false
         };
     }

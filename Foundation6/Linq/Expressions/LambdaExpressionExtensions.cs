@@ -5,13 +5,13 @@ namespace Foundation.Linq.Expressions
 {
     public static class LambdaExpressionExtensions
     {
-        public static bool EqualsToExpression(this LambdaExpression lhs, LambdaExpression rhs, bool considerParameterName = false)
+        public static bool EqualsToExpression(this LambdaExpression lhs, LambdaExpression rhs, bool ignoreParameterName = true)
         {
             if (null == lhs) return null == rhs;
 
-            Func<ParameterExpression, ParameterExpression, bool> equal = considerParameterName
-            ? (ParameterExpression left, ParameterExpression right) => left.Name == right.Name && left.Type == right.Type
-            : (ParameterExpression left, ParameterExpression right) => left.Type == right.Type;
+            Func<ParameterExpression, ParameterExpression, bool> equal = ignoreParameterName
+            ? (ParameterExpression left, ParameterExpression right) => left.Type == right.Type
+            : (ParameterExpression left, ParameterExpression right) => left.Name == right.Name && left.Type == right.Type;
 
             return null != rhs
                 && lhs.NodeType == rhs.NodeType
