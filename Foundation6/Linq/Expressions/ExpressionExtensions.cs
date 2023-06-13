@@ -146,6 +146,11 @@ public static class ExpressionExtensions
                                             expression.Operand.GetExpressionHashCode());
     }
 
+    public static bool IsConstant(this Expression expression)
+    {
+        return expression.NodeType == ExpressionType.Constant;
+    }
+
     public static bool IsConvert(this Expression expression)
     {
         return expression.NodeType == ExpressionType.Convert;

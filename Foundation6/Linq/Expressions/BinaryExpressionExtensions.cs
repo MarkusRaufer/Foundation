@@ -6,6 +6,6 @@ public static class BinaryExpressionExtensions
 {
     public static bool IsPredicate(this BinaryExpression expression)
     {
-        return expression.NodeType.IsPredicate();
+        return expression.ThrowIfNull().NodeType.IsPredicate();
     }
 }
