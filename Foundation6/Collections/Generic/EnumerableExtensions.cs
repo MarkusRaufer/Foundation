@@ -847,6 +847,15 @@ public static class EnumerableExtensions
         }
     }
 
+    public static IEnumerable<IGrouping<TKey, TSource>> GroupBy<TSource, TKey>(
+        this IEnumerable<TSource> source,
+        Func<TSource, TKey> keySelector,
+        Func<TKey?, TKey?, bool> predicate)
+    {
+        return source.GroupBy(keySelector.ThrowIfNull(),
+                              new LambdaEqualityComparer<TKey>(predicate.ThrowIfNull()));
+    }
+
     /// <summary>
     /// Returns if the list has at least numberOfElements.
     /// </summary>
@@ -1809,10 +1818,10 @@ public static class EnumerableExtensions
     /// <summary>
     /// Partitions items into two lists. If predicate is true the item is added to matching otherwise notMatching.
     /// </summary>
-    /// <typeparam name="T"></typeparam>
-    /// <typeparam name="TResult"></typeparam>
-    /// <param name="items"></param>
-    /// <param name="predicate"></param>
+    /// <typeparam name="T">Type of items.</typeparam>
+    /// <typeparam name="TResult">Type of the result.</typeparam>
+    /// <param name="items">List of items.</param>
+    /// <param name="predicate">Predicate to partition.</param>
     /// <param name="match">projection to TResult.</param>
     /// <param name="noMatch">projection to TResult.</param>
     /// <returns></returns>

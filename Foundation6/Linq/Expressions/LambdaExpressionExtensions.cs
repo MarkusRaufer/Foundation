@@ -21,18 +21,21 @@ namespace Foundation.Linq.Expressions
                 && lhs.Body.EqualsToExpression(rhs.Body);
         }
 
-        public static int GetExpressionHashCode(this LambdaExpression expression)
+        public static int GetExpressionHashCode(this LambdaExpression expression, bool ignoreParameterName = true)
         {
             expression.ThrowIfNull();
 
-            var hashCodes = Enumerable.Empty<int>();
-            hashCodes = hashCodes.Append(expression.NodeType.GetHashCode());
-            hashCodes = hashCodes.Append(expression.Type.GetHashCode());
-            hashCodes = hashCodes.Append(expression.ReturnType.GetHashCode());
-            hashCodes = hashCodes.Concat(expression.Parameters.Select(x => x.GetExpressionHashCode(false)));
-            hashCodes = hashCodes.Append(expression.Body.GetExpressionHashCode());
-
-            return HashCode.FromOrderedHashCode(hashCodes.ToArray());
+            var hashCodes = new List<int>
+            {
+                expression.NodeType.GetHashCode(),
+                expression.Type.GetHashCode(),
+                expression.ReturnType.GetHashCode(),
+                expression.Body.GetExpressionHashCode(ignoreParameterName)
+            };
+            expression.Parameters.Select(x => x.GetExpressionHashCode(ignoreParameterName))
+                                 .ForEach(hashCodes.Add);
+            
+            return HashCode.FromOrderedHashCodes(hashCodes);
         }
 
         public static MemberExpression? GetMember(this LambdaExpression lambda)

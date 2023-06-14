@@ -78,6 +78,12 @@ public class ExpressionExtensionsTests
     [Test]
     public void GetExpressionHashCode_Should_ReturnSameHashCodes_When_LambdaExpression_BodyNotEqual()
     {
+        var p1 = Expression.Parameter(typeof(string));
+        var p2 = Expression.Parameter(typeof(string));
+
+        var hc1 = p1.GetExpressionHashCode();
+        var hc2 = p2.GetExpressionHashCode();
+
         Expression<Func<int, bool>> expression1 = x => x != 12;
         var hashCodeWithX = expression1.GetExpressionHashCode();
 
@@ -114,8 +120,8 @@ public class ExpressionExtensionsTests
     [Test]
     public void GetExpressionHashCode_Should_ReturnSameHashCodes_When_UsingParameterExpression_DifferentNames_With_ConsiderNamesFalse()
     {
-        var hashCode1 = Expression.Parameter(typeof(string), "x").GetExpressionHashCode(false);
-        var hashCode2 = Expression.Parameter(typeof(string), "a").GetExpressionHashCode(false);
+        var hashCode1 = Expression.Parameter(typeof(string), "x").GetExpressionHashCode(true);
+        var hashCode2 = Expression.Parameter(typeof(string), "a").GetExpressionHashCode(true);
 
         hashCode1.Should().Be(hashCode2);
     }

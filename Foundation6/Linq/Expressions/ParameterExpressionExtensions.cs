@@ -18,6 +18,7 @@ public static class ParameterExpressionExtensions
     {
         expression.ThrowIfNull();
         return ignoreName ? expression.Type.GetHashCode()
-                          : System.HashCode.Combine(expression.Type, expression.Name);
+                          : HashCode.FromOrderedHashCode(expression.Type.GetHashCode(),
+                                                         expression.Name.GetNullableHashCode());
     }
 }

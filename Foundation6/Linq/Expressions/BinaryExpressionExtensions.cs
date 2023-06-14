@@ -19,13 +19,13 @@ public static class BinaryExpressionExtensions
             && lhs.Right.EqualsToExpression(rhs.Right);
     }
 
-    public static int GetExpressionHashCode(this BinaryExpression expression)
+    public static int GetExpressionHashCode(this BinaryExpression expression, bool ignoreName = false)
     {
         expression.ThrowIfNull();
         return HashCode.FromOrderedHashCode(expression.NodeType.GetHashCode(),
                                             expression.Type.GetHashCode(),
-                                            expression.Left.GetExpressionHashCode(),
-                                            expression.Right.GetExpressionHashCode());
+                                            expression.Left.GetExpressionHashCode(ignoreName),
+                                            expression.Right.GetExpressionHashCode(ignoreName));
     }
 
     public static bool IsPredicate(this BinaryExpression expression)

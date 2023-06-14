@@ -104,20 +104,21 @@ public class EnumerableConditionalsTests
     public void If_Should_ReturnMappedValues_When_Predicate_IsTrue()
     {
         {
-            var numbers = Enumerable.Range(1, 6);
+            var numbers = Enumerable.Range(1, 6).ToArray();
 
             var actual = numbers.If(n => n % 2 == 0, n => n * 10)
-                                .Else(n => n).ToArray();
+                                .Else(n => n)
+                                .ToArray();
 
             var expected = new[] { 1, 20, 3, 40, 5, 60 };
 
-            Assert.AreEqual(expected.Length, actual.Length);
-            Assert.AreEqual(expected[0], actual[0]);
-            Assert.AreEqual(expected[1], actual[1]);
-            Assert.AreEqual(expected[2], actual[2]);
-            Assert.AreEqual(expected[3], actual[3]);
-            Assert.AreEqual(expected[4], actual[4]);
-            Assert.AreEqual(expected[5], actual[5]);
+            Assert.AreEqual(numbers.Length, actual.Length);
+            Assert.AreEqual( 1, actual[0]);
+            Assert.AreEqual(20, actual[1]);
+            Assert.AreEqual( 3, actual[2]);
+            Assert.AreEqual(40, actual[3]);
+            Assert.AreEqual( 5, actual[4]);
+            Assert.AreEqual(60, actual[5]);
         }
 
         {

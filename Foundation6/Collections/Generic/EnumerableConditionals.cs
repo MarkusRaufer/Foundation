@@ -1,10 +1,12 @@
-﻿using System.ComponentModel;
+﻿using System;
+using System.ComponentModel;
 using System.Runtime.CompilerServices;
 
 namespace Foundation.Collections.Generic;
 
 public static class EnumerableConditionals
 {
+    
     private class ElseIf<T> : IElseIf<T>
     {
         private readonly IEnumerable<T> _items;
@@ -25,6 +27,51 @@ public static class EnumerableConditionals
             }
         }
 
+        IElseIf<T> IElseIf<T>.ElseIf(Func<T, bool> condition, Action<T> action)
+        {
+            return _items.If(condition, action);
+        }
+
+        public void EndIf()
+        {
+            foreach (var _ in Else())
+            {
+            }
+        }
+    }
+
+    private class ElseIf<T, TResult> : IElseIf<T, TResult>
+    {
+        private readonly IEnumerable<(T? lhs, TResult? rhs, bool isLhs)> _items;
+        private readonly Func<T, TResult> _selector;
+
+        public ElseIf(IEnumerable<(T? lhs, TResult? rhs, bool isLhs)> items, Func<T, TResult> selector)
+        {
+            _items = items.ThrowIfNull();
+            _selector = selector.ThrowIfNull();
+        }
+
+        public IEnumerable<TResult> Else() => _items.Where(x => x.isLhs).Select(tuple => _selector(tuple.lhs!));
+
+        public IEnumerable<TResult> Else(Func<T, TResult> selector)
+        {
+            foreach (var (lhs, rhs, isLhs) in _items)
+            {
+                if (isLhs)
+                {
+                    if (lhs is null) continue;
+
+                    var selected = selector(lhs);
+                    yield return selected;
+                    continue;
+                }
+
+                if(rhs is null) continue;
+
+                yield return rhs;
+            }
+        }
+
         public void EndIf()
         {
             foreach (var _ in Else())
@@ -32,11 +79,14 @@ public static class EnumerableConditionals
             }
         }
 
-        IElseIf<T> IElseIf<T>.ElseIf(Func<T, bool> condition, Action<T> action)
+        IElseIf<T, TResult> IElseIf<T, TResult>.ElseIf(Func<T, bool> condition, Func<T, TResult> selector)
         {
-            return _items.If(condition, action);
+            return _items.Where(x => x.isLhs && x.lhs is not null)
+                         .Select(x => x.lhs!)
+                         .If(condition, selector);
         }
     }
+
 
     private class ElseResult<T, TResult> : IElse<T, TResult>
     {
@@ -168,16 +218,39 @@ public static class EnumerableConditionals
         return new ElseIf<T>(@else);
     }
 
-    public static IElse<T, TResult> If<T, TResult>(
+    public static IElseIf<T, TResult> If<T, TResult>(
         this IEnumerable<T> items,
         Func<T, bool> predicate,
-        Func<T, TResult> map)
+        Func<T, TResult> selector)
     {
         predicate.ThrowIfNull();
-        map.ThrowIfNull();
+        selector.ThrowIfNull();
 
-        return new ElseResult<T, TResult>(items, predicate, map);
+        var @else = new List<(T? lhs, TResult? rhs, bool isLhs)>();
+
+        foreach (var item in items)
+        {
+            if (predicate(item))
+            {
+                var selected = selector(item);
+                @else.Add((lhs: default(T?), rhs: selected, isLhs: false));
+                continue;
+            }
+            @else.Add((lhs: item, rhs: default(TResult?), isLhs: true));
+        }
+        return new ElseIf<T, TResult>(@else, selector);
     }
+
+    //public static IElse<T, TResult> If<T, TResult>(
+    //    this IEnumerable<T> items,
+    //    Func<T, bool> predicate,
+    //    Func<T, TResult> map)
+    //{
+    //    predicate.ThrowIfNull();
+    //    map.ThrowIfNull();
+
+    //    return new ElseResult<T, TResult>(items, predicate, map);
+    //}
 
     /// <summary>
     /// If items is empty <paramref name="whenEmpty"/> is called otherwise <paramref name="whenNotEmpty"/>.
@@ -594,6 +667,15 @@ public interface IElseIf<T>
     IElseIf<T> ElseIf(Func<T, bool> condition, Action<T> action);
     void EndIf();
 }
+
+public interface IElseIf<T, TResult>
+{
+    IEnumerable<TResult> Else();
+    IEnumerable<TResult> Else(Func<T, TResult> selector);
+    IElseIf<T, TResult> ElseIf(Func<T, bool> condition, Func<T, TResult> selector);
+    void EndIf();
+}
+
 
 public interface IElse<T, TResult>
 {

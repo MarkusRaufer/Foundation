@@ -24,17 +24,17 @@ public static class ExpressionExtensions
         return flattener.Flatten(expression);
     }
 
-    public static int GetExpressionHashCode(this Expression expression)
+    public static int GetExpressionHashCode(this Expression expression, bool ignoreName = true)
     {
         expression.ThrowIfNull();
         return expression switch
         {
-            BinaryExpression e => e.GetExpressionHashCode(),
-            ConstantExpression e => e.GetExpressionHashCode(),
-            LambdaExpression e => e.GetExpressionHashCode(),
-            MemberExpression e => e.GetExpressionHashCode(),
-            ParameterExpression e => e.GetExpressionHashCode(false),
-            UnaryExpression e => e.GetExpressionHashCode(),
+            BinaryExpression e    => e.GetExpressionHashCode(ignoreName),
+            ConstantExpression e  => e.GetExpressionHashCode(),
+            LambdaExpression e    => e.GetExpressionHashCode(ignoreName),
+            MemberExpression e    => e.GetExpressionHashCode(),
+            ParameterExpression e => e.GetExpressionHashCode(ignoreName),
+            UnaryExpression e     => e.GetExpressionHashCode(ignoreName),
             _ => 0
         };
     }
