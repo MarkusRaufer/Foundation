@@ -5,6 +5,14 @@
 /// </summary>
 public static class Scope
 {
+    public static T If<T>(
+        bool predicate,
+        Func<T> match,
+        Func<T> noMatch)
+    {
+        return predicate ? match() : noMatch();
+    }
+
     /// <summary>
     /// Returns an option from a scope. This can be used to avoid state. This enables e.g. return a value from an if or foreach statement.
     /// </summary>

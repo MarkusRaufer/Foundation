@@ -8,9 +8,37 @@ namespace Foundation;
 public class ScopeTests
 {
     [Test]
+    public void If_Should_ReturnMatchValue_When_PredicateIsTrue()
+    {
+        var x = 10;
+        var expected = 100;
+
+        var result = Scope.If(x == 10, () => expected, () => 20);
+
+        result.Should().Be(100);
+    }
+
+    [Test]
+    public void If_Should_ReturnNoMatchValue_When_PredicateIsFalse()
+    {
+        var x = 10;
+        var expected = 100;
+
+        var result = Scope.If(x == 5,
+                           () => 50,
+                           () => Scope.If(x == 10, 
+                                         () => expected,
+                                         () => 30));
+
+        result.Should().Be(expected);
+
+    }
+
+    [Test]
     public void MayReturn_Should_ReturnNone_When_InvalidIf()
     {
         var x = 10;
+
         var option = Scope.MayReturn(() =>
         {
             if (20 == x) return Option.Some(x + 2);
