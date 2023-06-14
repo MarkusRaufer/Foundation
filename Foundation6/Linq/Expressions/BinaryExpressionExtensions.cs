@@ -4,6 +4,11 @@ namespace Foundation.Linq.Expressions;
 
 public static class BinaryExpressionExtensions
 {
+    public static BinaryExpression? Concat(this IEnumerable<BinaryExpression> expressions, ExpressionType binaryType)
+    {
+        return ExpressionHelper.Concat(expressions, binaryType);
+    }
+
     public static bool EqualsToExpression(this BinaryExpression lhs, BinaryExpression rhs)
     {
         if (null == lhs) return null == rhs;

@@ -1,4 +1,6 @@
-﻿using System.Linq.Expressions;
+﻿using Foundation;
+using Foundation.Collections.Generic;
+using System.Linq.Expressions;
 using System.Reflection;
 
 namespace Foundation.Linq.Expressions;
@@ -90,6 +92,12 @@ public static class ExpressionHelper
         return AreEqualTerminators(lhs, rhs, true);
     }
 
+    public static BinaryExpression? Concat(IEnumerable<BinaryExpression> expressions, ExpressionType binaryType)
+    {
+        return expressions.Aggregate(x => x, (acc, x) => Expression.MakeBinary(binaryType, acc, x))
+                          .TryGet(out var binaryExpression) ? binaryExpression : null;
+    }
+
     //public static Expression<Func<T, object>> ConvertToReturnTypeObject<T>(MemberExpression member)
     //{
     //    var objectMember = Expression.Convert(member, typeof(object));
@@ -105,15 +113,15 @@ public static class ExpressionHelper
     //    return Expression.Lambda<Func<T, object>>(converted, expression.Parameters);
     //}
 
-    public static int CreateHashCode(this Expression expression)
-    {
-        return CreateHashCode(expression.Flatten());
-    }
+    //public static int CreateHashCode(this Expression expression)
+    //{
+    //    return CreateHashCode(expression.Flatten());
+    //}
 
-    public static int CreateHashCode(IEnumerable<Expression> expressions)
-    {
-        return HashCode.FromOrderedHashCode(expressions.Select(x => x.GetExpressionHashCode()).ToArray());
-    }
+    //public static int CreateHashCode(IEnumerable<Expression> expressions)
+    //{
+    //    return HashCode.FromOrderedHashCode(expressions.Select(x => x.GetExpressionHashCode()).ToArray());
+    //}
 
     //public static IEnumerable<(int hashcode, Expression expression)> CreateHashCodeTuples(
     //    IEnumerable<Expression> expressions)
