@@ -7,7 +7,7 @@ public class SortedList<T>
     , IReadOnlyList<T>
 {
     private List<T> _list;
-
+     
     public SortedList()
     {
         _list = new List<T>();

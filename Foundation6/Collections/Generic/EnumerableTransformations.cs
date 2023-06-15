@@ -62,6 +62,16 @@ public static class EnumerableTransformations
         return ToMultiValueMap(items, keySelector, x => x);
     }
 
+    /// <summary>
+    /// Creates a <see cref="IMultiValueMap{TKey, TValue}"/> from an enumerable.
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <typeparam name="TKey"></typeparam>
+    /// <typeparam name="TValue"></typeparam>
+    /// <param name="items"></param>
+    /// <param name="keySelector"></param>
+    /// <param name="valueSelector"></param>
+    /// <returns></returns>
     public static IMultiValueMap<TKey, TValue> ToMultiValueMap<T, TKey, TValue>(
         this IEnumerable<T> items,
         Func<T, TKey> keySelector,
@@ -173,6 +183,14 @@ public static class EnumerableTransformations
                     .Where(tuple => predicate(tuple.item))
                     .Select(tuple => new Ordinal<T> { Position = tuple.counter, Value = tuple.item });
     }
+
+    /// <summary>
+    /// Creates a <see cref="Queue{T}"/> from an enumerable.
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <param name="items"></param>
+    /// <returns></returns>
+    public static Queue<T> ToQueue<T>(this IEnumerable<T> items) => new(items);
 
     /// <summary>
     /// creates a string from the items separated by separator.
