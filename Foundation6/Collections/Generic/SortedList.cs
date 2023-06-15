@@ -1,4 +1,8 @@
-﻿using System.Collections;
+﻿using Foundation.Linq.Expressions;
+using System.Collections;
+using System.Linq.Expressions;
+using System.Reflection;
+using System.Security.AccessControl;
 
 namespace Foundation.Collections.Generic;
 
@@ -80,9 +84,52 @@ public class SortedList<T>
     public T? Find(Predicate<T> match) => _list.Find(match);
 
     /// <summary>
+    /// Retrieves all the elements that match the conditions defined by the specified lambda.
+    /// </summary>
+    /// <param name="lambda"></param>
+    /// <returns></returns>
+    //public SortedList<T> FindAll(LambdaExpression lambda)
+    //{
+    //    if (!lambda.IsPredicate()
+    //        || 1 != lambda.Parameters.Count) return new SortedList<T>();
+
+    //    var parameterType = lambda.Parameters[0].Type;
+
+    //    //var predicateType = typeof(Predicate<>);
+    //    //var predicateArgs = new[] { parameterType };
+    //    //var genericPredicate = predicateType.MakeGenericType(predicateArgs);
+
+    //    var d = lambda.ToDelegate();
+
+    //    var listType = typeof(SortedList<>);
+    //    var args = new[] { parameterType };
+    //    var genericList = listType.MakeGenericType(args);
+
+    //    var findAllName = nameof(SortedList<object>.FindAll);
+
+    //    var findAllMethods = genericList.GetMethods()
+    //                             .Where(x => x.Name == findAllName)
+    //                             .ToArray();
+
+    //    var findAll = findAllMethods[1];
+
+    //    if (null == findAll) return new();
+    //    var found = findAll.Invoke(_list, new[] { d });
+
+    //    return new();//_list.FindAll(predicate);
+    //    //var delegateType = typeof(Func<,>).MakeGenericType(new[] { parameter.Type, typeof(bool) });
+    //    //var generic = delegateType.MakeGenericMethod(parameter.Type);
+
+    //    //Delegate myDelegate = Delegate.CreateDelegate(delegateType, this, generic);
+    //    //var args = new object[] { myDelegate };
+
+    //    //return (int)anyImplementer.GetType().InvokeMember("Any", BindingFlags.InvokeMethod, null, anyImplementer, args);
+    //}
+
+    /// <summary>
     /// <see cref="List{T}.FindAll(Predicate{T})"/>
     /// </summary>
-    public SortedList<T> FindAll(Predicate<T> match) => new(_list.FindAll(match));
+    public List<T> FindAll(Predicate<T> match) => _list.FindAll(match);
 
     /// <summary>
     /// <see cref="List{T}.FindIndex(Predicate{T})"/>
