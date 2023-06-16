@@ -1712,6 +1712,34 @@ public class EnumerableExtensionsTests
     }
 
     [Test]
+    public void Permutations_Should_Return3TuplesOfPermutations_When_RepetitionsFalse()
+    {
+        var n1 = Enumerable.Range(1, 2);
+        var n2 = Enumerable.Range(10, 2);
+        var numbers = new[] { n1, n2 };
+
+        var permutations = numbers.Permutations().ToArray();
+
+        Assert.AreEqual(4, permutations.Length);
+        {
+            var values = permutations[0];
+            values.Should().ContainInOrder(new[] { 1, 10 });
+        }
+        {
+            var values = permutations[1];
+            values.Should().ContainInOrder(new[] { 1, 11 });
+        }
+        {
+            var values = permutations[2];
+            values.Should().ContainInOrder(new[] { 2, 10 });
+        }
+        {
+            var values = permutations[3];
+            values.Should().ContainInOrder(new[] { 2, 11 });
+        }
+    }
+
+    [Test]
     public void RandomSubset()
     {
         var numbers = Enumerable.Range(1, 5).ToArray();

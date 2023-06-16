@@ -1888,33 +1888,39 @@ public static class EnumerableExtensions
         return repetitions ? tuples : tuples.Distinct();
     }
 
+    /// <summary>
+    /// Creates permutations of multiple lists.
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <param name="lists"></param>
+    /// <returns></returns>
     public static IEnumerable<T[]> Permutations<T>(this IEnumerable<IEnumerable<T>> lists)
     {
-        if (!lists.Any()) return new T[][] { Array.Empty<T>() };
+        if (!lists.Any())
+        {
+            yield return Array.Empty<T>();
+            yield break;
+        }
 
-        var firstList = lists.First().ToArray();
-        var remainingLists = lists.Skip(1).ToArray();
+        var firstList = lists.First();
+        var remainingLists = lists.Skip(1);
 
         var withoutFirstList = Permutations(remainingLists);
-
-        var permutations = new List<T[]>();
 
         foreach (var lhs in firstList)
         {
             foreach (var permutationWithoutFirst in withoutFirstList)
             {
-                var rhs = permutationWithoutFirst.ToArray();
+                var rhs = permutationWithoutFirst;
 
                 var permutation = new T[1 + rhs.Length];
                 permutation[0] = lhs;
 
                 if (rhs.Length > 0) Array.Copy(rhs, 0, permutation, 1, rhs.Length);
 
-                permutations.Add(permutation);
+                yield return permutation;
             }
         }
-
-        return permutations;
     }
 
     /// <summary>
