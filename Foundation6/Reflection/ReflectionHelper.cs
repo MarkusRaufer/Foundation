@@ -5,6 +5,36 @@ namespace Foundation.Reflection
 {
     public static class ReflectionHelper
     {
+        public static IEnumerable<MemberInfo> GetAllInterfaceMembers(Type type, bool includeSelf = false)
+        {
+            if(includeSelf)
+            {
+                foreach(var member in type.GetMembers())
+                    yield return member;
+            }
+
+            foreach(var interfaceType in type.GetInterfaces())
+            {
+                foreach(var member in interfaceType.GetMembers())
+                    yield return member;
+            }
+        }
+
+        public static IEnumerable<MethodInfo> GetAllInterfaceMethods(Type type, bool includeSelf = false)
+        {
+            if (includeSelf)
+            {
+                foreach (var method in type.GetMethods())
+                    yield return method;
+            }
+
+            foreach (var interfaceType in type.GetInterfaces())
+            {
+                foreach (var method in interfaceType.GetMethods())
+                    yield return method;
+            }
+        }
+
         public static FieldInfo? GetBackingField(PropertyInfo property)
         {
             if (property.DeclaringType is null) return null;
