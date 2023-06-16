@@ -18,6 +18,18 @@ public static class ObjectExtensions
     }
 
     /// <summary>
+    /// Generic cast works on reference types and value types.
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <param name="obj"></param>
+    /// <returns></returns>
+    public static T? CastTo<T>(this object obj)
+    {
+        if (obj is T t) return t;
+        return default;
+    }
+
+    /// <summary>
     /// Converts an object to a target type.
     /// </summary>
     /// <typeparam name="T"></typeparam>
@@ -354,6 +366,20 @@ public static class ObjectExtensions
             TimeOnly to => to.ToDateTime(kind),
             _ => null
         };
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static int? ToInt32(this object? value)
+    {
+        if(value is int number) return number;
+
+        if (value is string str && int.TryParse(str, out int result))
+            return result;
+
+        if (value is byte[] buffer && 4 == buffer.Length)
+            return BitConverter.ToInt32(buffer);
+
+        return null;
     }
 
     /// <summary>
