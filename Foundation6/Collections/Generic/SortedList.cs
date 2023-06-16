@@ -1,4 +1,6 @@
-﻿using System.Collections;
+﻿using Foundation.Linq.Expressions;
+using System.Collections;
+using System.Linq.Expressions;
 
 namespace Foundation.Collections.Generic;
 
@@ -78,6 +80,27 @@ public class SortedList<T>
     /// <see cref="List{T}.Find(Predicate{T})"/>
     /// </summary>
     public T? Find(Predicate<T> match) => _list.Find(match);
+
+    /// <summary>
+    /// Retrieves all the elements that match the conditions defined by the specified lambda.
+    /// </summary>
+    /// <param name="list">The list to execute the lambda.</param>
+    /// <param name="lambda">Filter for FindAll method.</param>
+    /// <returns></returns>
+    public List<T> FindAll(LambdaExpression lambda)
+    {
+        if (!lambda.ThrowIfNull().IsPredicate())
+            throw new ArgumentOutOfRangeException(nameof(lambda), $"is not a predicate");
+
+        if (1 != lambda.Parameters.Count)
+            throw new ArgumentOutOfRangeException(nameof(lambda), $"one parameter expected");
+
+        if (lambda.Parameters.First().Type != typeof(T))
+            throw new ArgumentOutOfRangeException(nameof(lambda), $"wrong parameter type");
+
+        var func = (Func<T, bool>)lambda.Compile();
+        return FindAll(new Predicate<T>(func));
+    }
 
     /// <summary>
     /// <see cref="List{T}.FindAll(Predicate{T})"/>
