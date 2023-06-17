@@ -4,10 +4,16 @@ using System.Linq.Expressions;
 
 namespace Foundation.Collections.Generic;
 
+/// <summary>
+/// Represents a collection of values that are sorted by the values
+/// and are accessible by value and by index.
+/// </summary>
+/// <typeparam name="T">T should implement IComparable<typeparamref name="T"/> or use your own IComparer<typeparamref name="T"/></typeparam>
 public class SortedList<T>
     : ICollection<T>
     , IReadOnlyList<T>
 {
+    private readonly IComparer<T>? _comparer;
     private List<T> _list;
      
     public SortedList()
@@ -18,6 +24,11 @@ public class SortedList<T>
     public SortedList(int capacity)
     {
         _list = new List<T>(capacity);
+    }
+
+    public SortedList(IComparer<T> comparer) : this()
+    {
+        _comparer = comparer.ThrowIfNull();
     }
 
     /// <summary>
@@ -33,6 +44,16 @@ public class SortedList<T>
         }
     }
 
+    public SortedList(IComparer<T> comparer, int capacity) : this(capacity)
+    {
+        _comparer = comparer.ThrowIfNull();
+    }
+
+    public SortedList(IComparer<T> comparer, IEnumerable<T> collection) : this(collection)
+    {
+        _comparer = comparer.ThrowIfNull();
+    }
+
     /// <inheritdoc/>
     public T this[int index] => _list[index];
 
@@ -42,7 +63,10 @@ public class SortedList<T>
     /// <param name="item"></param>
     public void Add(T item)
     {
-        var index = _list.BinarySearch(item);
+        var index = null == _comparer
+            ? _list.BinarySearch(item)
+            : _list.BinarySearch(item, _comparer);
+
         if (0 > index) index = ~index;
 
         _list.Insert(index, item);
@@ -51,7 +75,9 @@ public class SortedList<T>
     /// <summary>
     /// <see cref="List{T}.BinarySearch(T)"/>
     /// </summary>
-    public int BinarySearch(T item) => _list.BinarySearch(item);
+    public int BinarySearch(T item) => null == _comparer
+            ? _list.BinarySearch(item)
+            : _list.BinarySearch(item, _comparer);
 
     /// <summary>
     /// <see cref="List{T}.BinarySearch(T, IComparer{T}?)"/>
@@ -68,10 +94,13 @@ public class SortedList<T>
     public void Clear() => _list.Clear();
 
     /// <inheritdoc/>
-    public bool Contains(T item) => _list.BinarySearch(item) > -1;
+    public bool Contains(T item) => null == _comparer
+            ? _list.BinarySearch(item) > -1
+            : _list.BinarySearch(item, _comparer) > -1;
 
     /// <inheritdoc/>
-    public void CopyTo(T[] array, int arrayIndex) => _list.CopyTo(array, arrayIndex);
+    public void CopyTo(T[] array, int arrayIndex)
+        => _list.CopyTo(array, arrayIndex);
 
     /// <inheritdoc/>
     public int Count => _list.Count;
@@ -115,12 +144,14 @@ public class SortedList<T>
     /// <summary>
     /// <see cref="List{T}.FindIndex(int, Predicate{T})"/>
     /// </summary>
-    public int FindIndex(int startIndex, Predicate<T> match) => _list.FindIndex(startIndex, match);
+    public int FindIndex(int startIndex, Predicate<T> match)
+        => _list.FindIndex(startIndex, match);
 
     /// <summary>
     /// <see cref="List{T}.FindIndex(int, int, Predicate{T})"/>
     /// </summary>
-    public int FindIndex(int startIndex, int count, Predicate<T> match) => _list.FindIndex(startIndex, count, match);
+    public int FindIndex(int startIndex, int count, Predicate<T> match)
+        => _list.FindIndex(startIndex, count, match);
 
     /// <summary>
     /// <see cref="List{T}.FindLast(Predicate{T})"/>
@@ -135,12 +166,14 @@ public class SortedList<T>
     /// <summary>
     /// <see cref="List{T}.FindLastIndex(int, Predicate{T})"/>
     /// </summary>
-     public int FindLastIndex(int startIndex, Predicate<T> match) => _list.FindLastIndex(startIndex, match);
+     public int FindLastIndex(int startIndex, Predicate<T> match)
+        => _list.FindLastIndex(startIndex, match);
 
     /// <summary>
     /// <see cref="List{T}.FindLastIndex(int, int, Predicate{T})"/>
     /// </summary>
-    public int FindLastIndex(int startIndex, int count, Predicate<T> match) => _list.FindLastIndex(startIndex, count, match);
+    public int FindLastIndex(int startIndex, int count, Predicate<T> match)
+        => _list.FindLastIndex(startIndex, count, match);
 
     /// <inheritdoc/>
     public IEnumerator<T> GetEnumerator() => _list.GetEnumerator();
