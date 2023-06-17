@@ -1909,10 +1909,8 @@ public static class EnumerableExtensions
 
         foreach (var lhs in firstList)
         {
-            foreach (var permutationWithoutFirst in withoutFirstList)
+            foreach (var rhs in withoutFirstList)
             {
-                var rhs = permutationWithoutFirst;
-
                 var permutation = new T[1 + rhs.Length];
                 permutation[0] = lhs;
 

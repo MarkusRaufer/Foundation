@@ -214,31 +214,29 @@ public static class EnumerableExtensions
 
     public static IEnumerable<object[]> Permutations(this IEnumerable<IEnumerable<object>> lists)
     {
-        if (!lists.Any()) return new object[][] { Array.Empty<object>() };
+        if (!lists.Any())
+        {
+            yield return Array.Empty<object>();
+            yield break;
+        }
 
-        var firstList = lists.First().ToArray();
-        var remainingLists = lists.Skip(1).ToArray();
+        var firstList = lists.First();
+        var remainingLists = lists.Skip(1);
 
         var withoutFirstList = Permutations(remainingLists);
 
-        var permutations = new List<object[]>();
-
         foreach (var lhs in firstList)
         {
-            foreach (var permutationWithoutFirst in withoutFirstList)
+            foreach (var rhs in withoutFirstList)
             {
-                var rhs = permutationWithoutFirst.ToArray();
-
                 var permutation = new object[1 + rhs.Length];
                 permutation[0] = lhs;
 
                 if (rhs.Length > 0) Array.Copy(rhs, 0, permutation, 1, rhs.Length);
 
-                permutations.Add(permutation);
+                yield return permutation;
             }
         }
-
-        return permutations;
     }
 
     public static object[][] PermutationsArrays(this object[][] lists)
