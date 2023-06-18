@@ -175,6 +175,17 @@ public class SortedList<T>
     public int FindLastIndex(int startIndex, int count, Predicate<T> match)
         => _list.FindLastIndex(startIndex, count, match);
 
+    /// <summary>
+    /// Returs the first element if list is not empty.
+    /// </summary>
+    public T? First => 0 == _list.Count ? default : _list[0];
+
+    /// <summary>
+    /// Returns the index of the first element. If <see cref="SortedList{T}"/> is empty -1 is returned.
+    /// </summary>
+    /// <returns>Index greater or equal 0 or -1 if emtpy.</returns>
+    public int FirstIndex() => 0 == _list.Count ? -1 : 0;
+
     /// <inheritdoc/>
     public IEnumerator<T> GetEnumerator() => _list.GetEnumerator();
 
@@ -251,6 +262,17 @@ public class SortedList<T>
 
     /// <inheritdoc/>
     public bool IsReadOnly => false;
+
+    /// <summary>
+    /// Returns the last element of the list if not empty.
+    /// </summary>
+    public T? Last => 0 == _list.Count ? default : _list[LastIndex()];
+
+    /// <summary>
+    /// Returns the index of the last element. If <see cref="SortedList{T}"/> is empty -1 is returned.
+    /// </summary>
+    /// <returns>Index greater or equal 0 or -1 if emtpy.</returns>
+    public int LastIndex() => _list.Count - 1;
 
     /// <summary>
     /// <see cref="List{T}.LastIndexOf(T)"/>
