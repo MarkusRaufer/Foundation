@@ -51,6 +51,12 @@ public class MultiValueMap<TKey, TValue>
     {
     }
 
+    public MultiValueMap(
+            IEnumerable<KeyValuePair<TKey, TValue>> keyValues,
+            Func<ICollection<TValue>> valueCollectionFactory)
+        : base(keyValues, valueCollectionFactory)
+    { 
+    }
 
     public MultiValueMap(
         IDictionary<TKey, ICollection<TValue>> dictionary,
@@ -87,6 +93,19 @@ public class MultiValueMap<TKey, TValue, TValueCollection>
     public MultiValueMap(int capasity, IEqualityComparer<TKey> comparer, Func<TValueCollection> valueCollectionFactory)
         : this(new Dictionary<TKey, TValueCollection>(capasity, comparer), valueCollectionFactory)
     {
+    }
+
+    public MultiValueMap(
+        IEnumerable<KeyValuePair<TKey, TValue>> keyValues,
+        Func<TValueCollection> valueCollectionFactory)
+    {
+        _dictionary = new Dictionary<TKey, TValueCollection>();
+        _valueCollectionFactory = valueCollectionFactory.ThrowIfNull();
+
+        foreach (var (key, value) in keyValues)
+        {
+            Add(key, value);
+        }
     }
 
     public MultiValueMap(
