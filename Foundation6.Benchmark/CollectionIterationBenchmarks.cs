@@ -1,5 +1,6 @@
 ﻿using BenchmarkDotNet.Attributes;
 using Foundation.Collections.Generic;
+using Foundation.Collections.Immutable;
 using System.Collections.ObjectModel;
 using System.Runtime.CompilerServices;
 
@@ -9,15 +10,16 @@ namespace Foundation.Benchmark
     public class CollectionIterationBenchmarks
     {
         //private readonly Collection<int> _collection = new();
+        private readonly ImmutableSortedList<int> _immutableSortedList = new();
         //private readonly List<int> _list = new();
-        private readonly SortedList<int> _sortedList = new();
+        //private readonly SortedList<int> _sortedList = new();
 
         public const int NumberOfIterations = 10000;
 
         //[Params(10, 5000, 9000)]
         //public int Search { get; set; }
 
-        public static IEnumerable<int> Values => Enumerable.Range(1, NumberOfIterations);
+        public static int[] Values => Enumerable.Range(1, NumberOfIterations).Shuffle().ToArray();
 
         //public static DictionaryValue<int, string> KeyValues
         //    => DictionaryValue.New(Enumerable.Range(1, NumberOfIterations)
@@ -37,18 +39,37 @@ namespace Foundation.Benchmark
             //foreach (var i in Enumerable.Range(1, NumberOfIterations))
             //    _list.Add(i);
 
-            foreach (var value in Values)
-            {
-                _sortedList.Add(value);
-            }
+            //foreach (var value in Values)
+            //{
+            //    _sortedList.Add(value);
+            //}
         }
 
         [GlobalCleanup]
         public void Cleanup()
         {
             //_collection.Clear();
+            _immutableSortedList.Clear();
             //_list.Clear();
-            _sortedList.Clear();
+            //_sortedList.Clear();
+        }
+
+        //[Benchmark]
+        //public void Add_SortedList()
+        //{
+        //    foreach(var value in Values)
+        //    {
+        //        _sortedList.Add(value);
+        //    }
+        //}
+
+        [Benchmark]
+        public void Add_ImmutableSortedList()
+        {
+            foreach (var value in Values)
+            {
+                _immutableSortedList.Add(value);
+            }
         }
 
         //[Benchmark]
@@ -69,10 +90,10 @@ namespace Foundation.Benchmark
         //    return _sortedList.Contains(Search);
         //}
 
-        [Benchmark]
-        public SortedList<int> SortedList_GetViewBetween()
-        {
-            return _sortedList.GetViewBetween(4000, 5000);
-        }
+        //[Benchmark]
+        //public SortedList<int> SortedList_GetViewBetween()
+        //{
+        //    return _sortedList.GetViewBetween(4000, 5000);
+        //}
     }
 }
