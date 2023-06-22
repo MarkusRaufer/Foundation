@@ -146,6 +146,45 @@ namespace Foundation.Collections.Generic
                 Assert.AreEqual(j, inserted[i]);
             }
         }
+
+        [Test]
+        public void InsertAtSameArray_Should_InsertAtHead_When_Index_Is_0()
+        {
+            var numbers = Enumerable.Range(2, 5).Append(0).ToArray();
+
+            numbers.InsertAtSameArray(1, 0);
+
+            for (int i = 0, j = 1; i < numbers.Length; i++, j++)
+            {
+                Assert.AreEqual(j, numbers[i]);
+            }
+        }
+
+        [Test]
+        public void InsertAtSameArray_Should_InsertAtTail_When_Index_Has_TailPosition()
+        {
+            var numbers = Enumerable.Range(1, 5).Append(0).ToArray();
+
+            numbers.InsertAtSameArray(6, numbers.Length - 1);
+
+            for (int i = 0, j = 1; i < numbers.Length; i++, j++)
+            {
+                Assert.AreEqual(j, numbers[i]);
+            }
+        }
+
+        [Test]
+        public void InsertAtSameArray_Should_InsertItem_When_Index_Has_MiddlePosition()
+        {
+            var numbers = Enumerable.Range(1, 2).Concat(Enumerable.Range(4, 2)).Append(0).ToArray();
+
+            numbers.InsertAtSameArray(3, 2);
+
+            for (int i = 0, j = 1; i < numbers.Length; i++, j++)
+            {
+                Assert.AreEqual(j, numbers[i]);
+            }
+        }
     }
 }
 

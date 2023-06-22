@@ -162,6 +162,34 @@ public static class ArrayExtensions
     }
 
     /// <summary>
+    /// Inserts a value into an array. Existing values will be moved.
+    /// The array must big enough to move the elements.
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <param name="array"></param>
+    /// <param name="value"></param>
+    /// <param name="index"></param>
+    public static void InsertAtSameArray<T>(this T[] array, T value, int index)
+    {
+        index.ThrowIfOutOfRange(() => index < 0 || index > array.Length);
+        array.ThrowIfOutOfRange(() => 2 > array.Length);
+
+        if (0 == index)
+        {
+            Array.Copy(array, 0, array, 1, array.Length - 1);
+        }
+        else if (index == array.Length - 1)
+        {
+        }
+        else
+        {
+            Array.Copy(array, index, array, index + 1, array.Length - index - 1);
+        }
+
+        array[index] = value;
+    }
+
+    /// <summary>
     /// Creates a new array and prepends <paramref name="elem"/> to the new array.
     /// </summary>
     /// <typeparam name="T"></typeparam>
