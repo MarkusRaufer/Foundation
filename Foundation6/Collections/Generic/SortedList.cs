@@ -1,5 +1,6 @@
 ﻿using Foundation.Linq.Expressions;
 using System.Collections;
+using System.Collections.Generic;
 using System.Linq.Expressions;
 
 namespace Foundation.Collections.Generic;
@@ -14,7 +15,7 @@ public class SortedList<T>
     , IReadOnlyList<T>
 {
     private readonly IComparer<T>? _comparer;
-    private List<T> _list;
+    private readonly List<T> _list;
      
     public SortedList()
     {
@@ -52,6 +53,15 @@ public class SortedList<T>
     public SortedList(IComparer<T> comparer, IEnumerable<T> collection) : this(collection)
     {
         _comparer = comparer.ThrowIfNull();
+    }
+
+    public SortedList(SortedList<T> sortedList)
+    {
+        _list = new List<T>();
+        foreach (T item in sortedList)
+        {
+            _list.Add(item);
+        }
     }
 
     /// <inheritdoc/>
@@ -195,13 +205,7 @@ public class SortedList<T>
     /// <summary>
     /// <see cref="List{T}.GetRange(int, int)"/>
     /// </summary>
-    public SortedList<T> GetRange(int index, int count)
-    {
-        return new SortedList<T>
-        {
-            _list = _list.GetRange(index, count)
-        };
-    }
+    public SortedList<T> GetRange(int index, int count) => new (_list.GetRange(index, count));
 
     /// <summary>
     /// Returns a view of a subset in a <see cref="SortedList{T}"/>.
