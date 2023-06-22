@@ -1,21 +1,24 @@
 ﻿namespace Foundation.ComponentModel;
 
-public class Transaction : Transaction<TransactionAction, ITransactionControl>
+public class Transaction<TChange> : Transaction<Guid, TChange>
 {
-    public Transaction() : base()
+    public Transaction() : this(Guid.NewGuid())
+    {
+    }
+
+    public Transaction(Guid transactionId) : base(transactionId)
     {
     }
 }
 
-public class Transaction<TAction, TChangeTuple>
-    : Transaction<TAction, TChangeTuple, Action<IList<TChangeTuple>>>
-    where TChangeTuple : ITransactionControl<TAction>
+public class Transaction<TId, TChange>
+    : Transaction<TId, TChange, Action<IList<TChange>>>
 {
-    public Transaction() : base()
+    public Transaction(TId transactionId) : base(transactionId)
     {
     }
 
-    public override void Commit() => Committed?.Publish(Actions);
+    public override void Commit() => Committed?.Publish(Changes);
 }
 
 /// <summary>
@@ -24,15 +27,16 @@ public class Transaction<TAction, TChangeTuple>
 /// <typeparam name="TAction">This value is needed to describe what kind of action is executed.</typeparam>
 /// <typeparam name="TChangeTuple">This tuple should contain the TAction and the value changes.</typeparam>
 /// <typeparam name="TDelegate">This is the delegate which will be called on <see cref="Commit"/></typeparam>
-public abstract class Transaction<TAction, TChangeTuple, TDelegate> : ITransaction
-    where TChangeTuple : ITransactionControl<TAction>
+public abstract class Transaction<TId, TChange, TDelegate> : ITransaction<TId>
     where TDelegate : Delegate
 {
     private bool _disposed;
 
-    public Transaction()
+    public Transaction(TId transactionId)
     {
-        Actions = new List<TChangeTuple>();
+        TransactionId = transactionId.ThrowIfNull();
+
+        Changes = new List<TChange>();
         Committed = new Event<TDelegate>();
     }
 
@@ -41,9 +45,9 @@ public abstract class Transaction<TAction, TChangeTuple, TDelegate> : ITransacti
         Dispose(false);
     }
 
-    protected IList<TChangeTuple> Actions { get; }
+    public void Add(TChange change) => Changes.Add(change);
 
-    public void Add(TChangeTuple change) => Actions.Add(change);
+    protected IList<TChange> Changes { get; }
 
     public virtual void Commit()
     {
@@ -64,10 +68,14 @@ public abstract class Transaction<TAction, TChangeTuple, TDelegate> : ITransacti
             if (disposing)
             {
                 Committed.Dispose();
-                Actions.Clear();
+                Changes.Clear();
 
             }
             _disposed = true;
         }
     }
+
+    public bool HasChanges() => 0 < Changes.Count;
+
+    public TId TransactionId { get; }
 }
