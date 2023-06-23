@@ -29,8 +29,8 @@ public class ImmutableSortedList<T> : IImmutableList<T>
     /// </summary>
     /// <param name="collection">The collection can be unsorted.</param>
     public ImmutableSortedList(IEnumerable<T> collection)
-        : this(ImmutableList.CreateRange(collection.OrderBy(x => x)))
     {
+        _list = ImmutableList.CreateRange(collection.OrderBy(x => x));
     }
 
     public ImmutableSortedList(IComparer<T> comparer, IEnumerable<T> collection) : this(collection)
@@ -38,9 +38,11 @@ public class ImmutableSortedList<T> : IImmutableList<T>
         _comparer = comparer.ThrowIfNull();
     }
 
-    public ImmutableSortedList(ImmutableList<T> list)
+    public ImmutableSortedList(ImmutableSortedList<T> list)
     {
-        _list = list ?? throw new ArgumentNullException(nameof(list));
+        list.ThrowIfNull();
+
+        _list = ImmutableList.CreateRange(list);
     }
 
     /// <inheritdoc/>
