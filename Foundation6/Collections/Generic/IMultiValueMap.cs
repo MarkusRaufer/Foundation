@@ -14,6 +14,13 @@ public interface IMultiValueMap<TKey, TValue, TValueCollection>
     where TValueCollection : IEnumerable<TValue>
 {
     /// <summary>
+    /// Adds a list of values to a key.
+    /// </summary>
+    /// <param name="key"></param>
+    /// <param name="values"></param>
+    void AddRange(TKey key, IEnumerable<TValue> values);
+
+    /// <summary>
     /// Adds a single value to the key. If a value exists for this key, it will be removed before.
     /// </summary>
     /// <param name="item"></param>
@@ -34,6 +41,12 @@ public interface IMultiValueMap<TKey, TValue, TValueCollection>
     /// <param name="replaceExisting">If true an existing value is replaced by value, if false no value is added.</param>
     bool AddUnique(TKey key, TValue value, bool replaceExisting = false);
 
+    /// <summary>
+    /// Removes a value from a key.
+    /// </summary>
+    /// <param name="key"></param>
+    /// <param name="value"></param>
+    /// <returns></returns>
     bool Remove(TKey key, TValue value);
 
     /// <summary>

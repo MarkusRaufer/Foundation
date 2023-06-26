@@ -1,7 +1,6 @@
 ﻿namespace Foundation.Collections.Generic;
 
 using System.Collections;
-using System.Diagnostics.CodeAnalysis;
 
 /// <summary>
 /// Dictionary that supports multiple values per key.
@@ -116,8 +115,17 @@ public class MultiValueMap<TKey, TValue, TValueCollection>
         _valueCollectionFactory = valueCollectionFactory.ThrowIfNull();
     }
 
+    /// <summary>
+    /// Adds key value to the map.
+    /// </summary>
+    /// <param name="item"></param>
     public void Add(KeyValuePair<TKey, TValue> item) => Add(item.Key, item.Value);
 
+    /// <summary>
+    /// Adds key value to the map.
+    /// </summary>
+    /// <param name="key"></param>
+    /// <param name="value"></param>
     public void Add(TKey key, TValue value)
     {
         if (!_dictionary.TryGetValue(key, out TValueCollection? values))
@@ -129,13 +137,23 @@ public class MultiValueMap<TKey, TValue, TValueCollection>
         values.Add(value);
     }
 
+    /// <inheritdoc/>
+    public void AddRange(TKey key, IEnumerable<TValue> values)
+    {
+        if (!_dictionary.TryGetValue(key, out TValueCollection? valueCollection))
+        {
+            valueCollection = _valueCollectionFactory();
+            _dictionary.Add(key, valueCollection);
+        }
+
+        foreach (var value in values)
+            valueCollection.Add(value);
+    }
+
+    /// <inheritdoc/>
     public void AddSingle(KeyValuePair<TKey, TValue> item) => AddSingle(item.Key, item.Value);
 
-    /// <summary>
-    /// Has only one value for a key.
-    /// </summary>
-    /// <param name="key"></param>
-    /// <param name="value"></param>
+    /// <inheritdoc/>
     public void AddSingle(TKey key, TValue value)
     {
         if (!_dictionary.TryGetValue(key, out TValueCollection? values))
@@ -151,6 +169,7 @@ public class MultiValueMap<TKey, TValue, TValueCollection>
         values.Add(value);
     }
 
+    /// <inheritdoc/>
     public bool AddUnique(TKey key, TValue value, bool replaceExisting = false)
     {
         if (!_dictionary.TryGetValue(key, out TValueCollection? values))
@@ -172,6 +191,7 @@ public class MultiValueMap<TKey, TValue, TValueCollection>
         return true;
     }
 
+    /// <inheritdoc/>
     public virtual void Clear() => _dictionary.Clear();
 
     /// <summary>
@@ -194,9 +214,10 @@ public class MultiValueMap<TKey, TValue, TValueCollection>
 
         return false;
     }
-
+    /// <inheritdoc/>
     public bool ContainsKey(TKey key) => _dictionary.ContainsKey(key);
 
+    /// <inheritdoc/>
     public bool ContainsValue(TValue value)
     {
         foreach (var pair in _dictionary)

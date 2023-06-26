@@ -33,6 +33,17 @@ public class ObservableMultiMapDecorator<TKey, TValue>
             CollectionChanged?.Invoke(this, new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Add, new KeyValuePair<TKey, TValue>(key, value)));
     }
 
+    public void AddRange(TKey key, IEnumerable<TValue> values)
+    {
+        _map.AddRange(key, values);
+        if (!CollectionChangedEnabled || null == CollectionChanged) return;
+
+        foreach(var value in values)
+        {
+            CollectionChanged?.Invoke(this, new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Add, new KeyValuePair<TKey, TValue>(key, value)));
+        }
+    }
+
     public void AddSingle(KeyValuePair<TKey, TValue> item) => AddSingle(item.Key, item.Value);
 
     public void AddSingle(TKey key, TValue value)
