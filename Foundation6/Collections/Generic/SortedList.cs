@@ -1,13 +1,12 @@
 ﻿using Foundation.Linq.Expressions;
 using System.Collections;
-using System.Collections.Generic;
 using System.Linq.Expressions;
 
 namespace Foundation.Collections.Generic;
 
 /// <summary>
-/// Represents a collection of values that are sorted by the values
-/// and are accessible by value and by index.
+/// Represents a collection of values that are sorted by the values and are accessible by value and by index.
+/// This list supports duplicates unlike the <see cref="SortedList{TKey, TValue}" of Microsoft./>
 /// </summary>
 /// <typeparam name="T">T should implement IComparable<typeparamref name="T"/> or use your own IComparer<typeparamref name="T"/></typeparam>
 public class SortedList<T>
@@ -36,10 +35,13 @@ public class SortedList<T>
     /// Constructor expects a collection of items.
     /// </summary>
     /// <param name="collection">The collection can be unsorted.</param>
-    public SortedList(IEnumerable<T> collection)
+    /// <param name="isSorted">If false the items will be sorted otherwise just added.</param>
+    public SortedList(IEnumerable<T> collection, bool isSorted = false)
     {
         _list = new List<T>();
-        foreach (T item in collection.OrderBy(x => x))
+        var sortedItems = isSorted ? collection : collection.OrderBy(x => x);
+
+        foreach (T item in sortedItems)
         {
             _list.Add(item);
         }
@@ -53,15 +55,6 @@ public class SortedList<T>
     public SortedList(IComparer<T> comparer, IEnumerable<T> collection) : this(collection)
     {
         _comparer = comparer.ThrowIfNull();
-    }
-
-    public SortedList(SortedList<T> sortedList)
-    {
-        _list = new List<T>();
-        foreach (T item in sortedList)
-        {
-            _list.Add(item);
-        }
     }
 
     /// <inheritdoc/>
@@ -80,6 +73,18 @@ public class SortedList<T>
         if (0 > index) index = ~index;
 
         _list.Insert(index, item);
+    }
+
+    /// <summary>
+    /// Adds a list of elements to the list.
+    /// </summary>
+    /// <param name="items"></param>
+    public void AddRange(IEnumerable<T> items)
+    {
+        foreach (T item in items.OrderBy(x => x))
+        {
+            Add(item);
+        }
     }
 
     /// <summary>
