@@ -19,7 +19,7 @@ public interface IReadOnlyMultiValueMap<TKey, TValue, TValueCollection>
     bool Contains(TKey key, TValue value);
 
     /// <summary>
-    /// Checks if value exists in a value list.
+    /// Checks if value exists for a key.
     /// </summary>
     /// <param name="value"></param>
     /// <returns></returns>
