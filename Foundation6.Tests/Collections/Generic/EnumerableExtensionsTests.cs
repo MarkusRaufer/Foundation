@@ -765,6 +765,19 @@ public class EnumerableExtensionsTests
     }
 
     [Test]
+    public void Ignore_Should_Ignore_2_Items_When_2_IndicesUsed()
+    {
+        var numbers = Enumerable.Range(1, 5);
+
+        var filtered = numbers.Ignore(new[] { 2, 3 }).ToArray();
+
+        Assert.AreEqual(3, filtered.Length);
+        Assert.AreEqual(1, filtered[0]);
+        Assert.AreEqual(2, filtered[1]);
+        Assert.AreEqual(5, filtered[2]);
+    }
+
+    [Test]
     public void Ignore_Should_Ignore_Items_When_Match_On_Indices()
     {
         var numbers = Enumerable.Range(0, 10);

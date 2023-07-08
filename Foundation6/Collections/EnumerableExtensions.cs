@@ -157,19 +157,17 @@ public static class EnumerableExtensions
     /// <param name="items"></param>
     /// <param name="indices"></param>
     /// <returns></returns>
-    public static IEnumerable<T> Ignore<T>(this IEnumerable<T> items, params int[] indices)
+    public static IEnumerable<T> Ignore<T>(this IEnumerable<T> items, int[] indices)
     {
         items.ThrowIfNull();
-        if (0 == indices.Length) yield break;
+        indices.ThrowIfNull();
 
         var i = 0;
         foreach (var item in items)
         {
-            if (indices.Contains(i))
-                continue;
-
+            if (indices.Contains(i++)) continue;
+            
             yield return item;
-            i++;
         }
     }
 
