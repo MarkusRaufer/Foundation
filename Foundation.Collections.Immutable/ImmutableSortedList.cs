@@ -1,4 +1,4 @@
-﻿using Foundation.Linq.Expressions;
+﻿using Foundation.Collections.Generic;
 using System.Collections;
 using System.Collections.Immutable;
 using System.Linq.Expressions;
@@ -12,37 +12,34 @@ namespace Foundation.Collections.Immutable;
 /// <typeparam name="T">T should implement IComparable<typeparamref name="T"/> or use your own IComparer<typeparamref name="T"/></typeparam>
 public class ImmutableSortedList<T> : IImmutableList<T>
 {
-    private readonly IComparer<T>? _comparer;
-    private readonly ImmutableList<T> _list;
+    private readonly SortedList<T> _list;
 
     public ImmutableSortedList() : this(ImmutableList<T>.Empty)
     {
     }
 
-    public ImmutableSortedList(IComparer<T> comparer) : this()
+    public ImmutableSortedList(IComparer<T> comparer)
     {
-        _comparer = comparer.ThrowIfNull();
+        _list = new SortedList<T>(comparer);
     }
 
     /// <summary>
     /// Constructor expects a collection of items.
     /// </summary>
     /// <param name="collection">The collection can be unsorted.</param>
-    public ImmutableSortedList(IEnumerable<T> collection)
+    public ImmutableSortedList(IEnumerable<T> collection, bool isSorted = false)
     {
-        _list = ImmutableList.CreateRange(collection.OrderBy(x => x));
+        _list = new SortedList<T>(collection, isSorted);
     }
 
-    public ImmutableSortedList(IComparer<T> comparer, IEnumerable<T> collection) : this(collection)
+    public ImmutableSortedList(IComparer<T> comparer, IEnumerable<T> collection)
     {
-        _comparer = comparer.ThrowIfNull();
+        _list = new SortedList<T>(comparer, collection);
     }
 
-    public ImmutableSortedList(ImmutableSortedList<T> list)
+    private ImmutableSortedList(SortedList<T> list)
     {
-        list.ThrowIfNull();
-
-        _list = ImmutableList.CreateRange(list);
+        _list = list;
     }
 
     /// <inheritdoc/>
@@ -54,22 +51,27 @@ public class ImmutableSortedList<T> : IImmutableList<T>
     /// <param name="item"></param>
     public IImmutableList<T> Add(T item)
     {
-        var index = BinarySearch(item);
+        var list = new SortedList<T>(_list, true)
+        {
+            item
+        };
 
-        if (0 > index) index = ~index;
-
-        return new ImmutableSortedList<T>(_list.Insert(index, item));
+        return new ImmutableSortedList<T>(list, true);
     }
 
 
-    public IImmutableList<T> AddRange(IEnumerable<T> items) => new ImmutableSortedList<T>(_list.AddRange(items));
+    public IImmutableList<T> AddRange(IEnumerable<T> items)
+    {
+        var list = new SortedList<T>(_list, true);
+        list.AddRange(items);
+
+        return new ImmutableSortedList<T>(list, true);
+    }
 
     /// <summary>
     /// <see cref="ImmutableSortedList{T}.BinarySearch(T)"/>
     /// </summary>
-    public int BinarySearch(T item) => null == _comparer
-            ? _list.BinarySearch(item)
-            : _list.BinarySearch(item, _comparer);
+    public int BinarySearch(T item) => _list.BinarySearch(item);
 
     /// <summary>
     /// <see cref="ImmutableSortedList{T}.BinarySearch(T, IComparer{T}?)"/>
@@ -83,12 +85,10 @@ public class ImmutableSortedList<T> : IImmutableList<T>
         => _list.BinarySearch(index, count, item, comparer);
 
     /// <inheritdoc/>
-    public IImmutableList<T> Clear() => new ImmutableSortedList<T>(_list.Clear());
+    public IImmutableList<T> Clear() => new ImmutableSortedList<T>();
 
     /// <inheritdoc/>
-    public bool Contains(T item) => null == _comparer
-            ? _list.BinarySearch(item) > -1
-            : _list.BinarySearch(item, _comparer) > -1;
+    public bool Contains(T item) => _list.Contains(item);
 
     /// <inheritdoc/>
     public void CopyTo(T[] array, int arrayIndex)
@@ -109,24 +109,12 @@ public class ImmutableSortedList<T> : IImmutableList<T>
     /// <param name="lambda">Filter for FindAll method.</param>
     /// <returns></returns>
     public IImmutableList<T> FindAll(LambdaExpression lambda)
-    {
-        if (!lambda.ThrowIfNull().IsPredicate())
-            throw new ArgumentOutOfRangeException(nameof(lambda), $"is not a predicate");
-
-        if (1 != lambda.Parameters.Count)
-            throw new ArgumentOutOfRangeException(nameof(lambda), $"one parameter expected");
-
-        if (lambda.Parameters.First().Type != typeof(T))
-            throw new ArgumentOutOfRangeException(nameof(lambda), $"wrong parameter type");
-
-        var func = (Func<T, bool>)lambda.Compile();
-        return FindAll(new Predicate<T>(func));
-    }
+        => new ImmutableSortedList<T>(_list.FindAll(lambda), true);
 
     /// <summary>
     /// <see cref="ImmutableSortedList{T}.FindAll(Predicate{T})"/>
     /// </summary>
-    public IImmutableList<T> FindAll(Predicate<T> match) => new ImmutableSortedList<T>(_list.FindAll(match));
+    public IImmutableList<T> FindAll(Predicate<T> match) => new ImmutableSortedList<T>(_list.FindAll(match), true);
 
     /// <summary>
     /// <see cref="ImmutableSortedList{T}.FindIndex(Predicate{T})"/>
@@ -189,7 +177,8 @@ public class ImmutableSortedList<T> : IImmutableList<T>
     /// </summary>
     public IImmutableList<T> GetRange(int index, int count)
     {
-        return new ImmutableSortedList<T>(_list.GetRange(index, count));
+        var list = _list.GetRange(index, count);
+        return new ImmutableSortedList<T>(list, true);
     }
 
     /// <summary>
@@ -206,32 +195,9 @@ public class ImmutableSortedList<T> : IImmutableList<T>
     /// <returns>A subset view that contains only the values in the specified range.</returns>
     public IImmutableList<T> GetViewBetween(T? lowerValue, T? upperValue)
     {
-        var lowerIndex = 0;
-        var upperIndex = _list.Count - 1;
+        var list = _list.GetViewBetween(lowerValue, upperValue);
 
-        if (lowerValue is T lower)
-        {
-            var index = _list.BinarySearch(lower);
-            if (0 > index) index = ~index;
-
-            lowerIndex = index;
-        }
-
-        if (upperValue is T upper)
-        {
-            var index = _list.BinarySearch(upper);
-            if (0 > index) index = ~index;
-
-            if (index <= upperIndex)
-            {
-                upperIndex = index;
-
-                var valueAtIndex = _list[upperIndex];
-                if (!upper.Equals(valueAtIndex)) --upperIndex;
-            }
-        }
-
-        return GetRange(lowerIndex, (upperIndex - lowerIndex) + 1);
+        return new ImmutableSortedList<T>(list, true);
     }
 
     /// <summary>
@@ -252,20 +218,33 @@ public class ImmutableSortedList<T> : IImmutableList<T>
 
     public int IndexOf(T item, int index, int count, IEqualityComparer<T>? equalityComparer)
     {
-        return _list.IndexOf(item, index, count, equalityComparer);
+        index.ThrowIfOutOfRange(() => 0 > index);
+        if(equalityComparer is null) throw new ArgumentNullException(nameof(equalityComparer));
+
+        var end = index + count;
+        for (var i = index; i < end; i++)
+        {
+            if (equalityComparer.Equals(item, _list[i])) return i;
+        }
+        return -1;
     }
 
 
     IImmutableList<T> IImmutableList<T>.Insert(int index, T element)
     {
-        var list = _list.Insert(index, element);
-        return list.Sort();
+        var list = new SortedList<T>(_list, true)
+        {
+            element
+        };
+        return new ImmutableSortedList<T>(list);
     }
 
     IImmutableList<T> IImmutableList<T>.InsertRange(int index, IEnumerable<T> items)
     {
-        var list = _list.InsertRange(index, items.OrderBy(x => x));
-        return list.Sort();
+        var list = new SortedList<T>(_list, true);
+        list.AddRange(items);
+
+        return new ImmutableSortedList<T>(list);
     }
 
     /// <inheritdoc/>
@@ -299,66 +278,90 @@ public class ImmutableSortedList<T> : IImmutableList<T>
 
     public int LastIndexOf(T item, int index, int count, IEqualityComparer<T>? equalityComparer)
     {
-        return _list.LastIndexOf(item, index, count, equalityComparer);
+        if(equalityComparer is null) throw new ArgumentNullException(nameof(equalityComparer));
+
+        var end = index + count;
+
+        var lastIndex = -1;
+        for(int i = 0; i < end; i++)
+        {
+            if (equalityComparer.Equals(item, _list[i])) lastIndex = i;
+        }
+        return lastIndex;
     }
 
-    public ImmutableSortedList<T> Remove(T item) => new (_list.Remove(item));
+    public ImmutableSortedList<T> Remove(T item)
+    {
+        return new ImmutableSortedList<T>(new SortedList<T>(_list.Ignore(item)));
+    }
 
     public IImmutableList<T> Remove(T value, IEqualityComparer<T>? equalityComparer)
     {
-        return new ImmutableSortedList<T>(_list.Remove(value, equalityComparer));
+        if (equalityComparer is null) throw new ArgumentNullException(nameof(equalityComparer));
+
+        return new ImmutableSortedList<T>(_list.Ignore(x => equalityComparer.Equals(value, x)), true);
     }
 
     public IImmutableList<T> RemoveAll(Predicate<T> match)
     {
-        return new ImmutableSortedList<T>(_list.RemoveAll(match));
+        if(match is null) throw new ArgumentNullException(nameof(match));
+
+        return new ImmutableSortedList<T>(_list.Ignore(x => match(x)), true);
     }
 
     IImmutableList<T> IImmutableList<T>.RemoveAt(int index)
     {
-        return new ImmutableSortedList<T>(_list.RemoveAt(index));
+        return new ImmutableSortedList<T>(_list.Ignore(new[] { index }), true);
     }
 
     public IImmutableList<T> RemoveRange(IEnumerable<T> items, IEqualityComparer<T>? equalityComparer)
     {
-        return new ImmutableSortedList<T>(_list.RemoveRange(items, equalityComparer));
+        if (equalityComparer is null) throw new ArgumentNullException(nameof(equalityComparer));
+
+        var list = new SortedList<T>();
+        foreach (var element in _list)
+        {
+            if (items.Any(x => equalityComparer.Equals(x, element))) continue;
+
+            list.Add(element);
+        }
+
+        return new ImmutableSortedList<T>(list, true);
     }
 
     public IImmutableList<T> RemoveRange(int index, int count)
     {
-        return new ImmutableSortedList<T>(_list.RemoveRange(index, count));
+        var indices = Enumerable.Range(index, count).ToArray();
+
+        return new ImmutableSortedList<T>(_list.Ignore(indices));
     }
 
     public IImmutableList<T> Replace(T oldValue, T newValue, IEqualityComparer<T>? equalityComparer)
     {
-        return new ImmutableSortedList<T>(_list.Replace(oldValue, newValue, equalityComparer).Sort());
+        throw new NotImplementedException();
     }
 
     /// <summary>
     /// <see cref="ImmutableSortedList{T}.Reverse()"/>
     /// </summary>
-    public IImmutableList<T> Reverse() => new ImmutableSortedList<T>(_list.Reverse());
+    public IImmutableList<T> Reverse()
+    {
+        var list = new SortedList<T>(_list, true);
+        list.Reverse();
+        return new ImmutableSortedList<T>(list, true);
+    }
+
 
     /// <summary>
     /// <see cref="ImmutableSortedList{T}.Reverse(int, int)"/>
     /// </summary>
     /// <param name="index"></param>
     /// <param name="count"></param>
-    public IImmutableList<T> Reverse(int index, int count) => new ImmutableSortedList<T>(_list.Reverse(index, count));
+    public IImmutableList<T> Reverse(int index, int count) => throw new NotImplementedException();
 
     public IImmutableList<T> SetItem(int index, T value)
     {
-        index.ThrowIfOutOfRange(() => 0 > index);
-
-        if (index == _list.Count - 1) return Add(value);
-
-        var foundIndex = _list.BinarySearch(value);
-        if (0 > foundIndex) foundIndex = ~foundIndex;
-
-        var list = _list.SetItem(index, value);
-        if (index == foundIndex) return new ImmutableSortedList<T>(list);
-
-        return new ImmutableSortedList<T>(list.Sort());
+        throw new NotImplementedException();
     }
 
     /// <summary>
