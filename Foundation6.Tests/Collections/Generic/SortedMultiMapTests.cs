@@ -9,11 +9,11 @@ namespace Foundation.Collections.Generic
     {
         // ReSharper disable InconsistentNaming
 
-        private SortedMultiMap<string, string> _sut;
+        private SortedMultiValueMap<string, string> _sut;
 
         public SortedMultiMapTests()
         {
-            _sut = new SortedMultiMap<string, string>();
+            _sut = new SortedMultiValueMap<string, string>();
         }
 
         [TearDown]
@@ -55,7 +55,7 @@ namespace Foundation.Collections.Generic
         }
 
         [Test]
-        public void Add_Should_Have2Keys_When_Adding_2Key_4Values()
+        public void Add_Should_HaveKeyValuesInSortedOrder_When_Adding_2Key_4Values()
         {
             const string key1 = "1";
             const string one = "one";
@@ -64,10 +64,10 @@ namespace Foundation.Collections.Generic
             const string two = "two";
             const string dos = "dos";
 
-            _sut.Add(key1, one);
-            _sut.Add(key1, uno);
             _sut.Add(key2, two);
+            _sut.Add(key1, uno);
             _sut.Add(key2, dos);
+            _sut.Add(key1, one);
 
             var items = _sut.ToArray();
             {
@@ -83,12 +83,12 @@ namespace Foundation.Collections.Generic
             {
                 var item = items[2];
                 Assert.AreEqual(key2, item.Key);
-                Assert.AreEqual(two, item.Value);
+                Assert.AreEqual(dos, item.Value);
             }
             {
                 var item = items[3];
                 Assert.AreEqual(key2, item.Key);
-                Assert.AreEqual(dos, item.Value);
+                Assert.AreEqual(two, item.Value);
             }
         }
 
@@ -96,15 +96,16 @@ namespace Foundation.Collections.Generic
         public void AddSingle()
         {
             const string key = "1";
-            const string value = "one";
+            const string value1 = "one";
+            const string value2 = "two";
 
-            _sut.AddSingle(key, value);
-            Assert.AreEqual(1, _sut.Count);
+            _sut.Add(key, value1);
 
-            var item = _sut.First();
-            Assert.IsNotNull(item);
-            Assert.AreEqual(key, item.Key);
-            Assert.AreEqual(value, item.Value);
+            _sut.AddSingle(key, value2);
+
+            var (k, v) = _sut.Single();
+            Assert.AreEqual(k, key);
+            Assert.AreEqual(v, value2);
         }
 
         [Test]
@@ -118,7 +119,7 @@ namespace Foundation.Collections.Generic
             _sut.AddSingle(key, value2);
             Assert.AreEqual(1, _sut.Count);
 
-            var item = _sut.First();
+            var item = _sut.Single();
 
             Assert.AreEqual(key, item.Key);
             Assert.AreEqual(value2, item.Value);
@@ -139,7 +140,7 @@ namespace Foundation.Collections.Generic
             _sut.Add(key2, two);
             _sut.Add(key2, dos);
 
-            var array = new KeyValuePair<string, string>[_sut.Count];
+            var array = _sut.GetFlattenedKeyValues().ToArray();
 
             _sut.CopyTo(array, 0);
             {
@@ -155,12 +156,12 @@ namespace Foundation.Collections.Generic
             {
                 var item = array[2];
                 Assert.AreEqual(key2, item.Key);
-                Assert.AreEqual(two, item.Value);
+                Assert.AreEqual(dos, item.Value);
             }
             {
                 var item = array[3];
                 Assert.AreEqual(key2, item.Key);
-                Assert.AreEqual(dos, item.Value);
+                Assert.AreEqual(two, item.Value);
             }
         }
 
@@ -208,44 +209,6 @@ namespace Foundation.Collections.Generic
                 var item = items[1];
                 Assert.AreEqual(key1, item.Key);
                 Assert.AreEqual(uno, item.Value);
-            }
-        }
-
-        [Test]
-        public void Iterate()
-        {
-            const string key1 = "1";
-            const string one = "one";
-            const string uno = "uno";
-            const string key2 = "2";
-            const string two = "two";
-            const string dos = "dos";
-
-            _sut.Add(key1, one);
-            _sut.Add(key1, uno);
-            _sut.Add(key2, two);
-            _sut.Add(key2, dos);
-
-            var items = _sut.OrderBy(x => x.Key).ToArray();
-            {
-                var item = items[0];
-                Assert.AreEqual(key1, item.Key);
-                Assert.AreEqual(one, item.Value);
-            }
-            {
-                var item = items[1];
-                Assert.AreEqual(key1, item.Key);
-                Assert.AreEqual(uno, item.Value);
-            }
-            {
-                var item = items[2];
-                Assert.AreEqual(key2, item.Key);
-                Assert.AreEqual(two, item.Value);
-            }
-            {
-                var item = items[3];
-                Assert.AreEqual(key2, item.Key);
-                Assert.AreEqual(dos, item.Value);
             }
         }
 
