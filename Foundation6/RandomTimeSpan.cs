@@ -3,7 +3,7 @@
 /// <summary>
 /// A random TimeSpan generator.
 /// </summary>
-public struct RandomTimeSpan
+public readonly struct RandomTimeSpan
 {
     private readonly Random _random;
 
@@ -11,6 +11,12 @@ public struct RandomTimeSpan
     {
     }
 
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="min"></param>
+    /// <param name="max"></param>
+    /// <param name="seed">The seed value for Random.</param>
     public RandomTimeSpan(TimeSpan min, TimeSpan max, int seed) : this(new Random(seed), min, max)
     {
     }
