@@ -11,51 +11,12 @@ namespace Foundation.Collections.Generic;
 public class EnumerableConditionalsTests
 {
     [DebuggerDisplay("Name:{Name}")]
-    public class A
-    {
-        private Guid _id;
+    private record A(Guid Id, string Name);
 
-        public A(string name)
-        {
-            Name = name;
-        }
-
-        public Guid Id
-        {
-            get
-            {
-                if (Guid.Empty == _id)
-                    _id = Guid.NewGuid();
-
-                return _id;
-            }
-            set { _id = value; }
-        }
-
-        public string Name { get; set; }
-
-        public override string ToString()
-        {
-            return Name;
-        }
-    }
-
-    public class B : A
-    {
-        public B(string name) : base(name)
-        {
-        }
-    }
+    private record B(string Name) : A(Guid.NewGuid(), Name);
 
 
-    public class C : A
-    {
-        public C(string name) : base(name)
-        {
-        }
-
-        public string? NickName { get; set; }
-    }
+    private record C(string Name, string? NickName) : A(Guid.NewGuid(), Name);
 
     [Test]
     public void If_Should_ExecuteAction_When_Predicate_IsTrue()
@@ -228,6 +189,53 @@ public class EnumerableConditionalsTests
                 return CompareResult.Equal;
             }).Should().BeTrue();
         }
+    }
+
+    [Test]
+    public void ModifyIf_Should_ReturnModifiedItems_When_ModifyIsTrue()
+    {
+        var s1 = "1";
+        var s2 = "2";
+        var s3 = "3";
+        var s4 = "4";
+
+        var items = Enumerable.Empty<string>()
+                        .Append(s1)
+                        .Append(s2)
+                        .ModifyIf(() => s3 is not null, elems => elems.Append(s3!))
+                        .Append(s4)
+                        .ToArray();
+
+        items.Should().NotBeNull();
+        items.Length.Should().Be(4);
+
+        items[0].Should().Be(s1);
+        items[1].Should().Be(s2);
+        items[2].Should().Be(s3);
+        items[3].Should().Be(s4);
+    }
+
+    [Test]
+    public void ModifyIf_Should_ReturnUnmodifiedItems_When_ModifyIsFalse()
+    {
+        var s1 = "1";
+        var s2 = "2";
+        string? s3 = null;
+        var s4 = "4";
+
+        var items = Enumerable.Empty<string>()
+                        .Append(s1)
+                        .Append(s2)
+                        .ModifyIf(() => s3 is not null, elems => elems.Append(s3!))
+                        .Append(s4)
+                        .ToArray();
+
+        items.Should().NotBeNull();
+        items.Length.Should().Be(3);
+
+        items[0].Should().Be(s1);
+        items[1].Should().Be(s2);
+        items[2].Should().Be(s4);
     }
 
     [Test]

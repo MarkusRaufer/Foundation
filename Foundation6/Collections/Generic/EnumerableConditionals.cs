@@ -6,7 +6,6 @@ namespace Foundation.Collections.Generic;
 
 public static class EnumerableConditionals
 {
-    
     private class ElseIf<T> : IElseIf<T>
     {
         private readonly IEnumerable<T> _items;
@@ -474,6 +473,21 @@ public static class EnumerableConditionals
 
         var search = new HashSet<T>(lhs);
         return search.IsSubsetOf(rhs);
+    }
+
+    /// <summary>
+    /// Only calls <paramref name="selector"/> if <paramref name="modify"/> returns true otherwise returns items unmodified.
+    /// </summary>
+    /// <typeparam name="T">Type of item(s)</typeparam>
+    /// <param name="items">List which should be modified.</param>
+    /// <param name="modify">If true <paramref name="selector"/> is called.</param>
+    /// <param name="selector">Is called when <paramref name="modify"/> returns true.</param>
+    /// <returns></returns>
+    public static IEnumerable<T> ModifyIf<T>(this IEnumerable<T> items, Func<bool> modify, Func<IEnumerable<T>, IEnumerable<T>> selector)
+    {
+        modify.ThrowIfNull();
+
+        return modify() ? selector(items) : items;
     }
 
     /// <summary>
