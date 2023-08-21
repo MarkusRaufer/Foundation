@@ -6,7 +6,7 @@ using System.Collections.Generic;
 namespace Foundation.Collections.Generic;
 
 [TestFixture]
-public class PropertyMapTests
+public class PropertiesTests
 {
     [Test]
     public void Ctor_Should_HaveNoProperties_When_Created()
