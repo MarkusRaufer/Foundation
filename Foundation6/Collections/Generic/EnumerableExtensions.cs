@@ -1782,6 +1782,25 @@ public static class EnumerableExtensions
     }
 
     /// <summary>
+    /// Calls selector on all adjacent elements and returns all elements of the tuple.
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <param name="items"></param>
+    /// <param name="selector"></param>
+    /// <returns></returns>
+    public static IEnumerable<T> Pairs<T>(this IEnumerable<T> items, Func<T, T, (T, T)> selector)
+    {
+        selector.ThrowIfNull();
+
+        foreach (var (lhs, rhs) in items.Pairs())
+        {
+            var (l, r) = selector(lhs, rhs);
+            yield return l;
+            yield return r;
+        }
+    }
+
+    /// <summary>
     /// Calls selector on all adjacent elements and transforms each element into TReturn.
     /// </summary>
     /// <typeparam name="T"></typeparam>
