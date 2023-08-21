@@ -11,7 +11,7 @@ public class PropertyMapTests
     [Test]
     public void Ctor_Should_HaveNoProperties_When_Created()
     {
-        var sut = new PropertyMap();
+        var sut = new Properties();
         
         sut.Count.Should().Be(0);
     }
@@ -19,7 +19,7 @@ public class PropertyMapTests
     [Test]
     public void Add_Should_Have3Properties_When_Added3Properties()
     {
-        var sut = new PropertyMap();
+        var sut = new Properties();
 
         var firstName = new KeyValuePair<string, object>("FirstName", "Peter");
         var lastName = new KeyValuePair<string, object>("LastName", "Pan");
@@ -56,7 +56,7 @@ public class PropertyMapTests
     [Test]
     public void Remove_Should_Have2Properties_When_Removed1From3Properties()
     {
-        var sut = new PropertyMap();
+        var sut = new Properties();
 
         var firstName = new KeyValuePair<string, object>("FirstName", "Peter");
         var lastName = new KeyValuePair<string, object>("LastName", "Pan");
@@ -88,7 +88,7 @@ public class PropertyMapTests
     [Test]
     public void Replace_Should_HaveTheReplacedValue_When_IndexerToReplaceIsCalled()
     {
-        var sut = new PropertyMap();
+        var sut = new Properties();
 
         var firstName = new KeyValuePair<string, object>("FirstName", "Peter");
         var lastName = new KeyValuePair<string, object>("LastName", "Pan");

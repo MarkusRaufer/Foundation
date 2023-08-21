@@ -6,7 +6,7 @@
     /// <typeparam name="TId">The type of the identifier.</typeparam>
     /// <typeparam name="TEvent">The type of the changed event.</typeparam>
     public interface IIdPropertyMap<TId, TEvent>
-        : IPropertyMap<TEvent>
+        : IProperties<TEvent>
         , IIdentifiable<TId>
         where TId : notnull
     {
@@ -20,7 +20,7 @@
     /// <typeparam name="TEvent">The type of the changed event.</typeparam>
     public interface IIdPropertyMap<TObjectType, TId, TEvent>
         : IIdPropertyMap<TId, TEvent>
-        , IPropertyMap<TObjectType, TEvent>
+        , IProperties<TObjectType, TEvent>
         where TId : notnull
     {
     }
