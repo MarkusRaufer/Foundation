@@ -29,6 +29,8 @@ public ref struct SplitEnumerator<T>
     {
     }
 
+    public ReadOnlySpan<T> Current { get; private set; }
+
     // Needed to be compatible with the foreach operator
     public SplitEnumerator<T> GetEnumerator() => this;
 
@@ -53,8 +55,6 @@ public ref struct SplitEnumerator<T>
         _span = span[(index + 1)..];
         return true;
     }
-
-    public ReadOnlySpan<T> Current { get; private set; }
 
     ReadOnlySpan<T> Separators { get; }
 }

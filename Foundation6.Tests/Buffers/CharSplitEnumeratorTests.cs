@@ -10,6 +10,7 @@ namespace Foundation.Buffers
         public void MoveNext_Should_Find_Separator_When_Calling_MoveNext()
         {
             var span = "123.4567.89".AsSpan();
+
             var sut = new CharSplitEnumerator(span, '.');
 
             Assert.IsTrue(sut.MoveNext());
