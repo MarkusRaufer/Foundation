@@ -1,45 +1,18 @@
 ﻿namespace Foundation.Collections.Generic;
 
-using System.Collections;
-using System.Diagnostics.CodeAnalysis;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
 
 public static class ReadOnlyCollection
 {
-    public static IReadOnlyCollection<T> New<T>(ICollection<T> items)
+    public static IReadOnlyCollection<T> New<T>(IEnumerable<T> items)
     {
-        return new ReadOnlyCollection<T>(items, items.Count);
+        return new ReadOnlyCollection<T>(new List<T>(items));
     }
 
-    public static IReadOnlyCollection<T> New<T>(IEnumerable<T> items)
+    public static IReadOnlyCollection<T> New<T>(IList<T> items)
     {
         return new ReadOnlyCollection<T>(items);
     }
-
-    public static IReadOnlyCollection<T> New<T>(IEnumerable<T> items, int count)
-    {
-        return new ReadOnlyCollection<T>(items, count);
-    }
-}
-
-public class ReadOnlyCollection<T> : IReadOnlyCollection<T>
-{
-    private readonly IEnumerable<T> _items;
-
-    public ReadOnlyCollection(IEnumerable<T> items)
-        : this(items, items.Count())
-    {
-    }
-
-    public ReadOnlyCollection(IEnumerable<T> items, int count)
-    {
-        _items = items ?? throw new ArgumentNullException(nameof(items));
-        Count = count;
-    }
-
-    public int Count { get; private set; }
-
-    public IEnumerator<T> GetEnumerator() => _items.GetEnumerator();
-
-    IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
 }
 
