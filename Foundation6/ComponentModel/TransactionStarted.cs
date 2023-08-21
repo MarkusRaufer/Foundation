@@ -1,8 +1,10 @@
 ﻿namespace Foundation.ComponentModel;
 
-public record TransactionStarted(Guid EventId, DateTime StartedOn) : TransactionStarted<Guid>(EventId, StartedOn);
+public record TransactionStarted(Guid TransactionId, Guid EventId, DateTime StartedOn)
+    : TransactionStarted<Guid, Guid>(TransactionId, EventId, StartedOn);
 
-public record TransactionStarted<TTransactionId>(TTransactionId EventId, DateTime StartedOn) 
-    : TransactionEvent<TTransactionId>(EventId)
-    , IStartedEvent<TTransactionId>
-    where TTransactionId : notnull;
+public record TransactionStarted<TTransactionId, TEventId>(TTransactionId TransactionId, TEventId EventId, DateTime StartedOn) 
+    : TransactionEvent<TTransactionId, TEventId>(TransactionId, EventId)
+    , IStartedEvent<TEventId>
+    where TTransactionId : notnull
+    where TEventId : notnull;

@@ -75,7 +75,7 @@ public abstract class Transaction<TId, TChange, TDelegate> : ITransaction<TId>
         }
     }
 
-    public bool HasChanges() => 0 < Changes.Count;
+    public bool HasChanges => 0 < Changes.Count;
 
     public TId TransactionId { get; }
 }

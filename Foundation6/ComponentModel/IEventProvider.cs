@@ -1,9 +1,12 @@
 ﻿namespace Foundation.ComponentModel;
 
-public interface IEventProvider<TEvent>
+public interface IEventProvider<TEvent> : IEventProvider<TEvent, IEnumerable<TEvent>>
 {
-    void ClearEvents();
-    IEnumerable<TEvent> Events { get; }
-    bool HasEvents { get; }
 }
 
+public interface IEventProvider<TEvent, TEventCollection>
+{
+    void ClearEvents();
+    TEventCollection Events { get; }
+    bool HasEvents { get; }
+}

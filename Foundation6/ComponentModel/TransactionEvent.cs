@@ -1,11 +1,12 @@
 ﻿namespace Foundation.ComponentModel;
-public abstract record TransactionEvent<TTransactionId>(TTransactionId EventId)
-    : EventBase<TTransactionId>(EventId)
-    , ITransactionEvent<TTransactionId>
-    where TTransactionId : notnull;
-
-public abstract record TransactionEvent<TTransactionId, TCommandId>(TTransactionId EventId, TCommandId CommandId)
-    : EventBase<TTransactionId, TCommandId>(EventId, CommandId)
-    , ITransactionEvent<TTransactionId>
+public abstract record TransactionEvent<TTransactionId, TEventId>(TTransactionId TransactionId, TEventId EventId)
+    : ITransactionEvent<TTransactionId, TEventId>
     where TTransactionId : notnull
+    where TEventId : notnull;
+
+public abstract record TransactionEvent<TTransactionId, TEventId, TCommandId>(TTransactionId TransactionId, TEventId EventId, TCommandId CommandId)
+    : TransactionEvent<TTransactionId, TEventId>(TransactionId, EventId)
+    , ITransactionEvent<TTransactionId, TEventId, TCommandId>
+    where TTransactionId : notnull
+    where TEventId : notnull
     where TCommandId : notnull;
