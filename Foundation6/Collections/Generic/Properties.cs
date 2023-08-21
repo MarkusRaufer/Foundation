@@ -9,13 +9,13 @@ namespace Foundation.Collections.Generic
     /// <summary>
     /// A map with properties (string, object) that can handle hierarchical properties.
     /// </summary>
-    public class PropertyMap : PropertyMap<PropertyChanged>
+    public class Properties : Properties<PropertyChanged>
     {
-        public PropertyMap() : base()
+        public Properties() : base()
         {
         }
 
-        public PropertyMap(EquatableSortedDictionary<string, object> dictionary) : base(dictionary)
+        public Properties(EquatableSortedDictionary<string, object> dictionary) : base(dictionary)
         {
         }
 
@@ -55,18 +55,18 @@ namespace Foundation.Collections.Generic
     /// <summary>
     /// A map with properties (string, object).
     /// </summary>
-    public abstract class PropertyMap<TEvent> 
-        : IPropertyMap<TEvent>
-        , IEquatable<PropertyMap<TEvent>>
+    public abstract class Properties<TEvent> 
+        : IProperties<TEvent>
+        , IEquatable<Properties<TEvent>>
     {
         private readonly EquatableSortedDictionary<string, object> _properties;
         private readonly IList<TEvent> _events;
 
-        protected PropertyMap() : this(new EquatableSortedDictionary<string, object>())
+        protected Properties() : this(new EquatableSortedDictionary<string, object>())
         {
         }
 
-        protected PropertyMap(EquatableSortedDictionary<string, object> properties)
+        protected Properties(EquatableSortedDictionary<string, object> properties)
         {
             _properties = properties.ThrowIfNull();
             _events = new List<TEvent>();
@@ -77,7 +77,9 @@ namespace Foundation.Collections.Generic
             get => _properties[key];
             set
             {
-                var exists = ContainsKey(key);
+                var exists = TryGetValue(key, out object? val);
+                if (exists && val.EqualsNullable(value)) return;
+
                 _properties[key] = value;
 
                 var state = exists ? CollectionActionState.Replaced : CollectionActionState.Added;
@@ -121,8 +123,8 @@ namespace Foundation.Collections.Generic
 
         public int Count => _properties.Count;
 
-        public override bool Equals(object? obj) => Equals(obj as PropertyMap<TEvent>);
-        public bool Equals(PropertyMap<TEvent>? other)
+        public override bool Equals(object? obj) => Equals(obj as Properties<TEvent>);
+        public bool Equals(Properties<TEvent>? other)
         {
             return null != other && _properties.Equals(other._properties);
         }
