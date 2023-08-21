@@ -12,6 +12,7 @@ namespace Foundation.Collections.Generic;
 public class SortedList<T>
     : ICollection<T>
     , IReadOnlyList<T>
+    , ILambdaSearch<T, List<T>>
 {
     private readonly IComparer<T>? _comparer;
     private readonly List<T> _list;
