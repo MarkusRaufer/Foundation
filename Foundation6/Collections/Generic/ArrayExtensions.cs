@@ -239,5 +239,9 @@ public static class ArrayExtensions
 
     public static T[] ThrowIfNullOrEmpty<T>(this T[] arr, [CallerArgumentExpression("arr")] string paramName = "")
             => arr.ThrowIfNull(paramName).ThrowIfEmpty(paramName);
+
+
+    public static NonEmptyArrayValue<T> ToNonEmptyArrayValue<T>(this T[] arr) => new (arr);
+    public static NonEmptySetValue<T> ToNonEmptySetValue<T>(this T[] arr) => new(arr);
 }
 
