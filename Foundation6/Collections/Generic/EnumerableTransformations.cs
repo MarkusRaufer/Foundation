@@ -89,6 +89,30 @@ public static class EnumerableTransformations
     }
 
     /// <summary>
+    /// Creates a <see cref="NonEmptyArrayValue{T}"/> from a list of items.
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <param name="items"></param>
+    /// <returns></returns>
+    public static NonEmptyArrayValue<T> ToNonEmptyArrayValue<T>(this IEnumerable<T> items) => new(items.ToArray());
+
+    /// <summary>
+    /// Creates a <see cref="NonEmptySetValue{T}"/> from a list of items.
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <param name="items"></param>
+    /// <returns></returns>
+    public static NonEmptySetValue<T> ToNonEmptySetValue<T>(this IEnumerable<T> items) => new (items);
+
+    /// <summary>
+    /// Transforms an <see cref="IEnumerable{T}"/> into <see cref="IEnumerable{object}"/>
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <param name="items"></param>
+    /// <returns></returns>
+    public static IEnumerable<object> ToObjects<T>(this IEnumerable<T> items) => items.Select(x => (object)x.ThrowIfNull());
+
+    /// <summary>
     /// Creates from a list with duplicate keys (n : m => relationship) a list with unique keys and multiple values (1 : n => relationship).
     /// </summary>
     /// <typeparam name="TSource"></typeparam>
@@ -213,12 +237,6 @@ public static class EnumerableTransformations
     public static IReadOnlyCollection<T> ToReadOnlyCollection<T>(this IEnumerable<T> items)
     {
         items.ThrowIfNull();
-        return new ReadOnlyCollection<T>(items);
-    }
-
-    public static IReadOnlyCollection<T> ToReadOnlyCollection<T>(this IEnumerable<T> items, int count)
-    {
-        items.ThrowIfNull();
-        return new ReadOnlyCollection<T>(items, count);
+        return ReadOnlyCollection.New(items);
     }
 }
