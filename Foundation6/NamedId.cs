@@ -119,7 +119,7 @@ public readonly struct NamedId
 /// </summary>
 /// <typeparam name="T"></typeparam>
 [Serializable]
-public struct NamedId<T>
+public readonly struct NamedId<T>
     : IComparable<NamedId<T>>
     , IEquatable<NamedId<T>>
     , ISerializable
