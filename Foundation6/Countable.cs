@@ -2,16 +2,23 @@
 
 public static class Countable
 {
-	public static Countable<T> New<T>(T value, int count = 0) => new(value, count);
+    public static Countable<T> New<T>(T value, bool hashCodeIncludesCount) => new(value, 0, hashCodeIncludesCount);
+
+    public static Countable<T> New<T>(T value, int count, bool hashCodeIncludesCount) => new(value, count, hashCodeIncludesCount);
 }
 
 public sealed class Countable<T> : IEquatable<Countable<T>>
 {
-	public Countable(T value, int count = 0)
+    public Countable(T? value, bool hashCodeIncludesCount) : this(value, 0, hashCodeIncludesCount)
+    {
+    }
+
+    public Countable(T? value, int count, bool hashCodeIncludesCount)
 	{
-		Value = value.ThrowIfNull();
+		Value = value;
 		Count = count;
-	}
+        HashCodeIncludesCount = hashCodeIncludesCount;
+    }
 
 	public int Count { get; private set; }
 
@@ -28,11 +35,18 @@ public sealed class Countable<T> : IEquatable<Countable<T>>
 			&& Count == other.Count;
 	}
 
-	public override int GetHashCode() => System.HashCode.Combine(Value, Count);
+	public override int GetHashCode()
+	{
+		if(HashCodeIncludesCount) return Value is null ? System.HashCode.Combine(0, Count) : System.HashCode.Combine(Value, Count);
+
+		return Value.GetNullableHashCode();
+	}
 
     public int GetValueHashCode() => Value.GetNullableHashCode();
 
-    public T Value { get; }
+	public bool HashCodeIncludesCount { get; }
+
+    public T? Value { get; }
 
 	public bool ValueEquals(Countable<T>? other)
 	{
