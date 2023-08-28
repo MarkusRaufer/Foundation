@@ -1675,7 +1675,7 @@ public static class EnumerableExtensions
     /// <param name="items">List of items</param>
     /// <param name="comparer">custom comparer.</param>
     /// <returns>Returns all items with their occurrencies.</returns>
-    public static IEnumerable<(T value, int quantity)> Occurrencies<T>(
+    public static IEnumerable<(T? value, int quantity)> Occurrencies<T>(
         this IEnumerable<T> items,
         IEqualityComparer<T> comparer)
     {
@@ -1685,7 +1685,7 @@ public static class EnumerableExtensions
 
         foreach (var item in items)
         {
-            var countable = Countable.New(item);
+            var countable = Countable.New(item, false);
             if (set.TryGetValue(countable, out var existing))
             {
                 existing.Inc();

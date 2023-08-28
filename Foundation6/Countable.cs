@@ -2,29 +2,68 @@
 
 public static class Countable
 {
-    public static Countable<T> New<T>(T value, bool hashCodeIncludesCount) => new(value, 0, hashCodeIncludesCount);
+    public static Countable<T> New<T>(T value) => new(value, 1, false);
+
+    public static Countable<T> New<T>(T value, int count) => new(value, count, false);
+
+    public static Countable<T> New<T>(T value, bool hashCodeIncludesCount) => new(value, 1, hashCodeIncludesCount);
 
     public static Countable<T> New<T>(T value, int count, bool hashCodeIncludesCount) => new(value, count, hashCodeIncludesCount);
 }
 
 public sealed class Countable<T> : IEquatable<Countable<T>>
 {
-    public Countable(T? value, bool hashCodeIncludesCount) : this(value, 0, hashCodeIncludesCount)
-    {
-    }
-
-    public Countable(T? value, int count, bool hashCodeIncludesCount)
+	public Countable(T? value, int count, bool hashCodeIncludesCount)
 	{
 		Value = value;
 		Count = count;
-        HashCodeIncludesCount = hashCodeIncludesCount;
+		HashCodeIncludesCount = hashCodeIncludesCount;
+	}
+
+    public static implicit operator T?(Countable<T> countable)
+    {
+        return countable.Value;
     }
 
-	public int Count { get; private set; }
+    public static bool operator ==(Countable<T> lhs, Countable<T> rhs)
+	{
+		return lhs.Equals(rhs);
+	}
 
-	public void Dec() => Count--;
+    public static bool operator ==(Countable<T> lhs, T? rhs)
+    {
+        return lhs.Value.EqualsNullable(rhs);
+    }
 
-    public void Inc() => Count++;
+    public static bool operator ==(T? lhs, Countable<T> rhs)
+    {
+        return lhs.EqualsNullable(rhs.Value);
+    }
+
+    public static bool operator !=(Countable<T> lhs, Countable<T> rhs)
+    {
+        return !(lhs == rhs);
+    }
+
+    public static bool operator !=(Countable<T> lhs, T? rhs)
+    {
+        return !(lhs == rhs);
+    }
+
+    public static bool operator !=(T? lhs, Countable<T> rhs)
+    {
+        return !(lhs == rhs);
+    }
+
+    public int Count { get; private set; }
+
+    public void Dec()
+    {
+        if (0 == Count) return;
+        
+        Count--;
+    }
+
 
 	public override bool Equals(object? obj) => Equals(obj as Countable<T>);
 
@@ -45,6 +84,8 @@ public sealed class Countable<T> : IEquatable<Countable<T>>
     public int GetValueHashCode() => Value.GetNullableHashCode();
 
 	public bool HashCodeIncludesCount { get; }
+
+    public void Inc() => Count++;
 
     public T? Value { get; }
 
