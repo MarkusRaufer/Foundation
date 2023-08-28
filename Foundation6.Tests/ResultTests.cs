@@ -28,13 +28,14 @@ public class ResultTests
         var value = 5;
         var sut = Result.Ok<int>(value);
 
-        Assert.AreEqual(value, sut.OkOrThrow());
+        Assert.IsTrue(sut.TryGetOk(out int ok));
+        Assert.AreEqual(value, ok);
     }
 
     [Test]
     public void OkOrThrow_Should_ThrowAnException_When_IsOKIsFalse()
     {
-        var sut = Result.Error<int>(new ArgumentOutOfRangeException());
+        var sut = Result.Error<int, Exception>(new ArgumentOutOfRangeException());
 
         Assert.Throws<ArgumentOutOfRangeException>(() => sut.OkOrThrow());
     }
@@ -71,7 +72,7 @@ public class ResultTests
     {
         var sut = Result.Ok();
 
-        Assert.False(sut.TryGetError(out Exception? error));
+        Assert.False(sut.TryGetError(out Error? _));
     }
 
     [Test]
@@ -80,7 +81,7 @@ public class ResultTests
         var exception = new ArgumentException("error");
         var sut = Result.Error(exception);
 
-        Assert.True(sut.TryGetError(out Exception? error));
+        Assert.True(sut.TryGetError(out Error? error));
         Assert.AreEqual(exception, error);
     }
 }

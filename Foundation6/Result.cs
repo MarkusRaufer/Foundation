@@ -4,16 +4,28 @@ using System.Diagnostics.CodeAnalysis;
 
 public static class Result
 {
-    public static Result<Exception> Error(Exception error)
+    public static Result<Error> Error(Error error)
     {
         error.ThrowIfNull();
-        return new Result<Exception>(error);
+        return new Result<Error>(error);
     }
 
-    public static Result<TOk, Exception> Error<TOk>(Exception error)
+    public static Result<Error> Error(Exception exception)
+    {
+        exception.ThrowIfNull();
+        return new Result<Error>(Foundation.Error.FromException(exception));
+    }
+
+    public static Result<TOk, Error> Error<TOk>(Error error)
     {
         error.ThrowIfNull();
-        return new Result<TOk, Exception>(Option.None<TOk>(), Option.Some(error));
+        return new Result<TOk, Error>(Option.None<TOk>(), Option.Some(error));
+    }
+
+    public static Result<TOk, Error> Error<TOk>(Exception exception)
+    {
+        exception.ThrowIfNull();
+        return new Result<TOk, Error>(Option.None<TOk>(), Option.Some(Foundation.Error.FromException(exception)));
     }
 
     public static Result<TOk, TError> Error<TOk, TError>(TError error)
@@ -22,17 +34,16 @@ public static class Result
         return new Result<TOk, TError>(Option.None<TOk>(), Option.Some(error));
     }
 
-    public static Result<Exception> Ok()
+    public static Result<Error> Ok()
     {
-        return new Result<Exception>();
-
+        return new Result<Error>();
     }
 
-    public static Result<TOk, Exception> Ok<TOk>(TOk value)
+    public static Result<TOk, Error> Ok<TOk>(TOk value)
     {
         value.ThrowIfNull();
 
-        return new Result<TOk, Exception>(Option.Some(value), Option.None<Exception>());
+        return new Result<TOk, Error>(Option.Some(value), Option.None<Error>());
     }
 
     public static Result<TOk, TError> Ok<TOk, TError>(TOk value)

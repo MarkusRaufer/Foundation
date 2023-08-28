@@ -1,6 +1,6 @@
 ﻿namespace Foundation;
 
-public interface IResult : IResult<Exception>
+public interface IResult : IResult<Error>
 {
 }
 
