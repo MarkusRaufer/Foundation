@@ -30,9 +30,9 @@ public sealed class Countable<T> : IEquatable<Countable<T>>
 
 	public bool Equals(Countable<T>? other)
 	{
-		return other is not null
-			&& Value.EqualsNullable(other.Value)
-			&& Count == other.Count;
+		if (other is null) return false;
+		if (!Value.EqualsNullable(other.Value)) return false;
+		return HashCodeIncludesCount ? Count == other.Count : true;
 	}
 
 	public override int GetHashCode()
