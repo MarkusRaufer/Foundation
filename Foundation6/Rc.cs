@@ -18,7 +18,7 @@ public static class Rc
 /// This is a reference counter.
 /// </summary>
 /// <typeparam name="T"></ typeparam >
-public class Rc<T>
+public sealed class Rc<T>
     : IComparable<Rc<T>>
     , IEquatable<Rc<T>>
 {
