@@ -8,15 +8,17 @@ namespace Foundation.Collections.Generic;
 /// </summary>
 /// <typeparam name="T"></typeparam>
 public class CountedHashSet<T> : ICollection<T>
-    where T : notnull
 {
-    private readonly HashSet<Countable<T>> _countables = new ();
+    private readonly HashSet<Countable<T>> _countables;
 
-    /// <inheritdoc/>
-    public int Count => _countables.Count;
+    public CountedHashSet() : this(new HashSet<Countable<T>>()) 
+    {
+    }
 
-    /// <inheritdoc/>
-    public bool IsReadOnly => false;
+    public CountedHashSet(HashSet<Countable<T>> countables)
+    {
+        _countables = countables.ThrowIfNull();
+    }
 
     /// <summary>
     /// if item exists the counter of this item is incremented.
@@ -33,6 +35,9 @@ public class CountedHashSet<T> : ICollection<T>
 
         _countables.Add(newCountable);
     }
+
+    /// <inheritdoc/>
+    public int Count => _countables.Count;
 
     /// <inheritdoc/>
     public void Clear() => _countables.Clear();
@@ -71,6 +76,9 @@ public class CountedHashSet<T> : ICollection<T>
 
     /// <inheritdoc/>
     IEnumerator IEnumerable.GetEnumerator() => _countables.Select(x => x.Value).GetEnumerator();
+
+    /// <inheritdoc/>
+    public bool IsReadOnly => false;
 
     /// <summary>
     /// If item exists the counter of this item is decremented.

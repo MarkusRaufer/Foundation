@@ -1,4 +1,6 @@
-﻿using NUnit.Framework;
+﻿using Foundation.Collections.Generic;
+using Newtonsoft.Json.Bson;
+using NUnit.Framework;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -7,6 +9,18 @@ namespace Foundation.Collections;
 [TestFixture]
 public class EnumerableExtensionsTests
 {
+    [Test]
+    public void Occurrencies_Should_Return3Tuples_When_Added3DifferentItems()
+    {
+        var numbers = new int [] { 1, 1, 2, 2, 2, 3, 3, 3, 3 };
+
+        var occurrencies = numbers.Occurrencies().ToArray();
+        Assert.AreEqual(3, occurrencies.Length);
+        Assert.AreEqual((1, 2), occurrencies[0]);
+        Assert.AreEqual((2, 3), occurrencies[1]);
+        Assert.AreEqual((3, 4), occurrencies[2]);
+    }
+
     [Test]
     public void Permutations_ShouldReturn_AnEnumerableOfPermutations_When_WhenListsHasValues()
     {

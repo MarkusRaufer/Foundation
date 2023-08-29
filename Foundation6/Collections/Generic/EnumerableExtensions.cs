@@ -1679,26 +1679,18 @@ public static class EnumerableExtensions
         this IEnumerable<T> items,
         IEqualityComparer<T> comparer)
     {
-        var set = new HashSet<Countable<T>>(new NullableEqualityComparer<Countable<T>>(
+        var set = new CountedHashSet<T>(new HashSet<Countable<T>>(new NullableEqualityComparer<Countable<T>>(
                         (x, y) => comparer.Equals(x.Value, y.Value),
-                        x => comparer.GetHashCode(x.Value!)));
+                        x => comparer.GetHashCode(x.Value!))));
 
         foreach (var item in items)
         {
-            var countable = Countable.New(item, false);
-            if (set.TryGetValue(countable, out var existing))
-            {
-                existing.Inc();
-                continue;
-            }
-
-            countable.Inc();
-            set.Add(countable);
+            set.Add(item);
         }
 
-        foreach (var countable in set)
+        foreach (var (item, count) in set.GetCountedElements())
         {
-            yield return (value: countable.Value, quantity: countable.Count);
+            yield return (value: item, quantity: count);
         }
     }
 
