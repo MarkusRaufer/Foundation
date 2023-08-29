@@ -1,9 +1,27 @@
-﻿using System.Runtime.CompilerServices;
+﻿using Foundation.Linq.Expressions;
+using System.Linq.Expressions;
+using System.Runtime.CompilerServices;
 
 namespace Foundation.Collections.Generic;
 
 public static class CollectionExtensions
 {
+    public static IEnumerable<T> FindAll<T>(this ICollection<T> collection, LambdaExpression lambda)
+    {
+        if (!lambda.ThrowIfNull().IsPredicate())
+            throw new ArgumentOutOfRangeException(nameof(lambda), $"is not a predicate");
+
+        if (1 != lambda.Parameters.Count)
+            throw new ArgumentOutOfRangeException(nameof(lambda), $"exact one parameter expected");
+
+        if (lambda.Parameters.First().Type != typeof(T))
+            throw new ArgumentOutOfRangeException(nameof(lambda), $"wrong parameter type");
+
+        var predicate = (Func<T, bool>)lambda.Compile();
+
+        return predicate is null ? Enumerable.Empty<T>() : collection.Where(predicate);
+    }
+
     /// <summary>
     /// Throws an exception when collection is empty.
     /// </summary>
