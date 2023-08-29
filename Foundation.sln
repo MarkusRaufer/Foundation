@@ -15,8 +15,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Foundation.TestUtil", "Foun
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Foundation.Algorithms", "Foundation.Algorithms\Foundation.Algorithms.csproj", "{1D6C0B49-B2C0-4CB1-8E92-C250F70FADAE}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Foundation.Collections.Immutable", "Foundation.Collections.Immutable\Foundation.Collections.Immutable.csproj", "{1E2D2360-E998-4755-8BC9-A4CC92DEADC7}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -47,10 +45,6 @@ Global
 		{1D6C0B49-B2C0-4CB1-8E92-C250F70FADAE}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{1D6C0B49-B2C0-4CB1-8E92-C250F70FADAE}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{1D6C0B49-B2C0-4CB1-8E92-C250F70FADAE}.Release|Any CPU.Build.0 = Release|Any CPU
-		{1E2D2360-E998-4755-8BC9-A4CC92DEADC7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{1E2D2360-E998-4755-8BC9-A4CC92DEADC7}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{1E2D2360-E998-4755-8BC9-A4CC92DEADC7}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{1E2D2360-E998-4755-8BC9-A4CC92DEADC7}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
