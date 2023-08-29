@@ -5,7 +5,7 @@ using System.ComponentModel;
 /// <summary>
 /// Value-object with a name and a value It implements INotifyPropertyChanged.
 /// </summary>
-public class Property : Property<object>
+public sealed class Property : Property<object>
 {
     public Property(string name, object? value = null) : base(name, value)
     {
