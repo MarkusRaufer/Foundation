@@ -6,6 +6,14 @@ namespace Foundation.Collections
     public static class EnumerableTransformations
     {
         /// <summary>
+        /// Convert to typed enumerable.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="items"></param>
+        /// <returns></returns>
+        public static IEnumerable<T> AsEnumerable<T>(this IEnumerable items) => items.CastTo<T>();
+
+        /// <summary>
         /// Like <see cref="=Select<typeparamref name="T"/>"/>
         /// </summary>
         /// <param name="items"></param>
@@ -35,15 +43,6 @@ namespace Foundation.Collections
             foreach (var item in items)
                 yield return selector(item);
         }
-
-
-        /// <summary>
-        /// Convert to typed enumerable.
-        /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="items"></param>
-        /// <returns></returns>
-        public static IEnumerable<T> ToEnumerable<T>(this IEnumerable items) => items.CastTo<T>();
 
         public static IList<T> ToList<T>(this IEnumerable items)
         {
