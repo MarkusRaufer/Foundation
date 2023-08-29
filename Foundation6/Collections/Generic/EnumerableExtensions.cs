@@ -1681,7 +1681,7 @@ public static class EnumerableExtensions
     {
         var set = new CountedHashSet<T>(new HashSet<Countable<T>>(new NullableEqualityComparer<Countable<T>>(
                         (x, y) => comparer.Equals(x.Value, y.Value),
-                        x => comparer.GetHashCode(x.Value!))));
+                             x => comparer.GetHashCode(x.Value!))));
 
         foreach (var item in items)
         {
