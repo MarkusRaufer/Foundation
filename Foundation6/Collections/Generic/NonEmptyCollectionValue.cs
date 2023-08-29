@@ -32,6 +32,8 @@ public readonly struct NonEmptyCollectionValue<T>
     public NonEmptyCollectionValue(T[] values)
     {
         _values = values.ThrowIfNullOrEmpty();
+        if(_values.Length == 0) throw new ArgumentOutOfRangeException(nameof(values), $"{nameof(values)} must have at least one element");
+
         _hashCode = HashCode.FromOrderedObjects(_values);
     }
 

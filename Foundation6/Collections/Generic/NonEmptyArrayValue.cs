@@ -30,6 +30,8 @@ public readonly struct NonEmptyArrayValue<T>
     public NonEmptyArrayValue(T[] values, string separator = ", ")
     {
         _values = values.ThrowIfNullOrEmpty();
+        if(_values.Length == 0) throw new ArgumentOutOfRangeException(nameof(values), $"{nameof(values)} must have at least one element");
+        
         _separator = separator ?? throw new ArgumentNullException(nameof(separator));
         _hashCode = HashCode.FromObjects(_values);
     }

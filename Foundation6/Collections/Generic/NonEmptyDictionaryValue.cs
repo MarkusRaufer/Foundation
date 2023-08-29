@@ -34,6 +34,8 @@ public class NonEmptyDictionaryValue<TKey, TValue>
     public NonEmptyDictionaryValue(IDictionary<TKey, TValue> dictionary)
     {
         _dictionary = dictionary.ThrowIfNullOrEmpty();
+        if (_dictionary.Count == 0) throw new ArgumentOutOfRangeException(nameof(dictionary), $"{nameof(dictionary)} must have at least one element");
+        
         _hashCode = HashCode.FromObjects(_dictionary);
     }
     

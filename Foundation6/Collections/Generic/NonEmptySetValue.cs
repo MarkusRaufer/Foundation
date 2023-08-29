@@ -46,6 +46,8 @@ public readonly struct NonEmptySetValue<T>
     public NonEmptySetValue(HashSet<T> values)
     {
         _values = values.ThrowIfNullOrEmpty();
+        if(_values.Count == 0) throw new ArgumentOutOfRangeException(nameof(values), $"{nameof(values)} must have at least one element");
+
         _hashCode = HashCode.FromOrderedObjects(_values);
     }
 
