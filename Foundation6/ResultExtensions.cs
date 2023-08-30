@@ -40,7 +40,7 @@
         }
 
         /// <summary>
-        /// <paramref name="error"/> is only called when IsError of <paramref name="result"/> is true.
+        /// <paramref name="error"/> is only called when IsOk is false.
         /// </summary>
         /// <typeparam name="TOk"></typeparam>
         /// <typeparam name="TError"></typeparam>
@@ -57,7 +57,7 @@
         }
 
         /// <summary>
-        /// <paramref name="ok"/> is only called when IsOk of <paramref name="result"/> is true.
+        /// <paramref name="ok"/> is only called when IsOk is true.
         /// </summary>
         /// <typeparam name="TOk"></typeparam>
         /// <typeparam name="TError"></typeparam>
