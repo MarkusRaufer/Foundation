@@ -76,6 +76,13 @@ public static class OptionExtensions
         return option.TryGet(out T? value) ? some(value!) : none();
     }
 
+    /// <summary>
+    /// Calls <paramref name="action"/> if <paramref name="option"/> is none.
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <param name="option"></param>
+    /// <param name="action"></param>
+    /// <returns></returns>
     [return: NotNull]
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static Unit OnNone<T>(this Option<T> option, Action action)
@@ -85,6 +92,13 @@ public static class OptionExtensions
         return new Unit();
     }
 
+    /// <summary>
+    /// Calls <paramref name="action"/> if <paramref name="option"/> is some.
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <param name="option"></param>
+    /// <param name="action"></param>
+    /// <returns></returns>
     [return: NotNull]
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static Unit OnSome<T>(this Option<T> option, Action<T> action)
