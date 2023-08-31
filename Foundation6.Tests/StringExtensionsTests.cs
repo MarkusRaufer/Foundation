@@ -11,6 +11,13 @@ namespace Foundation
         public void CompareRegardingNumbers()
         {
             {
+                var result = "10".CompareTo("9");
+                Assert.AreEqual(-1, result); // not what is expected
+
+                result = "10".CompareRegardingNumbers("9");
+                Assert.AreEqual(1, result); // this is what is expected
+            }
+            {
                 var result = "90.5".CompareRegardingNumbers("100.3");
                 Assert.AreEqual(-1, result);
             }
@@ -19,16 +26,11 @@ namespace Foundation
                 Assert.AreEqual(-1, result);
             }
             {
-                var result = "10".CompareRegardingNumbers("9");
-                Assert.AreEqual(1, result);
-            }
-            {
                 var result = "10".CompareRegardingNumbers("10");
                 Assert.AreEqual(0, result);
             }
             {
                 var result = "ABC".CompareRegardingNumbers("ABc");
-                var r2 = string.Compare("ABC", "ABc", true);
                 Assert.AreEqual(1, result);
             }
             {
@@ -143,7 +145,7 @@ namespace Foundation
         }
 
         [Test]
-        public void RemoveApostrophes_double_quoted_apostrophes()
+        public void TrimApostrophes_double_quoted_apostrophes()
         {
             var value = "Test";
             var str = $"\"{value}\"";
@@ -152,7 +154,7 @@ namespace Foundation
         }
 
         [Test]
-        public void RemoveApostrophes_no_apostrophes()
+        public void TrimApostrophes_no_apostrophes()
         {
             var value = "Test";
             var result = value.TrimApostrophes();
@@ -160,7 +162,7 @@ namespace Foundation
         }
 
         [Test]
-        public void RemoveApostrophes_single_quoted_apostrophes()
+        public void TrimApostrophes_single_quoted_apostrophes()
         {
             var value = "Test";
             var str = $"'{value}'";
