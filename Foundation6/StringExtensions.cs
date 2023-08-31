@@ -2,7 +2,6 @@
 
 using Foundation.Buffers;
 using Foundation.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
 using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.Runtime.CompilerServices;
@@ -32,7 +31,7 @@ public static class StringExtensions
     }
 
     /// <summary>
-    /// returns the indices of value starting from the end.
+    /// returns the indices of a character starting from the end.
     /// </summary>
     /// <param name="str"></param>
     /// <param name="value"></param>
@@ -52,7 +51,7 @@ public static class StringExtensions
     }
 
     /// <summary>
-    /// returns the indices of value starting from the end.
+    /// returns the indices of a substring starting from the end.
     /// </summary>
     /// <param name="str"></param>
     /// <param name="value"></param>
@@ -70,7 +69,7 @@ public static class StringExtensions
     }
 
     /// <summary>
-    /// returns the indices of value.
+    /// Returns the indices of a substring.
     /// </summary>
     /// <param name="str"></param>
     /// <param name="value"></param>
@@ -117,6 +116,13 @@ public static class StringExtensions
         }
     }
 
+    /// <summary>
+    /// Returns a list of indices of the found substrings.
+    /// </summary>
+    /// <param name="str"></param>
+    /// <param name="values"></param>
+    /// <param name="stopAfterNumberOfHits"></param>
+    /// <returns></returns>
     public static IEnumerable<int> IndicesOfAny(this string str, string[] values, int stopAfterNumberOfHits = -1)
     {
         var numberOfHits = 0;
@@ -191,6 +197,13 @@ public static class StringExtensions
         return false;
     }
 
+    /// <summary>
+    /// Returns Some if the string contains a primitive type or DateTime.
+    /// </summary>
+    /// <param name="str"></param>
+    /// <param name="type"></param>
+    /// <returns></returns>
+    [Obsolete]
     public static Option<object> ParseScalarType(this string str, Type type)
     {
         type.ThrowIfNull();
@@ -289,6 +302,12 @@ public static class StringExtensions
         return span.ToString();
     }
 
+    /// <summary>
+    /// Splits a string at the indexes.
+    /// </summary>
+    /// <param name="str"></param>
+    /// <param name="indexes"></param>
+    /// <returns></returns>
     public static IEnumerable<string> SplitAtIndex(this string str, params int[] indexes)
     {
         if (0 == indexes.Length)
@@ -314,46 +333,6 @@ public static class StringExtensions
 
         if (i < str.Length)
             yield return str.SubstringFromIndex(i, str.Length - 1);
-    }
-
-    /// <summary>
-    /// creates a list of separators with strings between separators.
-    /// 
-    /// example:
-    /// string: "A123B456C789"
-    /// result: {'A', "123"}, {'B', "456"}, {'C', "789"}
-    /// 
-    /// </summary>
-    /// <param name="str"></param>
-    /// <param name="separator"></param>
-    /// <returns></returns>
-    public static IEnumerable<KeyValuePair<char, string>> SplitSeq(this string str, char[] separator)
-    {
-        var key = Option.None<char>();
-        var sb = new StringBuilder();
-        var len = str.Length;
-        var i = 0;
-        foreach (var c in str)
-        {
-            if (separator.Contains(c))
-            {
-                if (key.TryGet(out char keyValue))
-                {
-                    yield return Pair.New(keyValue, sb.ToString());
-                    sb.Clear();
-                }
-                key = Option.Some(c);
-                i++;
-                if (i == len)
-                    yield return Pair.New(keyValue, sb.ToString());
-
-                continue;
-            }
-            if (key.IsSome)
-                sb.Append(c);
-
-            i++;
-        }
     }
 
     /// <summary>
@@ -500,7 +479,7 @@ public static class StringExtensions
         return null;
     }
 
-    public static Option<string> ToOptIfNullOrEmpty(this string str)
+    public static Option<string> ToOptionIfNullOrEmpty(this string str)
     {
         return string.IsNullOrEmpty(str) ? Option.None<string>() : Option.Some(str);
     }
@@ -512,18 +491,23 @@ public static class StringExtensions
         return string.IsNullOrEmpty(str) ? Option.None<T>() : Option.Some(projection(str));
     }
 
-    public static Option<string> ToOptIfNullOrWhiteSpace(this string str)
+    public static Option<string> ToOptionIfNullOrWhiteSpace(this string str)
     {
         return string.IsNullOrWhiteSpace(str) ? Option.None<string>() : Option.Some(str);
     }
 
-    public static Option<T> ToOptIfNullOrWhiteSpace<T>(this string str, Func<string, T> projection)
+    public static Option<T> ToOptionIfNullOrWhiteSpace<T>(this string str, Func<string, T> projection)
     {
         projection.ThrowIfNull();
 
         return string.IsNullOrWhiteSpace(str) ? Option.None<T>() : Option.Some(projection(str));
     }
 
+    /// <summary>
+    /// Removes \" and ' from string.
+    /// </summary>
+    /// <param name="str"></param>
+    /// <returns></returns>
     public static string TrimApostrophes(this string str)
     {
         if (string.IsNullOrEmpty(str)) return str;
@@ -537,7 +521,7 @@ public static class StringExtensions
             length--;
         }
 
-        if (apostrophes.Any(c => c == str[str.Length - 1]))
+        if (apostrophes.Any(c => c == str[^1]))
             length--;
 
         return str.Substring(start, length);
