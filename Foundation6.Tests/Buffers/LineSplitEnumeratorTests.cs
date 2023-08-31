@@ -14,27 +14,23 @@ namespace Foundation.Buffers
             var enumerator = sut.GetEnumerator();
             {
                 Assert.IsTrue(enumerator.MoveNext());
-                var (line, separator) = enumerator.Current;
+                var line = enumerator.Current;
                 Assert.True("this".AsSpan().IsSameAs(line));
-                Assert.True("\n".AsSpan().IsSameAs(separator));
             }
             {
                 Assert.IsTrue(enumerator.MoveNext());
-                var (line, separator) = enumerator.Current;
+                var line = enumerator.Current;
                 Assert.True("is".AsSpan().IsSameAs(line));
-                Assert.True("\n".AsSpan().IsSameAs(separator));
             }
             {
                 Assert.IsTrue(enumerator.MoveNext());
-                var (line, separator) = enumerator.Current;
+                var line = enumerator.Current;
                 Assert.True("a".AsSpan().IsSameAs(line));
-                Assert.True("\n".AsSpan().IsSameAs(separator));
             }
             {
                 Assert.IsTrue(enumerator.MoveNext());
-                var (line, separator) = enumerator.Current;
+                var line = enumerator.Current;
                 Assert.True("test".AsSpan().IsSameAs(line));
-                Assert.True("".AsSpan().IsSameAs(separator));
             }
             Assert.IsFalse(enumerator.MoveNext());
         }

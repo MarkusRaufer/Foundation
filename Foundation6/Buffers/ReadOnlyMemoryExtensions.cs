@@ -4,6 +4,13 @@ using Foundation.Collections.Generic;
 
 public static class ReadOnlyMemoryExtensions
 {
+    /// <summary>
+    /// Returns all indices of the found value starting from the end.
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <param name="memory"></param>
+    /// <param name="value"></param>
+    /// <returns></returns>
     public static IEnumerable<int> IndicesFromEnd<T>(this ReadOnlyMemory<T> memory, ReadOnlyMemory<T> value)
     {
         if (0 == memory.Length) yield break;
@@ -26,7 +33,7 @@ public static class ReadOnlyMemoryExtensions
     }
 
     /// <summary>
-    /// returns the indices of 
+    /// Returns the indices of a search buffer.
     /// </summary>
     /// <typeparam name="T"></typeparam>
     /// <param name="memories"></param>
@@ -51,7 +58,7 @@ public static class ReadOnlyMemoryExtensions
     }
 
     /// <summary>
-    /// returns tuples of selectors with the found indices.
+    /// Returns tuples of selectors with the found indices.
     /// </summary>
     /// <typeparam name="T"></typeparam>
     /// <param name="memory"></param>

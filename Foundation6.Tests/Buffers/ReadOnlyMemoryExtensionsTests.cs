@@ -23,7 +23,9 @@ namespace Foundation.Buffers
         {
             var str = "ADDDDD".AsMemory();
             var indexes = str.IndicesFromEnd("DD".AsMemory()).ToArray();
+
             Assert.AreEqual(4, indexes.Length);
+
             Assert.AreEqual(4, indexes[0]);
             Assert.AreEqual(3, indexes[1]);
             Assert.AreEqual(2, indexes[2]);
@@ -66,8 +68,12 @@ namespace Foundation.Buffers
         public void IndicesOfAny_Should_Return_Tuples_When_Selectors_MatchSeveralTimes()
         {
             var numbers = "dad of dads".AsMemory();
-            var indexes = numbers.IndicesOfAny(new[] { "dad".AsMemory(), "d".AsMemory() }).ToArray();
+            var selectors = new[] { "dad".AsMemory(), "d".AsMemory() };
+
+            var indexes = numbers.IndicesOfAny(selectors).ToArray();
+
             Assert.AreEqual(6, indexes.Length);
+
             Assert.AreEqual((selector: 0, index: 0), indexes[0]);
             Assert.AreEqual((selector: 1, index: 0), indexes[1]);
             Assert.AreEqual((selector: 1, index: 2), indexes[2]);

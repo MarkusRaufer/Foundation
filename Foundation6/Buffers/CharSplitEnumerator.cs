@@ -1,6 +1,9 @@
 ﻿namespace Foundation.Buffers;
 
-// Must be a ref struct as it contains a ReadOnlySpan<char>
+/// <summary>
+/// Splits strings as spans.
+/// Must be a ref struct as it contains a ReadOnlySpan<char>
+/// </summary>
 public ref struct CharSplitEnumerator
 {
     private readonly bool _notFoundReturnsNothing;

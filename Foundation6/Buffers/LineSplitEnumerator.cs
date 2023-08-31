@@ -1,6 +1,9 @@
 ﻿namespace Foundation.Buffers;
 
-// Must be a ref struct as it contains a ReadOnlySpan<char>
+/// <summary>
+/// Splits a text into lines. The lines are represented by ReadOnlySpans.
+/// Must be a ref struct as it contains a ReadOnlySpan<char>
+/// </summary>
 public ref struct LineSplitEnumerator
 {
     private ReadOnlySpan<char> _str;
@@ -24,7 +27,7 @@ public ref struct LineSplitEnumerator
         if (index == -1) // The string is composed of only one line
         {
             _str = ReadOnlySpan<char>.Empty; // The remaining string is an empty string
-            Current = new LineSplitEntry(span, ReadOnlySpan<char>.Empty);
+            Current = span;
             return true;
         }
 
@@ -34,17 +37,17 @@ public ref struct LineSplitEnumerator
             var next = span[index + 1];
             if (next == '\n')
             {
-                Current = new LineSplitEntry(span[..index], span.Slice(index, 2));
+                Current = span[..index];
                 _str = span[(index + 2)..];
                 return true;
             }
         }
 
-        Current = new LineSplitEntry(span[..index], span.Slice(index, 1));
+        Current = span[..index];
         _str = span[(index + 1)..];
         return true;
     }
 
-    public LineSplitEntry Current { get; private set; }
+    public ReadOnlySpan<char> Current { get; private set; }
 }
 
