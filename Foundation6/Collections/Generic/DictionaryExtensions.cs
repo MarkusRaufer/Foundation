@@ -123,10 +123,4 @@ public static  class DictionaryExtensions
         => dictionary ?? throw new ArgumentException($"{paramName} must not be empty");
     public static IDictionary<TKey, TValue> ThrowIfNullOrEmpty<TKey, TValue>(this IDictionary<TKey, TValue> dictionary, [CallerArgumentExpression("dictionary")] string paramName = "")
         => ThrowIfNull(dictionary, paramName).ThrowIfEmpty(paramName);
-
-    //public static IEnumerable<KeyValue<TKey, TValue>> ToKeyValues<TKey, TValue>(this IDictionary<TKey, TValue> dictionary)
-    //    where TKey : notnull
-    //{
-    //    return dictionary.Select(kvp => new KeyValue<TKey, TValue>(kvp.Key, kvp.Value));
-    //}
 }
