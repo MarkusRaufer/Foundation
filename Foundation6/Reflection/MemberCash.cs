@@ -26,22 +26,25 @@ public abstract class MemberCash<TInfo> where TInfo : MemberInfo
 
     protected abstract TInfo GetMemberFromLambda(LambdaExpression lambda);
 
-    public IEnumerable<TInfo> GetMembers()
+    public IEnumerable<TInfo> Members
     {
-        if (null != _members) return _members;
-
-        var members = GetTypeMembers();
-        if (null == _memberNames)
+        get
         {
-            _members = null == MemberFilter
-                ? members.ToArray()
-                : members.Where(MemberFilter).ToArray();
+            if (null != _members) return _members;
+
+            var members = GetTypeMembers();
+            if (null == _memberNames)
+            {
+                _members = null == MemberFilter
+                    ? members.ToArray()
+                    : members.Where(MemberFilter).ToArray();
+
+                return _members;
+            }
+            _members = members.Where(member => _memberNames.Contains(member.Name)).ToArray();
 
             return _members;
         }
-        _members = members.Where(member => _memberNames.Contains(member.Name)).ToArray();
-
-        return _members;
     }
 
     protected abstract IEnumerable<TInfo> GetTypeMembers();
