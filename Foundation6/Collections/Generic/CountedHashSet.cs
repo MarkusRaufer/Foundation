@@ -3,8 +3,8 @@
 namespace Foundation.Collections.Generic;
 
 /// <summary>
-/// This HashSet counts all items added. If same item is added again the counter is incremented.
-/// If an existing item is removed the counter is decremented. If the counter is 0 after removing an item, the item if removed from the HashSet.
+/// This HashSet counts all equal items added. If same item is added again the counter is incremented.
+/// If an existing item is removed the counter is decremented. If the counter is 0 after removing an item, the item is removed from the HashSet.
 /// </summary>
 /// <typeparam name="T"></typeparam>
 public class CountedHashSet<T> : ICollection<T>

@@ -12,8 +12,8 @@ public static class CollectionValue
 }
 
 /// <summary>
-/// This is an immutable array that compares each element on <see cref="Equals(CollectionValue{T})"/>.
-/// That enables the comparison of two arrays.
+/// This is an immutable collecion that compares each element on <see cref="Equals(CollectionValue{T})"/>.
+/// That enables the comparison of two collecions.
 /// </summary>
 /// <typeparam name="T"></typeparam>
 public readonly struct CollectionValue<T>
