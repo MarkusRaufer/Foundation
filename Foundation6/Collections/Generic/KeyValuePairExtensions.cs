@@ -68,12 +68,5 @@ namespace Foundation.Collections.Generic
         {
             return !string.IsNullOrWhiteSpace(pair.Value) ? pair : throw new ArgumentNullException(name);
         }
-
-        public static IEnumerable<KeyValue<TKey, TValue>> ToKeyValues<TKey, TValue>(this IEnumerable<KeyValuePair<TKey, TValue>> keyValues)
-            where TKey : notnull
-        {
-            return keyValues.ThrowIfNull()
-                            .Select(kvp => new KeyValue<TKey, TValue>(kvp.Key, kvp.Value));
-        }
     }
 }
