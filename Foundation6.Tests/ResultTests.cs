@@ -81,7 +81,7 @@ public class ResultTests
         var exception = new ArgumentException("error");
         var sut = Result.Error(exception);
 
-        Assert.True(sut.TryGetError(out Error? error));
+        Assert.True(sut.TryGetError(out ArgumentException? error));
         Assert.AreEqual(exception, error);
     }
 }

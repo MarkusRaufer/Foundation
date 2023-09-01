@@ -28,16 +28,21 @@ public static class Result
         return new Result<TOk, Error>(Option.None<TOk>(), Option.Some(Foundation.Error.FromException(exception)));
     }
 
+    public static Result<TError> Error<TError>(TError error)
+    {
+        error.ThrowIfNull();
+        return new Result<TError>(error);
+    }
+
     public static Result<TOk, TError> Error<TOk, TError>(TError error)
     {
         error.ThrowIfNull();
         return new Result<TOk, TError>(Option.None<TOk>(), Option.Some(error));
     }
 
-    public static Result<Error> Ok()
-    {
-        return new Result<Error>();
-    }
+    public static Result<Error> Ok() => new ();
+
+    public static Result<TError> Ok<TError>() => new ();
 
     public static Result<TOk, Error> Ok<TOk>(TOk value)
     {
