@@ -3,14 +3,12 @@ namespace Foundation.Collections.Generic;
 public interface IMultiValueMap<TKey, TValue>
     : IMultiValueMap<TKey, TValue, ICollection<TValue>>
     , IReadOnlyMultiValueMap<TKey, TValue>
-    where TKey : notnull
 {
 }
 
 public interface IMultiValueMap<TKey, TValue, TValueCollection>
     : IDictionary<TKey, TValue>
     , IReadOnlyMultiValueMap<TKey, TValue, TValueCollection>
-    where TKey : notnull
     where TValueCollection : IEnumerable<TValue>
 {
     /// <summary>
