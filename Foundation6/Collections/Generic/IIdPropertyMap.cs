@@ -8,7 +8,6 @@
     public interface IIdPropertyMap<TId, TEvent>
         : IProperties<TEvent>
         , IIdentifiable<TId>
-        where TId : notnull
     {
     }
 
@@ -21,7 +20,6 @@
     public interface IIdPropertyMap<TObjectType, TId, TEvent>
         : IIdPropertyMap<TId, TEvent>
         , IProperties<TObjectType, TEvent>
-        where TId : notnull
     {
     }
 }

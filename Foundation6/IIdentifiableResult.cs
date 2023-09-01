@@ -11,6 +11,5 @@ public interface IIdentifiableResult<TOk, TError> : IIdentifiableResult<Guid, TO
 public interface IIdentifiableResult<TId, TOk, TError>
     : IIdentifiable<TId>
     , IResult<TOk, TError>
-    where TId : notnull
 {
 }

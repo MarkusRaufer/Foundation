@@ -1,13 +1,11 @@
 namespace Foundation.Collections.Generic;
 
 public interface IReadOnlyMultiValueMap<TKey, TValue> : IReadOnlyMultiValueMap<TKey, TValue, ICollection<TValue>>
-    where TKey : notnull
 {
 }
 
 public interface IReadOnlyMultiValueMap<TKey, TValue, TValueCollection> 
     : IEnumerable<KeyValuePair<TKey, TValue>>
-    where TKey : notnull
     where TValueCollection : IEnumerable<TValue>
 {
     /// <summary>

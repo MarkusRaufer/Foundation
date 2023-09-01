@@ -7,6 +7,5 @@ public interface ICompensableProvider<TId, TStrategy>
 
 public interface ICompensableProvider<TId, TTransactionState, TTransactionResponse, TCompensationResponse>
     : ICompensableProvider<TId, IIdentifiableTransactionCompensation<TId, TTransactionState, TTransactionResponse, TCompensationResponse>>
-    where TId : notnull
 {
 }

@@ -4,7 +4,7 @@ namespace Foundation;
 /// Contract for an object that can be identified by Id.
 /// </summary>
 /// <typeparam name="T"></typeparam>
-public interface IIdentifiable<out T> where T : notnull
+public interface IIdentifiable<out T>
 {
     T Id { get; }
 }

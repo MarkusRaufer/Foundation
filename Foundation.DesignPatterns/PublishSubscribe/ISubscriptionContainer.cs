@@ -2,7 +2,6 @@
 
 public interface ISubscriptionContainer<TSubject, TDelegate>
     : ISingleSubscriptionContainer<TSubject, TDelegate>
-    where TSubject : notnull
     where TDelegate : Delegate
 {
     /// <summary>

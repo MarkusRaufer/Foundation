@@ -1,7 +1,6 @@
 ﻿namespace Foundation.DesignPatterns.PublishSubscribe;
 
 public interface ISingleSubscriptionContainer<TSubject, TDelegate>
-    where TSubject : notnull
     where TDelegate : Delegate
 {
     /// <summary>

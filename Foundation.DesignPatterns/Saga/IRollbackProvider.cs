@@ -7,6 +7,5 @@ public interface IRollbackProvider<TId, TStrategy>
 
 public interface IRollbackProvider<TId, TTransactionState, TTransactionResponse, TRollbackResponse>
     : IRollbackProvider<TId, IIdentifiableTransactionRollback<TId, TTransactionState, TTransactionResponse, TRollbackResponse>>
-    where TId : notnull
 {
 }
