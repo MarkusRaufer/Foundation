@@ -1785,7 +1785,7 @@ public class EnumerableExtensionsTests
     }
 
     [Test]
-    public void Replace_ShouldReturnTheModifiedList_When_ReplaceSingleItem()
+    public void Replace_Should_ReturnAModifiedList_When_ReplaceSingleItemAtIndex()
     {
         var numbers = Enumerable.Range(1, 5);
 
@@ -1847,7 +1847,7 @@ public class EnumerableExtensionsTests
     }
 
     [Test]
-    public void Replace_Should_ReturnReplacedList_When_ListIsLongerThanMaxReplaceIndex()
+    public void Replace_Should_ReturnReplacedList_When_IndexValueTuples_AreUsed()
     {
         var numbers = Enumerable.Range(1, 5);
 
@@ -1858,7 +1858,7 @@ public class EnumerableExtensionsTests
     }
 
     [Test]
-    public void Replace_Should_ReturnReplacedList_When_ListIsLongerThanMaxReplaceIndexAndProjectIsSet()
+    public void Replace_Should_ReturnReplacedList_When_IndexValueTuples_AreUsed_AndIntsTransformedToString()
     {
         var numbers = Enumerable.Range(1, 5);
 
@@ -1873,7 +1873,7 @@ public class EnumerableExtensionsTests
     }
 
     [Test]
-    public void Replace_Should_ReturnReplacedList_When_ListIsLongerThanMaxReplaceIndexAndUsingPredicate()
+    public void Replace_Should_ReturnReplacedList_When_ListOfIndexValues_IsUsed()
     {
         var numbers = Enumerable.Range(1, 5);
 
@@ -1888,40 +1888,20 @@ public class EnumerableExtensionsTests
     }
 
     [Test]
-    public void Replace_Should_Replaced1Element_When_NumberOfReplacementIs2AndListHasNotEnoughElements()
+    public void Replace_Should_ReturnReplacedList_When_PredicateIsUsed()
     {
-        var numberOfElements = 3;
+        var numberOfElements = 5;
         var numbers = Enumerable.Range(1, numberOfElements);
 
-        var modified = numbers.Replace(x => x % 2 == 0, replaced => 0, 2).ToArray();
+        var modified = numbers.Replace((index, item) => index % 2 == 0, (index, item) => 0).ToArray();
 
         modified.Length.Should().Be(numberOfElements);
 
-        modified[0].Should().Be(1);
-        modified[1].Should().Be(0);
-        modified[2].Should().Be(3);
-    }
-
-    [Test]
-    public void Replace_Should_Replaced2Elements_When_NumberOfReplacementIs2AndListHasEnoughElements()
-    {
-        var numberOfElements = 10;
-        var numbers = Enumerable.Range(1, numberOfElements);
-
-        var modified = numbers.Replace(x => x % 2 == 0, replaced => 0, numberOfReplacements: 2).ToArray();
-
-        modified.Length.Should().Be(numberOfElements);
-
-        modified[0].Should().Be(1);
-        modified[1].Should().Be(0);
-        modified[2].Should().Be(3);
-        modified[3].Should().Be(0);
-        modified[4].Should().Be(5);
-        modified[5].Should().Be(6);
-        modified[6].Should().Be(7);
-        modified[7].Should().Be(8);
-        modified[8].Should().Be(9);
-        modified[9].Should().Be(10);
+        modified[0].Should().Be(0);
+        modified[1].Should().Be(2);
+        modified[2].Should().Be(0);
+        modified[3].Should().Be(4);
+        modified[4].Should().Be(0);
     }
 
     [Test]

@@ -1,6 +1,6 @@
 ﻿namespace Foundation;
 
-public enum BinarySelection
+public enum LateralSelection
 {
     None = 0,
     Left = 1,

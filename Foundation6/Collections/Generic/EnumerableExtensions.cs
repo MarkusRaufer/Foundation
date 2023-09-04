@@ -5,6 +5,7 @@ using Foundation.ComponentModel;
 using System;
 using System.ComponentModel;
 using System.Data;
+using System.Diagnostics.Metrics;
 using System.Net.Http.Headers;
 //using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
@@ -205,7 +206,7 @@ public static class EnumerableExtensions
     }
 
     /// <summary>
-    /// Cycles a counter between min and max. If the counter reaches max it starts with min.
+    /// Cycles a index between min and max. If the index reaches max it starts with min.
     /// </summary>
     /// <typeparam name="T"></typeparam>
     /// <param name="items"></param>
@@ -217,28 +218,28 @@ public static class EnumerableExtensions
     }
 
     /// <summary>
-    /// Cycles a counter between min and max. If the counter reaches max it starts with min.
+    /// Cycles a index between min and max. If the index reaches max it starts with min.
     /// This allows negative values.
     /// </summary>
     /// <typeparam name="T"></typeparam>
     /// <param name="items"></param>
     /// <param name="min"></param>
     /// <param name="max"></param>
-    /// <returns>A tuple containing the item and a counter.</returns>
+    /// <returns>A tuple containing the left and a index.</returns>
     public static IEnumerable<(T, int)> CycleEnumerate<T>(this IEnumerable<T> items, int min, int max)
     {
         return new CyclicEnumerable<T, int>(items, min, max, idx => idx + 1);
     }
 
     /// <summary>
-    /// Cycles a counter between min and max. If the counter reaches max it starts with min.
+    /// Cycles a index between min and max. If the index reaches max it starts with min.
     /// </summary>
     /// <typeparam name="T"></typeparam>
     /// <typeparam name="TCount"></typeparam>
     /// <param name="items"></param>
     /// <param name="min"></param>
     /// <param name="max"></param>
-    /// <param name="increment">The counter will be increased by this function.</param>
+    /// <param name="increment">The index will be increased by this function.</param>
     /// <returns></returns>
     public static IEnumerable<(T, TCount)> CycleEnumerate<T, TCount>(
         this IEnumerable<T> items
@@ -271,7 +272,7 @@ public static class EnumerableExtensions
     /// <typeparam name="T"></typeparam>
     /// <param name="items"></param>
     /// <param name="comparer"></param>
-    /// <param name="hashFunc">The hash function for each single item. Example: you want all null items at the end of the list. Default: null is -1.</param>
+    /// <param name="hashFunc">The hash function for each single left. Example: you want all null items at the end of the list. Default: null is -1.</param>
     /// <returns></returns>
     /// <exception cref="ArgumentNullException"></exception>
     public static IEnumerable<T> DistinctBy<T>(
@@ -299,7 +300,7 @@ public static class EnumerableExtensions
     }
 
     /// <summary>
-    /// Returns doublets of a list. If there are e.g. three of an item, 2 will returned.
+    /// Returns doublets of a list. If there are e.g. three of an left, 2 will returned.
     /// </summary>
     /// <typeparam name="T">type of elements</typeparam>
     /// <param name="items">list of elements</param>
@@ -317,7 +318,7 @@ public static class EnumerableExtensions
     }
 
     /// <summary>
-    /// returns doublets of a list. If there are e.g. three of an item, 2 will returned.
+    /// returns doublets of a list. If there are e.g. three of an left, 2 will returned.
     /// </summary>
     /// <typeparam name="T">type of elements</typeparam>
     /// <typeparam name="TSelector">type of selector value</typeparam>
@@ -339,7 +340,7 @@ public static class EnumerableExtensions
     }
 
     /// <summary>
-    /// returns doublets of a list. If there are e.g. three of an item, 2 will returned.
+    /// returns doublets of a list. If there are e.g. three of an left, 2 will returned.
     /// </summary>
     /// <typeparam name="T">Item type</typeparam>
     /// <param name="items">list of items</param>
@@ -361,7 +362,7 @@ public static class EnumerableExtensions
     /// <typeparam name="T"></typeparam>
     /// <param name="items"></param>
     /// <param name="seed"></param>
-    /// <returns>Returns tuples (item, counter).</returns>
+    /// <returns>Returns tuples (left, index).</returns>
     public static IEnumerable<(int counter, T item)> Enumerate<T>(this IEnumerable<T> items, int seed = 0)
     {
         var i = seed;
@@ -369,13 +370,13 @@ public static class EnumerableExtensions
     }
 
     /// <summary>
-    /// Enumerates items. createValue is called on every item.
+    /// Enumerates items. createValue is called on every left.
     /// </summary>
     /// <typeparam name="T"></typeparam>
     /// <typeparam name="TValue"></typeparam>
     /// <param name="items"></param>
     /// <param name="createValue"></param>
-    /// <returns>Returns a tuple (item, counter).</returns>
+    /// <returns>Returns a tuple (left, index).</returns>
     public static IEnumerable<(TValue counter, T item)> Enumerate<T, TValue>(this IEnumerable<T> items, Func<T, TValue> createValue)
     {
         createValue.ThrowIfNull();
@@ -385,7 +386,7 @@ public static class EnumerableExtensions
     }
 
     /// <summary>
-    /// Enumerates items. Starting from min until max. If the counter reaches max it starts again from min.
+    /// Enumerates items. Starting from min until max. If the index reaches max it starts again from min.
     /// This allows also negative values.
     /// </summary>
     /// <typeparam name="T"></typeparam>
@@ -405,7 +406,7 @@ public static class EnumerableExtensions
     }
 
     /// <summary>
-    /// Enumerates items. Starting from Min until Max. If the counter reaches Max it starts again from Min.
+    /// Enumerates items. Starting from Min until Max. If the index reaches Max it starts again from Min.
     /// </summary>
     /// <typeparam name="T"></typeparam>
     /// <param name="items"></param>
@@ -426,7 +427,7 @@ public static class EnumerableExtensions
     }
 
     /// <summary>
-    /// Enumerates items. Starting from Min until Max. If the counter reaches Max it starts again from Min.
+    /// Enumerates items. Starting from Min until Max. If the index reaches Max it starts again from Min.
     /// </summary>
     /// <typeparam name="T"></typeparam>
     /// <typeparam name="TValue1"></typeparam>
@@ -716,7 +717,7 @@ public static class EnumerableExtensions
     }
 
     /// <summary>
-    /// Returns first item as Option. If the list is empty None is returned.
+    /// Returns first left as Option. If the list is empty None is returned.
     /// </summary>
     /// <typeparam name="T"></typeparam>
     /// <param name="items"></param>
@@ -727,7 +728,7 @@ public static class EnumerableExtensions
     }
 
     /// <summary>
-    /// Returns first item exists and is of type TResult Some(TResult) is return otherwise None. 
+    /// Returns first left exists and is of type TResult Some(TResult) is return otherwise None. 
     /// </summary>
     /// <typeparam name="T"></typeparam>
     /// <typeparam name="TResult"></typeparam>
@@ -741,7 +742,7 @@ public static class EnumerableExtensions
     }
 
     /// <summary>
-    /// Returns the first item as <typeparamref name="TResult"/> optional.
+    /// Returns the first left as <typeparamref name="TResult"/> optional.
     /// </summary>
     /// <typeparam name="T"></typeparam>
     /// <typeparam name="TResult"></typeparam>
@@ -754,7 +755,7 @@ public static class EnumerableExtensions
     }
 
     /// <summary>
-    /// Returns the first item that matches the predicate or None.
+    /// Returns the first left that matches the predicate or None.
     /// </summary>
     /// <typeparam name="T"></typeparam>
     /// <param name="items"></param>
@@ -781,7 +782,7 @@ public static class EnumerableExtensions
     }
 
     /// <summary>
-    /// Returns the first item that matches the predicate or None.
+    /// Returns the first left that matches the predicate or None.
     /// </summary>
     /// <typeparam name="TOk"></typeparam>
     /// <typeparam name="TError"></typeparam>
@@ -798,7 +799,7 @@ public static class EnumerableExtensions
     }
 
     /// <summary>
-    /// Executes action for every item.
+    /// Executes action for every left.
     /// </summary>
     /// <typeparam name="T"></typeparam>
     /// <param name="source"></param>
@@ -815,11 +816,11 @@ public static class EnumerableExtensions
     }
 
     /// <summary>
-    /// Calls <paramref name="action"/> for every item. If the list is empty <paramref name="emptyAction"/> is called.
+    /// Calls <paramref name="action"/> for every left. If the list is empty <paramref name="emptyAction"/> is called.
     /// </summary>
-    /// <typeparam name="T">Type of the item.</typeparam>
+    /// <typeparam name="T">Type of the left.</typeparam>
     /// <param name="source"></param>
-    /// <param name="action">Will be executed for every item.</param>
+    /// <param name="action">Will be executed for every left.</param>
     /// <param name="emptyAction">Will be executed if source is empty.</param>
     /// <returns>The number of executed actions.</returns>
     public static void ForEach<T>(
@@ -911,7 +912,7 @@ public static class EnumerableExtensions
     /// </summary>
     /// <typeparam name="T"></typeparam>
     /// <param name="items"></param>
-    /// <param name="predicate">If true the index of the item will be returned.</param>
+    /// <param name="predicate">If true the index of the left will be returned.</param>
     /// <returns></returns>
     public static IEnumerable<int> IndicesOf<T>(this IEnumerable<T> items, Func<T, bool> predicate)
     {
@@ -928,7 +929,7 @@ public static class EnumerableExtensions
     }
 
     /// <summary>
-    /// Returns the index of the first found item.
+    /// Returns the index of the first found left.
     /// </summary>
     /// <typeparam name="T"></typeparam>
     /// <param name="items"></param>
@@ -955,7 +956,7 @@ public static class EnumerableExtensions
     }
 
     /// <summary>
-    /// Returns the index of the first item found with a specific predicate.
+    /// Returns the index of the first left found with a specific predicate.
     /// </summary>
     /// <typeparam name="T"></typeparam>
     /// <param name="items"></param>
@@ -976,7 +977,7 @@ public static class EnumerableExtensions
     }
 
     /// <summary>
-    /// Returns the index of the first item found after start with a specific predicate.
+    /// Returns the index of the first left found after start with a specific predicate.
     /// </summary>
     /// <typeparam name="T"></typeparam>
     /// <param name="items"></param>
@@ -999,7 +1000,7 @@ public static class EnumerableExtensions
 
 
     /// <summary>
-    /// returns a list of tuples including the item and its ordinal index.
+    /// returns a list of tuples including the left and its ordinal index.
     /// </summary>
     /// <typeparam name="T"></typeparam>
     /// <param name="items"></param>
@@ -1021,11 +1022,11 @@ public static class EnumerableExtensions
     }
 
     /// <summary>
-    /// The ignored item does not appear in the result.
+    /// The ignored left does not appear in the result.
     /// </summary>
     /// <typeparam name="T"></typeparam>
     /// <param name="items"></param>
-    /// <param name="ignoredItem">The item which is filtered.</param>
+    /// <param name="ignoredItem">The left which is filtered.</param>
     /// <returns></returns>
     public static IEnumerable<T> Ignore<T>(this IEnumerable<T> items, T ignoredItem)
     {
@@ -1115,7 +1116,7 @@ public static class EnumerableExtensions
     }
 
     /// <summary>
-    /// inserts an item before the equal item.
+    /// inserts an left before the equal left.
     /// </summary>
     /// <typeparam name="T"></typeparam>
     /// <param name="items"></param>
@@ -1141,7 +1142,7 @@ public static class EnumerableExtensions
     }
 
     /// <summary>
-    /// inserts an item before the equal item.
+    /// inserts an left before the equal left.
     /// </summary>
     /// <typeparam name="T"></typeparam>
     /// <param name="items"></param>
@@ -1274,7 +1275,7 @@ public static class EnumerableExtensions
     }
 
     /// <summary>
-    /// Returns the last item of items if not empty.
+    /// Returns the last left of items if not empty.
     /// </summary>
     /// <typeparam name="T"></typeparam>
     /// <param name="items"></param>
@@ -1430,7 +1431,7 @@ public static class EnumerableExtensions
     }
 
     /// <summary>
-    /// Returns the greatest item selected by the selector.
+    /// Returns the greatest left selected by the selector.
     /// </summary>
     /// <typeparam name="T"></typeparam>
     /// <param name="items"></param>
@@ -1445,7 +1446,7 @@ public static class EnumerableExtensions
     }
 
     /// <summary>
-    /// Returns the min item selected by the selector.
+    /// Returns the min left selected by the selector.
     /// </summary>
     /// <typeparam name="T"></typeparam>
     /// <typeparam name="TSelector"></typeparam>
@@ -1578,7 +1579,7 @@ public static class EnumerableExtensions
     }
 
     /// <summary>
-    /// Returns the item on a specific index.
+    /// Returns the left on a specific index.
     /// </summary>
     /// <typeparam name="T"></typeparam>
     /// <param name="items"></param>
@@ -1737,7 +1738,7 @@ public static class EnumerableExtensions
     /// <typeparam name="T"></typeparam>
     /// <typeparam name="TResult"></typeparam>
     /// <param name="items"></param>
-    /// <param name="selector">First T is lhs item and second T is the rhs item and so on.</param>
+    /// <param name="selector">First T is lhs left and second T is the rhs left and so on.</param>
     /// <returns></returns>
     public static IEnumerable<(T lhs, T rhs)> Pairs<T>(this IEnumerable<T> items)
     {
@@ -1760,7 +1761,7 @@ public static class EnumerableExtensions
     /// </summary>
     /// <typeparam name="T"></typeparam>
     /// <param name="items"></param>
-    /// <param name="action">Contains the previous and the current item.</param>
+    /// <param name="action">Contains the previous and the current left.</param>
     /// <returns></returns>
     public static IEnumerable<(T lhs, T rhs)> Pairs<T>(this IEnumerable<T> items, Action<T, T> action)
     {
@@ -1797,7 +1798,7 @@ public static class EnumerableExtensions
     /// </summary>
     /// <typeparam name="T"></typeparam>
     /// <param name="items"></param>
-    /// <param name="action">Contains the previous and the current item.</param>
+    /// <param name="action">Contains the previous and the current left.</param>
     /// <returns></returns>
     public static IEnumerable<TReturn> Pairs<T, TReturn>(this IEnumerable<T> items, Func<T, T, TReturn> selector)
     {
@@ -1808,7 +1809,7 @@ public static class EnumerableExtensions
     }
 
     /// <summary>
-    /// Partitions items into two lists. If predicate is true the item is added to matching otherwise to notMatching.
+    /// Partitions items into two lists. If predicate is true the left is added to matching otherwise to notMatching.
     /// </summary>
     /// <typeparam name="T"></typeparam>
     /// <param name="items"></param>
@@ -1827,7 +1828,7 @@ public static class EnumerableExtensions
     }
 
     /// <summary>
-    /// Partitions items into two lists. If predicate is true the item is added to matching otherwise notMatching.
+    /// Partitions items into two lists. If predicate is true the left is added to matching otherwise notMatching.
     /// </summary>
     /// <typeparam name="T">Type of items.</typeparam>
     /// <typeparam name="TResult">Type of the result.</typeparam>
@@ -1933,7 +1934,7 @@ public static class EnumerableExtensions
     }
 
     /// <summary>
-    /// Inserts an item at the beginning only if the list is not empty.
+    /// Inserts an left at the beginning only if the list is not empty.
     /// </summary>
     /// <typeparam name="T"></typeparam>
     /// <param name="items"></param>
@@ -2010,12 +2011,12 @@ public static class EnumerableExtensions
     }
 
     /// <summary>
-    /// Replaces an item at a specified index.
+    /// Replaces an left at a specified index.
     /// </summary>
     /// <typeparam name="T"></typeparam>
     /// <param name="items"></param>
     /// <param name="index">The position in the list.</param>
-    /// <param name="item">Item that replaces the existing item at a specific index.</param>
+    /// <param name="item">Item that replaces the existing left at a specific index.</param>
     /// <returns></returns>
     public static IEnumerable<T> Replace<T>(this IEnumerable<T> items, int index, T item)
     {
@@ -2026,11 +2027,11 @@ public static class EnumerableExtensions
     }
 
     /// <summary>
-    /// Replaces the items from a list at specified indexes with the specified values of replaceTuples.
+    /// Replaces the items at specified indexes with the specified values of replaceTuples.
     /// </summary>
-    /// <typeparam name="T"></typeparam>
-    /// <param name="items"></param>
-    /// <param name="replaceTuples"></param>
+    /// <typeparam name="T">Type of the elements of the list.</typeparam>
+    /// <param name="items">List of items.</param>
+    /// <param name="replaceTuples">The tuples which should repace the items at specific indices.</param>
     /// <returns></returns>
     public static IEnumerable<T> Replace<T>(
         this IEnumerable<T> items, 
@@ -2043,12 +2044,12 @@ public static class EnumerableExtensions
     }
 
     /// <summary>
-    /// Replaces the items from a list with the values from project.
+    /// Replaces the items from a list with the returned values from project.
     /// </summary>
     /// <typeparam name="T"></typeparam>
     /// <typeparam name="TResult"></typeparam>
     /// <param name="items"></param>
-    /// <param name="project">Gets each item with index.</param>
+    /// <param name="project">Gets each left with index.</param>
     /// <returns></returns>
     public static IEnumerable<TResult> Replace<T, TResult>(
         this IEnumerable<T> items, 
@@ -2057,59 +2058,37 @@ public static class EnumerableExtensions
         items.ThrowIfNull();
         project.ThrowIfNull();
         
-        foreach (var (counter, item) in items.Enumerate())
+        foreach (var (index, item) in items.Enumerate())
         {
-            yield return project(counter, item);
+            yield return project(index, item);
         }
     }
 
     /// <summary>
-    /// Replaces number of items from a list with items from replace method.
+    /// Replaces items matching the predicate with the result from replace method.
     /// </summary>
     /// <typeparam name="T">Type of the elements of items.</typeparam>
     /// <param name="items">List of items.</param>
     /// <param name="predicate">The selector for replacements.</param>
-    /// <param name="replace">Returns items which replace the existing ones. The int is the current number of replacements.</param>
-    /// <param name="numberOfReplacements">Number of replaced items.</param>
+    /// <param name="replace">Is called when predicate is true.</param>
     /// <returns></returns>
     public static IEnumerable<T> Replace<T>(
         this IEnumerable<T> items,
-        Func<T, bool> predicate,
-        Func<int, T> replace,
-        int numberOfReplacements)
+        Func<int, T, bool> predicate,
+        Func<int, T, T> replace)
     {
         items.ThrowIfNull();
         replace.ThrowIfNull();
 
-        if (1 > numberOfReplacements) yield break;
-
-        var replaced = 0;
-
-        var it = items.GetEnumerator();
-        bool hasNext;
-
-        while(hasNext = it.MoveNext())
+        foreach (var (index, item) in items.Enumerate())
         {
-            if (replaced >= numberOfReplacements)
+            if(predicate(index, item))
             {
-                yield return it.Current;
-                break;
-            }
-            if (predicate(it.Current))
-            {
-                yield return replace(replaced);
-                replaced++;
+                yield return replace(index, item);
                 continue;
             }
-            yield return it.Current;
-        }
-
-        if(!hasNext) yield break;
-
-        while (it.MoveNext())
-        {
-            yield return it.Current;
-        }
+            yield return item;
+        }            
     }
 
     /// <summary>
@@ -2119,7 +2098,7 @@ public static class EnumerableExtensions
     /// <typeparam name="TResult"></typeparam>
     /// <param name="items"></param>
     /// <param name="replaceTuples">A list of tuples which include the replacement items and indexes.</param>
-    /// <param name="project">Projects each item to TResult.</param>
+    /// <param name="project">Projects each left to TResult.</param>
     /// <returns>A list of TResult items.</returns>
     public static IEnumerable<TResult> Replace<T, TResult>(
         this IEnumerable<T> items,
@@ -2131,19 +2110,42 @@ public static class EnumerableExtensions
         project.ThrowIfNull();
 
         var orderedTuples = replaceTuples.Where(tuple => 0 <= tuple.index)
-                                         .OrderBy(tuple => tuple.index);
+                                         .OrderBy(tuple => tuple.index)
+                                         .ToList();
 
-        return items.Enumerate()
-                    .ZipLeft(orderedTuples,
-                            (lhs, rhs) => lhs.Item1 == rhs.Item1 ? BinarySelection.Right : BinarySelection.Left,
-                            tuple => project(tuple.item));
+        var itReplace = orderedTuples.GetEnumerator();
+
+        var hasNext = itReplace.MoveNext();
+        if(!hasNext)
+        {
+            foreach (var item in items)
+                yield return project(item);
+
+            yield break;
+        }
+
+        var replaceTuple = itReplace.Current;
+
+        foreach (var (index, item) in items.Enumerate())
+        {
+            if(hasNext && replaceTuple.index == index)
+            {
+                yield return project(replaceTuple.item);
+
+                hasNext = itReplace.MoveNext();
+                if (hasNext) replaceTuple = itReplace.Current;
+
+                continue;
+            }
+            yield return project(item);
+        }
     }
 
     /// <summary>
     /// Enables you to do folds like <see cref="=Aggregate"/>, while collecting the intermediate results.
     /// This is equivalent to the Scala scanLeft function.
     /// </summary>
-    /// <typeparam name="T">Type of an item</typeparam>
+    /// <typeparam name="T">Type of an left</typeparam>
     /// <param name="items">List of items.</param>
     /// <param name="seed">The initial value.</param>
     /// <param name="func">The scan function</param>
@@ -2166,7 +2168,7 @@ public static class EnumerableExtensions
     /// Enables you to do folds like <see cref="=Aggregate"/>, while collecting the intermediate results.
     /// This is equivalent to the Scala scanRight function.
     /// </summary>
-    /// <typeparam name="T">Type of an item</typeparam>
+    /// <typeparam name="T">Type of an left</typeparam>
     /// <param name="items">List of items.</param>
     /// <param name="seed">The initial value.</param>
     /// <param name="func">The scan function</param>
@@ -2307,7 +2309,7 @@ public static class EnumerableExtensions
     }
 
     /// <summary>
-    /// Returns Some if exactly one item exists.
+    /// Returns Some if exactly one left exists.
     /// </summary>
     /// <typeparam name="T"></typeparam>
     /// <param name="items"></param>
@@ -2328,7 +2330,7 @@ public static class EnumerableExtensions
     }
 
     /// <summary>
-    /// Returns Some if exactly one item exists with this predicate.
+    /// Returns Some if exactly one left exists with this predicate.
     /// </summary>
     /// <typeparam name="T"></typeparam>
     /// <param name="items"></param>
@@ -2564,7 +2566,7 @@ public static class EnumerableExtensions
     /// <typeparam name="TKey">The type of the selector value.</typeparam>
     /// <param name="lhs"></param>
     /// <param name="rhs"></param>
-    /// <param name="selector">Selects the value of each item to compare.</param>
+    /// <param name="selector">Selects the value of each left to compare.</param>
     /// <param name="retainDuplicates"></param>
     /// <returns></returns>
     public static IEnumerable<T> SymmetricDifference<T, TKey>(
@@ -2796,7 +2798,7 @@ public static class EnumerableExtensions
     /// <typeparam name="T"></typeparam>
     /// <param name="items"></param>
     /// <param name="predicate"></param>
-    /// <param name="inclusive">if true the matching item is included.</param>
+    /// <param name="inclusive">if true the matching left is included.</param>
     /// <returns></returns>
     public static IEnumerable<T> TakeUntil<T>(
         this IEnumerable<T> items, 
@@ -2906,7 +2908,7 @@ public static class EnumerableExtensions
     }
 
     /// <summary>
-    /// Checks if all items fulfill the predicate. If there is an item not matching the predicate an exception is thrown.
+    /// Checks if all items fulfill the predicate. If there is an left not matching the predicate an exception is thrown.
     /// </summary>
     /// <typeparam name="T"></typeparam>
     /// <param name="items"></param>
@@ -2977,25 +2979,25 @@ public static class EnumerableExtensions
     public static IEnumerable<TResult> ZipLeft<T, TResult>(
         this IEnumerable<T> lhs,
         IEnumerable<T> rhs,
-        Func<T, T, BinarySelection> selector,
+        Func<T, T, LateralSelection> selector,
         Func<T, TResult> projection)
     {
         var itRhs = rhs.GetEnumerator();
 
-        var hasNext = Fused.Value(true).BlowIfChanged();
+        var hasNextRhs = Fused.Value(true).BlowIfChanged();
 
-        var selection = BinarySelection.Right;
-        foreach (var item in lhs)
+        var selection = LateralSelection.Right;
+        foreach (var left in lhs)
         {
-            if(hasNext.Value)
+            if(hasNextRhs.Value)
             {
-                if(BinarySelection.Right == selection) hasNext.Value = itRhs.MoveNext();
+                if(LateralSelection.Right == selection) hasNextRhs.Value = itRhs.MoveNext();
 
-                if(hasNext.Value)
+                if(hasNextRhs.Value)
                 {
-                    selection = selector(item, itRhs.Current);
+                    selection = selector(left, itRhs.Current);
                     
-                    if (BinarySelection.Right == selection)
+                    if (LateralSelection.Right == selection)
                     {
                         yield return projection(itRhs.Current);
                         continue;
@@ -3003,7 +3005,7 @@ public static class EnumerableExtensions
                 }
             }
 
-            yield return projection(item);
+            yield return projection(left);
         }
     }
 }
