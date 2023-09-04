@@ -7,7 +7,11 @@ using System.Diagnostics.CodeAnalysis;
 
 public static class DictionaryValue
 {
-    public static DictionaryValue<TKey, TValue> New<TKey, TValue>(IEnumerable<KeyValuePair<TKey, TValue>> keyValues)
+    public static DictionaryValue<TKey, TValue> FromEnumerable<TKey, TValue>(IEnumerable<KeyValuePair<TKey, TValue>> keyValues)
+        where TKey : notnull
+        => new(keyValues);
+
+    public static DictionaryValue<TKey, TValue> New<TKey, TValue>(params KeyValuePair<TKey, TValue>[] keyValues)
         where TKey: notnull
         => new(keyValues);
 
