@@ -1,4 +1,5 @@
-﻿using System.Reflection;
+﻿using System.Diagnostics;
+using System.Reflection;
 
 namespace Foundation.Reflection;
 
@@ -6,13 +7,7 @@ public static class AssemblyExtensions
 {
     public static string? GetAssemblyFileVersion(this Assembly assembly)
     {
-        var attributes = assembly.GetCustomAttributes(typeof(AssemblyFileVersionAttribute), false);
-        if (attributes.Length == 1)
-        {
-            if(attributes[0] is AssemblyFileVersionAttribute attribute)
-                return attribute.Version;
-        }
-        return null;
+        return FileVersionInfo.GetVersionInfo(assembly.Location).FileVersion;
     }
 
     public static Result<string, FileNotFoundException> GetAssemblyDirectory(this Assembly assembly)
@@ -25,13 +20,7 @@ public static class AssemblyExtensions
 
     public static string? GetAssemblyProduct(this Assembly assembly)
     {
-        var attributes = assembly.GetCustomAttributes(typeof(AssemblyProductAttribute), false);
-        if (attributes.Length == 1)
-        {
-            if(attributes[0] is AssemblyProductAttribute attribute)
-                return attribute.Product;
-        }
-        return null;
+        return FileVersionInfo.GetVersionInfo(assembly.Location).ProductVersion;
     }
 
     public static string? GetAssemblyVersion(this Assembly assembly)
