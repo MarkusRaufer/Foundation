@@ -56,7 +56,7 @@ public static class EnumerableExtensions
     }
 
     /// <summary>
-    /// checks if all values of the selector are equal.
+    /// checks if all values of the predicate are equal.
     /// </summary>
     /// <typeparam name="T"></typeparam>
     /// <typeparam name="TSelector"></typeparam>
@@ -177,10 +177,10 @@ public static class EnumerableExtensions
     }
 
     /// <summary>
-    /// Correlates to lists by a selector.
+    /// Correlates to lists by a predicate.
     /// </summary>
     /// <typeparam name="T">Type of the items</typeparam>
-    /// <typeparam name="TKey">Type of the selector value.</typeparam>
+    /// <typeparam name="TKey">Type of the predicate value.</typeparam>
     /// <param name="lhs">Left list.</param>
     /// <param name="rhs">Right list.</param>
     /// <param name="selector">Selector funciton.</param>
@@ -321,9 +321,9 @@ public static class EnumerableExtensions
     /// returns doublets of a list. If there are e.g. three of an left, 2 will returned.
     /// </summary>
     /// <typeparam name="T">type of elements</typeparam>
-    /// <typeparam name="TSelector">type of selector value</typeparam>
+    /// <typeparam name="TSelector">type of predicate value</typeparam>
     /// <param name="items">list of elements</param>
-    /// <param name="selector">selector delegate</param>
+    /// <param name="selector">predicate delegate</param>
     /// <returns></returns>
     /// <exception cref="ArgumentNullException"></exception>
     public static IEnumerable<T> Duplicates<T, TSelector>(
@@ -577,7 +577,7 @@ public static class EnumerableExtensions
     /// The smaller list should be rhs.
     /// </summary>
     /// <typeparam name="T">The type of the elements.</typeparam>
-    /// <typeparam name="TKey">The type of the selector value which is used for comparison.</typeparam>
+    /// <typeparam name="TKey">The type of the predicate value which is used for comparison.</typeparam>
     /// <param name="lhs"></param>
     /// <param name="rhs"></param>
     /// <param name="selector"></param>
@@ -1431,7 +1431,7 @@ public static class EnumerableExtensions
     }
 
     /// <summary>
-    /// Returns the greatest left selected by the selector.
+    /// Returns the greatest left selected by the predicate.
     /// </summary>
     /// <typeparam name="T"></typeparam>
     /// <param name="items"></param>
@@ -1446,7 +1446,7 @@ public static class EnumerableExtensions
     }
 
     /// <summary>
-    /// Returns the min left selected by the selector.
+    /// Returns the min left selected by the predicate.
     /// </summary>
     /// <typeparam name="T"></typeparam>
     /// <typeparam name="TSelector"></typeparam>
@@ -1499,7 +1499,7 @@ public static class EnumerableExtensions
     }
 
     /// <summary>
-    /// Returns the min and max selected by the selector.
+    /// Returns the min and max selected by the predicate.
     /// </summary>
     /// <typeparam name="T"></typeparam>
     /// <typeparam name="TSelector"></typeparam>
@@ -1775,7 +1775,7 @@ public static class EnumerableExtensions
     }
 
     /// <summary>
-    /// Calls selector on all adjacent elements and returns all elements of the tuple.
+    /// Calls predicate on all adjacent elements and returns all elements of the tuple.
     /// </summary>
     /// <typeparam name="T"></typeparam>
     /// <param name="items"></param>
@@ -1794,7 +1794,7 @@ public static class EnumerableExtensions
     }
 
     /// <summary>
-    /// Calls selector on all adjacent elements and transforms each element into TReturn.
+    /// Calls predicate on all adjacent elements and transforms each element into TReturn.
     /// </summary>
     /// <typeparam name="T"></typeparam>
     /// <param name="items"></param>
@@ -2069,7 +2069,7 @@ public static class EnumerableExtensions
     /// </summary>
     /// <typeparam name="T">Type of the elements of items.</typeparam>
     /// <param name="items">List of items.</param>
-    /// <param name="predicate">The selector for replacements.</param>
+    /// <param name="predicate">The predicate for replacements.</param>
     /// <param name="replace">Is called when predicate is true.</param>
     /// <returns></returns>
     public static IEnumerable<T> Replace<T>(
@@ -2436,7 +2436,7 @@ public static class EnumerableExtensions
     }
 
     /// <summary>
-    /// Returns the object with the smallest selector value.
+    /// Returns the object with the smallest predicate value.
     /// </summary>
     /// <typeparam name="T"></typeparam>
     /// <param name="items"></param>
@@ -2450,7 +2450,7 @@ public static class EnumerableExtensions
     }
 
     /// <summary>
-    /// Returns the object with the smallest selector value.
+    /// Returns the object with the smallest predicate value.
     /// </summary>
     /// <typeparam name="T"></typeparam>
     /// <typeparam name="TSelector"></typeparam>
@@ -2563,7 +2563,7 @@ public static class EnumerableExtensions
     /// Returns the symmetric difference of two lists.
     /// </summary>
     /// <typeparam name="T"></typeparam>
-    /// <typeparam name="TKey">The type of the selector value.</typeparam>
+    /// <typeparam name="TKey">The type of the predicate value.</typeparam>
     /// <param name="lhs"></param>
     /// <param name="rhs"></param>
     /// <param name="selector">Selects the value of each left to compare.</param>
@@ -2963,49 +2963,5 @@ public static class EnumerableExtensions
                from secondItem in second
                where comparer(firstItem, secondItem)
                select resultSelector(firstItem, secondItem);
-    }
-
-    /// <summary>
-    /// Merges two lists. If lhs has more elements than rhs, the lhs elements are returned until the end.
-    /// If rhs has more elements than lhs, the rhs elements are skipped.
-    /// </summary>
-    /// <typeparam name="T"></typeparam>
-    /// <typeparam name="TResult"></typeparam>
-    /// <param name="lhs"></param>
-    /// <param name="rhs"></param>
-    /// <param name="selector"></param>
-    /// <param name="projection"></param>
-    /// <returns></returns>
-    public static IEnumerable<TResult> ZipLeft<T, TResult>(
-        this IEnumerable<T> lhs,
-        IEnumerable<T> rhs,
-        Func<T, T, LateralSelection> selector,
-        Func<T, TResult> projection)
-    {
-        var itRhs = rhs.GetEnumerator();
-
-        var hasNextRhs = Fused.Value(true).BlowIfChanged();
-
-        var selection = LateralSelection.Right;
-        foreach (var left in lhs)
-        {
-            if(hasNextRhs.Value)
-            {
-                if(LateralSelection.Right == selection) hasNextRhs.Value = itRhs.MoveNext();
-
-                if(hasNextRhs.Value)
-                {
-                    selection = selector(left, itRhs.Current);
-                    
-                    if (LateralSelection.Right == selection)
-                    {
-                        yield return projection(itRhs.Current);
-                        continue;
-                    }
-                }
-            }
-
-            yield return projection(left);
-        }
     }
 }
