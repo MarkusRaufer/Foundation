@@ -18,7 +18,7 @@ public static class ArrayValue
 /// That enables the comparison of two arrays.
 /// </summary>
 /// <typeparam name="T"></typeparam>
-public struct ArrayValue<T>
+public readonly struct ArrayValue<T>
     : ICloneable
     , IEnumerable<T>
     , IEquatable<ArrayValue<T>>
@@ -60,6 +60,11 @@ public struct ArrayValue<T>
 
     public override bool Equals([NotNullWhen(true)] object? obj) => obj is ArrayValue<T> other && Equals(other);
 
+    /// <summary>
+    /// All elements are compared with the elements of <paramref name="other"/>.
+    /// </summary>
+    /// <param name="other"></param>
+    /// <returns></returns>
     public bool Equals(T[]? other)
     {
         if (IsEmpty) return null == other || 0 == other.Length;
@@ -67,26 +72,43 @@ public struct ArrayValue<T>
         return null != other && _values.SequenceEqual(other);
     }
 
+    /// <summary>
+    /// All elements are compared with the elements of <paramref name="other"/>.
+    /// </summary>
+    /// <param name="other"></param>
+    /// <returns></returns>
     public bool Equals(ArrayValue<T> other)
     {
         if (IsEmpty) return other.IsEmpty;
-        if (other.IsEmpty) return false;
 
-        if (GetHashCode() != other.GetHashCode()) return false;
-
-        return _values.SequenceEqual(other._values);
+        return !other.IsEmpty 
+            && _hashCode == other._hashCode
+            && _values.SequenceEqual(other._values);
     }
 
+    /// <inheritdoc/>
     public IEnumerator<T> GetEnumerator() => _values.GetEnumerator<T>();
 
+    /// <inheritdoc/>
     IEnumerator IEnumerable.GetEnumerator() => _values.GetEnumerator();
 
+    /// <summary>
+    /// Hash code considers all elements.
+    /// </summary>
+    /// <returns></returns>
     public override int GetHashCode() => _hashCode;
 
-    public bool IsEmpty => null == _values || 0 == _values.Length;
+    /// <summary>
+    /// True if not initialized.
+    /// </summary>
+    public bool IsEmpty => _values is null;
 
+    /// <summary>
+    /// Number of elements.
+    /// </summary>
     public int Length => IsEmpty ? 0 : _values.Length;
-    
+
+    /// <inheritdoc/>
     public override string? ToString()
     {
         return IsEmpty ? "" : string.Join(_separator, _values);

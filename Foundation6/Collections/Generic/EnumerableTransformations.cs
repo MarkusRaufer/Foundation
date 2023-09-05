@@ -43,7 +43,7 @@ public static class EnumerableTransformations
 
     public static DictionaryValue<TKey, TValue> ToDictionaryValue<TKey, TValue>(
         this IEnumerable<KeyValuePair<TKey, TValue>> items) where TKey : notnull
-        => DictionaryValue.FromEnumerable(items);
+        => DictionaryValue.New(items);
 
     /// <summary>
     /// Creates a <see cref="IMultiValueMap{TKey, TValue}"/> from an enumerable.
