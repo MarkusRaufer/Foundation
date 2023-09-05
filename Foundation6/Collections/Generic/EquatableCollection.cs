@@ -52,6 +52,7 @@ public class EquatableCollection<T>
         CollectionChanged = new Event<Action<CollectionEvent<T>>>();
     }
 
+    /// <inheritdoc/>
     public void Add(T item)
     {
         item.ThrowIfNull();
@@ -63,6 +64,7 @@ public class EquatableCollection<T>
         CollectionChanged.Publish(new { State = CollectionActionState.Added, Element = item });
     }
 
+    /// <inheritdoc/>
     public void Clear()
     {
         _collection.Clear();
@@ -73,10 +75,13 @@ public class EquatableCollection<T>
 
     public Event<Action<CollectionEvent<T>>> CollectionChanged { get; private set; }
 
+    /// <inheritdoc/>
     public bool Contains(T item) => _collection.Contains(item);
 
+    /// <inheritdoc/>
     public void CopyTo(T[] array, int arrayIndex) => _collection.CopyTo(array, arrayIndex);
 
+    /// <inheritdoc/>
     public int Count => _collection.Count;
 
     protected int CreateHashCode()
@@ -109,8 +114,10 @@ public class EquatableCollection<T>
         return _collection.EqualsCollection(other._collection);
     }
 
+    /// <inheritdoc/>
     IEnumerator IEnumerable.GetEnumerator() => _collection.GetEnumerator();
 
+    /// <inheritdoc/>
     public IEnumerator<T> GetEnumerator() => _collection.GetEnumerator();
 
     /// <summary>
@@ -124,8 +131,10 @@ public class EquatableCollection<T>
         info.AddValue(nameof(_collection), _collection);
     }
 
+    /// <inheritdoc/>
     public bool IsReadOnly => _collection.IsReadOnly;
 
+    /// <inheritdoc/>
     public bool Remove(T item)
     {
         item.ThrowIfNull();

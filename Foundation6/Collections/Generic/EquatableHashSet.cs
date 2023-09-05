@@ -4,6 +4,11 @@ using Foundation;
 using Foundation.ComponentModel;
 using System.Runtime.Serialization;
 
+public static class EquatableHashSet
+{
+    public static EquatableHashSet<T> New<T>(IEnumerable<T> items) => new(items);
+}
+
 /// <summary>
 /// This hashset considers the equality of all elements <see cref="Equals"/>. The position of the elements are ignored.
 /// </summary>
@@ -27,9 +32,8 @@ public class EquatableHashSet<T>
     /// <summary>
     /// 
     /// </summary>
-    /// <param name="collection">EnumerableCounter is needed to detect wether the collection contains duplicates.
-    /// Use T[], Collection<typeparamref name="T"/> or List<typeparamref name="T"/></param>
-    public EquatableHashSet(IEnumerable<T> collection) : base(collection)
+    /// <param name="items">Items are added to the hashset.</param>
+    public EquatableHashSet(IEnumerable<T> items) : base(items)
     {        
         _hashCode = CreateHashCode();
         CollectionChanged = new Event<Action<CollectionEvent<T>>>();
@@ -50,7 +54,7 @@ public class EquatableHashSet<T>
     /// <summary>
     /// 
     /// </summary>
-    /// <param name="collection">EnumerableCounter is needed to detect wether the collection contains duplicates.
+    /// <param name="collection">EnumerableCounter is needed to detect wether the items contains duplicates.
     /// Use T[], Collection<typeparamref name="T"/> or List<typeparamref name="T"/></param>
     /// <param name="comparer"></param>
     public EquatableHashSet(IEnumerable<T> collection, IEqualityComparer<T>? comparer) : base(collection, comparer)
@@ -72,10 +76,7 @@ public class EquatableHashSet<T>
         CollectionChanged = new Event<Action<CollectionEvent<T>>>();
     }
 
-    /// <summary>
-    /// Adds an item to the hashset.
-    /// </summary>
-    /// <param name="item"></param>
+    /// <inheritdoc/>
     public new bool Add(T item)
     {
         var added = base.Add(item.ThrowIfNull());
@@ -90,6 +91,7 @@ public class EquatableHashSet<T>
         return false;
     }
 
+    /// <inheritdoc/>
     public new void Clear()
     {
         base.Clear();
@@ -111,6 +113,11 @@ public class EquatableHashSet<T>
 
     protected static int DefaultHashCode { get; } = typeof(EquatableHashSet<T>).GetHashCode();
 
+    /// <summary>
+    /// Checks the equality of all elements. The position of the elements are ignored.
+    /// </summary>
+    /// <param name="obj"></param>
+    /// <returns></returns>
     public override bool Equals(object? obj) => Equals(obj as EquatableHashSet<T>);
 
     /// <summary>
@@ -134,7 +141,7 @@ public class EquatableHashSet<T>
     }
 
     /// <summary>
-    /// Considers values only. Position of the values are ignored.
+    /// Considers all elements. Position of the elements are ignored.
     /// </summary>
     /// <returns></returns>
     public override int GetHashCode() => _hashCode;
@@ -144,6 +151,7 @@ public class EquatableHashSet<T>
         base.GetObjectData(info, context);
     }
 
+    /// <inheritdoc/>
     public new bool Remove(T item)
     {
         item.ThrowIfNull();

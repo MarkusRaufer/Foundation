@@ -57,6 +57,7 @@ public class EquatableDictionary<TKey, TValue>
         CollectionChanged = new Event<Action<CollectionEvent<KeyValuePair<TKey, TValue>>>>();
     }
 
+    /// <inheritdoc/>
     public TValue this[TKey key]
     {
         get => _keyValues[key];
@@ -81,6 +82,7 @@ public class EquatableDictionary<TKey, TValue>
         }
     }
 
+    /// <inheritdoc/>
     public void Add(TKey key, TValue value)
     {
         key.ThrowIfNull();
@@ -88,6 +90,7 @@ public class EquatableDictionary<TKey, TValue>
         Add(Pair.New(key, value));
     }
 
+    /// <inheritdoc/>
     public void Add(KeyValuePair<TKey, TValue> keyValue)
     {
         keyValue.ThrowIfKeyIsNull();
@@ -99,7 +102,11 @@ public class EquatableDictionary<TKey, TValue>
         CollectionChanged.Publish(new { State = CollectionActionState.Added, Element = keyValue });
     }
 
-    public void Add(IEnumerable<KeyValuePair<TKey, TValue>> keyValues)
+    /// <summary>
+    /// Adds a list of <see cref="=KeyValuePair<typeparamref name="TKey"/>, <typeparamref name="TValue"/>" to the dictionary./>
+    /// </summary>
+    /// <param name="keyValues"></param>
+    public void AddRange(IEnumerable<KeyValuePair<TKey, TValue>> keyValues)
     {
         keyValues.ThrowIfNull();
 
@@ -113,6 +120,7 @@ public class EquatableDictionary<TKey, TValue>
 
     }
 
+    /// <inheritdoc/>
     public void Clear()
     {
         _keyValues.Clear();
@@ -123,12 +131,16 @@ public class EquatableDictionary<TKey, TValue>
 
     public Event<Action<CollectionEvent<KeyValuePair<TKey, TValue>>>> CollectionChanged { get; private set; }
 
+    /// <inheritdoc/>
     public bool Contains(KeyValuePair<TKey, TValue> item) => _keyValues.Contains(item);
 
+    /// <inheritdoc/>
     public bool ContainsKey(TKey key) => _keyValues.ContainsKey(key);
 
+    /// <inheritdoc/>
     public void CopyTo(KeyValuePair<TKey, TValue>[] array, int arrayIndex) => _keyValues.CopyTo(array, arrayIndex);
 
+    /// <inheritdoc/>
     public int Count => _keyValues.Count;
 
     protected int CreateHashCode()
@@ -161,8 +173,10 @@ public class EquatableDictionary<TKey, TValue>
         return _keyValues.IsEqualToSet(other);
     }
 
+    /// <inheritdoc/>
     IEnumerator IEnumerable.GetEnumerator() => _keyValues.GetEnumerator();
 
+    /// <inheritdoc/>
     public IEnumerator<KeyValuePair<TKey, TValue>> GetEnumerator() => _keyValues.GetEnumerator();
 
     /// <summary>
@@ -176,10 +190,13 @@ public class EquatableDictionary<TKey, TValue>
         info.AddValue(nameof(_keyValues), _keyValues);
     }
 
+    /// <inheritdoc/>
     public bool IsReadOnly => _keyValues.IsReadOnly;
 
+    /// <inheritdoc/>
     public ICollection<TKey> Keys => _keyValues.Keys;
 
+    /// <inheritdoc/>
     public bool Remove(TKey key)
     {
         if (_keyValues.Remove(key))
@@ -194,6 +211,7 @@ public class EquatableDictionary<TKey, TValue>
         return false;
     }
 
+    /// <inheritdoc/>
     public bool Remove(KeyValuePair<TKey, TValue> item)
     {
         if (_keyValues.Remove(item))
@@ -205,7 +223,9 @@ public class EquatableDictionary<TKey, TValue>
         return false;
     }
 
+    /// <inheritdoc/>
     public bool TryGetValue(TKey key, [MaybeNullWhen(false)] out TValue value) => _keyValues.TryGetValue(key, out value);
 
+    /// <inheritdoc/>
     public ICollection<TValue> Values => _keyValues.Values;
 }
