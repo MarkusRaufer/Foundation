@@ -16,6 +16,16 @@ public static class NonEmptySetValue
     /// <param name="values"></param>
     /// <returns></returns>
     /// <exception cref="ArgumentOutOfRangeException">Is thrown if values is empty.</exception>
+    public static NonEmptySetValue<T> New<T>(IEnumerable<T> values)
+       => new(values);
+
+    /// <summary>
+    /// Creates a new <see cref="=NonEmptyUniqueValues<typeparamref name="T"/>"/> from values.
+    /// </summary>
+    /// <typeparam name="T">The type of the values.</typeparam>
+    /// <param name="values"></param>
+    /// <returns></returns>
+    /// <exception cref="ArgumentOutOfRangeException">Is thrown if values is empty.</exception>
     public static NonEmptySetValue<T> New<T>(params T[] values)
         => new(values);
 }
@@ -43,7 +53,7 @@ public readonly struct NonEmptySetValue<T>
     /// </summary>
     /// <param name="values">The unique values. Duplicates are ignored.</param>
     /// <exception cref="ArgumentOutOfRangeException">Is thrown if values is empty.</exception>
-    public NonEmptySetValue(HashSet<T> values)
+    private NonEmptySetValue(HashSet<T> values)
     {
         _values = values.ThrowIfNullOrEmpty();
         if(_values.Count == 0) throw new ArgumentOutOfRangeException(nameof(values), $"{nameof(values)} must have at least one element");
@@ -61,11 +71,23 @@ public readonly struct NonEmptySetValue<T>
     {
     }
 
+    /// <summary>
+    /// Considers the equality and number of all elements <see cref="Equals"/>. The position of the elements are ignored.
+    /// </summary>
+    /// <param name="left"></param>
+    /// <param name="right"></param>
+    /// <returns></returns>
     public static bool operator ==(NonEmptySetValue<T> left, NonEmptySetValue<T> right)
     {
         return left.Equals(right);
     }
 
+    /// <summary>
+    /// Considers the equality and number of all elements <see cref="Equals"/>. The position of the elements are ignored.
+    /// </summary>
+    /// <param name="left"></param>
+    /// <param name="right"></param>
+    /// <returns></returns>
     public static bool operator !=(NonEmptySetValue<T> left, NonEmptySetValue<T> right)
     {
         return !(left == right);
@@ -73,13 +95,11 @@ public readonly struct NonEmptySetValue<T>
 
     public static implicit operator NonEmptySetValue<T>(T[] values) => new(values);
 
-    /// <summary>
-    /// Number of values.
-    /// </summary>
+    /// <inheritdoc/>
     public int Count => _values.Count;
 
     /// <summary>
-    /// considers the equality and number of all elements <see cref="Equals"/>. The position of the elements are ignored.
+    /// Considers the equality and number of all elements <see cref="Equals"/>. The position of the elements are ignored.
     /// </summary>
     /// <param name="obj"></param>
     /// <returns></returns>
@@ -87,7 +107,7 @@ public readonly struct NonEmptySetValue<T>
         => obj is NonEmptySetValue<T> other && Equals(other);
 
     /// <summary>
-    /// considers the equality and number of all elements <see cref="Equals"/>. The position of the elements are ignored.
+    /// Considers the equality and number of all elements <see cref="Equals"/>. The position of the elements are ignored.
     /// </summary>
     /// <param name="other"></param>
     /// <returns></returns>
@@ -98,11 +118,20 @@ public readonly struct NonEmptySetValue<T>
         return _values.SetEquals(other._values);
     }
 
+    /// Hash code considers all elements.
     public override int GetHashCode() => _hashCode;
 
+    /// <inheritdoc/>
     public IEnumerator<T> GetEnumerator() => _values.GetEnumerator();
 
+    /// <inheritdoc/>
     IEnumerator IEnumerable.GetEnumerator() => _values.GetEnumerator();
 
+    /// <summary>
+    /// Returns true if not initialized.
+    /// </summary>
+    public bool IsEmpty => _values is null;
+
+    /// <inheritdoc/>
     public override string ToString() => string.Join(", ", _values);
 }

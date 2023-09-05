@@ -61,10 +61,7 @@ public class SortedList<T>
     /// <inheritdoc/>
     public T this[int index] => _list[index];
 
-    /// <summary>
-    /// Adds an element into the <see cref="SortedList{T}"./>
-    /// </summary>
-    /// <param name="item"></param>
+    /// <inheritdoc/>
     public void Add(T item)
     {
         var index = null == _comparer
