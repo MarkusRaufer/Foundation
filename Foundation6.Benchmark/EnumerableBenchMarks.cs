@@ -6,7 +6,6 @@ namespace Foundation.Benchmark
     [MemoryDiagnoser]
     public class EnumerableBenchMarks
     {
-        //private readonly List<int> _list = new();
         private readonly List<int> _lhs = new();
         private readonly List<int> _rhs = new();
         private IComparer<int> _comparer = Comparer<int>.Default;
@@ -33,7 +32,6 @@ namespace Foundation.Benchmark
         [GlobalCleanup]
         public void Cleanup()
         {
-            //_list.Clear();
             _lhs.Clear();
             _rhs.Clear();
         }
