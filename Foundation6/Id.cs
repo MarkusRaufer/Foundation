@@ -52,10 +52,7 @@ public readonly struct Id
 
     public override bool Equals(object? obj) => obj is Id other && Equals(other);
 
-    public bool Equals(Id other)
-    {
-        return _hashCode == other._hashCode && 0 == CompareTo(other);
-    }
+    public bool Equals(Id other) => _hashCode == other._hashCode && 0 == CompareTo(other);
 
     public override int GetHashCode() => _hashCode;
 
