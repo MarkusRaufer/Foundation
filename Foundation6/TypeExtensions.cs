@@ -178,6 +178,18 @@ public static class TypeExtensions
         }
     }
 
+    public static bool IsOfGenericType(this Type type, Type other)
+    {
+        if (!type.IsGenericType || !other.IsGenericType) return false;
+
+        return type.GetGenericTypeDefinition() == other.GetGenericTypeDefinition();
+    }
+
+    public static bool IsOfGenericType<T>(this Type type)
+    {
+        return IsOfGenericType(type, typeof(T));
+    }
+
     public static bool IsScalar(this Type? type)
     {
         ArgumentNullException.ThrowIfNull(type);
