@@ -112,6 +112,15 @@ public readonly struct NamedId
 
         return string.IsNullOrEmpty(format) ? $"{_name}:{_value}" : string.Format(provider, format, _value);
     }
+
+    public string ValueToString() => $"{_value}";
+
+    public string ValueToString(string? format, IFormatProvider? formatProvider)
+    {
+        var provider = formatProvider ?? CultureInfo.InvariantCulture;
+
+        return string.IsNullOrEmpty(format) ? $"{_value}" : string.Format(provider, format, _value);
+    }
 }
 
 /// <summary>
