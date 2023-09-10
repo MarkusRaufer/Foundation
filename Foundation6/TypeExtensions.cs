@@ -1,21 +1,27 @@
 ﻿namespace Foundation;
 
 using System.Collections;
+using System.Runtime.CompilerServices;
 using System.Text;
 
 public static class TypeExtensions
 {
+    private readonly static Type _anyType = typeof(Any);
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static int Compare(this Type type, Type other, Func<Type, IComparable> selector)
     {
         return selector(type).CompareTo(selector(other));
     }
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static int Compare<T>(this Type type, Type other, Func<Type, T> selector)
         where T : IComparable<T>
     {
         return selector(type).CompareTo(selector(other));
     }
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static Type CreateGenericType(this Type objectType, params Type[] genericTypeArguments)
     {
         if (!objectType.IsGenericType)
@@ -27,12 +33,14 @@ public static class TypeExtensions
         return objectType.MakeGenericType(genericTypeArguments);
     }
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static Type? GetAssignableInterface<T>(this Type self)
     {
         var interfaceType = typeof(T);
         return GetAssignableInterface(self, interfaceType);
     }
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static Type? GetAssignableInterface(this Type self, Type interfaceType)
     {
         foreach (var type in self.GetInterfaces())
@@ -44,6 +52,7 @@ public static class TypeExtensions
         return null;
     }
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static object? GetDefault(this Type type)
     {
         if (type.IsValueType)
@@ -52,6 +61,7 @@ public static class TypeExtensions
         return null;
     }
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static IEnumerable<Type> GetGenericInterfaceTypeArguments(this Type self, Type interfaceType)
     {
         foreach (var type in self.GetInterfaces())
@@ -73,6 +83,7 @@ public static class TypeExtensions
     /// </summary>
     /// <param name="type"></param>
     /// <returns></returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static string GetNameWithoutGenericArity(this Type type)
     {
         var sb = new StringBuilder();
@@ -85,6 +96,7 @@ public static class TypeExtensions
         return sb.ToString();
     }
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static IEnumerable<Type> GetNestedParentTypes(this Type? type)
     {
         if (null == type) throw new ArgumentNullException(nameof(type));
@@ -99,28 +111,69 @@ public static class TypeExtensions
         }
     }
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static bool HasAnyGenericArgument(this Type type)
+    {
+        var args = type.GetGenericArguments();
+        if (0 == args.Length) return false;
+
+        return _anyType == args[0];
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static bool HasInterface<T>(this Type type)
     {
         return HasInterface(type, typeof(T));
     }
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static bool HasInterface(this Type type, Type @interface)
     {
         return @interface.IsAssignableFrom(type);
     }
 
     /// <summary>
-    /// Returns true, if the object obj implements the generic interface of type type.
+    /// Returns true, if type implements the interface type.
     /// </summary>
-    /// <param name="type">Type of the object, which implements the generic interface.</param>
-    /// <param name="interfaceType">Type of the generic interface. E.g. typeof(IEquatable{})</param>
+    /// <param name="type">The type, which implements a specific interface.</param>
+    /// <param name="interfaceType">Type of interface. You can also use generic interface types E.g. typeof(IEquatable{})</param>
     /// <returns></returns>
-    public static bool ImplementsGenericInterface(this Type type, Type interfaceType)
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static bool ImplementsInterface(this Type type, Type interfaceType)
     {
-        return type.GetInterfaces()
-                   .Any(x => x.IsGenericType && x.GetGenericTypeDefinition() == interfaceType);
+        var isGenericTypeDefinition = interfaceType.IsGenericTypeDefinition;
+
+        foreach (var iface in type.GetInterfaces())
+        {
+            if(interfaceType.IsGenericTypeDefinition && iface.IsGenericType && interfaceType == iface.GetGenericTypeDefinition()) return true;
+
+            if (interfaceType == iface) return true;
+        }
+
+        return false;
     }
 
+    /// <summary>
+    /// Returns all inherted types of type. If includingInterfaces is true all implemented interfaces are also returned.
+    /// </summary>
+    /// <param name="type"></param>
+    /// <param name="includingInterfaces">If true all implemented interfaces are also returned.</param>
+    /// <returns></returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static IEnumerable<Type> GetInheritedTypes(this Type type, bool includingInterfaces = false)
+    {
+        foreach (var t in type.Assembly.GetTypes())
+        {
+            if (t.IsSubclassOf(type)) yield return t;
+        }
+
+        if(!includingInterfaces) yield break;
+
+        foreach (var i in type.GetInterfaces())
+            yield return i;
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static bool IsAction(Type? type)
     {
         if (null == type) return false;
@@ -137,11 +190,13 @@ public static class TypeExtensions
         return generic == typeof(Action<>);
     }
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static bool IsEnumerable(this Type type)
     {
         return (typeof(string) != type) && typeof(IEnumerable).IsAssignableFrom(type);
     }
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static bool IsLambda(this Type? type)
     {
         var generic = type switch
@@ -157,6 +212,7 @@ public static class TypeExtensions
         return generic.Name.StartsWith("Func`");
     }
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static bool IsNumeric(this Type? type)
     {
         switch (Type.GetTypeCode(type))
@@ -178,6 +234,7 @@ public static class TypeExtensions
         }
     }
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static bool IsOfGenericType(this Type type, Type other)
     {
         if (!type.IsGenericType || !other.IsGenericType) return false;
@@ -185,11 +242,13 @@ public static class TypeExtensions
         return type.GetGenericTypeDefinition() == other.GetGenericTypeDefinition();
     }
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static bool IsOfGenericType<T>(this Type type)
     {
         return IsOfGenericType(type, typeof(T));
     }
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static bool IsScalar(this Type? type)
     {
         ArgumentNullException.ThrowIfNull(type);
@@ -197,6 +256,7 @@ public static class TypeExtensions
         return type.IsPrimitive || TypeHelper.ScalarTypes(true).Any(x => x == type);
     }
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static bool IsScalarArrayType(this Type? type)
     {
         ArgumentNullException.ThrowIfNull(type);
@@ -206,6 +266,7 @@ public static class TypeExtensions
         return type.GetElementType().IsScalar();
     }
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static bool IsScalarEnumerableType(this Type? type)
     {
         ArgumentNullException.ThrowIfNull(type);
@@ -216,6 +277,7 @@ public static class TypeExtensions
         return type.GenericTypeArguments.All(t => t.IsScalar());
     }
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static string ToGenericsString(this Type? type)
     {
         ArgumentNullException.ThrowIfNull(type);
