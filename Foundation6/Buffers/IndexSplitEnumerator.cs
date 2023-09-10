@@ -1,7 +1,4 @@
-﻿using System;
-using System.Reflection;
-
-namespace Foundation.Buffers;
+﻿namespace Foundation.Buffers;
 
 /// <summary>
 /// Splits a string into parts by using indices and lengths. An index means where to split the string and the lenght means how many characters starting from index.

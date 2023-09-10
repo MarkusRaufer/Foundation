@@ -292,6 +292,11 @@ public static class ReadOnlySpanExtensions
         return new SplitEnumerator<T>(span, separators, notFoundReturnsNothing);
     }
 
+    public static StringSplitEnumerator SplitAtPart(this ReadOnlySpan<char> span, ReadOnlySpan<char> part, StringComparison comparison)
+    {
+        return new StringSplitEnumerator(span, part, comparison);
+    }
+
     public static ReadOnlySpan<char> TrimAll(this ReadOnlySpan<char> span, char value)
     {
         var startIndex = span.IndexOf(value);
