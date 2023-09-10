@@ -141,8 +141,6 @@ public static class TypeExtensions
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static bool ImplementsInterface(this Type type, Type interfaceType)
     {
-        var isGenericTypeDefinition = interfaceType.IsGenericTypeDefinition;
-
         foreach (var iface in type.GetInterfaces())
         {
             if(interfaceType.IsGenericTypeDefinition && iface.IsGenericType && interfaceType == iface.GetGenericTypeDefinition()) return true;
