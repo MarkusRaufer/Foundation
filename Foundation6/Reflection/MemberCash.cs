@@ -4,11 +4,9 @@ using System.Reflection;
 
 namespace Foundation.Reflection;
 
-public abstract class MemberCash<TInfo> where TInfo : MemberInfo
+public abstract class MemberCash<TInfo> : MemberCashBase<TInfo>
+    where TInfo : MemberInfo
 {
-    private readonly string[]? _memberNames;
-    private TInfo[]? _members;
-
     public MemberCash(Type memberType)
     {
         MemberType = memberType.ThrowIfNull();
@@ -16,94 +14,41 @@ public abstract class MemberCash<TInfo> where TInfo : MemberInfo
 
     public MemberCash(Type memberType, TInfo[] members) : this(memberType)
     {
-        _members = members.ThrowIfEmpty();
+        Members = members.ThrowIfEmpty();
     }
 
     public MemberCash(Type memberType, string[] memberNames) : this(memberType)
     {
-        _memberNames = memberNames.ThrowIfEmpty();
+        MemberNames = memberNames.ThrowIfEmpty();
     }
-
-    protected abstract TInfo GetMemberFromLambda(LambdaExpression lambda);
-
-    public IEnumerable<TInfo> Members
-    {
-        get
-        {
-            if (null != _members) return _members;
-
-            var members = GetTypeMembers();
-            if (null == _memberNames)
-            {
-                _members = null == MemberFilter
-                    ? members.ToArray()
-                    : members.Where(MemberFilter).ToArray();
-
-                return _members;
-            }
-            _members = members.Where(member => _memberNames.Contains(member.Name)).ToArray();
-
-            return _members;
-        }
-    }
-
-    protected abstract IEnumerable<TInfo> GetTypeMembers();
-
-    protected Func<TInfo, bool> MemberFilter { get; set; } = _ => true;
 
     public Type MemberType { get; }
 }
 
-public abstract class MemberCash<T, TInfo> where TInfo : MemberInfo
+public abstract class MemberCash<T, TInfo> : MemberCashBase<TInfo>
+    where TInfo : MemberInfo
 {
-    private readonly string[]? _memberNames;
-    private TInfo[]? _members;
-
     public MemberCash()
     {
     }
 
     public MemberCash(TInfo[] members)
     {
-        _members = members.ThrowIfEmpty();
+        Members = members.ThrowIfEmpty();
     }
 
     public MemberCash(string[] memberNames)
     {
-        _memberNames = memberNames.ThrowIfEmpty();
+        MemberNames = memberNames.ThrowIfEmpty();
     }
 
     public MemberCash(params Expression<Func<T, object>>[] members)
     {
         if (0 == members.Length) throw new ArgumentOutOfRangeException(nameof(members));
 
-        _members = members.Cast<LambdaExpression>()
-                          .Select(GetMemberFromLambda)
-                          .Where(MemberFilter)
-                          .ToArray();
+        Members = members.Cast<LambdaExpression>()
+                         .Select(GetMemberFromLambda)
+                         .Where(MemberFilter)
+                         .ToArray();
     }
-
-    protected abstract TInfo GetMemberFromLambda(LambdaExpression lambda);
-
-    public IEnumerable<TInfo> GetMembers()
-    {
-        if (null != _members) return _members;
-
-        var members = GetTypeMembers();
-        if(null == _memberNames)
-        {
-            _members = null == MemberFilter 
-                ? members.ToArray() 
-                : members.Where(MemberFilter).ToArray();
-
-            return _members;
-        }
-        _members = members.Where(member => _memberNames.Contains(member.Name)).ToArray();
-
-        return _members;
-    }
-
-    protected abstract IEnumerable<TInfo> GetTypeMembers();
-
-    protected Func<TInfo, bool> MemberFilter { get; set; } = _ => true;
 }

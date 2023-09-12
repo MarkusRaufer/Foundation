@@ -41,7 +41,7 @@
         }
 
         /// <summary>
-        /// Replaces existing key values of dictionary with the values of replacements.
+        /// Returns all key values from dictionary. Existing key values of dictionary are replaced by the values of replacements.
         /// </summary>
         /// <typeparam name="TKey"></typeparam>
         /// <typeparam name="TValue"></typeparam>
