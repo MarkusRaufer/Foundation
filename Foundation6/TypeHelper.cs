@@ -40,11 +40,22 @@ public static class TypeHelper
     /// <summary>
     /// returns the type from the short name. e.g. int, string.
     /// </summary>
-    /// <param name="shortTypeName"></param>
+    /// <param name="shortTypeName">The name of the type.</param>
     /// <returns></returns>
-    public static Type? GetScalarType(string shortTypeName, bool whithoutPrimitives = false)
+    public static Type? GetScalarType(string shortTypeName)
     {
-        var fullName = GetScalarTypeFullName(shortTypeName, whithoutPrimitives);
+        return GetScalarType(shortTypeName, true);
+    }
+
+    /// <summary>
+    /// returns the type from the short name. e.g. int, string.
+    /// </summary>
+    /// <param name="shortTypeName">The name of the type.</param>
+    /// <param name="whithPrimitives">Including primitive types.</param>
+    /// <returns></returns>
+    public static Type? GetScalarType(string shortTypeName, bool whithPrimitives)
+    {
+        var fullName = GetScalarTypeFullName(shortTypeName, whithPrimitives);
         if (null == fullName) return null;
 
         return Type.GetType(fullName);
@@ -55,9 +66,9 @@ public static class TypeHelper
     /// </summary>
     /// <param name="shortTypeName">e.g. DateTime, decimal, string.</param>
     /// <returns></returns>
-    public static string? GetScalarTypeFullName(string shortTypeName, bool whithoutPrimitives = false)
+    public static string? GetScalarTypeFullName(string shortTypeName, bool whithPrimitives = true)
     {
-        if(!whithoutPrimitives)
+        if(whithPrimitives)
         {
             var fullName = GetPrimitiveTypeFullName(shortTypeName);
             if (null != fullName) return fullName;
