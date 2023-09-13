@@ -1,5 +1,6 @@
 ﻿using Foundation.Collections.Generic;
 using Foundation.Reflection;
+using System.Diagnostics.Metrics;
 using System.Reflection;
 
 namespace Foundation.IO
@@ -27,12 +28,19 @@ namespace Foundation.IO
                 var memberType = member.GetMemberType();
                 if (memberType is null) throw new ArgumentException($"member {member} not found");
 
-                var value = reader.ReadFromType(memberType);
+                var value = reader.ReadSystemType(memberType);
                 yield return (member, value);
             }
         }
 
-        public static object ReadFromType(this BinaryReader reader, Type type)
+        /// <summary>
+        /// Reads from a type which is included in the System namespace. E.g. bool, byte, char, ...
+        /// </summary>
+        /// <param name="reader">An instance of a <see cref="BinaryReader"/></param>
+        /// <param name="type">Type is included in the System namesapce.</param>
+        /// <returns></returns>
+        /// <exception cref="NotImplementedException"></exception>
+        public static object ReadSystemType(this BinaryReader reader, Type type)
         {
             return type switch
             {
@@ -60,13 +68,13 @@ namespace Foundation.IO
             };
         }
 
-        public static IEnumerable<(Type type, object value)> ReadFromTypes(
+        public static IEnumerable<(Type type, object value)> ReadSystemTypes(
             this BinaryReader reader,
             IEnumerable<Type> types)
         {
             foreach (var type in types)
             {
-                yield return (type, reader.ReadFromType(type));
+                yield return (type, reader.ReadSystemType(type));
             }
         }
 
@@ -82,6 +90,11 @@ namespace Foundation.IO
             return new TimeOnly(ticks);
         }
 
+        /// <summary>
+        /// Reads the values from stream and sets the values of the members of obj.
+        /// </summary>
+        /// <param name="reader"></param>
+        /// <param name="obj"></param>
         public static void ReadToObject(this BinaryReader reader, object obj)
         {
             obj.ThrowIfNull();
@@ -89,15 +102,27 @@ namespace Foundation.IO
             ReadToObject(reader, obj, obj.GetType().GetMembers());
         }
 
+        /// <summary>
+        /// Reads the values from stream and sets the values of the members of obj.
+        /// </summary>
+        /// <param name="reader"></param>
+        /// <param name="obj">An instance of an object.</param>
+        /// <param name="memberNames">The names of the objects members.</param>
         public static void ReadToObject(this BinaryReader reader, object obj, IEnumerable<string> memberNames)
         {
-            obj.ThrowIfNull();
+            var type = obj.ThrowIfNull().GetType();
 
-            var type = obj.GetType();
             var members = memberNames.FilterMap(name => type.GetMember(name).FirstAsOption());
             ReadToObject(reader, obj, members);
         }
 
+        /// <summary>
+        /// Reads the values from stream and sets the values of the members of obj.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="reader"></param>
+        /// <param name="obj"></param>
+        /// <param name="members"></param>
         public static void ReadToObject<T>(this BinaryReader reader, T? obj, IEnumerable<MemberInfo> members)
         {
             obj.ThrowIfNull();
@@ -105,6 +130,14 @@ namespace Foundation.IO
             foreach (var (member, value) in ReadFromMembers(reader, members))
             {
                 ReflectionHelper.SetValue(obj, member, value);
+            }
+        }
+
+        public static IEnumerable<(MemberInfo member, object value)> ReadType(this BinaryReader reader, Type type)
+        {
+            foreach (var (member, value) in ReadFromMembers(reader, type.GetMembers()))
+            {
+                
             }
         }
     }
