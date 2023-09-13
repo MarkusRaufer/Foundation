@@ -7,22 +7,22 @@ namespace Foundation.Reflection;
 public abstract class MemberCash<TInfo> : MemberCashBase<TInfo>
     where TInfo : MemberInfo
 {
-    public MemberCash(Type memberType)
+    public MemberCash(Type type)
     {
-        MemberType = memberType.ThrowIfNull();
+        Type = type.ThrowIfNull();
     }
 
-    public MemberCash(Type memberType, TInfo[] members) : this(memberType)
+    public MemberCash(Type type, TInfo[] members) : this(type)
     {
         Members = members.ThrowIfEmpty();
     }
 
-    public MemberCash(Type memberType, string[] memberNames) : this(memberType)
+    public MemberCash(Type type, string[] memberNames) : this(type)
     {
         MemberNames = memberNames.ThrowIfEmpty();
     }
 
-    public Type MemberType { get; }
+    public Type Type { get; }
 }
 
 public abstract class MemberCash<T, TInfo> : MemberCashBase<TInfo>

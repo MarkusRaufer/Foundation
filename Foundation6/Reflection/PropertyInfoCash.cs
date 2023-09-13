@@ -6,15 +6,15 @@ namespace Foundation.Reflection;
 
 public class PropertyInfoCash : MemberCash<PropertyInfo>
 {
-    public PropertyInfoCash(Type memberType) : base(memberType)
+    public PropertyInfoCash(Type type) : base(type)
     {
     }
 
-    public PropertyInfoCash(Type memberType, PropertyInfo[] members) : base(memberType, members)
+    public PropertyInfoCash(Type type, PropertyInfo[] members) : base(type, members)
     {
     }
 
-    public PropertyInfoCash(Type memberType, string[] memberNames) : base(memberType, memberNames)
+    public PropertyInfoCash(Type type, string[] memberNames) : base(type, memberNames)
     {
     }
 
@@ -28,10 +28,7 @@ public class PropertyInfoCash : MemberCash<PropertyInfo>
             : throw new InvalidArgumentException($"{member.Member}");
     }
 
-    protected override IEnumerable<PropertyInfo> GetTypeMembers()
-    {
-        return MemberType.GetProperties();
-    }
+    protected override IEnumerable<PropertyInfo> GetTypeMembers() => Type.GetProperties();
 }
 
 public class PropertyInfoCash<T> : MemberCash<T, PropertyInfo>
@@ -62,8 +59,5 @@ public class PropertyInfoCash<T> : MemberCash<T, PropertyInfo>
             : throw new InvalidArgumentException($"{member.Member}");
     }
 
-    protected override IEnumerable<PropertyInfo> GetTypeMembers()
-    {
-        return typeof(T).GetProperties();
-    }
+    protected override IEnumerable<PropertyInfo> GetTypeMembers() => typeof(T).GetProperties();
 }

@@ -26,6 +26,10 @@ public abstract class MemberCashBase<TInfo> where TInfo : MemberInfo
         return Members;
     }
 
+    /// <summary>
+    /// Return type of meta information you want. Like PropertyInfo, FieldInfo,...
+    /// </summary>
+    /// <returns></returns>
     protected abstract IEnumerable<TInfo> GetTypeMembers();
 
     protected Func<TInfo, bool> MemberFilter { get; set; } = _ => true;

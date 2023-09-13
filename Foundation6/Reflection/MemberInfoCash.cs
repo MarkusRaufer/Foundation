@@ -4,6 +4,31 @@ using System.Reflection;
 
 namespace Foundation.Reflection;
 
+public class MemberInfoCash : MemberCash<MemberInfo>
+{
+    public MemberInfoCash(Type type) : base(type, type.GetProperties())
+    {
+    }
+
+    public MemberInfoCash(Type type, MemberInfo[] members) : base(type, members)
+    {
+    }
+
+    public MemberInfoCash(Type type, string[] memberNames) : base(type, memberNames)
+    {
+    }
+
+    protected override MemberInfo GetMemberFromLambda(LambdaExpression lambda)
+    {
+        var member = lambda.GetMember();
+        if (null == member) throw new InvalidArgumentException($"{lambda}");
+
+        return member.Member;
+    }
+
+    protected override IEnumerable<MemberInfo> GetTypeMembers() => Type.GetMembers();
+}
+
 public class MemberInfoCash<T> : MemberCash<T, MemberInfo>
 {
     public MemberInfoCash() : base()
@@ -30,9 +55,6 @@ public class MemberInfoCash<T> : MemberCash<T, MemberInfo>
         return member.Member;
     }
 
-    protected override IEnumerable<MemberInfo> GetTypeMembers()
-    {
-        return typeof(T).GetMembers();
-    }
+    protected override IEnumerable<MemberInfo> GetTypeMembers() => typeof(T).GetMembers();
 }
 

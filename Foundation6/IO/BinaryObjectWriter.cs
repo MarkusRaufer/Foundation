@@ -4,11 +4,41 @@ using System.Reflection;
 
 namespace Foundation.IO;
 
-public static class BinaryObjectWriter
+public class BinaryObjectWriter
 {
+    private readonly MemberInfoCash _memberCash;
+
+    public BinaryObjectWriter(Type type) : this(new MemberInfoCash(type))
+    {
+    }
+
+    public BinaryObjectWriter(Type type, MemberInfo[] members) : this(new MemberInfoCash(type, members))
+    {
+    }
+
+    public BinaryObjectWriter(Type type, string[] memberNames) : this(new MemberInfoCash(type, memberNames))
+    {
+    }
+
+    public BinaryObjectWriter(MemberInfoCash memberCash)
+    {
+        _memberCash = memberCash.ThrowIfNull();
+    }
+
+    public void WriteObject<T>(Stream stream, T obj)
+    {
+        if (null == stream) throw new ArgumentNullException(nameof(stream));
+        if (null == obj) throw new ArgumentNullException(nameof(obj));
+
+        var writer = new BinaryWriter(stream);
+        var members = _memberCash.GetMembers();
+
+        writer.WriteObject(obj, members);
+    }
+
     public static BinaryObjectWriter<T> New<T>(params Expression<Func<T, object>>[] members)
     {
-        return new (new MemberInfoCash<T>(members));
+        return new(new MemberInfoCash<T>(members));
     }
 }
 
