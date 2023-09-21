@@ -1,5 +1,4 @@
-﻿
-namespace Foundation;
+﻿namespace Foundation.ComponentModel;
 
 public static class PropertyExtensions
 {

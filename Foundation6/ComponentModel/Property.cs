@@ -1,4 +1,4 @@
-﻿namespace Foundation;
+﻿namespace Foundation.ComponentModel;
 
 using System.ComponentModel;
 
@@ -52,7 +52,7 @@ public class Property<TValue>
         value = Value;
     }
 
-    
+
     public override bool Equals(object? obj) => Equals(obj as Property);
 
     public bool Equals(Property<TValue>? other)
