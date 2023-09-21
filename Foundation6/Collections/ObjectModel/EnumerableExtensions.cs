@@ -1,4 +1,6 @@
-﻿namespace Foundation.Collections.ObjectModel;
+﻿using Foundation.ComponentModel;
+
+namespace Foundation.Collections.ObjectModel;
 
 public static class EnumerableExtensions
 {

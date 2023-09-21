@@ -20,7 +20,7 @@ public static class DictionaryValue
         IEnumerable<KeyValuePair<TKey, TValue>> replacements)
         where TKey : notnull
     {
-        return dictionaryValue.Replace(replacements).ToDictionaryValue();
+        return dictionaryValue.Replace(replacements).ToDictionaryValue(x => x.Key, x => x.Value);
     }
 }
 

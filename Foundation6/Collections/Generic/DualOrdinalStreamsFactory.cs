@@ -20,7 +20,7 @@ public static class DualOrdinalStreamsFactory
         Func<TLeft, TRight> project,
         bool isExhaustive)
     {
-        items.ThrowIfNull();
+        items.ThrowIfEnumerableIsNull();
         predicate.ThrowIfNull();
         project.ThrowIfNull();
 

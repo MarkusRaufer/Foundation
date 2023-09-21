@@ -13,12 +13,12 @@ namespace Foundation.Collections.Generic
 
         public EnumerableCounter(IEnumerable<T> items)
         {
-            _items = items.ThrowIfNull();
+            _items = items.ThrowIfEnumerableIsNull();
         }
 
         public EnumerableCounter(IEnumerable<T> items, out Func<EnumerableCounter<T>> self)
         {
-            _items = items.ThrowIfNull();
+            _items = items.ThrowIfEnumerableIsNull();
             self = () => this;
         }
         

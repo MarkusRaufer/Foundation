@@ -2,6 +2,7 @@
 using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Diagnostics.CodeAnalysis;
+using Foundation.ComponentModel;
 
 namespace Foundation.Collections.ObjectModel;
 

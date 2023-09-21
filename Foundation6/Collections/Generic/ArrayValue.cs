@@ -5,11 +5,21 @@ namespace Foundation.Collections.Generic;
 
 public static class ArrayValue
 {
+    public static ArrayValue<T> From<T>(IEnumerable<T> values) =>
+       new (values);
+
     public static ArrayValue<T> New<T>(params T[] values) =>
         new (values);
 
     public static ArrayValue<T> New<T>(string separator, params T[] values)
         => new (values, separator);
+
+    public static ArrayValue<T> NewWith<T>(
+        this ArrayValue<T> arrayValue,
+        IEnumerable<T> replacements)
+    {
+        return arrayValue.Replace(replacements).ToArrayValue();
+    }
 }
 
 /// <summary>
@@ -31,6 +41,13 @@ public readonly struct ArrayValue<T>
     public ArrayValue(T[] values, string separator = ", ")
     {
         _values = values.ThrowIfNull();
+        _separator = separator ?? throw new ArgumentNullException(nameof(separator)); ;
+        _hashCode = HashCode.FromObjects(_values);
+    }
+
+    public ArrayValue(IEnumerable<T> values, string separator = ", ")
+    {
+        _values = values.ThrowIfEnumerableIsNull().ToArray();
         _separator = separator ?? throw new ArgumentNullException(nameof(separator)); ;
         _hashCode = HashCode.FromObjects(_values);
     }

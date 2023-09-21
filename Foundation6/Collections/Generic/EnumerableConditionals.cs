@@ -10,7 +10,7 @@ public static class EnumerableConditionals
 
         public ElseIf(IEnumerable<T> items)
         {
-            _items = items.ThrowIfNull();
+            _items = items.ThrowIfEnumerableIsNull();
         }
 
         public IEnumerable<T> Else() => _items;
@@ -44,7 +44,7 @@ public static class EnumerableConditionals
 
         public ElseIf(IEnumerable<(T? lhs, TResult? rhs, bool isLhs)> items, Func<T, TResult> selector)
         {
-            _items = items.ThrowIfNull();
+            _items = items.ThrowIfEnumerableIsNull();
             _selector = selector.ThrowIfNull();
         }
 
@@ -96,7 +96,7 @@ public static class EnumerableConditionals
             Func<T, bool> predicate,
             Func<T, TResult> mapIf)
         {
-            _items = items.ThrowIfNull();
+            _items = items.ThrowIfEnumerableIsNull();
             _predicate = predicate.ThrowIfNull();
             _mapIf = mapIf.ThrowIfNull();
         }
@@ -155,7 +155,7 @@ public static class EnumerableConditionals
     /// <returns></returns>
     public static bool ExistsType<T>(this IEnumerable<T> items, bool includeAssignableTypes, params Type[] types)
     {
-        items = items.ThrowIfNull();
+        items = items.ThrowIfEnumerableIsNull();
         types.ThrowIfOutOfRange(() => types.Length == 0);
 
         var search = types.ToList();
@@ -243,8 +243,8 @@ public static class EnumerableConditionals
     //    Func<T, bool> predicate,
     //    Func<T, TResult> map)
     //{
-    //    predicate.ThrowIfNull();
-    //    map.ThrowIfNull();
+    //    predicate.ThrowIfEnumerableIsNull();
+    //    map.ThrowIfEnumerableIsNull();
 
     //    return new ElseResult<T, TResult>(items, predicate, map);
     //}
@@ -275,7 +275,7 @@ public static class EnumerableConditionals
     /// <returns></returns>
     public static IEnumerable<T> IfEmpty<T>(this IEnumerable<T> lhs, IEnumerable<T> rhs)
     {
-        rhs.ThrowIfNull();
+        rhs.ThrowIfEnumerableIsNull();
 
         var lIt = lhs.GetEnumerator();
         if (!lIt.MoveNext())
@@ -343,7 +343,7 @@ public static class EnumerableConditionals
 
     public static IEnumerable<T> IfMoreOrEqualThan<T>(this IEnumerable<T> items, int numberOfItems)
     {
-        var it = items.ThrowIfNull().GetEnumerator();
+        var it = items.ThrowIfEnumerableIsNull().GetEnumerator();
         if (0 >= numberOfItems) yield break;
 
         var minimum = new List<T>();
@@ -366,7 +366,7 @@ public static class EnumerableConditionals
 
     public static IEnumerable<T> IfMoreThan<T>(this IEnumerable<T> items, int numberOfItems)
     {
-        var it = items.ThrowIfNull().GetEnumerator();
+        var it = items.ThrowIfEnumerableIsNull().GetEnumerator();
         if (0 >= numberOfItems) yield break;
 
         var minimum = new List<T>();
@@ -398,7 +398,7 @@ public static class EnumerableConditionals
     public static bool IsInAscendingOrder<T>(this IEnumerable<T> items, bool allowEqual = false)
         where T : IComparable<T>
     {
-        items.ThrowIfNull();
+        items.ThrowIfEnumerableIsNull();
 
         var it = items.GetEnumerator();
 
@@ -427,7 +427,7 @@ public static class EnumerableConditionals
     /// <returns></returns>
     public static bool IsInAscendingOrder<T>(this IEnumerable<T> items, Func<T, T, CompareResult> compare)
     {
-        items.ThrowIfNull();
+        items.ThrowIfEnumerableIsNull();
         compare.ThrowIfNull();
 
         var it = items.GetEnumerator();
@@ -467,7 +467,7 @@ public static class EnumerableConditionals
     /// <returns></returns>
     public static bool IsSubsetOf<T>(this IEnumerable<T> lhs, IEnumerable<T> rhs)
     {
-        rhs.ThrowIfNull();
+        rhs.ThrowIfEnumerableIsNull();
 
         var search = new HashSet<T>(lhs);
         return search.IsSubsetOf(rhs);
@@ -534,7 +534,7 @@ public static class EnumerableConditionals
         Func<T, TResult> selector,
         params Type[] types)
     {
-        foreach (var item in items.ThrowIfNull())
+        foreach (var item in items.ThrowIfEnumerableIsNull())
         {
             if (null == item) continue;
 
@@ -567,9 +567,9 @@ public static class EnumerableConditionals
     /// <typeparam name="T"></typeparam>
     /// <param name="items"></param>
     /// <returns></returns>
-    public static IEnumerable<T> ThrowIfEmpty<T>(this IEnumerable<T> items, [CallerArgumentExpression("items")] string name = "")
+    public static IEnumerable<T> ThrowIfEnumerableIsEmpty<T>(this IEnumerable<T> items, [CallerArgumentExpression("items")] string name = "")
     {
-        return ThrowIfEmpty(items, () => new ArgumentOutOfRangeException(name));
+        return ThrowIfEnumerableIsEmpty(items, () => new ArgumentException("enumerable was empty", name));
     }
 
     /// <summary>
@@ -579,42 +579,28 @@ public static class EnumerableConditionals
     /// <param name="items"></param>
     /// <param name="exceptionFactory"></param>
     /// <returns></returns>
-    public static IEnumerable<T> ThrowIfEmpty<T>(this IEnumerable<T> items, Func<Exception> exceptionFactory)
+    public static IEnumerable<T> ThrowIfEnumerableIsEmpty<T>(this IEnumerable<T> items, Func<Exception> exceptionFactory)
     {
         if (!items.Any())
         {
-            var exception = exceptionFactory() ?? throw new ArgumentNullException("returned null", nameof(exceptionFactory));
+            var exception = exceptionFactory();
             throw exception;
         }
         return items;
     }
 
     /// <summary>
-    /// Throws an Exception if items is null.
+    /// Throws exception if items is null.
     /// </summary>
-    /// <typeparam name="T"></typeparam>
-    /// <param name="items"></param>
-    /// <param name="name"></param>
+    /// <typeparam name="T">Type of element.</typeparam>
+    /// <param name="items">Elements of the enumerable.</param>
+    /// <param name="name">name of the enumerable.</param>
     /// <returns></returns>
-    public static IEnumerable<T> ThrowIfNull<T>(this IEnumerable<T> items, [CallerArgumentExpression("items")] string name = "")
+    public static IEnumerable<T> ThrowIfEnumerableIsNull<T>(this IEnumerable<T> items, [CallerArgumentExpression("items")] string name = "")
     {
-        return ThrowIfNull(items, () => new ArgumentNullException(name));
+        return items.ThrowIfNull(name);
     }
-
-    /// <summary>
-    /// Throws an Exception if items is null.
-    /// </summary>
-    /// <typeparam name="T"></typeparam>
-    /// <param name="items"></param>
-    /// <param name="exceptionFactory">This creates an exception when items is null.</param>
-    /// <returns></returns>
-    public static IEnumerable<T> ThrowIfNull<T>(this IEnumerable<T> items, Func<Exception> exceptionFactory)
-    {
-        if (items is null) throw exceptionFactory() ?? throw new ArgumentNullException("returned null", nameof(exceptionFactory));
-
-        return items;
-    }
-
+            
     /// <summary>
     /// Throws an Exception if items is null or empty.
     /// </summary>
@@ -622,10 +608,10 @@ public static class EnumerableConditionals
     /// <param name="items"></param>
     /// <param name="name"></param>
     /// <returns></returns>
-    public static IEnumerable<T> ThrowIfNullOrEmpty<T>(this IEnumerable<T> items, [CallerArgumentExpression("items")] string name = "")
+    public static IEnumerable<T> ThrowIfEnumerableIsNullOrEmpty<T>(this IEnumerable<T> items, [CallerArgumentExpression("items")] string name = "")
     {
-        return items.ThrowIfNull()
-                    .ThrowIfEmpty();
+        return items.ThrowIfNull(name)
+                    .ThrowIfEnumerableIsEmpty(name);
     }
 
     /// <summary>
@@ -636,12 +622,13 @@ public static class EnumerableConditionals
     /// <param name="exceptionFactory"></param>
     /// <returns></returns>
     /// <exception cref="ArgumentException"></exception>
-    public static IEnumerable<T> ThrowIfNullOrEmpty<T>(this IEnumerable<T> items, Func<Exception> exceptionFactory)
+    public static IEnumerable<T> ThrowIfEnumerableIsNullOrEmpty<T>(this IEnumerable<T> items, Func<Exception> exceptionFactory)
     {
         exceptionFactory.ThrowIfNull();
+        exceptionFactory.ThrowIfNull();
 
-        return items.ThrowIfNull(exceptionFactory)
-                    .ThrowIfEmpty(exceptionFactory);
+        return items.ThrowIfNull()
+                    .ThrowIfEnumerableIsEmpty(exceptionFactory);
     }
 
     /// <summary>

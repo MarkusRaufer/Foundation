@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Diagnostics.CodeAnalysis;
+using Foundation.ComponentModel;
 
 namespace Foundation.Collections.ObjectModel
 {

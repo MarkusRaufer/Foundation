@@ -33,7 +33,7 @@ public static class Pair
         this KeyValuePair<TKey, TValue> pair,
         string name)
     {
-        name.ThrowIfNullOrEmpty(nameof(name));
+        name.ThrowIfEnumerableIsNullOrEmpty(nameof(name));
 
         if (!pair.IsInitialized()) throw new ArgumentException("not initialized", name);
         return pair;

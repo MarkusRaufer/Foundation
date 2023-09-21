@@ -9,8 +9,8 @@ public static class ExpressionHelper
 {
     //public static bool AreEqual(Expression lhs, Expression rhs)
     //{
-    //    lhs.ThrowIfNull();
-    //    rhs.ThrowIfNull();
+    //    lhs.ThrowIfEnumerableIsNull();
+    //    rhs.ThrowIfEnumerableIsNull();
 
     //    return AreEqual(lhs.Flatten(), rhs.Flatten());
     //}

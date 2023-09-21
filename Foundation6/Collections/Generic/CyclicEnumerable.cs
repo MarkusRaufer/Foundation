@@ -8,7 +8,7 @@ public class CyclicEnumerable<T> : IEnumerable<T>
 
     public CyclicEnumerable(IEnumerable<T> items)
     {
-        _items = items.ThrowIfNull();
+        _items = items.ThrowIfEnumerableIsNull();
     }
 
     public IEnumerator<T> GetEnumerator()
@@ -28,7 +28,7 @@ public class CyclicEnumerable<T> : IEnumerable<T>
 
         public CyclicEnumerator(IEnumerable<T> enumerable)
         {
-            _enumerable = enumerable.ThrowIfNull();
+            _enumerable = enumerable.ThrowIfEnumerableIsNull();
 
             _enumerator = _enumerable.GetEnumerator();
         }
@@ -64,7 +64,7 @@ public class CyclicEnumerable<T, TCount> : IEnumerable<(T, TCount)>
     private readonly Func<TCount, TCount> _increment;
     public CyclicEnumerable(IEnumerable<T> items, TCount min, TCount max, Func<TCount, TCount> increment)
     {
-        _enumerable = items.ThrowIfNull();
+        _enumerable = items.ThrowIfEnumerableIsNull();
         _increment = increment.ThrowIfNull();
 
         Min = min;
@@ -94,7 +94,7 @@ public class CyclicEnumerable<T, TCount> : IEnumerable<(T, TCount)>
 
         public CyclicEnumerator(IEnumerable<T> items, TCount min, TCount max, Func<TCount, TCount> increment)
         {
-            _items = items.ThrowIfNull().Cycle();
+            _items = items.ThrowIfEnumerableIsNull().Cycle();
             _enumerator = items.GetEnumerator();
             _increment = increment;
             Counter = min;

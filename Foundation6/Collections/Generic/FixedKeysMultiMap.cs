@@ -46,7 +46,7 @@ public class FixedKeysMultiMap<TKey, TValue> : IReadOnlyMultiValueMap<TKey, TVal
         IDictionary<TKey, ICollection<TValue>> dictionary,
         Func<ICollection<TValue>> valueCollectionFactory)
     {
-        _keys = new HashSet<TKey>(keys.ThrowIfNullOrEmpty());
+        _keys = new HashSet<TKey>(keys.ThrowIfEnumerableIsNullOrEmpty());
         _dictionary = dictionary.ThrowIfNull();
         _valueCollectionFactory = valueCollectionFactory.ThrowIfNull();
     }

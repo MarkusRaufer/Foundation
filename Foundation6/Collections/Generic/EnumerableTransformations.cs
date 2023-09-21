@@ -25,8 +25,19 @@ public static class EnumerableTransformations
     /// <returns></returns>
     public static IEnumerable<T[]> ToArrays<T>(this IEnumerable<IEnumerable<T>> lists)
     {
-        foreach(var list in lists)
+        foreach (var list in lists)
             yield return list.ToArray();
+    }
+
+    /// <summary>
+    /// Creates an ArrayValue from an IEnumerable<typeparamref name="T"/>.
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <param name="items"></param>
+    /// <returns></returns>
+    public static ArrayValue<T> ToArrayValue<T>(this IEnumerable<T> items)
+    {
+        return ArrayValue.New(items.ToArray());
     }
 
     /// <summary>
@@ -38,12 +49,17 @@ public static class EnumerableTransformations
     /// <returns></returns>
     public static IEnumerable<T> ToBreakable<T>(this IEnumerable<T> items, ref ObservableValue<bool> stop)
     {
-        return new BreakableEnumerable<T>(items.ThrowIfNull(), ref stop);
+        return new BreakableEnumerable<T>(items.ThrowIfEnumerableIsNull(), ref stop);
     }
 
     public static DictionaryValue<TKey, TValue> ToDictionaryValue<TKey, TValue>(
-        this IEnumerable<KeyValuePair<TKey, TValue>> items) where TKey : notnull
-        => DictionaryValue.New(items);
+        this IEnumerable<KeyValuePair<TKey, TValue>> items,
+        Func<KeyValuePair<TKey, TValue>, TKey> toKey,
+        Func<KeyValuePair<TKey, TValue>, TValue> toValue) where TKey : notnull
+        {
+            var newItems = items.Select(x => new KeyValuePair<TKey, TValue>(toKey(x), toValue(x)));
+            return DictionaryValue.New(newItems);
+        }
 
     /// <summary>
     /// Creates a <see cref="IMultiValueMap{TKey, TValue}"/> from an enumerable.
@@ -56,7 +72,7 @@ public static class EnumerableTransformations
     public static IMultiValueMap<TKey, T> ToMultiValueMap<T, TKey>(this IEnumerable<T> items, Func<T, TKey> keySelector)
         where TKey : notnull
     {
-        items.ThrowIfNull();
+        items.ThrowIfEnumerableIsNull();
         keySelector.ThrowIfNull();
 
         return ToMultiValueMap(items, keySelector, x => x);
@@ -78,7 +94,7 @@ public static class EnumerableTransformations
         Func<T, TValue> valueSelector)
         where TKey : notnull
     {
-        items.ThrowIfNull();
+        items.ThrowIfEnumerableIsNull();
         keySelector.ThrowIfNull();
 
         var dictionary = new MultiValueMap<TKey, TValue>();
@@ -128,7 +144,7 @@ public static class EnumerableTransformations
         Func<TSource, TRhs> rhsSelector)
         where TLhs : notnull
     {
-        source.ThrowIfNull();
+        source.ThrowIfEnumerableIsNull();
         lhsSelector.ThrowIfNull();
         rhsSelector.ThrowIfNull();
 
@@ -167,7 +183,7 @@ public static class EnumerableTransformations
         Func<TSource, TLhs> lhsSelector,
         Func<TSource, IEnumerable<TRhs>> rhsSelector)
     {
-        source.ThrowIfNull();
+        source.ThrowIfEnumerableIsNull();
         lhsSelector.ThrowIfNull();
         rhsSelector.ThrowIfNull();
 
@@ -192,7 +208,7 @@ public static class EnumerableTransformations
         this IEnumerable<T> items,
         Func<T, Option<TResult>> project)
     {
-        items.ThrowIfNull();
+        items.ThrowIfEnumerableIsNull();
         project.ThrowIfNull();
 
         return items.Select(project);
@@ -200,7 +216,7 @@ public static class EnumerableTransformations
 
     public static IEnumerable<Ordinal<T>> ToOrdinals<T>(this IEnumerable<T> items, Func<T, bool> predicate)
     {
-        items.ThrowIfNull();
+        items.ThrowIfEnumerableIsNull();
         predicate.ThrowIfNull();
 
         return items.Enumerate()
@@ -225,7 +241,7 @@ public static class EnumerableTransformations
     /// <returns></returns>
     public static string ToReadableString<T>(this IEnumerable<T> items, string separator = ",")
     {
-        items.ThrowIfNull();
+        items.ThrowIfEnumerableIsNull();
         var sb = new StringBuilder();
         foreach (var item in items.AfterEach(() => sb.Append(separator)))
         {
@@ -236,7 +252,7 @@ public static class EnumerableTransformations
 
     public static IReadOnlyCollection<T> ToReadOnlyCollection<T>(this IEnumerable<T> items)
     {
-        items.ThrowIfNull();
+        items.ThrowIfEnumerableIsNull();
         return ReadOnlyCollection.New(items);
     }
 }

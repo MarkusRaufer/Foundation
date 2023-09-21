@@ -138,7 +138,7 @@ public static class EnumerableExtensions
     /// <returns></returns>
     public static IEnumerable<T> Ignore<T>(this IEnumerable<T> items, Func<T, bool> predicate)
     {
-        items.ThrowIfNull();
+        items.ThrowIfEnumerableIsNull();
         predicate.ThrowIfNull();
 
         foreach (var item in items)
@@ -159,7 +159,7 @@ public static class EnumerableExtensions
     /// <returns></returns>
     public static IEnumerable<T> Ignore<T>(this IEnumerable<T> items, int[] indices)
     {
-        items.ThrowIfNull();
+        items.ThrowIfEnumerableIsNull();
         indices.ThrowIfNull();
 
         var i = 0;

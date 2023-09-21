@@ -1,5 +1,6 @@
 ﻿using System.Collections.Specialized;
 using System.ComponentModel;
+using Foundation.ComponentModel;
 
 namespace Foundation.Collections.ObjectModel;
 
