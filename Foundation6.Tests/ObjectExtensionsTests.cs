@@ -7,6 +7,22 @@ namespace Foundation
     public class ObjectExtensionsTests
     {
         [Test]
+        public void EqualsNullable_Should_ReturnTrue_When_BothSidesAreNull()
+        {
+            object? obj1 = null;
+            object? obj2 = null;
+            Assert.IsTrue(obj1.EqualsNullable(obj2));
+        }
+
+        [Test]
+        public void EqualsNullable2_Should_ReturnTrue_When_BothSidesAreNull()
+        {
+            object? obj1 = null;
+            object? obj2 = null;
+            Assert.IsTrue(obj1.EqualsNullable(obj2, (lhs, rhs) => lhs.Equals(rhs)));
+        }
+
+        [Test]
         public void ThrowIfOutOfRange_Should_ReturnValue_When_InRange()
         {
             var min = 5;
