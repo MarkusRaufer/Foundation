@@ -103,7 +103,7 @@ public static class ObjectExtensions
     }
 
     /// <summary>
-    /// Compares two objects. Treats like Object.Equals, but allows that objA is null.
+    /// Checks equality of two objects. Allows that lhs and rhs is null without throwing an exception.
     /// </summary>
     /// <param name="lhs"></param>
     /// <param name="rhs"></param>
@@ -118,6 +118,24 @@ public static class ObjectExtensions
         if(lhs.GetHashCode() != rhs.GetHashCode()) return false;
 
         return lhs.Equals(rhs);
+    }
+
+    /// <summary>
+    /// Checks equality of two objects. Allows that lhs and rhs is null without throwing an exception.
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <param name="lhs"></param>
+    /// <param name="rhs"></param>
+    /// <param name="equals">Overrides the standard equality comparer.</param>
+    /// <returns></returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static bool EqualsNullable<T>(this T? lhs, T? rhs, Func<T, T, bool> equals)
+    {
+        if (null == lhs) return null == rhs;
+        if (null == rhs) return false;
+        if (lhs.GetHashCode() != rhs.GetHashCode()) return false;
+
+        return equals(lhs, rhs);
     }
 
     /// <summary>
