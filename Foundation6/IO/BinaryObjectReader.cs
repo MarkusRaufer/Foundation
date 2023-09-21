@@ -51,4 +51,12 @@ public class BinaryObjectReader<T>
         var reader = new BinaryReader(stream);
         return reader.ReadFromMembers(_memberCash.GetMembers());
     }
+
+    public IEnumerable<(PropertyInfo property, object value)> ReadProperties(Stream stream)
+    {
+        stream.ThrowIfNull();
+
+        var reader = new BinaryReader(stream);
+        return reader.ReadFromProperties(_memberCash.GetMembers().OfType<PropertyInfo>());
+    }
 }

@@ -33,6 +33,17 @@ namespace Foundation.IO
             }
         }
 
+        public static IEnumerable<(PropertyInfo member, object value)> ReadFromProperties(
+            this BinaryReader reader,
+            IEnumerable<PropertyInfo> properties)
+        {
+            foreach (var property in properties)
+            {
+                var value = reader.ReadSystemType(property.PropertyType);
+                yield return (property, value);
+            }
+        }
+
         /// <summary>
         /// Reads from a type which is included in the System namespace. E.g. bool, byte, char, ...
         /// </summary>
@@ -91,7 +102,7 @@ namespace Foundation.IO
         }
 
         /// <summary>
-        /// Reads the values from stream and sets the values of the members of obj.
+        /// Reads the values from stream and sets the values of the properties of obj.
         /// </summary>
         /// <param name="reader"></param>
         /// <param name="obj"></param>
@@ -103,11 +114,11 @@ namespace Foundation.IO
         }
 
         /// <summary>
-        /// Reads the values from stream and sets the values of the members of obj.
+        /// Reads the values from stream and sets the values of the properties of obj.
         /// </summary>
         /// <param name="reader"></param>
         /// <param name="obj">An instance of an object.</param>
-        /// <param name="memberNames">The names of the objects members.</param>
+        /// <param name="memberNames">The names of the objects properties.</param>
         public static void ReadToObject(this BinaryReader reader, object obj, IEnumerable<string> memberNames)
         {
             var type = obj.ThrowIfNull().GetType();
@@ -117,7 +128,7 @@ namespace Foundation.IO
         }
 
         /// <summary>
-        /// Reads the values from stream and sets the values of the members of obj.
+        /// Reads the values from stream and sets the values of the properties of obj.
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="reader"></param>
@@ -133,11 +144,25 @@ namespace Foundation.IO
             }
         }
 
-        public static IEnumerable<(MemberInfo member, object value)> ReadType(this BinaryReader reader, Type type)
+        public static IEnumerable<(MemberInfo member, object value)> ReadTypeMembers(this BinaryReader reader, Type type)
         {
+            reader.ThrowIfNull();
+            type.ThrowIfNull();
+
             foreach (var (member, value) in ReadFromMembers(reader, type.GetMembers()))
             {
-                
+                yield return (member, value);
+            }
+        }
+
+        public static IEnumerable<(PropertyInfo property, object value)> ReadTypeProperties(this BinaryReader reader, Type type)
+        {
+            reader.ThrowIfNull();
+            type.ThrowIfNull();
+
+            foreach (var (property, value) in ReadFromProperties(reader, type.GetProperties()))
+            {
+                yield return (property, value);
             }
         }
     }
