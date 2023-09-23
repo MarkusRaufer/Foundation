@@ -8,8 +8,10 @@ namespace Foundation.Benchmarks
     {
         public static void Main(string[] args)
         {
+            //BenchmarkRunner.Run<ArrayValueBenchmarks>();
+            //BenchmarkRunner.Run<SortedSetXBenchmarks>();
             //BenchmarkRunner.Run<CollectionsCreationBenchmarks>();
-            BenchmarkRunner.Run<CollectionsSearchBenchmarks>();
+            //BenchmarkRunner.Run<CollectionsSearchBenchmarks>();
             //BenchmarkRunner.Run<EnumerableBenchMarks>();
             //BenchmarkRunner.Run<HashCodeBenchMarks>();
             //BenchmarkRunner.Run<OptionBenchmarks>();
