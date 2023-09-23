@@ -1,28 +1,7 @@
 ﻿using FluentAssertions;
 using NUnit.Framework;
-using System;
-using System.Collections.Generic;
 
 namespace Foundation.Collections.Generic;
-
-public class MyClass : IComparable<MyClass>
-{
-    public string Name { get; init; }
-    public int Number { get; init; }
-
-    public int CompareTo(MyClass? other)
-    {
-        if (other is null) return 1;
-        return Number.CompareTo(other.Number);
-    }
-
-    public override bool Equals(object? obj)
-    {
-        if (obj is not MyClass other) return false;
-
-        return Number == other.Number;
-    }
-}
 
 [TestFixture]
 public class SortedSetXTests
@@ -30,13 +9,6 @@ public class SortedSetXTests
     [Test]
     public void Add_Should_Append9_When_9IsMaxValue()
     {
-        //var set = new SortedSet<MyClass>();
-        //var x = new MyClass { Name = "one", Number = 10 };
-        //set.Add(x);
-
-        //var y = new MyClass { Name = "two", Number = 10 };
-        //set.Add(y);
-
         var sut = new SortedSetX<int> { 1, 3, 7 };
         var count = sut.Count;
 
