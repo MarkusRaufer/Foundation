@@ -61,13 +61,13 @@ public readonly struct Id
     public static Id New() => New(Guid.NewGuid());
 
     public static Id New<TValue>(TValue value)
-         where TValue : struct, IComparable, IComparable<TValue>, IEquatable<TValue>, IFormattable
+         where TValue : IComparable, IComparable<TValue>, IEquatable<TValue>, IFormattable
         => New(typeof(object), value);
 
     public static Id New<TEntity>(byte[] value) => new (typeof(object), ByteString.CopyFrom(value));
 
     public static Id New<TValue>(Type entityType, TValue value)
-         where TValue : struct, IComparable, IComparable<TValue>, IEquatable<TValue>, IFormattable
+         where TValue : IComparable, IComparable<TValue>, IEquatable<TValue>, IFormattable
         => new(entityType, value);
 
     //public static Id<TEntity> New<TEntity>(byte[] value) => new (ByteString.CopyFrom(value));
@@ -89,7 +89,7 @@ public readonly struct Id
     /// <param name="value"></param>
     /// <returns></returns>
     public static Id<TEntity> New<TEntity, TValue>(TValue value)
-        where TValue : struct, IComparable, IComparable<TValue>, IEquatable<TValue>, IFormattable
+        where TValue : IComparable, IComparable<TValue>, IEquatable<TValue>, IFormattable
         where TEntity : notnull
         => new(value);
 
