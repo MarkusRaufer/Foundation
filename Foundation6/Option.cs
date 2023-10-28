@@ -51,7 +51,15 @@ public readonly struct Option<T>
 
     public static bool operator ==(Option<T> lhs, Option<T> rhs) => lhs.Equals(rhs);
 
+    public static bool operator ==(Option<T> lhs, T rhs) => lhs.TryGet(out var l) && l.Equals(rhs);
+
+    public static bool operator ==(T lhs, Option<T> rhs) => rhs == lhs;
+
     public static bool operator !=(Option<T> lhs, Option<T> rhs) => !(lhs == rhs);
+
+    public static bool operator !=(Option<T> lhs, T rhs) => !(lhs == rhs);
+
+    public static bool operator !=(T lhs, Option<T> rhs) => rhs != lhs;
 
     public override bool Equals(object? obj) => obj is Option<T> other && Equals(other);
 

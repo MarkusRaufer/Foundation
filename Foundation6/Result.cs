@@ -112,12 +112,12 @@ public readonly struct Result<TError>
     /// </summary>
     /// <param name="error"></param>
     /// <returns></returns>
-    public bool TryGetError(out TError? error)
+    public bool TryGetError([NotNullWhen(true)] out TError? error)
     {
         if(!IsOk)
         {
             error = _error;
-            return true;
+            return _error is not null;
         }
 
         error = default;
@@ -192,8 +192,11 @@ public readonly struct Result<TOk, TError>
     {
         if(!IsOk)
         {
-            error = _error.OrThrow();
-            return true;
+            if(_error.IsSome)
+            {
+                error = _error.OrThrow();
+                return true;
+            }
         }
 
         error = default;

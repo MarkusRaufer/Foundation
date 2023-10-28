@@ -7,12 +7,12 @@ namespace Foundation
     public class IdTests
     {
         [Test]
-        public void Equals_ReturnsFalse_When_GenericId_And_DifferentTypes_And_SameValues()
+        public void Equals_Should_ReturnsFalse_When_ValuesAreSameButEntityTypesAreDifferent()
         {
             var value = 10;
 
-            var sut1 = Id.New<DateTime>(value);
-            var sut2 = Id.New<string>(value);
+            var sut1 = Id.New(typeof(DateTime), value);
+            var sut2 = Id.New(typeof(string), value);
 
             Assert.IsFalse(sut1.Equals(sut2));
         }
@@ -38,12 +38,12 @@ namespace Foundation
         }
 
         [Test]
-        public void Equals_ReturnsTrue_When_GenericId_And_SameTypes_And_SameValues()
+        public void Equals_Should_ReturnsTrue_When_EntityTypesAndValuesAreSame()
         {
             var value = 10;
 
-            var sut1 = Id.New<DateTime>(value);
-            var sut2 = Id.New<DateTime>(value);
+            var sut1 = Id.New(typeof(DateTime), value);
+            var sut2 = Id.New(typeof(DateTime), value);
 
             Assert.IsTrue(sut1.Equals(sut2));
         }

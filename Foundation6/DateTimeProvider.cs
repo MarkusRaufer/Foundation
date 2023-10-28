@@ -8,5 +8,6 @@ public class DateTimeProvider : IDateTimeProvider
     {
         _factory = factory.ThrowIfNull();
     }
+
     public DateTime Now => _factory();
 }

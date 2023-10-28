@@ -60,38 +60,17 @@ public readonly struct Id
 
     public static Id New() => New(Guid.NewGuid());
 
+    public static Id New(byte[] value) => New(typeof(object), value);
+
+    public static Id New(Type type, byte[] value) => new (type, ByteString.CopyFrom(value));
+
     public static Id New<TValue>(TValue value)
-         where TValue : IComparable, IComparable<TValue>, IEquatable<TValue>, IFormattable
+        where TValue : IComparable
         => New(typeof(object), value);
 
-    public static Id New<TEntity>(byte[] value) => new (typeof(object), ByteString.CopyFrom(value));
-
     public static Id New<TValue>(Type entityType, TValue value)
-         where TValue : IComparable, IComparable<TValue>, IEquatable<TValue>, IFormattable
-        => new(entityType, value);
-
-    //public static Id<TEntity> New<TEntity>(byte[] value) => new (ByteString.CopyFrom(value));
-
-    /// <summary>
-    /// Attention boxing happens with value.
-    /// </summary>
-    /// <typeparam name="TEntity"></typeparam>
-    /// <param name="value"></param>
-    /// <returns></returns>
-    public static Id<TEntity> New<TEntity>(IComparable value) where TEntity : notnull
-         => new(value);
-
-    /// <summary>
-    /// No boxing happens.
-    /// </summary>
-    /// <typeparam name="TEntity"></typeparam>
-    /// <typeparam name="TValue"></typeparam>
-    /// <param name="value"></param>
-    /// <returns></returns>
-    public static Id<TEntity> New<TEntity, TValue>(TValue value)
-        where TValue : IComparable, IComparable<TValue>, IEquatable<TValue>, IFormattable
-        where TEntity : notnull
-        => new(value);
+        where TValue : IComparable
+        => new (entityType, value);
 
     public override string ToString() => IsEmpty ? "" : $"{_value}";
 }
