@@ -39,6 +39,8 @@ public class CountedHashSet<T> : ICollection<T>
     /// <inheritdoc/>
     public int Count => _countables.Count;
 
+    public IEnumerable<Countable<T>> Countables => _countables;
+
     /// <inheritdoc/>
     public void Clear() => _countables.Clear();
 
