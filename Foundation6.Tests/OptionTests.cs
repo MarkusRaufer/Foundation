@@ -120,6 +120,95 @@ namespace Foundation
         }
 
         [Test]
+        public void Maybe_Should_ReturnFalse_When_ValueIsNull()
+        {
+            string? value = null;
+            var sut = Option.Maybe<string>(value);
+
+            sut.Should().NotBeNull();
+            sut.IsNone.Should().BeTrue();
+        }
+
+        [Test]
+        public void Maybe_Should_ReturnTrue_When_ValueIsNotNull()
+        {
+            var value = "test";
+
+            var sut = Option.Maybe(value);
+
+            sut.Should().NotBeNull();
+            sut.IsSome.Should().BeTrue();
+        }
+
+        [Test]
+        public void MaybeOfType_Should_ReturnFalse_When_ValueOfSpecificTypeIsNull()
+        {
+            object? value = null;
+            var sut = Option.MaybeOfType<IComparable>(value);
+
+            sut.Should().NotBeNull();
+            sut.IsNone.Should().BeTrue();
+        }
+
+        [Test]
+        public void MaybeOfType_WithResultType_Should_ReturnFalse_When_ValueOfSpecificTypeIsNull()
+        {
+            string? value = null;
+            var sut = Option.MaybeOfType<string, IComparable>(value);
+
+            sut.Should().NotBeNull();
+            sut.IsNone.Should().BeTrue();
+        }
+
+        [Test]
+        public void MaybeOfType_Should_ReturnTrue_When_ValueIsNotNullAndNotOfASpecificType()
+        {
+            var value = new int[10];
+
+            var sut = Option.MaybeOfType<IComparable>(value);
+
+            sut.Should().NotBeNull();
+            sut.IsNone.Should().BeTrue();
+        }
+
+        [Test]
+        public void MaybeOfType_WithResultType_Should_ReturnTrue_When_ValueIsNotNullAndNotOfASpecificType()
+        {
+            var value = new int[10];
+
+            var sut = Option.MaybeOfType<int[], IComparable>(value);
+
+            sut.Should().NotBeNull();
+            sut.IsNone.Should().BeTrue();
+        }
+
+        [Test]
+        public void MaybeOfType_Should_ReturnTrue_When_ValueIsOfASpecificType()
+        {
+            var value = "test";
+
+            var sut = Option.MaybeOfType<IComparable>(value);
+
+            sut.Should().NotBeNull();
+            sut.IsSome.Should().BeTrue();
+            sut.TryGet(out IComparable? result).Should().BeTrue();
+            result.Should().NotBeNull();
+        }
+
+        [Test]
+        public void MaybeOfType_WithResultType_Should_ReturnTrue_When_ValueIsOfASpecificType()
+        {
+            var value = "test";
+
+            var sut = Option.MaybeOfType<string, IComparable>(value);
+
+            sut.Should().NotBeNull();
+            sut.IsSome.Should().BeTrue();
+            sut.TryGet(out IComparable? result).Should().BeTrue();
+            result.Should().NotBeNull();
+        }
+
+        [Test]
         public void None_Should_Be_IsNone_When_CalledNone()
         {
             var sut = Option.None<int>();
