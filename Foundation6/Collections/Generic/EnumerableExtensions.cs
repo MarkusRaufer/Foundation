@@ -1171,6 +1171,30 @@ public static class EnumerableExtensions
     }
 
     /// <summary>
+    /// Inserts an element at a specific index.
+    /// If the index is 0 and the list is empty, the item will be inserted.
+    /// If the index is greater than the last elements index the item will not be inserted.
+    /// </summary>
+    /// <typeparam name="T">Type of items.</typeparam>
+    /// <param name="items">List of elements.</param>
+    /// <param name="item">Element to be added.</param>
+    /// <param name="index">Position where to insert the item.</param>
+    /// <returns></returns>
+    public static IEnumerable<T> InsertAt<T>(this IEnumerable<T> items, T item, long index)
+    {
+        var i = 0L;
+        foreach (var elem in items.ThrowIfEnumerableIsNull())
+        {
+            if (i == index) yield return item;
+
+            i++;
+            yield return elem;
+        }
+
+        if (0 == index) yield return item;
+    }
+
+    /// <summary>
     /// Intersects a list of collections.
     /// </summary>
     /// <typeparam name="T"></typeparam>

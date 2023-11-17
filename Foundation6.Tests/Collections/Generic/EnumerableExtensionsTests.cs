@@ -856,6 +856,72 @@ public class EnumerableExtensionsTests
     }
 
     [Test]
+    public void InsertAt_Should_InsertItem_When_EmptyEnumerableAndIndexIs0()
+    {
+        var items = Enumerable.Empty<int>();
+        var item = 4;
+
+        var newItems = items.InsertAt(item, 0).ToArray();
+
+        Assert.Contains(item, newItems);
+    }
+
+    [Test]
+    public void InsertAt_Should_NotInsertItem_When_EmptyEnumerableAndIndexIs1()
+    {
+        var items = Enumerable.Empty<int>();
+        var item = 4;
+
+        var newItems = items.InsertAt(item, 1).ToArray();
+
+        newItems.Length.Should().Be(0);
+    }
+
+    [Test]
+    public void InsertAt_Should_InsertItem_When_3ElementsAndIndexIs1()
+    {
+        IEnumerable<int> items = new[] { 1, 2, 3 };
+        var item = 4;
+
+        var newItems = items.InsertAt(item, 1).ToArray();
+
+        newItems.Length.Should().Be(4);
+        newItems[0].Should().Be(1);
+        newItems[1].Should().Be(item);
+        newItems[2].Should().Be(2);
+        newItems[3].Should().Be(3);
+    }
+
+    [Test]
+    public void InsertAt_Should_InsertItem_When_3ElementsAndIndexIs2()
+    {
+        IEnumerable<int> items = new[] { 1, 2, 3 };
+        var item = 4;
+
+        var newItems = items.InsertAt(item, 2).ToArray();
+
+        newItems.Length.Should().Be(4);
+        newItems[0].Should().Be(1);
+        newItems[1].Should().Be(2);
+        newItems[2].Should().Be(item);
+        newItems[3].Should().Be(3);
+    }
+
+    [Test]
+    public void InsertAt_Should_NotInsert_When_3ElementsAndIndexIs5()
+    {
+        IEnumerable<int> items = new[] { 1, 2, 3 };
+        var item = 4;
+
+        var newItems = items.InsertAt(item, 5).ToArray();
+
+        newItems.Length.Should().Be(3);
+        newItems[0].Should().Be(1);
+        newItems[1].Should().Be(2);
+        newItems[2].Should().Be(3);
+    }
+
+    [Test]
     public void Intersect_Should_ReturnTwoElements_When_AllListsContainTwoSameElements()
     {
         var items = new List<IEnumerable<int>>
