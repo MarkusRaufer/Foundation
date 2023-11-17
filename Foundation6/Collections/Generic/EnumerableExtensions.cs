@@ -1191,7 +1191,7 @@ public static class EnumerableExtensions
             yield return elem;
         }
 
-        if (0 == index) yield return item;
+        if (0 == i && 0 == index) yield return item;
     }
 
     /// <summary>

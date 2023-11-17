@@ -863,7 +863,21 @@ public class EnumerableExtensionsTests
 
         var newItems = items.InsertAt(item, 0).ToArray();
 
-        Assert.Contains(item, newItems);
+        newItems.Length.Should().Be(1);
+        newItems[0].Should().Be(item);
+    }
+
+    [Test]
+    public void InsertAt_Should_InsertItem_When_ListHasAnElementAndIndexIs0()
+    {
+        var items = Enumerable.Range(1, 1);
+        var item = 4;
+
+        var newItems = items.InsertAt(item, 0).ToArray();
+
+        newItems.Length.Should().Be(2);
+        newItems[0].Should().Be(item);
+        newItems[1].Should().Be(1);
     }
 
     [Test]
