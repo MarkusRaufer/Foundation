@@ -1,6 +1,7 @@
 ﻿namespace Foundation.Collections.Generic;
 
 using System.Collections;
+using System.Diagnostics.CodeAnalysis;
 
 /// <summary>
 /// Dictionary that supports multiple values per key.
@@ -478,7 +479,7 @@ public class MultiValueMap<TKey, TValue, TValueCollection>
     /// <param name="key"></param>
     /// <param name="values"></param>
     /// <returns></returns>
-    public bool TryGetValues(TKey key, out TValueCollection? values)
+    public bool TryGetValues(TKey key, [NotNullWhen(true)] out TValueCollection? values)
     {
         if (_dictionary.TryGetValue(key, out TValueCollection? vals))
         {
