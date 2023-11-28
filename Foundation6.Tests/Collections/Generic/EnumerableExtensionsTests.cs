@@ -1735,6 +1735,20 @@ public class EnumerableExtensionsTests
     }
 
     [Test]
+    public void Permutations2_Should_Return3Permutations_When_LengthIs1()
+    {
+        var numbers = Enumerable.Empty<int>();
+
+        var permutations = numbers.Permutations(1);
+
+
+        permutations.Any().Should().BeFalse();
+
+        var it = permutations.GetEnumerator();
+        it.MoveNext().Should().BeFalse();
+    }
+
+    [Test]
     public void Permutations_Should_Return3Permutations_When_LengthIs1()
     {
         var numbers = Enumerable.Range(1, 3);
