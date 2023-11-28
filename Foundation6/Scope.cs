@@ -5,6 +5,14 @@
 /// </summary>
 public static class Scope
 {
+    /// <summary>
+    /// If condition that returns a value. This can be used to avoid state.
+    /// </summary>
+    /// <typeparam name="T">Type of the parameter.</typeparam>
+    /// <param name="predicate">The predicate of the <see cref="If{T}(bool, Func{T}, Func{T})"/> condition.</param>
+    /// <param name="match">Is called when predicate is true.</param>
+    /// <param name="noMatch">Is called when predicate is false.</param>
+    /// <returns></returns>
     public static T If<T>(
         bool predicate,
         Func<T> match,
