@@ -33,6 +33,7 @@ public static class TimedRc
 public class TimedRc<T>
     : IEquatable<TimedRc<T>>
     , IComparable<TimedRc<T>>
+    where T : notnull
 {
     private readonly Rc<T> _rc;
 

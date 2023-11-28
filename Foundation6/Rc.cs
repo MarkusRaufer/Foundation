@@ -8,7 +8,7 @@ public static class Rc
     /// <typeparam name="T"></typeparam>
     /// <param name="obj"></param>
     /// <returns></returns>
-    public static Rc<T> New<T>(T obj)
+    public static Rc<T> New<T>(T obj) where T : notnull
     {
         return new Rc<T>(obj);
     }
@@ -21,6 +21,7 @@ public static class Rc
 public sealed class Rc<T>
     : IComparable<Rc<T>>
     , IEquatable<Rc<T>>
+    where T : notnull
 {
     private readonly T _value;
 
@@ -91,7 +92,14 @@ public sealed class Rc<T>
 
     public override int GetHashCode() => System.HashCode.Combine(_value, Counter);
 
-    public int GetValueHashCode() => _value!.GetHashCode();
+    public int GetValueHashCode() => _value.GetHashCode();
+
+    /// <summary>
+    /// Returns true if the type of the value is assignable to type. />.
+    /// </summary>
+    /// <param name="type">Type to which the values type can be assigned.</param>
+    /// <returns></returns>
+    public bool IsAssignableTo(Type type) => type.IsAssignableFrom(_value.GetType());
 
     public void Reset()
     {
