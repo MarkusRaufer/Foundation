@@ -1,3 +1,5 @@
+using System.Diagnostics.CodeAnalysis;
+
 namespace Foundation.Collections.Generic;
 
 public interface IReadOnlyMultiValueMap<TKey, TValue> : IReadOnlyMultiValueMap<TKey, TValue, ICollection<TValue>>
@@ -76,5 +78,5 @@ public interface IReadOnlyMultiValueMap<TKey, TValue, TValueCollection>
     /// </summary>
     public int KeyCount { get; }
 
-    bool TryGetValues(TKey key, out TValueCollection? values);
+    bool TryGetValues(TKey key, [NotNullWhen(true)] out TValueCollection? values);
 }

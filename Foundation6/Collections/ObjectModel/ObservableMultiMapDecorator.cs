@@ -156,7 +156,7 @@ public class ObservableMultiMapDecorator<TKey, TValue>
     public bool TryGetValue(TKey key, [MaybeNullWhen(false)] out TValue value)
         => _map.TryGetValue(key, out value);
 
-    public bool TryGetValues(TKey key, out ICollection<TValue>? values) => _map.TryGetValues(key, out values);
+    public bool TryGetValues(TKey key, [NotNullWhen(true)] out ICollection<TValue>? values) => _map.TryGetValues(key, out values);
 
     public ICollection<TValue> Values => _map.Values;
 }

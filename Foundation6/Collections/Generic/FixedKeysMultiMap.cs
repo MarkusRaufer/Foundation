@@ -245,14 +245,16 @@ public class FixedKeysMultiMap<TKey, TValue> : IReadOnlyMultiValueMap<TKey, TVal
 
 
 #pragma warning disable CS8767
-    public bool TryGetValue(TKey key, [MaybeNullWhen(false)] out TValue? value)
+    public bool TryGetValue(TKey key, [NotNullWhen(true)] out TValue? value)
     {
         if (_dictionary.TryGetValue(key, out ICollection<TValue>? values))
         {
             if (0 < values.Count)
             {
                 value = values.First();
+#pragma warning disable CS8762 // Parameter must have a non-null value when exiting in some condition.
                 return true;
+#pragma warning restore CS8762 // Parameter must have a non-null value when exiting in some condition.
             }
         }
 
@@ -267,7 +269,7 @@ public class FixedKeysMultiMap<TKey, TValue> : IReadOnlyMultiValueMap<TKey, TVal
     /// <param name="key"></param>
     /// <param name="values"></param>
     /// <returns></returns>
-    public bool TryGetValues(TKey key, out ICollection<TValue>? values)
+    public bool TryGetValues(TKey key, [NotNullWhen(true)] out ICollection<TValue>? values)
     {
         if (_dictionary.TryGetValue(key, out ICollection<TValue>? vals))
         {
