@@ -43,14 +43,16 @@
         /// <summary>
         /// Returns all key values from dictionary. Existing key values of dictionary are replaced by the values of replacements.
         /// </summary>
-        /// <typeparam name="TKey"></typeparam>
-        /// <typeparam name="TValue"></typeparam>
-        /// <param name="dictionary"></param>
+        /// <typeparam name="TKey">Type of keys.</typeparam>
+        /// <typeparam name="TValue">Type of values.</typeparam>
+        /// <param name="dictionary">Dictionary which key values should be replaced.</param>
         /// <param name="replacements"></param>
+        /// <param name="addNonExistingReplacements">Add key value from replacements which do not exist in dictionary.</param>
         /// <returns></returns>
         public static IEnumerable<KeyValuePair<TKey, TValue>> Replace<TKey, TValue>(
             this IReadOnlyDictionary<TKey, TValue> dictionary,
-            IEnumerable<KeyValuePair<TKey, TValue>> replacements)
+            IEnumerable<KeyValuePair<TKey, TValue>> replacements,
+            bool addNonExistingReplacements = false)
             where TKey : notnull
         {
             var rhs = replacements.ToDictionary(x => x.Key, x => x.Value);
@@ -60,10 +62,19 @@
                 if (rhs.TryGetValue(lhs.Key, out TValue? rhsValue))
                 {
                     yield return new KeyValuePair<TKey, TValue>(lhs.Key, rhsValue);
+                    rhs.Remove(lhs.Key);
+
                     continue;
                 }
 
                 yield return lhs;
+            }
+
+            if (!addNonExistingReplacements) yield break;
+
+            foreach(var r in rhs)
+            {
+                if (!dictionary.ContainsKey(r.Key)) yield return r;
             }
         }
     }
