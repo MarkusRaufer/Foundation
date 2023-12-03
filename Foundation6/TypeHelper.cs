@@ -3,6 +3,78 @@
 public static class TypeHelper
 {
     /// <summary>
+    /// Returns the type of a nullable primitive type from type name.
+    /// </summary>
+    /// <param name="shortTypeName"></param>
+    /// <returns></returns>
+    public static Type? GetNullablePrimitveType(string shortTypeName)
+    {
+        var fullName = GetNullablePrimitiveTypeFullName(shortTypeName);
+        if (null == fullName) return null;
+
+        return Type.GetType(fullName);
+    }
+
+    /// <summary>
+    /// Returns the full name of the nullable primitive type from the short name.
+    /// </summary>
+    /// <param name="shortTypeName"></param>
+    /// <returns></returns>
+    public static string? GetNullablePrimitiveTypeFullName(string shortTypeName) => shortTypeName switch
+    {
+        "bool?" => typeof(Boolean?).FullName,
+        "byte?" => typeof(Byte?).FullName,
+        "char?" => typeof(Char?).FullName,
+        "double?" => typeof(Double?).FullName,
+        "float?" => typeof(Single?).FullName,
+        "int?" => typeof(Int32?).FullName,
+        "long?" => typeof(Int64?).FullName,
+        "sbyte?" => typeof(SByte?).FullName,
+        "short?" => typeof(Int16?).FullName,
+        "uint?" => typeof(UInt32?).FullName,
+        "ulong?" => typeof(UInt64?).FullName,
+        "ushort?" => typeof(UInt16?).FullName,
+        _ => null,
+    };
+    /// <summary>
+    /// returns the type from the short name. e.g. int?, string?.
+    /// </summary>
+    /// <param name="shortTypeName">The name of the type.</param>
+    /// <returns></returns>
+    public static Type? GetNullableScalarType(string shortTypeName, bool withNullablePrimitives = true)
+    {
+        var fullName = GetNullableScalarTypeFullName(shortTypeName, withNullablePrimitives);
+        if (null == fullName) return null;
+
+        return Type.GetType(fullName);
+    }
+
+    /// <summary>
+    /// returns the fullname of the type.
+    /// </summary>
+    /// <param name="shortTypeName">e.g. DateTime?, decimal?, string.</param>
+    /// <returns></returns>
+    public static string? GetNullableScalarTypeFullName(string shortTypeName, bool withNullablePrimitives = true)
+    {
+        if (withNullablePrimitives)
+        {
+            var fullName = GetNullablePrimitiveTypeFullName(shortTypeName);
+            if (null != fullName) return fullName;
+        }
+
+        return shortTypeName switch
+        {
+            $"{nameof(DateOnly)}?" => typeof(DateOnly?).FullName,
+            $"{nameof(DateTime)}?" => typeof(DateTime?).FullName,
+            "decimal?" => typeof(Decimal?).FullName,
+            $"{nameof(Guid)}?" => typeof(Guid?).FullName,
+            "string" => typeof(String).FullName,
+            $"{nameof(TimeOnly)}?" => typeof(TimeOnly?).FullName,
+            _ => null,
+        };
+    }
+
+    /// <summary>
     /// returns the type from the short name. e.g. bool, int.
     /// </summary>
     /// <param name="shortTypeName"></param>
@@ -84,6 +156,57 @@ public static class TypeHelper
             nameof(TimeOnly) => typeof(TimeOnly).FullName,
             _ => null,
         };
+    }
+
+    public static IEnumerable<Type> NullablePrimitiveTypes()
+    {
+        yield return typeof(Boolean?);
+        yield return typeof(Byte?);
+        yield return typeof(Char?);
+        yield return typeof(Double?);
+        yield return typeof(Int16?);
+        yield return typeof(Int32?);
+        yield return typeof(Int64?);
+        yield return typeof(SByte?);
+        yield return typeof(Single?);
+        yield return typeof(UInt16?);
+        yield return typeof(UInt32?);
+        yield return typeof(UInt64?);
+    }
+
+    public static IEnumerable<string> NullablePrimitiveTypeShortNames()
+    {
+        yield return "bool?";
+        yield return "byte?";
+        yield return "char?";
+        yield return "double?";
+        yield return "float?";
+        yield return "int?";
+        yield return "long?";
+        yield return "sbyte?";
+        yield return "short?";
+        yield return "uint?";
+        yield return "ulong?";
+        yield return "ushort?";
+    }
+
+    public static IEnumerable<Type> NullableScalarTypes(bool whithoutPrimitives = false)
+    {
+        if (!whithoutPrimitives)
+        {
+            foreach (var primitive in NullablePrimitiveTypes())
+            {
+                yield return primitive;
+            }
+        }
+
+        yield return typeof(DateOnly?);
+        yield return typeof(DateTime?);
+        yield return typeof(decimal?);
+        yield return typeof(Guid?);
+        yield return typeof(string);
+        yield return typeof(TimeOnly?);
+        yield return typeof(TimeSpan?);
     }
 
     public static IEnumerable<Type> PrimitiveArrayTypes()
