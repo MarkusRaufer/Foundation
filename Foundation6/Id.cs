@@ -78,45 +78,45 @@ public readonly struct Id
 /// <summary>
 /// Typed identifier. Boxing happens with value.
 /// </summary>
-/// <typeparam name="TEntity"></typeparam>
-public readonly struct Id<TEntity>
+/// <typeparam name="TEntityType"></typeparam>
+public readonly struct Id<TEntityType>
     : IComparable
-    , IComparable<Id<TEntity>>
-    , IEquatable<Id<TEntity>>
-    where TEntity : notnull
+    , IComparable<Id<TEntityType>>
+    , IEquatable<Id<TEntityType>>
+    where TEntityType : notnull
 {
     private readonly int _hashCode;
     private readonly IComparable _value;
 
-    internal Id(IComparable value)
+    internal Id(TEntityType entityType, IComparable value)
     {
         _value = value.ThrowIfNull();
 
-        EntityType = typeof(TEntity);
+        EntityType = entityType;
 
         _hashCode = System.HashCode.Combine(EntityType, _value);
     }
 
-    public static bool operator ==(Id<TEntity> left, Id<TEntity> right) => left.Equals(right);
+    public static bool operator ==(Id<TEntityType> left, Id<TEntityType> right) => left.Equals(right);
 
-    public static bool operator !=(Id<TEntity> left, Id<TEntity> right) => !(left == right);
+    public static bool operator !=(Id<TEntityType> left, Id<TEntityType> right) => !(left == right);
 
-    public static bool operator <(Id<TEntity> left, Id<TEntity> right) => -1 == left.CompareTo(right);
+    public static bool operator <(Id<TEntityType> left, Id<TEntityType> right) => -1 == left.CompareTo(right);
 
-    public static bool operator <=(Id<TEntity> left, Id<TEntity> right) => 0 >= left.CompareTo(right);
+    public static bool operator <=(Id<TEntityType> left, Id<TEntityType> right) => 0 >= left.CompareTo(right);
 
-    public static bool operator >(Id<TEntity> left, Id<TEntity> right) => 1 == left.CompareTo(right);
+    public static bool operator >(Id<TEntityType> left, Id<TEntityType> right) => 1 == left.CompareTo(right);
 
-    public static bool operator >=(Id<TEntity> left, Id<TEntity> right) => 0 <= left.CompareTo(right);
+    public static bool operator >=(Id<TEntityType> left, Id<TEntityType> right) => 0 <= left.CompareTo(right);
 
     public int CompareTo(object? obj)
     {
-        if (obj is Id<TEntity> other) return CompareTo(other);
+        if (obj is Id<TEntityType> other) return CompareTo(other);
 
         return 1;
     }
 
-    public int CompareTo(Id<TEntity> other)
+    public int CompareTo(Id<TEntityType> other)
     {
         if (IsEmpty) return other.IsEmpty ? 0 : -1;
         if (other.IsEmpty) return 1;
@@ -126,18 +126,18 @@ public readonly struct Id<TEntity>
         return _value.CompareTo(other._value);
     }
 
-    public override bool Equals(object? obj) => obj is Id<TEntity> other && Equals(other);
+    public override bool Equals(object? obj) => obj is Id<TEntityType> other && Equals(other);
 
-    public bool Equals(Id<TEntity> other)
+    public bool Equals(Id<TEntityType> other)
     {
         return _hashCode == other._hashCode &&  0 == CompareTo(other);
     }
 
     public override int GetHashCode() => _hashCode;
 
-    public Type EntityType { get; }
+    public TEntityType EntityType { get; }
 
     public bool IsEmpty => EntityType is null;
 
-    public override string ToString() => IsEmpty ? "" : $"{_value}";
+    public override string ToString() => IsEmpty ? "" : $"{EntityType}: {_value}";
 }
