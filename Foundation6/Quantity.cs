@@ -8,6 +8,12 @@
 public readonly record struct Quantity(string Unit, decimal Value)
 {
     public readonly bool IsEmpty => 0 == GetHashCode();
+
+    public static Quantity New(string unit, decimal value) => new(unit, value);
+
+    public static Quantity<TValue> New<TValue>(string unit, TValue value) => new(unit, value);
+
+    public static Quantity<TUnit, TValue> New<TUnit, TValue>(TUnit unit, TValue value) => new(unit, value);
 }
 
 /// <summary>
