@@ -174,7 +174,7 @@ public readonly struct NamedId<T>
 
     public static bool operator !=(NamedId<T> lhs, NamedId<T> rhs) => !(lhs == rhs);
 
-    public static bool operator <(NamedId<T> lhs, NamedId<T> rhs) => 1 == lhs.CompareTo(rhs);
+    public static bool operator <(NamedId<T> lhs, NamedId<T> rhs) => -1 == lhs.CompareTo(rhs);
 
     public static bool operator <=(NamedId<T> lhs, NamedId<T> rhs) => 0 >= lhs.CompareTo(rhs);
 
