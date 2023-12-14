@@ -1,4 +1,4 @@
-﻿namespace Foundation;
+﻿namespace Foundation.ComponentModel;
 
 public class NamedIdFactory
     : IIdFactory<NamedId>

@@ -1,4 +1,4 @@
-﻿namespace Foundation;
+﻿namespace Foundation.ComponentModel;
 
 public class IdFactory : IIdFactory<Id>, IResetable
 {
@@ -18,7 +18,7 @@ public class IdFactory : IIdFactory<Id>, IResetable
 
     public Id NewId()
     {
-        if(!_passed)
+        if (!_passed)
         {
             _passed = true;
             return _current;

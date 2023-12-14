@@ -15,33 +15,32 @@ public readonly struct NamedId
 {
     private readonly int _hashCode;
     private readonly bool _isInitialized;
-    private readonly string _name;
     private readonly IComparable _value;
 
     #region ctors
 
     internal NamedId(string name, IComparable value)
     {
-        _name = name.ThrowIfNullOrEmpty();
+        Name = name.ThrowIfNullOrEmpty();
         _value = value.ThrowIfNull();
 
-        _hashCode = System.HashCode.Combine(_name, _value);
+        _hashCode = System.HashCode.Combine(Name, _value);
 
         _isInitialized = true;
     }
 
     public NamedId(SerializationInfo info, StreamingContext context)
     {
-        if (info.GetValue(nameof(_name), typeof(Type)) is not string name)
-            throw new ArgumentNullException(nameof(_name));
+        if (info.GetValue(nameof(Name), typeof(Type)) is not string name)
+            throw new ArgumentNullException(nameof(Name));
 
         if (info.GetValue(nameof(_value), typeof(IComparable)) is not IComparable comparable)
             throw new ArgumentNullException(nameof(_value));
 
         _value = comparable;
-        _name = name.ThrowIfNullOrEmpty();
+        Name = name.ThrowIfNullOrEmpty();
 
-        _hashCode = System.HashCode.Combine(_name, _value);
+        _hashCode = System.HashCode.Combine(Name, _value);
         _isInitialized = true;
     }
     #endregion ctors
@@ -75,7 +74,7 @@ public readonly struct NamedId
         if (IsEmpty) return other.IsEmpty ? 0 : -1;
         if (other.IsEmpty) return 1;
 
-        if (!_name.Equals(other._name)) return 1;
+        if (!Name.Equals(other.Name)) return 1;
 
         return _value.CompareTo(other._value);
     }
@@ -93,24 +92,30 @@ public readonly struct NamedId
 
     public void GetObjectData(SerializationInfo info, StreamingContext context)
     {
-        info.AddValue(nameof(_name), _name);
+        info.AddValue(nameof(Name), Name);
         info.AddValue(nameof(_value), _value);
     }
 
     public bool IsEmpty => !_isInitialized;
 
-    public static NamedId New(string name, IComparable value) => new NamedId(name, value);
+    public string Name { get; }
+
+    public static NamedId New(string name) => new (name, Guid.NewGuid());
+
+    public static NamedId New(string name, IComparable value) => new (name, value);
+
+    public static NamedId New(string name, byte[] value) => new (name, ByteString.CopyFrom(value));
 
     public static NamedId<T> New<T>(string name, T value) where T : struct, IComparable<T>, IEquatable<T>
         => new(name, value);
 
-    public override string ToString() => $"{_name}:{_value}";
+    public override string ToString() => $"{Name}:{_value}";
 
     public string ToString(string? format, IFormatProvider? formatProvider)
     {
         var provider = formatProvider ?? CultureInfo.InvariantCulture;
 
-        return string.IsNullOrEmpty(format) ? $"{_name}:{_value}" : string.Format(provider, format, _value);
+        return string.IsNullOrEmpty(format) ? $"{Name}:{_value}" : string.Format(provider, format, _value);
     }
 
     public string ValueToString() => $"{_value}";
@@ -136,33 +141,32 @@ public readonly struct NamedId<T>
 {
     private readonly int _hashCode;
     private readonly bool _isInitialized;
-    private readonly string _name;
     private readonly T _value;
 
     #region ctors
 
     internal NamedId(string name, T value)
     {
-        _name = name.ThrowIfNullOrEmpty();
+        Name = name.ThrowIfNullOrEmpty();
         _value = value.ThrowIfNull();
 
-        _hashCode = System.HashCode.Combine(_name, value);
+        _hashCode = System.HashCode.Combine(Name, value);
 
         _isInitialized = true;
     }
 
     public NamedId(SerializationInfo info, StreamingContext context)
     {
-        if (info.GetValue(nameof(_name), typeof(T)) is not string name)
+        if (info.GetValue(nameof(Name), typeof(T)) is not string name)
             throw new ArgumentNullException(nameof(_value));
 
         if (info.GetValue(nameof(_value), typeof(T)) is not T value)
             throw new ArgumentNullException(nameof(_value));
 
-        _name = name;
+        Name = name;
         _value = value;
 
-        _hashCode = System.HashCode.Combine(_name, _value);
+        _hashCode = System.HashCode.Combine(Name, _value);
         _isInitialized = true;
     }
     #endregion ctors
@@ -195,7 +199,7 @@ public readonly struct NamedId<T>
         if (IsEmpty) return other.IsEmpty ? 0 : -1;
         if (other.IsEmpty) return 1;
 
-        if (!_name.Equals(other._name)) return 1;
+        if (!Name.Equals(other.Name)) return 1;
 
         return _value.CompareTo(other._value);
     }
@@ -213,19 +217,21 @@ public readonly struct NamedId<T>
 
     public void GetObjectData(SerializationInfo info, StreamingContext context)
     {
-        info.AddValue(nameof(_name), _name);
+        info.AddValue(nameof(Name), Name);
         info.AddValue(nameof(_value), _value);
     }
 
     public bool IsEmpty => !_isInitialized;
 
-    public override string ToString() => $"{_name}:{_value}";
+    public string Name { get; }
+
+    public override string ToString() => $"{Name}:{_value}";
 
     public string ToString(string? format, IFormatProvider? formatProvider)
     {
         var provider = formatProvider ?? CultureInfo.InvariantCulture;
 
-        return string.IsNullOrEmpty(format) ? $"{_name}:{_value}" : string.Format(provider, format, _value);
+        return string.IsNullOrEmpty(format) ? $"{Name}:{_value}" : string.Format(provider, format, _value);
     }
 }
 

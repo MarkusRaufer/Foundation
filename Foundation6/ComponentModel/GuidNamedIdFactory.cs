@@ -1,6 +1,6 @@
-﻿namespace Foundation;
+﻿namespace Foundation.ComponentModel;
 
-public class GuidNamedIdFactory 
+public class GuidNamedIdFactory
     : IIdFactory<NamedId>
     , IIdentifiableFactory<string>
 {
