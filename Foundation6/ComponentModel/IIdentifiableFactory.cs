@@ -1,4 +1,4 @@
-﻿namespace Foundation;
+﻿namespace Foundation.ComponentModel;
 
 public interface IIdentifiableFactory<TFactoryId>
 {
