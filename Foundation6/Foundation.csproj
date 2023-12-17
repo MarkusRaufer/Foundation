@@ -1,9 +1,17 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>net6.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
+	<LangVersion>latest</LangVersion>
+	<GeneratePackageOnBuild>True</GeneratePackageOnBuild>
+	<BaseOutputPath>bin\</BaseOutputPath>
+	<PackageOutputPath>$(LOCAL_NUGET)\</PackageOutputPath>
+	<Copyright>Markus Raufer</Copyright>
+	<Authors>Markus Raufer</Authors>
+	<Description>A base C# framework</Description>
+	<PackageTags>LINQ, standard types</PackageTags>
   </PropertyGroup>
 
   <ItemGroup>

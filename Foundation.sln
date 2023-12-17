@@ -17,7 +17,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Foundation.Algorithms", "Fo
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Foundation.DI", "Foundation.DI\Foundation.DI.csproj", "{7E4CDC00-B6A4-4EBE-8AEF-8DF42DF98605}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Foundation.DesignPatterns.Tests", "Foundation.DesignPatterns.Tests\Foundation.DesignPatterns.Tests.csproj", "{1B6D929A-E5B9-4C94-BA7A-421CDBA2A99A}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Foundation.DesignPatterns.Tests", "Foundation.DesignPatterns.Tests\Foundation.DesignPatterns.Tests.csproj", "{1B6D929A-E5B9-4C94-BA7A-421CDBA2A99A}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
