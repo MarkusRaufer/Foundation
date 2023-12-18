@@ -500,7 +500,7 @@ public static class EnumerableConditionals
 
         foreach (var item in items)
         {
-            if (null == item) continue;
+            if (item is null) continue;
 
             yield return item;
         }
@@ -558,7 +558,7 @@ public static class EnumerableConditionals
     /// <exception cref="ArgumentNullException"></exception>
     public static IEnumerable<T> ThrowIfElementNull<T>(this IEnumerable<T> items)
     {
-        return items.Any(x => null == x) ? throw new ArgumentNullException(nameof(items)) : items;
+        return items.Any(x => x is null) ? throw new ArgumentNullException(nameof(items)) : items;
     }
 
     /// <summary>

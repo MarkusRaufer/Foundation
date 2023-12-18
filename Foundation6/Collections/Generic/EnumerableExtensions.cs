@@ -803,14 +803,6 @@ public static class EnumerableExtensions
     /// </summary>
     /// <typeparam name="T">Type of element.</typeparam>
     /// <param name="items">List of elements.</param>
-    /// <returns>An element of type T if exists or null.</returns>
-    public static T? FirstOfType<T>(this IEnumerable<T> items) => items.OfType().FirstOrDefault();
-
-    /// <summary>
-    /// Returns the first element of a specific type if exists.
-    /// </summary>
-    /// <typeparam name="T">Type of element.</typeparam>
-    /// <param name="items">List of elements.</param>
     /// <returns>Returns an Option. If found the Option.IsSome is true.</returns>
     public static Option<T> FirstOfTypeAsOption<T>(this IEnumerable<T> items) => items.OfType().FirstAsOption();
 
