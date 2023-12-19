@@ -238,17 +238,6 @@ public static class EnumerableConditionals
         return new ElseIf<T, TResult>(@else, selector);
     }
 
-    //public static IElse<T, TResult> If<T, TResult>(
-    //    this IEnumerable<T> items,
-    //    Func<T, bool> predicate,
-    //    Func<T, TResult> map)
-    //{
-    //    predicate.ThrowIfEnumerableIsNull();
-    //    map.ThrowIfEnumerableIsNull();
-
-    //    return new ElseResult<T, TResult>(items, predicate, map);
-    //}
-
     /// <summary>
     /// If items is empty <paramref name="whenEmpty"/> is called otherwise <paramref name="whenNotEmpty"/>.
     /// </summary>
@@ -267,32 +256,17 @@ public static class EnumerableConditionals
     }
 
     /// <summary>
-    /// Returns alternative elements if enumerable is empty..
+    /// Returns alternative elements rhs if enumerable lhs is empty..
     /// </summary>
-    /// <typeparam name="T"></typeparam>
-    /// <param name="lhs">if not empty this elements are the result</param>
+    /// <typeparam name="T">Type of elements.</typeparam>
+    /// <param name="lhs">if not empty this elements are the result.</param>
     /// <param name="rhs">Alternative elements are the result if lhs is empty.</param>
     /// <returns></returns>
     public static IEnumerable<T> IfEmpty<T>(this IEnumerable<T> lhs, IEnumerable<T> rhs)
     {
         rhs.ThrowIfEnumerableIsNull();
-
-        var lIt = lhs.GetEnumerator();
-        if (!lIt.MoveNext())
-        {
-            foreach (var r in rhs)
-            {
-                yield return r;
-            }
-            yield break;
-        }
-
-        yield return lIt.Current;
-
-        while (lIt.MoveNext())
-        {
-            yield return lIt.Current;
-        }
+        
+        return lhs.Any() ? lhs : rhs;
     }
 
     /// <summary>
@@ -306,22 +280,7 @@ public static class EnumerableConditionals
     {
         whenEmpty.ThrowIfNull();
 
-        var it = items.GetEnumerator();
-        if (!it.MoveNext())
-        {
-            foreach (var x in whenEmpty())
-            {
-                yield return x;
-            }
-            yield break;
-        }
-
-        yield return it.Current;
-
-        while (it.MoveNext())
-        {
-            yield return it.Current;
-        }
+        return items.Any() ? items : whenEmpty();
     }
 
     /// <summary>
@@ -340,53 +299,6 @@ public static class EnumerableConditionals
     {
         return items.Any() ? whenNotEmpty(items) : whenEmpty(items);
     }
-
-    public static IEnumerable<T> IfMoreOrEqualThan<T>(this IEnumerable<T> items, int numberOfItems)
-    {
-        var it = items.ThrowIfEnumerableIsNull().GetEnumerator();
-        if (0 >= numberOfItems) yield break;
-
-        var minimum = new List<T>();
-        while (it.MoveNext())
-        {
-            minimum.Add(it.Current);
-            if (minimum.Count == numberOfItems) break;
-        }
-
-        if (0 == minimum.Count || minimum.Count < numberOfItems) yield break;
-
-        foreach (var item in minimum)
-            yield return item;
-
-        while (it.MoveNext())
-        {
-            yield return it.Current;
-        }
-    }
-
-    public static IEnumerable<T> IfMoreThan<T>(this IEnumerable<T> items, int numberOfItems)
-    {
-        var it = items.ThrowIfEnumerableIsNull().GetEnumerator();
-        if (0 >= numberOfItems) yield break;
-
-        var minimum = new List<T>();
-        while(it.MoveNext())
-        {
-            minimum.Add(it.Current);
-            if (minimum.Count > numberOfItems) break;
-        }
-
-        if (0 == minimum.Count) yield break;
-
-        foreach (var item in minimum)
-            yield return item;
-
-        while (it.MoveNext())
-        {
-            yield return it.Current;
-        }
-    }
-
 
     /// <summary>
     /// Returns true if all items are in an ascending order.
@@ -543,6 +455,44 @@ public static class EnumerableConditionals
             if (types.Any(t => t.Equals(itemType) || t.IsAssignableFrom(itemType))) continue;
 
             yield return selector(item);
+        }
+    }
+
+    /// <summary>
+    /// This method acts like a valve. It returns items only if predicate is satisfied first time. Means ff true all items are returned if false an empty enumerable is returned.
+    /// </summary>
+    /// <typeparam name="T">Type of elements.</typeparam>
+    /// <param name="items">List of elements.</param>
+    /// <param name="predicate">If true items are returns if false an empty enumerable is returned. The input of the predicate is the current element and the element counter.</param>
+    /// <param name="seed">This is the seed value of the element counter. Default is 1. If the counter is e.g. 0 you can use it as index.</param>
+    /// <returns></returns>
+    public static IEnumerable<T> OpenWhen<T>(this IEnumerable<T> items, Func<T, long, bool> predicate, long seed = 1L)
+    {
+        var buffer = new List<T>();
+        var i = seed;
+        var predicateResult = false;
+
+        var it = items.GetEnumerator();
+
+        while (it.MoveNext())
+        {
+            predicateResult = predicate(it.Current, i);
+            buffer.Add(it.Current);
+
+            if (predicateResult) break;
+            i++;
+        }
+
+        if (!predicateResult) yield break;
+
+        foreach (var bufferedItem in buffer)
+        {
+            yield return bufferedItem;
+        }
+
+        while (it.MoveNext())
+        {
+            yield return it.Current;
         }
     }
 

@@ -92,31 +92,31 @@ public class EnumerableConditionalsTests
     }
 
     [Test]
-    public void IfMoreOrEqualThan_Should_Return0Elements_When_NumberOfElementsAreSmallerThan11()
+    public void OpenWhen_Should_Return0Elements_When_NumberOfElementsIsSmallerThan11()
     {
         var numbers = Enumerable.Range(1, 10);
 
-        var actual = numbers.IfMoreOrEqualThan(11).ToArray();
+        var actual = numbers.OpenWhen((n, i) => i == 11).ToArray();
 
         actual.Length.Should().Be(0);
     }
 
     [Test]
-    public void IfMoreOrEqualThan_Should_Return10Elements_When_NumberOfElementsIs10()
+    public void OpenWhen_Should_Return10Elements_When_NumberOfElementsIsAtLeast10()
     {
         var numbers = Enumerable.Range(1, 10);
 
-        var actual = numbers.IfMoreOrEqualThan(10).ToArray();
+        var actual = numbers.OpenWhen((n, i) => i == 9).ToArray();
 
         actual.Length.Should().Be(10);
     }
 
     [Test]
-    public void IfMoreOrEqualThan_Should_Return10Elements_When_NumberOfElementsIs5()
+    public void OpenWhen_Should_Return10Elements_When_NumberOfElementsIsAtLeast5()
     {
         var numbers = Enumerable.Range(1, 10);
 
-        var actual = numbers.IfMoreOrEqualThan(5).ToArray();
+        var actual = numbers.OpenWhen((n, i) => i == 5).ToArray();
 
         actual.Length.Should().Be(10);
     }
