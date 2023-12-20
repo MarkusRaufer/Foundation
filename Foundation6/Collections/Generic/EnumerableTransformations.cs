@@ -7,6 +7,58 @@ namespace Foundation.Collections.Generic;
 public static class EnumerableTransformations
 {
     /// <summary>
+    /// Splits a stream into multiple new streams. For each predicate an extra stream.
+    /// </summary>
+    /// <typeparam name="T">Type of elements.</typeparam>
+    /// <param name="items">Stream which should be splitted.</param>
+    /// <param name="predicates">List of predicates. Each predicate creates an additional stream.</param>
+    /// <param name="allowSameElements">True means if multiple predicates return true on an element it will appear in multiple streams. False means if a predicate is true this element is added to this stream and will not appear in other streams. </param>
+    /// <param name="removeEmptyStreams">If true empty streams are removed from result otherwise empty streams are included.</param>
+    /// <returns></returns>
+    public static IEnumerable<IEnumerable<T>> SplitIntoStreams<T>(
+        this IEnumerable<T> items,
+        IEnumerable<Func<T, bool>> predicates,
+        bool allowSameElements = true,
+        bool removeEmptyStreams = false)
+    {
+        var streams = predicates.Select(x => Enumerable.Empty<T>()).ToList();
+
+        var stop = ObservableValue.New(false);
+
+        foreach (var item in items)
+        {
+            var i = 0;
+            foreach (var predicate in predicates.ToBreakable(ref stop))
+            {
+                if (predicate(item))
+                {
+                    streams[i] = streams[i].Append(item);
+
+                    if(!allowSameElements)
+                    {
+                        i++;
+                        stop.Value = true;
+                    }
+                }
+                i++;
+            }
+
+            stop.Value = false;
+        }
+
+        if(!removeEmptyStreams) return streams;
+
+        foreach (var i in streams.Enumerate()
+                                 .Where(tuple => !tuple.item.Any())
+                                 .Select(tuple => tuple.counter)
+                                 .ToArray())
+        {
+            streams.RemoveAt(i);
+        }
+        return streams;
+    }
+
+    /// <summary>
     /// Transforms an enumerable of enumerables into an array of arrays.
     /// </summary>
     /// <typeparam name="T"></typeparam>
