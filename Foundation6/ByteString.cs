@@ -18,10 +18,14 @@ public sealed class ByteString
     private readonly IComparer<ByteString> _comparer;
     private readonly int _hashCode;
 
-    public ByteString(byte[] bytes)
+    public ByteString(byte[] bytes) : this (bytes, ByteStringComparer.Default)
+    {
+    }
+
+    public ByteString(byte[] bytes, IComparer<ByteString> comparer)
     {
         _bytes = bytes;
-        _comparer = ByteStringComparer.Default;
+        _comparer = comparer.ThrowIfNull();
         _hashCode = HashCode.FromObjects(_bytes);
     }
 
@@ -85,6 +89,8 @@ public sealed class ByteString
     public static implicit operator byte[](ByteString byteString) => byteString.ToByteArray();
 
     public byte this[int index] => _bytes[index];
+
+    public ReadOnlySpan<byte> AsSpan() => new(_bytes);
 
     public object Clone()
     {
@@ -177,8 +183,6 @@ public sealed class ByteString
     public string ToBase64String() => Convert.ToBase64String(_bytes);
 
     public byte[] ToByteArray() => (byte[])_bytes.Clone();
-
-    public ReadOnlySpan<byte> ToReadOnlySpan() => new(_bytes);
 
     public string ToString(Encoding encoding)
     {

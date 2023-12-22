@@ -11,9 +11,9 @@ public static class ByteStringComparer
             if (x is null) return y is null ? 0 : -1;
             if (y is null) return 1;
 
-            var lhs = x.ToReadOnlySpan();
-            var rhs = y.ToReadOnlySpan();
-
+            var lhs = x.AsSpan();
+            var rhs = y.AsSpan();
+            
             return lhs.SequenceCompareTo(rhs);
         }
     }
@@ -27,25 +27,21 @@ public static class ByteStringComparer
             if (x is null) return y is null ? 0 : 1;
             if (y is null) return -1;
 
-            if (x.Length < y.Length) return -1;
-            if (x.Length > y.Length) return 1;
+            var lhs = x.AsSpan();
+            var rhs = y.AsSpan();
 
-            for (var i = 0; i < y.Length; i++)
-            {
-                var lhs = x[i];
-                var rhs = y[i];
-                if (lhs < rhs) return -1;
-                if (lhs > rhs) return 1;
-            }
-
-            return 0;
+            return lhs.SequenceCompareTo(rhs);
         }
     }
 
     /// <summary>
-    /// null is considered
+    /// null is considered. A ByteString is null means smaller.
     /// </summary>
     public static IComparer<ByteString> Default => new DefaultByteStringComparer();
-    public static IComparer<ByteString> NullValuesAreGreater => new NullByteStringComparer();
-}
 
+    /// <summary>
+    /// null is considered. A ByteString is null means greater. In a list including null values the null values appear at the end. 
+    /// Means you can stop iterating the list on the first null ByteString.
+    /// </summary>
+    public static IComparer<ByteString> NullIsGreater => new NullByteStringComparer();
+}

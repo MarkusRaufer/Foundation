@@ -6,11 +6,10 @@ namespace Foundation.Benchmark
     [MemoryDiagnoser]
     public class ByteStringBenchMarks
     {
-        private ByteString _lhs;
-        private ByteString _rhs;
+        private ByteString? _lhs;
+        private ByteString? _rhs;
 
-        private readonly Random _random = new Random();
-        private IComparer<ByteString> _nullComparer = ByteStringComparer.NullValuesAreGreater;
+        private readonly IComparer<ByteString> _nullComparer = ByteStringComparer.NullIsGreater;
 
         [Params(100, 1000, 100000)]
         public int NumberOfItems;
@@ -18,15 +17,24 @@ namespace Foundation.Benchmark
         [GlobalSetup]
         public void Setup()
         {
-            var bytes = new byte[NumberOfItems];
-            _lhs = new ByteString(bytes);
-            _rhs = new ByteString(bytes);
+            var lhsBytes = new byte[NumberOfItems];
+            var rhsBytes = new byte[NumberOfItems];
+            byte value = 1;
+            for(var i= 0; i < NumberOfItems; i++ )
+            {
+                lhsBytes[i] = value;
+                rhsBytes[i] = value;
+                value++;
+            }
+
+            _lhs = new ByteString(lhsBytes);
+            _rhs = new ByteString(rhsBytes);
         }
 
         [Benchmark]
         public int ByteStringComparer_Default()
         {
-            return _lhs.CompareTo(_rhs);
+            return _lhs!.CompareTo(_rhs);
         }
 
         [Benchmark]
