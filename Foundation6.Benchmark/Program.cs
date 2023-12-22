@@ -9,6 +9,7 @@ namespace Foundation.Benchmarks
         public static void Main(string[] args)
         {
             //BenchmarkRunner.Run<ArrayValueBenchmarks>();
+            //BenchmarkRunner.Run<ByteStringBenchMarks>();
             //BenchmarkRunner.Run<SortedSetXBenchmarks>();
             //BenchmarkRunner.Run<CollectionsCreationBenchmarks>();
             //BenchmarkRunner.Run<CollectionsSearchBenchmarks>();

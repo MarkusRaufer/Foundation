@@ -178,7 +178,7 @@ public sealed class ByteString
 
     public byte[] ToByteArray() => (byte[])_bytes.Clone();
 
-    public ReadOnlySpan<byte> ToReadOnlySpan => new(_bytes);
+    public ReadOnlySpan<byte> ToReadOnlySpan() => new(_bytes);
 
     public string ToString(Encoding encoding)
     {

@@ -11,18 +11,10 @@ public static class ByteStringComparer
             if (x is null) return y is null ? 0 : -1;
             if (y is null) return 1;
 
-            if (x.Length < y.Length) return -1;
-            if (x.Length > y.Length) return 1;
+            var lhs = x.ToReadOnlySpan();
+            var rhs = y.ToReadOnlySpan();
 
-            for (var i = 0; i < y.Length; i++)
-            {
-                var lhs = x[i];
-                var rhs = y[i];
-                if (lhs < rhs) return -1;
-                if (lhs > rhs) return 1;
-            }
-
-            return 0;
+            return lhs.SequenceCompareTo(rhs);
         }
     }
 
@@ -50,7 +42,10 @@ public static class ByteStringComparer
         }
     }
 
+    /// <summary>
+    /// null is considered
+    /// </summary>
     public static IComparer<ByteString> Default => new DefaultByteStringComparer();
-    public static IComparer<ByteString> NullValuesAreGreatest => new NullByteStringComparer();
+    public static IComparer<ByteString> NullValuesAreGreater => new NullByteStringComparer();
 }
 
