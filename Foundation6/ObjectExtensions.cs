@@ -107,17 +107,11 @@ public static class ObjectExtensions
     /// </summary>
     /// <param name="lhs"></param>
     /// <param name="rhs"></param>
-    /// <returns></returns>
+    /// <returns>True if both sides are equal.</returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static bool EqualsNullable(this object? lhs, object? rhs)
+    public static bool EqualsNullable<T>(this T? lhs, T? rhs)
     {
-        if (ReferenceEquals(lhs, rhs)) return true;
-
-        if (null == lhs) return null == rhs;
-        if (null == rhs) return false;
-        if(lhs.GetHashCode() != rhs.GetHashCode()) return false;
-
-        return lhs.Equals(rhs);
+        return EqualsNullable(lhs, rhs, (x, y) => x!.Equals(y));
     }
 
     /// <summary>
@@ -131,8 +125,10 @@ public static class ObjectExtensions
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static bool EqualsNullable<T>(this T? lhs, T? rhs, Func<T, T, bool> equals)
     {
-        if (null == lhs) return null == rhs;
-        if (null == rhs) return false;
+        if (ReferenceEquals(lhs, rhs)) return true;
+
+        if (lhs is null) return rhs is null;
+        if (rhs is null) return false;
         if (lhs.GetHashCode() != rhs.GetHashCode()) return false;
 
         return equals(lhs, rhs);
