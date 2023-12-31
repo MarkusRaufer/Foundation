@@ -460,12 +460,20 @@ public static class EnumerableExtensions
         return !lhs.SymmetricDifference(rhs, retainDuplicates: true).Any();
     }
 
-    public static bool EqualsCollection<T>(this IEnumerable<T> lhs, IEnumerable<T> rhs, Func<T, T, bool> equal)
+    /// <summary>
+    /// Returns true when both sides lhs and rhs are equal.
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <param name="lhs"></param>
+    /// <param name="rhs"></param>
+    /// <param name="equal">The selector of the comparison.</param>
+    /// <returns></returns>
+    public static bool EqualsCollection<T, TKey>(this IEnumerable<T> lhs, IEnumerable<T> rhs, Func<T, TKey?> selector)
     {
         if (null == lhs) return null == rhs;
         if (null == rhs) return false;
 
-        return !lhs.SymmetricDifference(rhs, retainDuplicates: true).Any();
+        return !lhs.SymmetricDifference(rhs, selector, retainDuplicates: true).Any();
     }
 
     /// <summary>

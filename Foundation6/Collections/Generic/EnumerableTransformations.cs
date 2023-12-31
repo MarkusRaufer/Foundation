@@ -1,5 +1,4 @@
 ﻿using Foundation.ComponentModel;
-using System.Runtime.CompilerServices;
 using System.Text;
 
 namespace Foundation.Collections.Generic;
