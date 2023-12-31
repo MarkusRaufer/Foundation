@@ -4,9 +4,9 @@ public class NamedIdFactory
     : IIdFactory<NamedId>
     , IIdentifiableFactory<string>
 {
-    private readonly Func<IComparable> _idFactory;
+    private readonly Func<NamedId> _idFactory;
 
-    public NamedIdFactory(string factoryId, Func<IComparable> idFactory)
+    public NamedIdFactory(string factoryId, Func<NamedId> idFactory)
     {
         FactoryId = factoryId.ThrowIfNullOrWhiteSpace();
         _idFactory = idFactory.ThrowIfNull();
@@ -16,8 +16,7 @@ public class NamedIdFactory
 
     public NamedId NewId()
     {
-        var id = _idFactory();
-        return new NamedId(FactoryId, id);
+        return _idFactory();
     }
 }
 
