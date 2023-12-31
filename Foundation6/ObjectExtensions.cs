@@ -331,7 +331,7 @@ public static class ObjectExtensions
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static byte[]? ToByteArray(this object? obj, Encoding? encoding = null)
+    public static byte[] ToByteArray(this object? obj, Encoding? encoding = null)
     {
         return obj switch
         {
@@ -350,7 +350,7 @@ public static class ObjectExtensions
             UInt64 ui64 => BitConverter.GetBytes(ui64),
             SByte sb => BitConverter.GetBytes(sb),
             string str => null != encoding ? encoding.GetBytes(str) : Encoding.UTF8.GetBytes(str),
-            _ => default
+            _ => []
         };
     }
 
