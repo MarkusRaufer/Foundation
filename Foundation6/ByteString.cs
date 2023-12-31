@@ -1,9 +1,11 @@
 ﻿namespace Foundation;
 
+using Foundation.Collections.Generic;
 using System.Collections;
+using System.Collections.Generic;
 using System.Runtime.Serialization;
 using System.Text;
-using Foundation.Collections.Generic;
+using System.Text.Json.Serialization;
 
 [Serializable]
 public sealed class ByteString
@@ -18,6 +20,7 @@ public sealed class ByteString
     private readonly IComparer<ByteString> _comparer;
     private readonly int _hashCode;
 
+    [JsonConstructor]
     public ByteString(byte[] bytes) : this (bytes, ByteStringComparer.Default)
     {
     }
@@ -58,30 +61,28 @@ public sealed class ByteString
     {
         if (lhs is null) return rhs is not null;
 
-        return lhs.CompareTo(rhs) == -1;
+        return lhs.CompareTo(rhs) < 0;
     }
 
     public static bool operator <=(ByteString lhs, ByteString rhs)
     {
         if (lhs is null) return true;
 
-        var compare = lhs.CompareTo(rhs);
-        return -1 == compare || 0 == compare;
+        return lhs.CompareTo(rhs) is (<= 0);
     }
 
     public static bool operator >(ByteString lhs, ByteString rhs)
     {
         if (lhs is null) return rhs is not null;
 
-        return lhs.CompareTo(rhs) == 1;
+        return lhs.CompareTo(rhs) > 0;
     }
 
     public static bool operator >=(ByteString lhs, ByteString rhs)
     {
         if (lhs is null) return rhs is null;
 
-        var compare = lhs.CompareTo(rhs);
-        return 1 == compare || 0 == compare;
+        return lhs.CompareTo(rhs) is (>= 0);
     }
 
     public static implicit operator ByteString(byte[] bytes) => CopyFrom(bytes);
@@ -97,6 +98,11 @@ public sealed class ByteString
         return CopyFrom(_bytes);
     }
 
+    /// <summary>
+    /// Determines the relative order of the sequences being compared by comparing the elements using IComparable{T}.CompareTo(T).
+    /// </summary>
+    /// <param name="other">The other ByteString which should be compared.</param>
+    /// <returns></returns>
     public int CompareTo(ByteString? other)
     {
         return _comparer.Compare(this, other);
@@ -109,14 +115,18 @@ public sealed class ByteString
 
     public static ByteString Concat(params ByteString[] byteStrings)
     {
-        var bytes = Enumerable.Empty<byte>();
+        var length = byteStrings.Select(x => x.Length).Sum();
+        var bytes = new byte[length];
 
+        var index = 0;
         foreach (var byteString in byteStrings)
         {
-            bytes = bytes.Concat(byteString.ToByteArray());
+            var target = new Span<byte>(bytes, index, byteString.Length);
+            byteString.AsSpan().CopyTo(target);
+            index += byteString.Length;
         }
 
-        return new ByteString(bytes.ToArray());
+        return new ByteString(bytes);
     }
 
     public static ByteString CopyFrom(params byte[] bytes)
@@ -129,6 +139,7 @@ public sealed class ByteString
         return new ByteString(bytes.ToArray());
     }
 
+    [JsonIgnore]
     public static ByteString Empty { get; } = new ByteString(Array.Empty<byte>());
 
     public override bool Equals(object? obj)
@@ -176,9 +187,24 @@ public sealed class ByteString
         info.AddValue(nameof(_bytes), _bytes);
     }
 
+    [JsonIgnore]
     public bool IsEmpty => 0 == Length;
 
+    [JsonIgnore]
     public int Length => _bytes.Length;
+
+    public int ToBase64CharArray(int offsetIn, int length, char[] outArray, int offsetOut)
+        => Convert.ToBase64CharArray(_bytes, offsetIn, length, outArray, offsetOut);
+
+    public int ToBase64CharArray(char[] outArray) =>
+        Convert.ToBase64CharArray(_bytes, 0,
+                                  _bytes.Length,
+                                  outArray.ThrowIf(() => outArray.Length != _bytes.Length,
+                                  () => new ArgumentOutOfRangeException(
+                                            nameof(outArray),
+                                            $"must have at least the size of {nameof(Length)} {Length} but was {outArray.Length}")),
+                                  0);
+                                                   
 
     public string ToBase64String() => Convert.ToBase64String(_bytes);
 
@@ -199,4 +225,3 @@ public sealed class ByteString
         return ToString(Encoding.UTF8);
     }
 }
-

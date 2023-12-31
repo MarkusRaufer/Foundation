@@ -4,6 +4,12 @@ public static class ByteStringComparer
 {
     private class DefaultByteStringComparer : IComparer<ByteString>
     {
+        /// <summary>
+        /// Returns the ordinal distance.
+        /// </summary>
+        /// <param name="x"></param>
+        /// <param name="y"></param>
+        /// <returns></returns>
         public int Compare(ByteString? x, ByteString? y)
         {
             if (ReferenceEquals(x, y)) return 0;
