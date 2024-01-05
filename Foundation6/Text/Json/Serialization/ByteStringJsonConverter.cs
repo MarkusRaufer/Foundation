@@ -3,9 +3,9 @@ using System.Text.Json.Serialization;
 
 namespace Foundation.Text.Json.Serialization;
 
-public class ByteStringConverter : JsonConverter<ByteString>
+public class ByteStringJsonConverter : JsonConverter<ByteString>
 {
-    public ByteStringConverter()
+    public ByteStringJsonConverter()
     {
     }
 

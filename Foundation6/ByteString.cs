@@ -52,15 +52,12 @@ public sealed class ByteString
         return lhs.Equals(rhs);
     }
 
-    public static bool operator !=(ByteString lhs, ByteString rhs)
-    {
-        return !(lhs == rhs);
-    }
+    public static bool operator !=(ByteString lhs, ByteString rhs) => !(lhs == rhs);
 
     public static bool operator <(ByteString lhs, ByteString rhs)
     {
         if (lhs is null) return rhs is not null;
-
+        
         return lhs.CompareTo(rhs) < 0;
     }
 
@@ -73,7 +70,7 @@ public sealed class ByteString
 
     public static bool operator >(ByteString lhs, ByteString rhs)
     {
-        if (lhs is null) return rhs is not null;
+        if (lhs is null) return false;
 
         return lhs.CompareTo(rhs) > 0;
     }
@@ -103,78 +100,34 @@ public sealed class ByteString
     /// </summary>
     /// <param name="other">The other ByteString which should be compared.</param>
     /// <returns></returns>
-    public int CompareTo(ByteString? other)
-    {
-        return _comparer.Compare(this, other);
-    }
+    public int CompareTo(ByteString? other) => _comparer.Compare(this, other);
 
-    public int CompareTo(object? obj)
-    {
-        return CompareTo(obj as ByteString);
-    }
+    public int CompareTo(object? obj) => CompareTo(obj as ByteString);
 
-    public static ByteString Concat(params ByteString[] byteStrings)
-    {
-        var length = byteStrings.Select(x => x.Length).Sum();
-        var bytes = new byte[length];
+    public static ByteString CopyFrom(params byte[] bytes) => new ByteString((byte[])bytes.Clone());
 
-        var index = 0;
-        foreach (var byteString in byteStrings)
-        {
-            var target = new Span<byte>(bytes, index, byteString.Length);
-            byteString.AsSpan().CopyTo(target);
-            index += byteString.Length;
-        }
-
-        return new ByteString(bytes);
-    }
-
-    public static ByteString CopyFrom(params byte[] bytes)
-    {
-        return new ByteString((byte[])bytes.Clone());
-    }
-
-    public static ByteString CopyFrom(ReadOnlySpan<byte> bytes)
-    {
-        return new ByteString(bytes.ToArray());
-    }
+    public static ByteString CopyFrom(ReadOnlySpan<byte> bytes) => new ByteString(bytes.ToArray());
 
     [JsonIgnore]
     public static ByteString Empty { get; } = new ByteString(Array.Empty<byte>());
 
-    public override bool Equals(object? obj)
-    {
-        if (obj is ByteString other)
-            return Equals(other);
-
-
-        return false;
-    }
+    public override bool Equals(object? obj) => Equals(obj as ByteString);
 
     public bool Equals(ByteString? other)
     {
-        return CompareTo(other) == 0;
+        return GetHashCode() == other.GetNullableHashCode() && CompareTo(other) == 0;
     }
 
     public static ByteString FromBase64String(string base64)
     {
-        return string.IsNullOrEmpty(base64) ? Empty : new ByteString(Convert.FromBase64String(base64));
+        return string.IsNullOrEmpty(base64) ? Empty : new (Convert.FromBase64String(base64));
     }
 
-    public static ByteString FromString(string text)
-    {
-        return FromString(text, Encoding.Unicode);
-    }
+    public static ByteString FromString(string text) => FromString(text, Encoding.Unicode);
 
-    public static ByteString FromString(string text, Encoding encoding)
-    {
-        return new ByteString(encoding.GetBytes(text));
-    }
+    public static ByteString FromString(string text, Encoding encoding) => new (encoding.GetBytes(text));
 
-    public static ByteString FromUtf8String(string text)
-    {
-        return string.IsNullOrEmpty(text) ? Empty : FromString(text, Encoding.UTF8);
-    }
+    public static ByteString FromUtf8String(string text) => string.IsNullOrEmpty(text) ? Empty : FromString(text, Encoding.UTF8);
 
     public IEnumerator<byte> GetEnumerator() => _bytes.GetEnumerator<byte>();
 
@@ -210,18 +163,11 @@ public sealed class ByteString
 
     public byte[] ToByteArray() => (byte[])_bytes.Clone();
 
-    public string ToString(Encoding encoding)
-    {
-        return encoding.GetString(_bytes, 0, _bytes.Length);
-    }
+    public IEnumerable<byte> ToBytes() => _bytes;
 
-    public override string ToString()
-    {
-        return ToString(Encoding.Unicode);
-    }
+    public string ToString(Encoding encoding) => encoding.GetString(_bytes, 0, _bytes.Length);
 
-    public string ToUtf8String()
-    {
-        return ToString(Encoding.UTF8);
-    }
+    public override string ToString() => ToString(Encoding.Unicode);
+
+    public string ToUtf8String() => ToString(Encoding.UTF8);
 }

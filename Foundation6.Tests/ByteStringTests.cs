@@ -11,7 +11,7 @@ public class ByteStringTests
 {
     private class MyClass
     {
-        [JsonConverter(typeof(ByteStringConverter))]
+        [JsonConverter(typeof(ByteStringJsonConverter))]
         public ByteString? Text { get; set; }
     }
 
@@ -53,7 +53,7 @@ public class ByteStringTests
         var sut2 = new ByteString("34".ToByteArray());
         var sut3 = new ByteString("56".ToByteArray());
 
-        var concatenated = ByteString.Concat(new[] { sut1, sut2, sut3 });
+        var concatenated = sut1.Concat(new[] { sut2, sut3 });
 
         var expected = new ByteString("123456".ToByteArray());
         var eq = concatenated == expected;
@@ -68,12 +68,12 @@ public class ByteStringTests
 
         var json = JsonSerializer.Serialize(expected, new JsonSerializerOptions
         {
-            Converters = { new ByteStringConverter() }
+            Converters = { new ByteStringJsonConverter() }
         });
 
         var sut = JsonSerializer.Deserialize<ByteString>(json, new JsonSerializerOptions
         {
-            Converters = { new ByteStringConverter() }
+            Converters = { new ByteStringJsonConverter() }
         });
 
         var notnull = sut is not null;
@@ -90,12 +90,12 @@ public class ByteStringTests
 
         var json = JsonSerializer.Serialize(expected, new JsonSerializerOptions
         {
-            Converters = { new ByteStringConverter() }
+            Converters = { new ByteStringJsonConverter() }
         });
 
         var sut = JsonSerializer.Deserialize<ByteString>(json, new JsonSerializerOptions
         {
-            Converters = { new ByteStringConverter() }
+            Converters = { new ByteStringJsonConverter() }
         });
 
         var notnull = sut is not null;
