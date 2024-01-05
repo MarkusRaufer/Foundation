@@ -1,73 +1,169 @@
-﻿using NUnit.Framework;
+﻿using FluentAssertions;
+using Foundation.Text.Json.Serialization;
+using NUnit.Framework;
 using System;
+using System.Globalization;
+using System.Text.Json;
 
-namespace Foundation
+namespace Foundation;
+
+[TestFixture]
+public class IdTests
 {
-    [TestFixture]
-    public class IdTests
+    [Test]
+    public void Deserialize_ToJson_ShouldReturnInt_When_Using_JsonString()
     {
-        [Test]
-        public void Equals_Should_ReturnsFalse_When_ValuesAreSameButEntityTypesAreDifferent()
+        var value = 12;
+        var sut1 = Id.New(value);
+
+        var json = $"{{\"Type\":\"System.Int32\",\"Value\":{value}}}";
+
+        var sut2 = JsonSerializer.Deserialize<Id>(json, new JsonSerializerOptions
         {
-            var value = 10;
+            Converters = { new IdJsonConverter() }
+        });
 
-            var sut1 = Id.New(typeof(DateTime), value);
-            var sut2 = Id.New(typeof(string), value);
+        sut1.Should().Be(sut2);
+    }
 
-            Assert.IsFalse(sut1.Equals(sut2));
-        }
+    [Test]
+    public void Equals_ReturnsFalse_When_SameType_DifferentIntValues()
+    {
+        var sut1 = Id.New(10);
+        var sut2 = Id.New(20);
 
-        [Test]
-        public void Equals_ReturnsFalse_When_NoType_And_DifferentValues()
+        sut1.Equals(sut2).Should().BeFalse();
+    }
+
+    [Test]
+    public void Equals_ReturnsFalse_When_SameType_DifferentDecimalValues()
+    {
+        var sut1 = Id.New(10M);
+        var sut2 = Id.New(20M);
+
+        sut1.Equals(sut2).Should().BeFalse();
+    }
+
+    [Test]
+    public void Equals_ReturnsFalse_When_SameType_DifferentStringValues()
+    {
+        var sut1 = Id.New("10");
+        var sut2 = Id.New("20");
+
+        sut1.Equals(sut2).Should().BeFalse();
+    }
+
+    [Test]
+    public void Equals_ReturnsFalse_When_DifferentTypes_And_SameValues()
+    {
+        var value = 10;
+
+        var sut1 = Id.New(value);
+        var sut2 = Id.New((char)value);
+
+        sut1.Equals(sut2).Should().BeFalse();
+    }
+
+    [Test]
+    public void Equals_Should_ReturnsTrue_When_SameTypes_And_SameDecimalValues()
+    {
+        var value = 10M;
+
+        var sut1 = Id.New(value);
+        var sut2 = Id.New(value);
+
+        sut1.Equals(sut2).Should().BeTrue();
+    }
+
+    [Test]
+    public void Equals_Should_ReturnsTrue_When_SameTypes_And_SameGuidValues()
+    {
+        var value = Guid.NewGuid();
+
+        var sut1 = Id.New(value);
+        var sut2 = Id.New(value);
+
+        sut1.Equals(sut2).Should().BeTrue();
+    }
+
+    [Test]
+    public void Equals_Should_ReturnsTrue_When_SameTypes_And_SameIntValues()
+    {
+        var value = 10;
+
+        var sut1 = Id.New(value);
+        var sut2 = Id.New(value);
+
+        sut1.Equals(sut2).Should().BeTrue();
+    }
+
+    [Test]
+    public void Equals_Should_ReturnsTrue_When_SameTypes_And_SameStringValues()
+    {
+        var sut1 = Id.New("10");
+        var sut2 = Id.New("10");
+
+        sut1.Equals(sut2).Should().BeTrue();
+    }
+
+    [Test]
+    public void Serialize_ToJson_ShouldReturnValidString_When_Using_DateTime()
+    {
+        var value = new DateTime(2001, 2, 3, 4, 5, 6);
+        var sut1 = Id.New(value);
+
+        var json = JsonSerializer.Serialize(sut1, new JsonSerializerOptions
         {
-            var sut1 = Id.New(10);
-            var sut2 = Id.New(20);
+            Converters = { new IdJsonConverter() }
+        });
 
-            Assert.IsFalse(sut1.Equals(sut2));
-        }
+        var expected = $"{{\"Type\":\"System.DateTime\",\"Value\":\"{value:yyyy-MM-ddTHH:mm:ss}\"}}";
+        json.Should().Be(expected);
+    }
 
-        [Test]
-        public void Equals_ReturnsFalse_When_DifferentTypes_And_SameValues()
+    [Test]
+    public void Serialize_ToJson_ShouldReturnValidString_When_Using_Decimal()
+    {
+        var value = 12.34M;
+        var sut1 = Id.New(value);
+
+        var json = JsonSerializer.Serialize(sut1, new JsonSerializerOptions
         {
-            var value = 10;
+            Converters = { new IdJsonConverter() }
+        });
 
-            var sut1 = Id.New(typeof(int), value);
-            var sut2 = Id.New(typeof(string), value);
+        var expected = string.Create(CultureInfo.InvariantCulture, $"{{\"Type\":\"System.Decimal\",\"Value\":{value}}}");
+        json.Should().Be(expected);
+    }
 
-            Assert.IsFalse(sut1.Equals(sut2));
-        }
+    [Test]
+    public void Serialize_ToJson_ShouldReturnValidString_When_Using_Int()
+    {
+        var value = 12;
+        var sut1 = Id.New(value);
 
-        [Test]
-        public void Equals_Should_ReturnsTrue_When_EntityTypesAndValuesAreSame()
+        var json = JsonSerializer.Serialize(sut1, new JsonSerializerOptions
         {
-            var value = 10;
+            Converters = {new IdJsonConverter() }
+        });
+        
+        var expected = $"{{\"Type\":\"System.Int32\",\"Value\":{value}}}";
+        json.Should().Be(expected);
+    }
 
-            var sut1 = Id.New(typeof(DateTime), value);
-            var sut2 = Id.New(typeof(DateTime), value);
+    [Test]
+    public void Serialize_ToJson_ShouldReturnValidString_When_Using_String()
+    {
+        var value = "test";
+        var sut1 = Id.New(value);
 
-            Assert.IsTrue(sut1.Equals(sut2));
-        }
-
-        [Test]
-        public void Equals_ReturnsTrue_When_NoType_And_SameValues()
+        var json = JsonSerializer.Serialize(sut1, new JsonSerializerOptions
         {
-            var value = 10;
+            Converters = { new IdJsonConverter() }
+        });
 
-            var sut1 = Id.New(value);
-            var sut2 = Id.New(value);
-
-            Assert.IsTrue(sut1.Equals(sut2));
-        }
-
-        [Test]
-        public void Equals_ReturnsTrue_When_SameTypes_And_SameValues()
-        {
-            var value = 10;
-            
-            var sut1 = Id.New(typeof(int), value);
-            var sut2 = Id.New(typeof(int), value);
-
-            Assert.IsTrue(sut1.Equals(sut2));
-        }
+        var expected = $"{{\"Type\":\"System.String\",\"Value\":\"{value}\"}}";
+        json.Should().Be(expected);
     }
 }
+
