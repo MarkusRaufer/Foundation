@@ -45,6 +45,8 @@ public readonly struct NamedId
 
     public bool Equals(NamedId other)
     {
+        if (GetHashCode() != other.GetHashCode()) return false;
+
         if (IsEmpty) return other.IsEmpty;
         if (other.IsEmpty) return false;
 
@@ -124,6 +126,8 @@ public readonly struct NamedId<T>
 
     public bool Equals(NamedId<T> other)
     {
+        if (GetHashCode() != other.GetHashCode()) return false;
+
         if (IsEmpty) return other.IsEmpty;
         if (other.IsEmpty) return false;
 
