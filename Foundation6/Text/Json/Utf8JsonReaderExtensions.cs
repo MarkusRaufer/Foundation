@@ -5,6 +5,29 @@ namespace Foundation.Text.Json;
 
 public static class Utf8JsonReaderExtensions
 {
+    public static Result<KeyValuePair<string, object?>, Error> GetProperty(this ref Utf8JsonReader reader, Type type)
+    {
+        if (reader.TokenType != JsonTokenType.PropertyName)
+        {
+            var error = new Error($"{nameof(JsonTokenType)}", $"expected {nameof(JsonTokenType.PropertyName)}");
+            return Result.Error<KeyValuePair<string, object?>>(error);
+        }
+
+        var name = reader.GetString();
+        if (null == name)
+        {
+            return Result.Error<KeyValuePair<string, object?>>(new Error("property name", "property has no name"));
+        }
+        
+        if (!reader.Read() || !reader.TokenType.IsValue())
+        {
+            return Result.Error<KeyValuePair<string, object?>>(new Error("property value", $"property {name} has no value"));
+        }
+
+        var value = reader.GetValue(type);
+        return Result.Ok(new KeyValuePair<string, object?>(name, value));
+    }
+
     public static object? GetValue(this Utf8JsonReader reader, Type type)
     {
         switch (Type.GetTypeCode(type))

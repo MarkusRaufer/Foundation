@@ -4,10 +4,13 @@ namespace Foundation.Text.Json;
 
 public static class Utf8JsonWriterExtensions
 {
-    public static void WriteValue(this Utf8JsonWriter writer, object value)
+    public static void WriteValue(this Utf8JsonWriter writer, object? value)
     {
-        if (null == value) return;
-
+        if (null == value)
+        {
+            writer.WriteNullValue();
+            return;
+        }
         var type = value.GetType();
         var typeCode = Type.GetTypeCode(type);
 

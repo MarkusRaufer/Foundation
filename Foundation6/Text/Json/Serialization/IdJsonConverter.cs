@@ -1,5 +1,6 @@
 ﻿using Foundation.Collections.Generic;
 using System.Reflection;
+using System.Reflection.PortableExecutable;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
@@ -7,73 +8,50 @@ namespace Foundation.Text.Json.Serialization;
 
 public class IdJsonConverter : JsonConverter<Id>
 {
-    private readonly Assembly[] _assemblies;
+    private readonly TypeJsonConverter _typeJsonConverter;
 
-    public IdJsonConverter() : this(GetAssemblies(Assembly.GetExecutingAssembly().Location))
+    public IdJsonConverter() : this(new TypeJsonConverter())
     {
     }
 
-    public IdJsonConverter(IEnumerable<Assembly> assemblies)
+    public IdJsonConverter(TypeJsonConverter typeJsonConverter)
     {
-        _assemblies = assemblies.ThrowIfNull().ToArray();
-    }
-
-    private static IEnumerable<Assembly> GetAssemblies(string location)
-    {
-        var dir = Path.GetDirectoryName(location);
-        if (dir is null) yield break;
-
-        var dlls = Directory.GetFiles(dir, "*.dll");
-        foreach(var dll in dlls)
-        {
-            yield return Assembly.LoadFile(dll);
-        }
+        _typeJsonConverter = typeJsonConverter.ThrowIfNull();
     }
 
     public override Id Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
     {
         if (reader.TokenType != JsonTokenType.StartObject) return Id.Empty;
-        if (!reader.Read()) throw new JsonException($"missing {nameof(Id)} object in JSON");
 
-        // Type property
-        if (reader.TokenType != JsonTokenType.PropertyName) throw new JsonException($"missing {nameof(Id.Type)} property");
+        ReadTypeProperty(ref reader);
 
-        var typePropertyName = reader.GetString();
-        if (nameof(Id.Type) != typePropertyName) throw new JsonException($"missing {nameof(Id.Type)} property");
+        var type = _typeJsonConverter.Read(ref reader, typeToConvert, options);
+        if (null == type) throw new JsonException(nameof(Id));
 
-        if (!reader.Read()) throw new JsonException($"missing {nameof(Id.Type)} property");
+        if (!reader.Read() || reader.TokenType != JsonTokenType.PropertyName) throw new JsonException(nameof(Id));
+        
+        // Value result
+        var result = reader.GetProperty(type);
+        if(!result.TryGetOk(out var property)) throw new JsonException(nameof(Id));
 
-        var typePropertyValue = reader.GetString();
-        if (null == typePropertyValue) throw new JsonException($"missing {nameof(Id.Type)} property value");
-
-        var type = Type.GetType(typePropertyValue);
-        if (type is null)
-        {
-            var span = typePropertyValue.AsSpan();
-            var index = span.IndexOf('+');
-            var typeName = span[(index + 1)..].ToString();
-
-            type = _assemblies.SelectMany(x => x.GetTypes()).Where(x => x.Name == typeName).FirstOrDefault();
-            if (type is null) throw new JsonException($"cannot deserialize type {typePropertyValue}");
-        }
-
-
-        // Value property
-        if (!reader.Read()) throw new JsonException($"missing {nameof(Id.Value)} property"); ;
-
-        if (reader.TokenType != JsonTokenType.PropertyName) throw new JsonException($"missing {nameof(Id.Value)} property");
-
-        var valuePropertyName = reader.GetString();
-        if (nameof(Id.Value) != valuePropertyName) throw new JsonException($"missing {nameof(Id.Value)} property");
-
-        if (!reader.Read()) throw new JsonException($"missing {nameof(Id.Value)} property");
-
-        var propertyValue = reader.GetValue(type);
-        if (null == propertyValue) throw new JsonException($"value of property {nameof(Id.Value)} must not be null");
+        if (property.Value is null) throw new JsonException(nameof(Id));
 
         reader.Read();
 
-        return Id.New(propertyValue);
+        return Id.New(property.Value);
+    }
+
+    private void ReadTypeProperty(ref Utf8JsonReader reader)
+    {
+        if (!reader.Read()) throw new JsonException(nameof(Id));
+
+        // Type property
+        if (reader.TokenType != JsonTokenType.PropertyName) throw new JsonException(nameof(Id));
+
+        var propertyName = reader.GetString();
+        if (propertyName != nameof(Id.Type)) throw new JsonException(nameof(Id));
+
+        if (!reader.Read() || reader.TokenType != JsonTokenType.StartObject) throw new JsonException(nameof(Id));
     }
 
     public override void Write(Utf8JsonWriter writer, Id id, JsonSerializerOptions options)
@@ -84,10 +62,11 @@ public class IdJsonConverter : JsonConverter<Id>
         
         // Type property
         writer.WritePropertyName(nameof(Id.Type));
-        var name = id.Type.FullName ?? id.Type.Name;
-        writer.WriteStringValue(name);
 
-        // Value property
+        // Type property value
+        _typeJsonConverter.Write(writer, id.Type, options);
+
+        // Value result
         writer.WritePropertyName(nameof(Id.Value));
         writer.WriteValue(id.Value);
 
