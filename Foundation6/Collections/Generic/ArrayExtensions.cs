@@ -68,11 +68,14 @@ public static class ArrayExtensions
             : (Option.Some(sorted[halfIndex]), Option.None<T>());
     }
 
-    public static void Swap<T>(this T[] items, int lhsIndex, int rhsIndex)
+    public static T[] ConcatArray<T>(this T[] lhs, T[] rhs)
     {
-        var temp = items[lhsIndex];
-        items[lhsIndex] = items[rhsIndex];
-        items[rhsIndex] = temp;
+        var newArray = new T[lhs.Length + rhs.Length];
+
+        lhs.CopyTo(newArray, 0);
+        rhs.CopyTo(newArray, lhs.Length);
+
+        return newArray;
     }
 
     public static bool EqualsArray<T>(this T[] lhs, T[] rhs)
@@ -228,6 +231,11 @@ public static class ArrayExtensions
         }
 
         return array;
+    }
+
+    public static void Swap<T>(this T[] items, int lhsIndex, int rhsIndex)
+    {
+        (items[rhsIndex], items[lhsIndex]) = (items[lhsIndex], items[rhsIndex]);
     }
 
     public static T[] ThrowIfEmpty<T>(this T[] arr, [CallerArgumentExpression("arr")] string paramName = "")

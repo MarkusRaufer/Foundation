@@ -1,4 +1,5 @@
 ﻿using Foundation.ComponentModel;
+using System.Runtime.CompilerServices;
 using System.Text;
 
 namespace Foundation.Collections.Generic;
@@ -103,6 +104,34 @@ public static class EnumerableTransformations
         return new BreakableEnumerable<T>(items.ThrowIfEnumerableIsNull(), ref stop);
     }
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static byte[] ToByteArray<T>(this IEnumerable<T> items, Encoding? encoding = null) => items.ToBytes(encoding).ToArray();
+
+    public static IEnumerable<byte> ToBytes<T>(this IEnumerable<T> items, Encoding? encoding = null)
+    {
+        var typeCode = Type.GetTypeCode(typeof(T));
+
+        return typeCode switch
+        {
+            TypeCode.Boolean => items.OfType<bool>().SelectMany(BitConverter.GetBytes),
+            TypeCode.Byte => items.OfType<byte>(),
+            TypeCode.Char => items.OfType<char>().SelectMany(BitConverter.GetBytes),
+            TypeCode.DateTime => items.OfType<DateTime>().SelectMany(x => BitConverter.GetBytes(x.Ticks)),
+            TypeCode.Decimal => items.OfType<decimal>().SelectMany(BitConverterExt.GetBytes),
+            TypeCode.Double => items.OfType<double>().SelectMany(BitConverter.GetBytes),
+            TypeCode.Int16 => items.OfType<Int16>().SelectMany(BitConverter.GetBytes),
+            TypeCode.Int32 => items.OfType<Int32>().SelectMany(BitConverter.GetBytes),
+            TypeCode.Int64 => items.OfType<Int64>().SelectMany(BitConverter.GetBytes),
+            TypeCode.UInt16 => items.OfType<UInt16>().SelectMany(BitConverter.GetBytes),
+            TypeCode.UInt32 => items.OfType<UInt32>().SelectMany(BitConverter.GetBytes),
+            TypeCode.UInt64 => items.OfType<UInt64>().SelectMany(BitConverter.GetBytes),
+            TypeCode.SByte => items.OfType<SByte>().SelectMany(x => BitConverter.GetBytes(x)),
+            TypeCode.Single => items.OfType<float>().SelectMany(BitConverter.GetBytes),
+            TypeCode.String => encoding is null ? items.OfType<string>().SelectMany(Encoding.UTF8.GetBytes)
+                                                : items.OfType<string>().SelectMany(encoding.GetBytes),
+            _ => []
+        };
+    }
     public static DictionaryValue<TKey, TValue> ToDictionaryValue<TKey, TValue>(
         this IEnumerable<KeyValuePair<TKey, TValue>> items,
         Func<KeyValuePair<TKey, TValue>, TKey> toKey,
