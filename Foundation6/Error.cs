@@ -12,7 +12,7 @@ public sealed record Error(string Id, string Message, Error[]? InnerErrors = nul
     /// Creates an Error instance from an exception.
     /// </summary>
     /// <param name="exception">The exception and all inner exceptions are fetched and created as a list of Errors.</param>
-    /// <returns>An Error where the Id is the exception type.</returns>
+    /// <returns>An Error where the EntityId is the exception type.</returns>
     public static Error FromException(Exception exception)
     {
         var id = exception.GetType().Name;
@@ -30,7 +30,7 @@ public sealed record Error(string Id, string Message, Error[]? InnerErrors = nul
     /// <typeparam name="T">The type of the error.</typeparam>
     /// <param name="error">The error instance.</param>
     /// <param name="selector">A selector for the error message.</param>
-    /// <returns>An Error where the Id is the error type.</returns>
+    /// <returns>An Error where the EntityId is the error type.</returns>
     public static Error FromType<T>(T error, Func<T, string> selector)
     {
         var id = error.ThrowIfNull().GetType().Name;

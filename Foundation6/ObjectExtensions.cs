@@ -2,6 +2,7 @@
 
 using System.ComponentModel;
 using System.Diagnostics.CodeAnalysis;
+using System.Globalization;
 using System.Runtime.CompilerServices;
 using System.Text;
 
@@ -336,7 +337,7 @@ public static class ObjectExtensions
         return obj switch
         {
             bool b => BitConverter.GetBytes(b),
-            byte b => new byte[] { b },
+            byte b => [b],
             char c => BitConverter.GetBytes(c),
             DateTime dt => BitConverter.GetBytes(dt.Ticks),
             decimal m => m.ToByteArray(),
