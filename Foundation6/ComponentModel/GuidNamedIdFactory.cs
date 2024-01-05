@@ -13,6 +13,6 @@ public class GuidNamedIdFactory
 
     public NamedId NewId()
     {
-        return NamedId.New(FactoryId, Guid.NewGuid());
+        return new() { Name = FactoryId, Value = Guid.NewGuid() };
     }
 }
