@@ -1,4 +1,5 @@
-﻿using Foundation.Collections.Generic;
+﻿using Foundation;
+using Foundation.Collections.Generic;
 
 namespace Foundation.DesignPatterns.Tests.MutableState.Events;
 
