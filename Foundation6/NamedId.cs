@@ -45,12 +45,10 @@ public readonly struct NamedId
 
     public bool Equals(NamedId other)
     {
-        if (GetHashCode() != other.GetHashCode()) return false;
-
         if (IsEmpty) return other.IsEmpty;
         if (other.IsEmpty) return false;
 
-        return Name == other.Name && _value.EqualsNullable(other._value);
+        return GetHashCode() == other.GetHashCode() && Name == other.Name && _value.EqualsNullable(other._value);
     }
 
     public override int GetHashCode() => System.HashCode.Combine(Name, Value);
@@ -126,12 +124,10 @@ public readonly struct NamedId<T>
 
     public bool Equals(NamedId<T> other)
     {
-        if (GetHashCode() != other.GetHashCode()) return false;
-
         if (IsEmpty) return other.IsEmpty;
         if (other.IsEmpty) return false;
 
-        return Name == other.Name && Value.Equals(other.Value);
+        return GetHashCode() == other.GetHashCode() && Name == other.Name && Value.Equals(other.Value);
     }
 
     public override int GetHashCode() => System.HashCode.Combine(Name, Value);
