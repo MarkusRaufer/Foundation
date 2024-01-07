@@ -85,10 +85,9 @@ public class DictionaryValue<TKey, TValue>
     /// <returns></returns>
     public bool Equals(DictionaryValue<TKey, TValue>? other)
     {
-        if (other is null) return false;
-        if (_hashCode != other._hashCode) return false;
-
-        return _dictionary.IsEqualToSet(other._dictionary);
+        return other is not null
+            && GetHashCode() == other.GetHashCode()
+            && _dictionary.IsEqualToSet(other._dictionary);
     }
 
     /// <inheritdoc/>
