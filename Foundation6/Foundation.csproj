@@ -12,6 +12,7 @@
 	<Authors>Markus Raufer</Authors>
 	<Description>A base C# framework</Description>
 	<PackageTags>LINQ, standard types</PackageTags>
+	<Version>1.0.0-rc.2</Version>
   </PropertyGroup>
 
   <ItemGroup>
