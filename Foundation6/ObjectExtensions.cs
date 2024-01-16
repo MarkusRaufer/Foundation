@@ -2,7 +2,6 @@
 
 using System.ComponentModel;
 using System.Diagnostics.CodeAnalysis;
-using System.Globalization;
 using System.Runtime.CompilerServices;
 using System.Text;
 
@@ -404,7 +403,7 @@ public static class ObjectExtensions
     /// <param name="obj"></param>
     /// <returns></returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static Option<T> ToOption<T>(this object? obj) => obj is T t ? Option.Some(t) : Option.None<T>();
+    public static Option<T> ToOption<T>(this T? value) => Option.Maybe(value);
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static string ToStringOrEmpty(this object? obj)
