@@ -11,6 +11,7 @@ namespace Foundation.Benchmark
 
         private readonly IComparer<ByteString> _nullComparer = ByteStringComparer.NullIsGreater;
 
+        private decimal _value = 12345M;
         [Params(100, 1000, 100000)]
         public int NumberOfItems;
 
@@ -20,7 +21,7 @@ namespace Foundation.Benchmark
             var lhsBytes = new byte[NumberOfItems];
             var rhsBytes = new byte[NumberOfItems];
             byte value = 1;
-            for(var i= 0; i < NumberOfItems; i++ )
+            for (var i = 0; i < NumberOfItems; i++)
             {
                 lhsBytes[i] = value;
                 rhsBytes[i] = value;

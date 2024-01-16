@@ -1,4 +1,7 @@
-﻿namespace Foundation;
+﻿using System.Collections;
+using System.Runtime.InteropServices;
+
+namespace Foundation;
 
 public static class BitConverterExt
 {
@@ -6,10 +9,13 @@ public static class BitConverterExt
     /// Creates a list of bytes from <paramref name="value"/>
     /// </summary>
     /// <param name="value"></param>
-    /// <returns></returns>
-    public static IEnumerable<byte> GetBytes(decimal value)
+    /// <returns>a byte array with the converted decimal value.</returns>
+    public static byte[] GetBytes(decimal value)
     {
-        return decimal.GetBits(value).SelectMany(i => BitConverter.GetBytes(i));
+        ReadOnlySpan<int> bits = decimal.GetBits(value);
+        var bytes = MemoryMarshal.Cast<int, byte>(bits);
+
+        return bytes.ToArray();
     }
 
     /// <summary>

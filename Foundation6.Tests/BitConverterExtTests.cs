@@ -11,7 +11,7 @@ namespace Foundation
         [TestCase(1)]
         public void GetBytes_Should_Return16Bytes_When_Called(decimal number)
         {
-            var bytes = BitConverterExt.GetBytes(number).ToArray();
+            var bytes = BitConverterExt.GetBytes(number);
             Assert.AreEqual(16, bytes.Length);
             var value = (byte)number;
             Assert.AreEqual(value, bytes[0]);
@@ -22,7 +22,7 @@ namespace Foundation
         [TestCase(12.3456)]
         public void GetBytes_Should_Return16Bytes_When_Called_GetBytesAndToDecimal(decimal number)
         {
-            var bytes = BitConverterExt.GetBytes(number).ToArray();
+            var bytes = BitConverterExt.GetBytes(number);
             var value = BitConverterExt.ToDecimal(bytes);
             Assert.AreEqual(number, value);
         }
