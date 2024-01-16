@@ -8,38 +8,11 @@ namespace Foundation;
 public class ScopeTests
 {
     [Test]
-    public void If_Should_ReturnMatchValue_When_PredicateIsTrue()
-    {
-        var x = 10;
-        var expected = 100;
-
-        var result = Scope.If(x == 10, () => expected, () => 20);
-
-        result.Should().Be(100);
-    }
-
-    [Test]
-    public void If_Should_ReturnNoMatchValue_When_PredicateIsFalse()
-    {
-        var x = 10;
-        var expected = 100;
-
-        var result = Scope.If(x == 5,
-                           () => 50,
-                           () => Scope.If(x == 10, 
-                                         () => expected,
-                                         () => 30));
-
-        result.Should().Be(expected);
-
-    }
-
-    [Test]
-    public void MayReturn_Should_ReturnNone_When_InvalidIf()
+    public void ReturnsOption_Should_ReturnNone_When_InvalidIf()
     {
         var x = 10;
 
-        var option = Scope.MayReturn(() =>
+        var option = Scope.ReturnsOption(() =>
         {
             if (20 == x) return Option.Some(x + 2);
 
@@ -50,10 +23,10 @@ public class ScopeTests
     }
 
     [Test]
-    public void MayReturnIf_Should_ReturnSome_When_ValidIf()
+    public void ReturnsOption_Should_ReturnSome_When_ValidIf()
     {
         var x = 10;
-        var option = Scope.MayReturnIf(() => x % 2 == 0, () => x + 2);
+        var option = Scope.ReturnsOption(() => x % 2 == 0, () => x + 2);
 
         option.TryGet(out var value).Should().Be(true);
         value.Should().Be(x + 2);
