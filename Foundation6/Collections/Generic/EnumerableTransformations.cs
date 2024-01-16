@@ -132,14 +132,43 @@ public static class EnumerableTransformations
             _ => []
         };
     }
+
+    /// <summary>
+    /// Transforms a list of KeyValuePairs into a DictionaryValue.
+    /// </summary>
+    /// <typeparam name="TKey"></typeparam>
+    /// <typeparam name="TValue"></typeparam>
+    /// <param name="items"></param>
+    /// <param name="toKey"></param>
+    /// <param name="toValue"></param>
+    /// <returns></returns>
     public static DictionaryValue<TKey, TValue> ToDictionaryValue<TKey, TValue>(
         this IEnumerable<KeyValuePair<TKey, TValue>> items,
         Func<KeyValuePair<TKey, TValue>, TKey> toKey,
         Func<KeyValuePair<TKey, TValue>, TValue> toValue) where TKey : notnull
-        {
-            var newItems = items.Select(x => new KeyValuePair<TKey, TValue>(toKey(x), toValue(x)));
-            return DictionaryValue.New(newItems);
-        }
+    {
+        var newItems = items.Select(x => new KeyValuePair<TKey, TValue>(toKey(x), toValue(x)));
+        return DictionaryValue.New(newItems);
+    }
+
+    /// <summary>
+    /// Transforms a list of items into a DictionaryValue.
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <typeparam name="TKey"></typeparam>
+    /// <typeparam name="TValue"></typeparam>
+    /// <param name="items"></param>
+    /// <param name="toKey"></param>
+    /// <param name="toValue"></param>
+    /// <returns></returns>
+    public static DictionaryValue<TKey, TValue> ToDictionaryValue<T, TKey, TValue>(
+        this IEnumerable<T> items,
+        Func<T, TKey> toKey,
+        Func<T, TValue> toValue) where TKey : notnull
+    {
+        var newItems = items.Select(x => new KeyValuePair<TKey, TValue>(toKey(x), toValue(x)));
+        return DictionaryValue.New(newItems);
+    }
 
     /// <summary>
     /// Creates a <see cref="IMultiValueMap{TKey, TValue}"/> from an enumerable.
