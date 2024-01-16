@@ -8,6 +8,33 @@ namespace Foundation
     public class OneOfTests
     {
         [Test]
+        public void CastOperator_Should_CreateOneOfObject_When_AssignedInteger()
+        {
+            var expected = 5;
+            OneOf<int, string> sut = expected;
+
+            TestMethod(5);
+
+            sut.TryGet<string>(out var _).Should().BeFalse();
+            sut.TryGet<int>(out var value).Should().BeTrue();
+            value.Should().Be(expected);
+        }
+
+        [Test]
+        public void CastOperator_Should_CreateOneOfObject_When_AssignedString()
+        {
+            var expected = "5";
+
+            OneOf<int, string> sut = expected;
+
+            TestMethod(expected);
+
+            sut.TryGet<int>(out var _).Should().BeFalse();
+            sut.TryGet<string>(out var value).Should().BeTrue();
+            value.Should().Be(expected);
+        }
+
+        [Test]
         public void Either_Should_ReturnTheResultOfTheMatchingFunc_When_CalledRightFunc()
         {
             {
@@ -210,6 +237,11 @@ namespace Foundation
                 Assert.IsTrue(sut.TryGet(out string? stringValue));
                 Assert.AreEqual(expected, stringValue);
             }
+        }
+
+        private void TestMethod(OneOf<int, string> oneOf)
+        {
+
         }
     }
 }

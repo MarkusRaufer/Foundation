@@ -65,6 +65,10 @@ public class OneOf<T1, T2> : IEquatable<OneOf<T1, T2>>
         };
     }
 
+    public static implicit operator OneOf<T1, T2>(T1 value) => new(value);
+
+    public static implicit operator OneOf<T1, T2>(T2 value) => new(value);
+
     public override bool Equals(object? obj) => Equals(obj as OneOf<T1, T2>);
 
     public bool Equals(OneOf<T1, T2>? other)
@@ -206,6 +210,12 @@ public class OneOf<T1, T2, T3>
         HashCode = System.HashCode.Combine(SelectedType, t3);
     }
 
+    public static implicit operator OneOf<T1, T2, T3>(T1 value) => new(value);
+
+    public static implicit operator OneOf<T1, T2, T3>(T2 value) => new(value);
+
+    public static implicit operator OneOf<T1, T2, T3>(T3 value) => new(value);
+
     /// <summary>
     /// Executes either onT1 or onT2 depending on Value is of type T1, T2 or T3.
     /// </summary>
@@ -325,6 +335,14 @@ public class OneOf<T1, T2, T3, T4> : OneOf<T1, T2, T3>
         SelectedType = typeof(T4);
         HashCode = System.HashCode.Combine(SelectedType, t4);
     }
+
+    public static implicit operator OneOf<T1, T2, T3, T4>(T1 value) => new(value);
+
+    public static implicit operator OneOf<T1, T2, T3, T4>(T2 value) => new(value);
+
+    public static implicit operator OneOf<T1, T2, T3, T4>(T3 value) => new(value);
+
+    public static implicit operator OneOf<T1, T2, T3, T4>(T4 value) => new(value);
 
     /// <summary>
     /// Executes either onT1 or onT2 depending on Value is of type T1, T2, T3 or T4.
@@ -454,6 +472,16 @@ public class OneOf<T1, T2, T3, T4, T5> : OneOf<T1, T2, T3, T4>
         SelectedType = typeof(T5);
         HashCode = System.HashCode.Combine(SelectedType, t5);
     }
+
+    public static implicit operator OneOf<T1, T2, T3, T4, T5>(T1 value) => new(value);
+
+    public static implicit operator OneOf<T1, T2, T3, T4, T5>(T2 value) => new(value);
+
+    public static implicit operator OneOf<T1, T2, T3, T4, T5>(T3 value) => new(value);
+
+    public static implicit operator OneOf<T1, T2, T3, T4, T5>(T4 value) => new(value);
+
+    public static implicit operator OneOf<T1, T2, T3, T4, T5>(T5 value) => new(value);
 
     /// <summary>
     /// Executes either onT1 or onT2 depending on Value is of type T1, T2, T3, T4 or T5.
