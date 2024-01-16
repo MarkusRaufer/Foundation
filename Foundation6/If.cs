@@ -1,5 +1,8 @@
 ﻿namespace Foundation;
 
+/// <summary>
+/// An if statement that returns a value.
+/// </summary>
 public static class If
 {
     public static IIfValue<T> Value<T>(T? value)
