@@ -18,7 +18,9 @@ public sealed record Money(RegionInfo RegionInfo, decimal Amount) : IComparable<
 
     public int CompareTo(Money? other)
     {
-        if(other is null || !RegionInfo.Equals(other.RegionInfo)) return 1;
+        if (other is null) return 1;
+        var cmp = RegionInfo.Name.CompareTo(other.RegionInfo.Name);
+        if (0 != cmp) return cmp;
 
         return Amount.CompareTo(other.Amount);
     }
