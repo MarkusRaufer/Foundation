@@ -1,16 +1,8 @@
 ﻿namespace Foundation.Collections.Generic;
 
 using Foundation;
-using Foundation.ComponentModel;
 using System;
-using System.ComponentModel;
 using System.Data;
-using System.Diagnostics.Metrics;
-using System.Net.Http.Headers;
-//using System.Diagnostics.CodeAnalysis;
-using System.Runtime.CompilerServices;
-using System.Runtime.InteropServices;
-using System.Text;
 
 public static class EnumerableExtensions
 {

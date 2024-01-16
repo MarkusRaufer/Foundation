@@ -11,7 +11,6 @@ namespace Foundation.Benchmark
 
         private readonly IComparer<ByteString> _nullComparer = ByteStringComparer.NullIsGreater;
 
-        private decimal _value = 12345M;
         [Params(100, 1000, 100000)]
         public int NumberOfItems;
 
