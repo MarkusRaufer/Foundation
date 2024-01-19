@@ -724,38 +724,29 @@ public static class EnumerableExtensions
     /// <returns></returns>
     public static Option<T> FirstAsOption<T>(this IEnumerable<T> items)
     {
-        return items.FirstAsOption(x => true);
+        var it = items.GetEnumerator();
+        if (!it.MoveNext()) return Option.None<T>();
+
+        return Option.Maybe(it.Current);
     }
 
     /// <summary>
-    /// Returns first left exists and is of type TResult Some(TResult) is return otherwise None. 
+    /// Returns first element if exists and is of type TResult Some(TResult) is return otherwise None. 
     /// </summary>
     /// <typeparam name="T"></typeparam>
     /// <typeparam name="TResult"></typeparam>
     /// <param name="items"></param>
     /// <returns></returns>
-    public static Option<TResult> FirstAsOption<T, TResult>(this IEnumerable<T> items)
+    public static Option<TResult> FirstAsOption<T, TResult>(this IEnumerable<T> items, Func<T, TResult> selector)
     {
-        return items.FirstAsOption(x => true)
-                    .Either(x => x.ToOption<TResult>(),
-                          () => Option.None<TResult>());
+        var it = items.GetEnumerator();
+        if (!it.MoveNext()) return Option.None<TResult>();
+
+        return Option.Maybe(selector(it.Current));
     }
 
     /// <summary>
-    /// Returns the first left as <typeparamref name="TResult"/> optional.
-    /// </summary>
-    /// <typeparam name="T"></typeparam>
-    /// <typeparam name="TResult"></typeparam>
-    /// <param name="items"></param>
-    /// <param name="onSome"></param>
-    /// <returns></returns>
-    public static Option<TResult> FirstAsOption<T, TResult>(this IEnumerable<T> items, Func<T, TResult> onSome)
-    {
-        return items.FirstAsOption(x => true, onSome);
-    }
-
-    /// <summary>
-    /// Returns the first left that matches the predicate or None.
+    /// Returns the first element that matches the predicate or None.
     /// </summary>
     /// <typeparam name="T"></typeparam>
     /// <param name="items"></param>
@@ -766,6 +757,15 @@ public static class EnumerableExtensions
         return items.FirstAsOption(predicate, x => x);
     }
 
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <typeparam name="TResult"></typeparam>
+    /// <param name="items"></param>
+    /// <param name="predicate"></param>
+    /// <param name="onSome"></param>
+    /// <returns></returns>
     public static Option<TResult> FirstAsOption<T, TResult>(
         this IEnumerable<T> items,
         Func<T, bool> predicate,
