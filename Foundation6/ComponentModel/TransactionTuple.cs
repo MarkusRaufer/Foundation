@@ -2,6 +2,7 @@
 
 public record TransactionControl(TransactionAction Action) 
     : TransactionControl<TransactionAction>(Action);
+
 public record TransactionControl<TAction>(TAction Action) : ITransactionControl<TAction>;
 
 public static class TransactionTuple

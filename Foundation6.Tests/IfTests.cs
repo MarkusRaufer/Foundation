@@ -1,6 +1,5 @@
 ﻿using FluentAssertions;
 using NUnit.Framework;
-using System.Linq;
 
 namespace Foundation;
 
@@ -8,7 +7,7 @@ namespace Foundation;
 public class IfTests
 {
     [Test]
-    public void If_EagerValue_Is_Should_ReturnElseValue_When_PredicateIsFalse()
+    public void EagerValue_Should_ReturnElseValue_When_Is_PredicateIsFalse()
     {
         var x = 10;
         var expected = 100;
@@ -19,7 +18,7 @@ public class IfTests
     }
 
     [Test]
-    public void If_EagerValue_Is_Should_ReturnThenValue_When_PredicateIsTrue()
+    public void EagerValue_Should_ReturnThenValue_When_Is_PredicateIsTrue()
     {
         var x = 10;
         var expected = 100;
@@ -30,7 +29,19 @@ public class IfTests
     }
 
     [Test]
-    public void If_EagerValue_NotNull_Should_ReturnElseValue_When_PredicateIsFalse()
+    public void EagerTrue_Should_ReturnThenValue_When_PredicateIsTrue()
+    {
+        var x = 10;
+        var expected = 100;
+
+        var result = If.True(x == 10).Then(() => expected).Else(() => 20);
+
+        result.Should().Be(100);
+    }
+
+
+    [Test]
+    public void EagerValue_NotNull_Should_ReturnElseValue_When_ValueIsNull()
     {
         string? value = null;
         string elseValue = "default";
@@ -41,7 +52,7 @@ public class IfTests
     }
 
     [Test]
-    public void If_LazyValue_Not_Should_ReturnConvertedElseValue_When_PredicateIsTrue()
+    public void LazyValue_Should_ReturnElseValue_When_ValueIsNull()
     {
         string? x = null;
         var expected = 1;
@@ -52,7 +63,7 @@ public class IfTests
     }
 
     [Test]
-    public void If_LazyValue_Not_Should_ReturnConvertedThenValue_When_PredicateIsTrue()
+    public void LazyValue_Should_ReturnThenValue_When_ValueNotNull()
     {
         var x = "12";
         var expected = int.Parse(x);
@@ -63,7 +74,7 @@ public class IfTests
     }
 
     [Test]
-    public void If_LazyValue_Is_Should_ReturnElseValue_When_PredicateIsFalse()
+    public void LazyValue_Should_ReturnElseValue_When_PredicateIsFalse()
     {
         var x = 10;
         var expected = 100;
@@ -74,7 +85,7 @@ public class IfTests
     }
 
     [Test]
-    public void If_LazyValue_Is_Should_ReturnThenValue_When_PredicateIsTrue()
+    public void LazyValue_Should_ReturnThenValueInt_When_PredicateIsTrue()
     {
         var x = 10;
         var expected = 100;
@@ -85,12 +96,34 @@ public class IfTests
     }
 
     [Test]
-    public void If_LazyValue_Not_Should_ReturnThenValue_When_PredicateIsTrue()
+    public void LazyValue_Should_ReturnThenValueString_When_PredicateIsTrue()
     {
         var x = "test";
 
         var result = If.Value(() => x).NotNull().Then(x => x).Else(() => "default");
 
         result.Should().Be(x);
+    }
+
+    [Test]
+    public void LazyTrue_Should_ReturnElseValue_When_PredicateIsFalse()
+    {
+        var x = 10;
+        var expected = 100;
+
+        var result = If.True(() => x == 5).Then(() => expected).Else(() => 20);
+
+        result.Should().Be(20);
+    }
+
+    [Test]
+    public void LazyTrue_Should_ReturnThenValue_When_PredicateIsTrue()
+    {
+        var x = 10;
+        var expected = 100;
+
+        var result = If.True(() => x == 10).Then(() => expected).Else(() => 20);
+
+        result.Should().Be(100);
     }
 }

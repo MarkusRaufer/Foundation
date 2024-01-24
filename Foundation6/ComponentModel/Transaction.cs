@@ -1,5 +1,27 @@
 ﻿namespace Foundation.ComponentModel;
 
+public class Transaction 
+    : Transaction<Guid, Unit, Action>
+    , ITransaction<Guid>
+{
+    public Transaction() : this(Guid.NewGuid())
+    {
+    }
+
+    public Transaction(Guid transactionId) : base(transactionId)
+    {
+    }
+
+    public override void Commit()
+    {
+        Committed.Publish();
+    }
+}
+
+/// <summary>
+///  With this class you can record changes and on <see cref="Commit"/> the event <see cref="Committed"/> is called.
+/// </summary>
+/// <typeparam name="TChange">The recorded type of change.</typeparam>
 public class Transaction<TChange> : Transaction<Guid, TChange>
 {
     public Transaction() : this(Guid.NewGuid())
@@ -11,49 +33,42 @@ public class Transaction<TChange> : Transaction<Guid, TChange>
     }
 }
 
-public class Transaction<TId, TChange>
-    : Transaction<TId, TChange, Action<IList<TChange>>>
+/// <summary>
+/// With this class you can record changes and on <see cref="Commit"/> the event <see cref="Committed"/> is called.
+/// </summary>
+/// <typeparam name="TId">The identifier of the transaction.</typeparam>
+/// <typeparam name="TChange">The recorded type of change.</typeparam>
+public class Transaction<TId, TChange> : Transaction<TId, TChange, Action<IEnumerable<TChange>>>
+    where TId : notnull
 {
     public Transaction(TId transactionId) : base(transactionId)
     {
     }
-
-    public override void Commit() => Committed?.Publish(Changes);
 }
 
-/// <summary>
-/// With this class you can record changes and on <see cref="Commit"/> the event <see cref="Committed"/> is called.
-/// </summary>
-/// <typeparam name="TAction">This value is needed to describe what kind of action is executed.</typeparam>
-/// <typeparam name="TChangeTuple">This tuple should contain the TAction and the value changes.</typeparam>
-/// <typeparam name="TDelegate">This is the delegate which will be called on <see cref="Commit"/></typeparam>
-public abstract class Transaction<TId, TChange, TDelegate> : ITransaction<TId>
+public class Transaction<TId, TChange, TDelegate>
+    : ITransaction<TId, TDelegate>
+    , IEquatable<Transaction<TId, TChange, TDelegate>>
+    where TId : notnull
     where TDelegate : Delegate
 {
     private bool _disposed;
 
     public Transaction(TId transactionId)
     {
-        TransactionId = transactionId.ThrowIfNull();
-
-        Changes = new List<TChange>();
-        Committed = new Event<TDelegate>();
-    }
-
-    ~Transaction()
-    {
-        Dispose(false);
+        TransactionId = transactionId;
     }
 
     public void Add(TChange change) => Changes.Add(change);
 
-    protected IList<TChange> Changes { get; }
+    protected IList<TChange> Changes { get; } = new List<TChange>();
 
     public virtual void Commit()
     {
+        Committed.Publish(Changes);
     }
 
-    public Event<TDelegate> Committed { get; }
+    public Event<TDelegate> Committed { get; } = new Event<TDelegate>();
 
     public void Dispose()
     {
@@ -75,7 +90,18 @@ public abstract class Transaction<TId, TChange, TDelegate> : ITransaction<TId>
         }
     }
 
-    public bool HasChanges => 0 < Changes.Count;
+    public override bool Equals(object? obj) => Equals(obj as Transaction<TId, TChange, TDelegate>);
+
+    public bool Equals(Transaction<TId, TChange, TDelegate>? other)
+    {
+        return other != null && TransactionId.Equals(other.TransactionId);
+    }
+
+    public override int GetHashCode() => TransactionId.GetHashCode();
+
+    public bool HasChanges => Changes.Count > 0;
+
+    public override string ToString() => $"{nameof(TransactionId)}: {TransactionId}";
 
     public TId TransactionId { get; }
 }

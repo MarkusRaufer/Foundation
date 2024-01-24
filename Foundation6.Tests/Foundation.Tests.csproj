@@ -23,8 +23,4 @@
     <ProjectReference Include="..\Foundation6\Foundation.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="ComponentModel\" />
-  </ItemGroup>
-
 </Project>
