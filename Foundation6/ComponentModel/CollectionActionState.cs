@@ -6,5 +6,4 @@ public enum CollectionActionState
     Cleared,
     Removed,
     Replaced,
-    Reset
 }
