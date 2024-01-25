@@ -2,7 +2,9 @@
 
 using Foundation;
 using System;
+using System.ComponentModel;
 using System.Data;
+using System.Diagnostics.CodeAnalysis;
 
 public static class EnumerableExtensions
 {
@@ -797,6 +799,49 @@ public static class EnumerableExtensions
 
         return items.SelectOk().FirstAsOption(predicate);
     }
+
+    /// <summary>
+    /// Returns the first occurrence of TResult. If the sequence does not contain the type TResult it throws an exception.
+    /// </summary>
+    /// <typeparam name="T">Type of the elements of the list.</typeparam>
+    /// <typeparam name="TResult">Type of the returned element.</typeparam>
+    /// <param name="items">List of elements.</param>
+    /// <returns></returns>
+    /// <exception cref="ArgumentNullException"></exception>
+    [return: NotNull]
+    public static TResult FirstOfType<T, TResult>(this IEnumerable<T> items)
+    {
+        var first = items.ThrowIfNull().OfType<TResult>().First();
+        return first ?? throw new ArgumentNullException($"sequence does not contain an element of type {typeof(TResult).Name}");
+    }
+
+    /// <summary>
+    /// Returns the first occurrence of T. If the sequence does not contain the type T it throws an exception.
+    /// </summary>
+    /// <typeparam name="T">Type of element searched for.</typeparam>
+    /// <param name="items">List of elements.</param>
+    /// <returns></returns>
+    [return: NotNull]
+    public static T FirstOfType<T>(this IEnumerable<object> items) => items.FirstOfType<object, T>();
+
+    /// <summary>
+    /// Returns the first occurrence of type TResult otherwise null.
+    /// </summary>
+    /// <typeparam name="T">Type of the elements of the list.</typeparam>
+    /// <typeparam name="TResult">Type of the returned element.</typeparam>
+    /// <param name="items">List of elements.</param>
+    /// <returns></returns>
+    public static TResult? FirstOrDefaultOfType<T, TResult>(this IEnumerable<T> items)
+        => items.ThrowIfNull().OfType<TResult>().FirstOrDefault();
+
+    /// <summary>
+    /// Returns the first occurrence of type T otherwise null.
+    /// </summary>
+    /// <typeparam name="T">Type of the returned element.</typeparam>
+    /// <param name="items">List of elements.</param>
+    /// <returns></returns>
+    public static T? FirstOrDefaultOfType<T>(this IEnumerable<object> items)
+        => items.ThrowIfNull().OfType<T>().FirstOrDefault();
 
     /// <summary>
     /// Returns the first element of a specific type if exists.

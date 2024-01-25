@@ -3,3 +3,4 @@
 /Foundation6/obj/
 bin
 obj
+*.csproj.user

@@ -1,4 +1,5 @@
-﻿using Foundation.Collections.Generic;
+﻿using FluentAssertions;
+using Foundation.Collections.Generic;
 using Newtonsoft.Json.Bson;
 using NUnit.Framework;
 using System.Collections.Generic;
@@ -9,6 +10,24 @@ namespace Foundation.Collections;
 [TestFixture]
 public class EnumerableExtensionsTests
 {
+    [Test]
+    public void FirstOfType_Should_ReturnFirstOccurenceOfString_When_Using_ResultTypeString()
+    {
+        var items = new object[] { 1, '2', "3", 4, '5', "6" };
+        var first = items.FirstOfType<string>();
+
+        first.Should().Be("3");
+    }
+
+    [Test]
+    public void FirstOfType_Should_ReturnFirstOccurenceOfString_When_Using_ElementsTypeObjectAndResultTypeString()
+    {
+        var items = new object[] { 1, '2', "3", 4, '5', "6" };
+        var first = items.FirstOfType<object, string>();
+
+        first.Should().Be("3");
+    }
+
     [Test]
     public void Occurrencies_Should_Return3Tuples_When_Added3DifferentItems()
     {
