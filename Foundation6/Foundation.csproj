@@ -1,19 +1,22 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
-  <PropertyGroup>
-    <TargetFramework>net6.0</TargetFramework>
-    <ImplicitUsings>enable</ImplicitUsings>
-    <Nullable>enable</Nullable>
-	<LangVersion>latest</LangVersion>
-	<GeneratePackageOnBuild>True</GeneratePackageOnBuild>
-	<BaseOutputPath>bin\</BaseOutputPath>
-	<PackageOutputPath>$(LOCAL_NUGET)\</PackageOutputPath>
-	<Copyright>Markus Raufer</Copyright>
-	<Authors>Markus Raufer</Authors>
-	<Description>A base C# framework</Description>
-	<PackageTags>LINQ, standard types</PackageTags>
-	<Version>1.0.0-rc.17</Version>
-  </PropertyGroup>
+	<PropertyGroup>
+		<TargetFramework>net6.0</TargetFramework>
+		<ImplicitUsings>enable</ImplicitUsings>
+		<Nullable>enable</Nullable>
+		<LangVersion>latest</LangVersion>
+		<GeneratePackageOnBuild>True</GeneratePackageOnBuild>
+		<PackageOutputPath>$(LOCAL_NUGET)\</PackageOutputPath>
+		<BaseOutputPath>bin\</BaseOutputPath>
+
+		<Copyright>Markus Raufer</Copyright>
+		<Authors>Markus Raufer</Authors>
+		<Description>A base C# framework as extension to .NET.</Description>
+		<PackageId>Foundation</PackageId>
+		<PackageTags>LINQ, additional standard types, .NET extension</PackageTags>
+		<ProductName>Foundation</ProductName>
+		<Version>1.0.0-rc.17</Version>
+	</PropertyGroup>
 
   <ItemGroup>
     <Folder Include="Runtime\" />
