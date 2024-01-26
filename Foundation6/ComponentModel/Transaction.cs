@@ -1,8 +1,6 @@
 ﻿namespace Foundation.ComponentModel;
 
-public class Transaction 
-    : Transaction<Guid, Unit, Action>
-    , ITransaction<Guid>
+public class Transaction : Transaction<Guid, Unit, Action>
 {
     public Transaction() : this(Guid.NewGuid())
     {

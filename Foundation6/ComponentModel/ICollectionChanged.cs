@@ -1,6 +1,10 @@
 ﻿namespace Foundation.ComponentModel;
 
-public interface ICollectionChanged<T>
+public interface ICollectionChanged<T> : ICollectionChanged<T, CollectionEvent<T>>
 {
-    Event<Action<CollectionEvent<T>>> CollectionChanged { get; }
+}
+
+public interface ICollectionChanged<T, TEvent>
+{
+    Event<Action<TEvent>> CollectionChanged { get; }
 }

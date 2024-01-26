@@ -17,7 +17,7 @@ using System.Runtime.Serialization;
 [Serializable]
 public class EquatableSortedDictionary<TKey, TValue>
     : IDictionary<TKey, TValue>
-    , ICollectionChanged<KeyValuePair<TKey, TValue>>
+    , ICollectionChanged<KeyValuePair<TKey, TValue>, DictionaryEvent<TKey, TValue>>
     , IEquatable<EquatableSortedDictionary<TKey, TValue>>
     , ISerializable
     where TKey : notnull
@@ -39,7 +39,7 @@ public class EquatableSortedDictionary<TKey, TValue>
         _keyValues = keyValues.ThrowIfNull();
         _hashCode = CreateHashCode();
 
-        CollectionChanged = new Event<Action<CollectionEvent<KeyValuePair<TKey, TValue>>>>();
+        CollectionChanged = new Event<Action<DictionaryEvent<TKey, TValue>>>();
     }
 
     public EquatableSortedDictionary(SerializationInfo info, StreamingContext context)
@@ -55,7 +55,7 @@ public class EquatableSortedDictionary<TKey, TValue>
 
         _hashCode = CreateHashCode();
 
-        CollectionChanged = new Event<Action<CollectionEvent<KeyValuePair<TKey, TValue>>>>();
+        CollectionChanged = new Event<Action<DictionaryEvent<TKey, TValue>>>();
     }
 
     public TValue this[TKey key]
@@ -77,8 +77,8 @@ public class EquatableSortedDictionary<TKey, TValue>
             _hashCode = CreateHashCode();
 
             var changeEvent = keyExists
-                ? new { State = CollectionActionState.Replaced, Element = Pair.New(key, existingValue) }
-                : new { State = CollectionActionState.Added, Element = Pair.New<TKey, TValue?>(key, value) };
+                ? new { Action = DictionaryAction.Replace, Element = Pair.New(key, existingValue) }
+                : new { Action = DictionaryAction.Add, Element = Pair.New<TKey, TValue?>(key, value) };
 
             CollectionChanged.Publish(changeEvent);
         }
@@ -99,7 +99,7 @@ public class EquatableSortedDictionary<TKey, TValue>
 
         _hashCode = CreateHashCode();
 
-        CollectionChanged.Publish(new { State = CollectionActionState.Added, Element = keyValue });
+        CollectionChanged.Publish(new { Action = DictionaryAction.Add, Element = keyValue });
 
         Add(keyValue.Key, keyValue.Value);
     }
@@ -122,10 +122,10 @@ public class EquatableSortedDictionary<TKey, TValue>
         _keyValues.Clear();
         _hashCode = CreateHashCode();
 
-        CollectionChanged.Publish(new { State = CollectionActionState.Cleared });
+        CollectionChanged.Publish(new { Action = DictionaryAction.Clear });
     }
 
-    public Event<Action<CollectionEvent<KeyValuePair<TKey, TValue>>>> CollectionChanged { get; private set; }
+    public Event<Action<DictionaryEvent<TKey, TValue>>> CollectionChanged { get; private set; }
 
     public bool Contains(KeyValuePair<TKey, TValue> item) => _keyValues.Contains(item);
 
@@ -191,7 +191,7 @@ public class EquatableSortedDictionary<TKey, TValue>
             _hashCode = CreateHashCode();
             var element = Pair.New<TKey, TValue?>(key, default);
 
-            CollectionChanged.Publish(new { State = CollectionActionState.Removed, Element = element });
+            CollectionChanged.Publish(new { Action = DictionaryAction.Remove, Element = element });
             return true;
         }
 

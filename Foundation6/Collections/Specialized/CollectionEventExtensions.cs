@@ -7,12 +7,12 @@ namespace Foundation.Collections.Specialized
     {
         public static NotifyCollectionChangedEventArgs ToNotifyCollectionChangedEventArgs<T>(this CollectionEvent<T> @event)
         {
-            return @event.State switch
+            return @event.Action switch
             {
-                CollectionActionState.Added => new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Add, @event.Element),
-                CollectionActionState.Cleared => new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Reset),
-                CollectionActionState.Removed => new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Remove, @event.Element),
-                CollectionActionState.Replaced => new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Replace, @event.Element),
+                CollectionAction.Add => new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Add, @event.Element),
+                CollectionAction.Clear => new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Reset),
+                CollectionAction.Remove => new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Remove, @event.Element),
+                //CollectionAction.Replaced => new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Replace, @event.Element),
                 _ => throw new NotImplementedException()
             };
         }

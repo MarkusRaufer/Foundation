@@ -2,6 +2,6 @@
 
 public interface IPropertyChanged
 {
-    CollectionActionState ActionState { get; }
+    DictionaryAction Action { get; }
     string PropertyName { get; }
 }

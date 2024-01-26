@@ -29,28 +29,28 @@ public class Properties : Properties<PropertyChanged>
 
         if(propertyChanged is PropertyValueChanged valueChanged)
         {
-            switch (valueChanged.ActionState)
+            switch (valueChanged.Action)
             {
-                case CollectionActionState.Added: Add(valueChanged.PropertyName, valueChanged.Value); break;
-                case CollectionActionState.Replaced: this[valueChanged.PropertyName] = valueChanged.Value!; break;
+                case DictionaryAction.Add: Add(valueChanged.PropertyName, valueChanged.Value); break;
+                case DictionaryAction.Replace: this[valueChanged.PropertyName] = valueChanged.Value!; break;
             };
 
             return;
         }
-        switch (propertyChanged.ActionState)
+        switch (propertyChanged.Action)
         {
-            case CollectionActionState.Removed: Remove(propertyChanged.PropertyName); break;
+            case DictionaryAction.Remove: Remove(propertyChanged.PropertyName); break;
         };
     }
 
-    protected override PropertyChanged CreateChangedEvent(string propertyName, object? value, CollectionActionState state)
+    protected override PropertyChanged CreateChangedEvent(string propertyName, object? value, DictionaryAction action)
     {
-        return state switch
+        return action switch
         {
-            CollectionActionState.Added => new PropertyValueChanged(propertyName, state, value),
-            CollectionActionState.Removed => new PropertyChanged(propertyName, state),
-            CollectionActionState.Replaced => new PropertyValueChanged(propertyName, state, value),
-            _ => throw new NotImplementedException($"{state}")
+            DictionaryAction.Add => new PropertyValueChanged(propertyName, action, value),
+            DictionaryAction.Remove => new PropertyChanged(propertyName, action),
+            DictionaryAction.Replace => new PropertyValueChanged(propertyName, action, value),
+            _ => throw new NotImplementedException($"{action}")
 
         };
     }
@@ -96,7 +96,7 @@ public abstract class Properties<TEvent>
 
             _properties[key] = value;
 
-            var state = exists ? CollectionActionState.Replaced : CollectionActionState.Added;
+            var state = exists ? DictionaryAction.Replace : DictionaryAction.Add;
             AddEvent(CreateChangedEvent(key, value, state));
         }
     }
@@ -135,7 +135,7 @@ public abstract class Properties<TEvent>
         _properties.CopyTo(array, arrayIndex);
     }
 
-    protected abstract TEvent CreateChangedEvent(string propertyName, object? value, CollectionActionState state);
+    protected abstract TEvent CreateChangedEvent(string propertyName, object? value, DictionaryAction action);
 
     public int Count => _properties.Count;
 
@@ -171,7 +171,7 @@ public abstract class Properties<TEvent>
 
         var removed = _properties.Remove(key);
 
-        if (exists && removed) _events.Add(CreateChangedEvent(key, value, CollectionActionState.Removed));
+        if (exists && removed) _events.Add(CreateChangedEvent(key, value, DictionaryAction.Remove));
 
         return removed;
     }
@@ -182,7 +182,7 @@ public abstract class Properties<TEvent>
 
         var removed = _properties.Remove(item);
 
-        if(removed) _events.Add(CreateChangedEvent(item.Key, item.Value, CollectionActionState.Removed));
+        if(removed) _events.Add(CreateChangedEvent(item.Key, item.Value, DictionaryAction.Remove));
 
         return removed;
     }
