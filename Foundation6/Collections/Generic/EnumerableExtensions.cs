@@ -2,7 +2,6 @@
 
 using Foundation;
 using System;
-using System.ComponentModel;
 using System.Data;
 using System.Diagnostics.CodeAnalysis;
 
@@ -822,7 +821,7 @@ public static class EnumerableExtensions
     /// <param name="items">List of elements.</param>
     /// <returns></returns>
     [return: NotNull]
-    public static T FirstOfType<T>(this IEnumerable<object> items) => items.FirstOfType<object, T>();
+    public static T FirstOf<T>(this IEnumerable<object> items) => items.FirstOfType<object, T>();
 
     /// <summary>
     /// Returns the first occurrence of type TResult otherwise null.

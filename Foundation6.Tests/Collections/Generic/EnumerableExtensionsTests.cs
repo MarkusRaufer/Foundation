@@ -712,6 +712,25 @@ public class EnumerableExtensionsTests
         strings.Should().Contain(expected);
     }
 
+
+    [Test]
+    public void FirstOf_Should_ReturnFirstOccurenceOfString_When_Using_ResultTypeString()
+    {
+        var items = new object[] { 1, '2', "3", 4, '5', "6" };
+        var first = items.FirstOf<string>();
+
+        first.Should().Be("3");
+    }
+
+    [Test]
+    public void FirstOfType_Should_ReturnFirstOccurenceOfString_When_Using_ElementsTypeObjectAndResultTypeString()
+    {
+        var items = new object[] { 1, '2', "3", 4, '5', "6" };
+        var first = items.FirstOfType<object, string>();
+
+        first.Should().Be("3");
+    }
+
     [Test]
     public void ForEach_Returning_number_of_processed_acctions()
     {
