@@ -12,6 +12,25 @@ namespace Foundation.Collections.Generic;
 public class EnumerableTransformationsTests
 {
     [Test]
+    public void SplitInto_Should_Return4StreamsWithSameNumbers_When_4PredicatesAreUsed()
+    {
+        var tuples = Enumerable.Range(1, 10).Select(x => (lhs: $"{x}", rhs: x)).ToArray();
+
+        var streams = tuples.SplitInto(x => (object)x.lhs, x => (object)x.rhs).ToArray();
+
+        streams.Length.Should().Be(2);
+        {
+            var stream = streams[0].OfType<string>();
+            var expected = Enumerable.Range(1, 10).Select(x => $"{x}");
+            stream.Should().ContainInOrder(expected);
+        }
+        {
+            var stream = streams[1].OfType<int>();
+            stream.Should().ContainInOrder(Enumerable.Range(1, 10));
+        }
+    }
+
+    [Test]
     public void SplitIntoStreams_Should_Return4StreamsWithSameNumbers_When_4PredicatesAreUsed()
     {
         var numbers = Enumerable.Range(1, 20);

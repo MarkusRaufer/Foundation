@@ -1,4 +1,5 @@
-﻿using NUnit.Framework;
+﻿using FluentAssertions;
+using NUnit.Framework;
 using System;
 
 namespace Foundation.Buffers
@@ -13,16 +14,16 @@ namespace Foundation.Buffers
 
             var sut = new CharSplitEnumerator(span, '.');
 
-            Assert.IsTrue(sut.MoveNext());
-            Assert.AreEqual(sut.Current.ToString(), "123");
+            sut.MoveNext().Should().BeTrue();
+            sut.Current.ToString().Should().Be("123");
 
-            Assert.IsTrue(sut.MoveNext());
-            Assert.AreEqual(sut.Current.ToString(), "4567");
+            sut.MoveNext().Should().BeTrue();
+            sut.Current.ToString().Should().Be("4567");
 
-            Assert.IsTrue(sut.MoveNext());
-            Assert.AreEqual(sut.Current.ToString(), "89");
+            sut.MoveNext().Should().BeTrue();
+            sut.Current.ToString().Should().Be("89");
 
-            Assert.IsFalse(sut.MoveNext());
+            sut.MoveNext().Should().BeFalse();
         }
 
         [Test]
@@ -34,9 +35,9 @@ namespace Foundation.Buffers
             var i = 0;
             foreach (var entry in sut)
             {
-                if (0 == i) Assert.AreEqual(entry.ToString(), "123");
-                if (1 == i) Assert.AreEqual(entry.ToString(), "4567");
-                if (2 == i) Assert.AreEqual(entry.ToString(), "89");
+                if (0 == i) entry.ToString().Should().Be("123");
+                if (1 == i) entry.ToString().Should().Be("4567");
+                if (2 == i) entry.ToString().Should().Be("89");
                 i++;
             }
         }
@@ -47,7 +48,7 @@ namespace Foundation.Buffers
             var span = "123.4567.89".AsSpan();
             var sut = new CharSplitEnumerator(span, '_');
 
-            Assert.IsFalse(sut.MoveNext());
+            sut.MoveNext().Should().BeFalse();
         }
 
         [Test]
@@ -62,7 +63,7 @@ namespace Foundation.Buffers
                 passed = true;
             }
 
-            Assert.IsFalse(passed);
+            passed.Should().BeFalse();
         }
     }
 }

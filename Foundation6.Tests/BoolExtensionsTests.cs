@@ -1,4 +1,5 @@
-﻿using NUnit.Framework;
+﻿using FluentAssertions;
+using NUnit.Framework;
 using System;
 
 namespace Foundation
@@ -17,7 +18,7 @@ namespace Foundation
         public void ThrowIfFalse_Should_ReturnValue_When_True()
         {
             var sut = true;
-            Assert.IsTrue(sut.ThrowIfFalse());
+            sut.Should().BeTrue();
         }
     }
 }

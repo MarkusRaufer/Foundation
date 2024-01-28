@@ -1,5 +1,6 @@
 ﻿namespace Foundation.Collections.Generic;
 
+using FluentAssertions;
 using Foundation.ComponentModel;
 using NUnit.Framework;
 using System;
@@ -19,10 +20,10 @@ public class EquatableDictionaryTests
         var properties = Pair.CreateMany<string, object>(("FirstName", "Peter"), ("LastName", "Pan"), ("Age", 16)).ToArray();
         var sut = new EquatableDictionary<string, object>(properties);
 
-        Assert.AreEqual(properties.Length, sut.Count);
-        CollectionAssert.Contains(sut, properties[0]);
-        CollectionAssert.Contains(sut, properties[1]);
-        CollectionAssert.Contains(sut, properties[2]);
+        sut.Count.Should().Be(properties.Length);
+        sut.Should().Contain(properties[0]);
+        sut.Should().Contain(properties[1]);
+        sut.Should().Contain(properties[2]);
     }
 
     [Test]
@@ -32,7 +33,7 @@ public class EquatableDictionaryTests
         var map1 = new EquatableDictionary<string, object>(properties);
         var map2 = new EquatableDictionary<string, object>(properties);
 
-        Assert.IsTrue(map1.Equals(map2));
+        map1.Equals(map2).Should().BeTrue();
     }
 
     [Test]
@@ -44,7 +45,7 @@ public class EquatableDictionaryTests
         var map1 = new EquatableDictionary<string, object>(properties1);
         var map2 = new EquatableDictionary<string, object>(properties2);
 
-        Assert.IsFalse(map1.Equals(map2));
+        map1.Equals(map2).Should().BeFalse();
     }
 
     [Test]
@@ -56,7 +57,7 @@ public class EquatableDictionaryTests
         var map1 = new EquatableDictionary<string, object>(properties1);
         var map2 = new EquatableDictionary<string, object>(properties2);
 
-        Assert.IsFalse(map1.Equals(map2));
+        map1.Equals(map2).Should().BeFalse();
     }
 
     [Test]
@@ -68,7 +69,6 @@ public class EquatableDictionaryTests
         var map2 = new EquatableDictionary<string, object>(properties);
 
         map2["LastName"] = "Duck";
-        Assert.IsFalse(map1.Equals(map2));
+        map1.Equals(map2).Should().BeFalse();
     }
 }
-

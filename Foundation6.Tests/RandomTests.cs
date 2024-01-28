@@ -93,7 +93,7 @@ public class RandomTests
                                 .Take(quantity)
                                 .ToArray();
 
-            CollectionAssert.AreEqual(dateTimes1, dateTimes2);
+            dateTimes1.Should().BeEquivalentTo(dateTimes2);
         }
     }
 
@@ -108,7 +108,7 @@ public class RandomTests
 
         var guids = randoms.Select(rnd => rnd.NextGuid(buffer)).ToArray();
 
-        Assert.IsTrue(guids.AllEqual());
+        guids.AllEqual().Should().BeTrue();
      }
 
     [Test]
@@ -127,7 +127,7 @@ public class RandomTests
             var guids1 = For.Collect(() => random1.NextGuid()).Take(numberOfGuids).ToArray();
             var guids2 = For.Collect(() => random2.NextGuid()).Take(numberOfGuids).ToArray();
 
-            CollectionAssert.AreEqual(guids1, guids2);
+            guids1.Should().BeEquivalentTo(guids2);
         }
     }
 }

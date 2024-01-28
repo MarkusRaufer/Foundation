@@ -1,4 +1,5 @@
-﻿using NUnit.Framework;
+﻿using FluentAssertions;
+using NUnit.Framework;
 using System;
 
 namespace Foundation.Buffers
@@ -13,26 +14,26 @@ namespace Foundation.Buffers
             var sut = new LineSplitEnumerator(str.AsSpan());
             var enumerator = sut.GetEnumerator();
             {
-                Assert.IsTrue(enumerator.MoveNext());
+                enumerator.MoveNext().Should().BeTrue();
                 var line = enumerator.Current;
-                Assert.True("this".AsSpan().IsSameAs(line));
+                "this".AsSpan().IsSameAs(line).Should().BeTrue();
             }
             {
-                Assert.IsTrue(enumerator.MoveNext());
+                enumerator.MoveNext().Should().BeTrue();
                 var line = enumerator.Current;
-                Assert.True("is".AsSpan().IsSameAs(line));
+                "is".AsSpan().IsSameAs(line).Should().BeTrue();
             }
             {
-                Assert.IsTrue(enumerator.MoveNext());
+                enumerator.MoveNext().Should().BeTrue();
                 var line = enumerator.Current;
-                Assert.True("a".AsSpan().IsSameAs(line));
+                "a".AsSpan().IsSameAs(line).Should().BeTrue();
             }
             {
-                Assert.IsTrue(enumerator.MoveNext());
+                enumerator.MoveNext().Should().BeTrue();
                 var line = enumerator.Current;
-                Assert.True("test".AsSpan().IsSameAs(line));
+                "test".AsSpan().IsSameAs(line).Should().BeTrue();
             }
-            Assert.IsFalse(enumerator.MoveNext());
+            enumerator.MoveNext().Should().BeFalse();
         }
     }
 }

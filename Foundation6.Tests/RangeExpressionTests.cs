@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using FluentAssertions;
 using NUnit.Framework;
 
 namespace Foundation
@@ -15,13 +16,13 @@ namespace Foundation
             var sut = new Between<int>(3, 5);
 
             //in range
-            Assert.IsTrue(sut.IsInRange(3));
-            Assert.IsTrue(sut.IsInRange(4));
-            Assert.IsTrue(sut.IsInRange(5));
+            sut.IsInRange(3).Should().BeTrue();
+            sut.IsInRange(4).Should().BeTrue();
+            sut.IsInRange(5).Should().BeTrue();
 
             //out of range
-            Assert.IsFalse(sut.IsInRange(2));
-            Assert.IsFalse(sut.IsInRange(6));
+            sut.IsInRange(2).Should().BeFalse();
+            sut.IsInRange(6).Should().BeFalse();
         }
 
         [Test]
@@ -31,11 +32,11 @@ namespace Foundation
             var sut = new Exactly<int>(number);
 
             //in range
-            Assert.IsTrue(sut.IsInRange(number));
-            Assert.AreEqual(number, sut.Value);
+            sut.IsInRange(number).Should().BeTrue();
+            sut.Value.Should().Be(number);
 
             //out of range
-            Assert.IsFalse(sut.IsInRange(4));
+            sut.IsInRange(4).Should().BeFalse();
         }
 
         [Test]
@@ -45,16 +46,16 @@ namespace Foundation
             var sut = new BufferdGenerator<int>(() => number++);
 
             //in range
-            Assert.IsTrue(sut.IsInRange(1));
+            sut.IsInRange(1).Should().BeTrue();
 
             //out of range
-            Assert.IsFalse(sut.IsInRange(0));
-            Assert.IsFalse(sut.IsInRange(2));
-            
+            sut.IsInRange(0).Should().BeFalse();
+            sut.IsInRange(2).Should().BeFalse();
+
             //compare values
             var expected = Enumerable.Range(1, 1);
             var values = sut.Values.ToList();
-            CollectionAssert.AreEqual(expected, values);
+            values.Should().BeEquivalentTo(expected);
         }
 
         [Test]
@@ -66,14 +67,14 @@ namespace Foundation
             //compare values
             var expected = Enumerable.Range(1, 1);
             var values = sut.Values.ToList();
-            CollectionAssert.AreEqual(expected, values);
-            
+            values.Should().BeEquivalentTo(expected);
+
             //in range
-            Assert.IsTrue(sut.IsInRange(1));
+            sut.IsInRange(1).Should().BeTrue();
 
             //out of range
-            Assert.IsFalse(sut.IsInRange(0));
-            Assert.IsFalse(sut.IsInRange(2));
+            sut.IsInRange(0).Should().BeFalse();
+            sut.IsInRange(2).Should().BeFalse();
         }
 
         [Test]
@@ -96,15 +97,15 @@ namespace Foundation
             {
                 var values = sut.Values.ToArray();
 
-                Assert.AreEqual(quantity, values.Length);
-                Assert.AreEqual(quantity, numberOfIncrementCalls);
+                values.Length.Should().Be(quantity);
+                numberOfIncrementCalls.Should().Be(quantity);
             }
             {
                 numberOfIncrementCalls = 0;
                 var values = sut.Values.ToArray();
 
-                Assert.AreEqual(quantity, values.Length);
-                Assert.AreEqual(0, numberOfIncrementCalls);
+                values.Length.Should().Be(quantity);
+                numberOfIncrementCalls.Should().Be(0);
             }
         }
 
@@ -113,23 +114,25 @@ namespace Foundation
         public void Generate_QuantityOfFive_CallIsInRangeFirst()
         {
             var number = 1;
-            var sut = new BufferdGenerator<int>(() => number++, 5);
+            var quantity = 5;
+            var sut = new BufferdGenerator<int>(() => number++, quantity);
 
             //in range
-            Assert.IsTrue(sut.IsInRange(1));
-            Assert.IsTrue(sut.IsInRange(2));
-            Assert.IsTrue(sut.IsInRange(3));
-            Assert.IsTrue(sut.IsInRange(4));
-            Assert.IsTrue(sut.IsInRange(5));
+            sut.IsInRange(1).Should().BeTrue();
+            sut.IsInRange(2).Should().BeTrue();
+            sut.IsInRange(3).Should().BeTrue();
+            sut.IsInRange(4).Should().BeTrue();
+            sut.IsInRange(5).Should().BeTrue();
 
             //out of range
-            Assert.IsFalse(sut.IsInRange(0));
-            Assert.IsFalse(sut.IsInRange(6));
+            sut.IsInRange(0).Should().BeFalse();
+            sut.IsInRange(6).Should().BeFalse();
 
             //compare values
-            var expected = Enumerable.Range(1, 5);
+            var expected = Enumerable.Range(1, quantity);
             var values = sut.Values.ToList();
-            CollectionAssert.AreEqual(expected, values);
+
+            values.Count.Should().Be(quantity);
         }
 
         [Test]
@@ -143,21 +146,21 @@ namespace Foundation
 
             //take(2) is just for inner test.
             var values = sut.Values.Take(2).ToList();
-            CollectionAssert.AreEqual(expected.Take(2), values);
+            values.Should().BeEquivalentTo(expected.Take(2));
 
             values = sut.Values.ToList();
-            CollectionAssert.AreEqual(expected, values);
+            values.Should().BeEquivalentTo(expected);
 
             //in range
-            Assert.IsTrue(sut.IsInRange(1));
-            Assert.IsTrue(sut.IsInRange(2));
-            Assert.IsTrue(sut.IsInRange(3));
-            Assert.IsTrue(sut.IsInRange(4));
-            Assert.IsTrue(sut.IsInRange(5));
+            sut.IsInRange(1).Should().BeTrue();
+            sut.IsInRange(2).Should().BeTrue();
+            sut.IsInRange(3).Should().BeTrue();
+            sut.IsInRange(4).Should().BeTrue();
+            sut.IsInRange(5).Should().BeTrue();
 
             //out of range
-            Assert.IsFalse(sut.IsInRange(0));
-            Assert.IsFalse(sut.IsInRange(6));
+            sut.IsInRange(0).Should().BeFalse();
+            sut.IsInRange(6).Should().BeFalse();
         }
 
         [Test]
@@ -166,13 +169,13 @@ namespace Foundation
             var sut = new Matching<int>(n => n > 3);
 
             //in range
-            Assert.IsTrue(sut.IsInRange(4));
-            Assert.IsTrue(sut.IsInRange(5));
+            sut.IsInRange(4).Should().BeTrue();
+            sut.IsInRange(5).Should().BeTrue();
 
             //out of range
-            Assert.IsFalse(sut.IsInRange(1));
-            Assert.IsFalse(sut.IsInRange(2));
-            Assert.IsFalse(sut.IsInRange(3));
+            sut.IsInRange(1).Should().BeFalse();
+            sut.IsInRange(2).Should().BeFalse();
+            sut.IsInRange(3).Should().BeFalse();
         }
 
         [Test]
@@ -181,18 +184,19 @@ namespace Foundation
             var sut = new NumericBetween<int>(3, 5);
 
             //in range
-            Assert.IsTrue(sut.IsInRange(3));
-            Assert.IsTrue(sut.IsInRange(4));
-            Assert.IsTrue(sut.IsInRange(5));
+            sut.IsInRange(3).Should().BeTrue();
+            sut.IsInRange(4).Should().BeTrue();
+            sut.IsInRange(5).Should().BeTrue();
 
             //out of range
-            Assert.IsFalse(sut.IsInRange(2));
-            Assert.IsFalse(sut.IsInRange(6));
+            sut.IsInRange(2).Should().BeFalse();
+            sut.IsInRange(6).Should().BeFalse();
 
             //compare values
             var expected = new List<int> {3, 4, 5};
             var values = sut.Values.ToList();
-            CollectionAssert.AreEqual(expected, values);
+
+            values.Should().BeEquivalentTo(expected);
         }
 
         [Test]
@@ -202,18 +206,19 @@ namespace Foundation
             var sut = new OneOf<int>(expected.ToArray());
             
             //in range
-            Assert.IsTrue(sut.IsInRange(1));
-            Assert.IsTrue(sut.IsInRange(3));
-            Assert.IsTrue(sut.IsInRange(5));
+            sut.IsInRange(1).Should().BeTrue();
+            sut.IsInRange(3).Should().BeTrue();
+            sut.IsInRange(5).Should().BeTrue();
 
             //out of range
-            Assert.IsFalse(sut.IsInRange(2));
-            Assert.IsFalse(sut.IsInRange(4));
-            Assert.IsFalse(sut.IsInRange(6));
+            sut.IsInRange(2).Should().BeFalse();
+            sut.IsInRange(4).Should().BeFalse();
+            sut.IsInRange(6).Should().BeFalse();
 
             //compare values
             var values = sut.Values.ToList();
-            CollectionAssert.AreEqual(expected, values);
+
+            values.Should().BeEquivalentTo(expected);
         }
 
         [Test]
@@ -222,19 +227,19 @@ namespace Foundation
             var sut = new OfType<int>();
 
             //in range
-            Assert.IsTrue(sut.IsInRange(-1));
-            Assert.AreEqual(-1, sut.Value);
+            sut.IsInRange(-1).Should().BeTrue();
+            sut.Value.Should().Be(-1);
 
-            Assert.IsTrue(sut.IsInRange(0));
-            Assert.AreEqual(0, sut.Value);
+            sut.IsInRange(0).Should().BeTrue();
+            sut.Value.Should().Be(0);
 
-            Assert.IsTrue(sut.IsInRange(1));
-            Assert.AreEqual(1, sut.Value);
+            sut.IsInRange(1).Should().BeTrue();
+            sut.Value.Should().Be(1);
 
             //out of range
-            Assert.IsFalse(sut.IsInRange(2.5));
-            Assert.IsFalse(sut.IsInRange("4"));
-            Assert.IsFalse(sut.IsInRange('A'));
+            sut.IsInRange(2.5).Should().BeFalse();
+            sut.IsInRange("4").Should().BeFalse();
+            sut.IsInRange('A').Should().BeFalse();
         }
         // ReSharper restore InconsistentNaming
     }
