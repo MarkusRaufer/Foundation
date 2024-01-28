@@ -7,6 +7,11 @@ namespace Foundation
     [TestFixture]
     public class OneOfTests
     {
+        private void TestMethod(OneOf<int, string> oneOf)
+        {
+
+        }
+
         [Test]
         public void CastOperator_Should_Compilable_When_PassingIntegerToMethod()
         {
@@ -242,11 +247,6 @@ namespace Foundation
                 sut.TryGet(out string? value).Should().BeTrue();
                 value.Should().Be(expected);
             }
-        }
-
-        private void TestMethod(OneOf<int, string> oneOf)
-        {
-
         }
     }
 }
