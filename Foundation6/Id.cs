@@ -4,7 +4,8 @@ using System.Text.Json.Serialization;
 namespace Foundation;
 
 /// <summary>
-/// Typed identifier.
+/// A generic identifier which encapsulates the value of the identifier.
+/// You can change the type of the identifier value without changing your code.
 /// </summary>
 [Serializable]
 public readonly struct Id
