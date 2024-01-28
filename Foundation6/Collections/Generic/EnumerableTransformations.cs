@@ -10,6 +10,37 @@ public static class EnumerableTransformations
     /// Splits a stream into multiple new streams. For each predicate an extra stream.
     /// </summary>
     /// <typeparam name="T">Type of elements.</typeparam>
+    /// <typeparam name="TResult">Type of the returned elements.</typeparam>
+    /// <param name="items">List of elements.</param>
+    /// <param name="projections">List of projections.</param>
+    /// <returns></returns>
+    public static IEnumerable<IEnumerable<TResult>> SplitInto<T, TResult>(
+        this IEnumerable<T> items,
+        params Func<T, TResult>[] projections)
+    {
+        var streams = new List<IList<TResult>>();
+
+        foreach(var projection in projections)
+        {
+            var stream = new List<TResult>();
+            streams.Add(stream);
+        }
+
+        foreach (var item in items)
+        {
+            foreach (var (index, projection) in projections.Enumerate())
+            {
+                var stream = streams[index];
+                stream.Add(projection(item));
+            }
+        }
+        return streams;
+    }
+
+    /// <summary>
+    /// Splits a stream into multiple new streams. For each predicate an extra stream.
+    /// </summary>
+    /// <typeparam name="T">Type of elements.</typeparam>
     /// <param name="items">Stream which should be splitted.</param>
     /// <param name="predicates">List of predicates. Each predicate creates an additional stream.</param>
     /// <param name="allowSameElements">True means if multiple predicates return true on an element it will appear in multiple streams. False means if a predicate is true this element is added to this stream and will not appear in other streams. </param>
