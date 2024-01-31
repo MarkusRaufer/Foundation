@@ -1,5 +1,7 @@
 ﻿using NUnit.Framework;
 using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace Foundation
 {
@@ -8,7 +10,18 @@ namespace Foundation
     {
         private class MyTest
         {
-            public void Func() { }
+            public void Func()
+            {
+                IsCalledFunc1 = true;
+            }
+            public void Func2(IEnumerable<string> names)
+            { 
+                IsCalledFunc2 = true;
+            }
+
+            public bool IsCalledFunc1 { get; set; }
+            public bool IsCalledFunc2 { get; set; }
+
         }
 
         [Test]
@@ -45,6 +58,27 @@ namespace Foundation
 
             Assert.IsTrue(executed1);
             Assert.IsTrue(executed2);
+        }
+
+        [Test]
+        public void Publish_ShouldCallSubscription_When_DelegateWithEnumerableAsSingleParameterIsUsed()
+        {
+            var expected = new string[] { "1", "2", "3" };
+
+            var executed = false;
+            void method(IEnumerable<string> names)
+            {
+                executed = names.SequenceEqual(expected);
+            }
+
+            // leaving the scope unregisters all subscriptions automatically.
+            using var sut = new Event<Action<IEnumerable<string>>>();
+
+            sut.Subscribe(method);
+
+            sut.Publish((object)expected);
+
+            Assert.IsTrue(executed);
         }
 
         [Test]

@@ -20,7 +20,7 @@ public static class EnumerableTransformations
     {
         var streams = new List<IList<TResult>>();
 
-        foreach(var projection in projections)
+        foreach(var _ in projections)
         {
             var stream = new List<TResult>();
             streams.Add(stream);

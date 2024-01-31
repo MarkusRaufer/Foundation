@@ -32,11 +32,15 @@ public sealed class Event<TDelegate> : IDisposable
     public Action<TDelegate>? OnSubscribe { get; set; }
     public Action<TDelegate>? OnUnsubscribe { get; set; }
 
-    public void Publish(params object?[] args)
+    /// <summary>
+    /// Calls the delegates of the the subscribers. 
+    /// </summary>
+    /// <param name="args">Each element of args corresponds to a parameter of the delegate. If you want to use a list of values as a single parameter cast it to object.</param>
+    public void Publish(params object?[]? args)
     {
         foreach (var subscribtion in _subscribtions.Value.ToArray())
         {
-            subscribtion.DynamicInvoke(args);
+            subscribtion?.DynamicInvoke(args);
         }
     }
 
