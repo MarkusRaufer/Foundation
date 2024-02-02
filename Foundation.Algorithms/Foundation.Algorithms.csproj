@@ -5,7 +5,7 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
 	<LangVersion>latest</LangVersion>
-	<Verion>1.0.0-rc.2</Verion>
+	<Verion>1.0.0</Verion>
   </PropertyGroup>
 
 </Project>
