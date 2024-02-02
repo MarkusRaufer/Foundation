@@ -40,10 +40,3 @@ Examples:
 
 
 The namespaces are based on Microsoft .NET namespaces. It is easy for a .NET developer to find a particular component because of the familiar namespace scheme.
-
-## Namespaces
-
-The namespaces correspond to the .NET counterparts.
-### [Foundation](../Foundation.Wiki//foundation.md)
-
-### [Foundation.Collections.Generic](../Foundation.Wiki//foundation-collections-generic.md)
