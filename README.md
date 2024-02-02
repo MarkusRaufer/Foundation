@@ -40,3 +40,5 @@ Examples:
 
 
 The namespaces are based on Microsoft .NET namespaces. It is easy for a .NET developer to find a particular component because of the familiar namespace scheme.
+
+For more information see [wiki](https://github.com/MarkusRaufer/Foundation/wiki).
