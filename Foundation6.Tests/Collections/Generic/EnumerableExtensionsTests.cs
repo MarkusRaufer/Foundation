@@ -2056,7 +2056,18 @@ public class EnumerableExtensionsTests
         var scanned = numbers.ScanLeft(0, (x, y) => x + y)
                              .ToArray();
 
+        // scanned == [0, 1, 3, 6, 10, 15]
+
+        // method iterations
+        // 0                 =  0 (seed)
+        // 0 + 1             =  1
+        // 1 + 2             =  3
+        // 1 + 2 + 3         =  6
+        // 1 + 2 + 3 + 4     = 10
+        // 1 + 2 + 3 + 4 + 5 = 15
+
         scanned.Should().BeEquivalentTo(new int[] { 0, 1, 3, 6, 10, 15 });
+
     }
 
     [Test]
