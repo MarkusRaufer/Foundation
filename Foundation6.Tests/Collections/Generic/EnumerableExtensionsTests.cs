@@ -2094,6 +2094,14 @@ public class EnumerableExtensionsTests
         var scanned = numbers.ScanRight(0, (x, y) => x + y)
                              .ToArray();
 
+        //method iterations
+        //5 + 4 + 3 + 2 + 1 = 15
+        //5 + 4 + 3 + 2     = 14
+        //5 + 4 + 3         = 12
+        //5 + 4             =  9
+        //5 + 0             =  5
+        //0                 =  0
+
         scanned.Should().BeEquivalentTo(new int[] { 15, 14, 12, 9, 5, 0 });
     }
 
@@ -2107,10 +2115,12 @@ public class EnumerableExtensionsTests
         // scanned == [ "Cz", "BCz", "ABCz" ]
 
         // method iterations
-        // C + z   = Cz
-        // B + Cz  = BCz
-        // A + BCz = ABCz
-        scanned.Should().BeEquivalentTo(new [] { "Cz", "BCz", "ABCz" });
+        // A + B + C + z = ABCz
+        // B + C + z     = BCz
+        // C + z         = Cz
+        // z             = z
+
+        scanned.Should().BeEquivalentTo(new [] { "ABCz", "BCz", "Cz", "z" });
     }
 
     [Test]

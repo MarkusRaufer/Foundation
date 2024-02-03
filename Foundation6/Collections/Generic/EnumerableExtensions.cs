@@ -2303,14 +2303,20 @@ public static class EnumerableExtensions
         var it = items.Reverse().GetEnumerator();
         var result = seed;
         var sequence = Enumerable.Empty<T>();
-        
-        while (it.MoveNext())
-        {
-            result = func(it.Current, result);
-            sequence = sequence.Append(result);
-        }
 
-        return sequence;
+        return fold(it, seed, func).Reverse();
+
+        IEnumerable<T> fold(IEnumerator<T> it, T seed, Func<T, T, T> func)
+        {
+            var result = seed;
+            yield return result;
+
+            while (it.MoveNext())
+            {
+                result = func(it.Current, result);
+                yield return result;
+            }
+        }
     }
 
     /// <summary>
