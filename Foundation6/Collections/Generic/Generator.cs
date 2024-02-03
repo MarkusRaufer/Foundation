@@ -23,7 +23,7 @@
 // SOFTWARE.
 ﻿namespace Foundation.Collections.Generic;
 
-public static class EnumerableEx
+public static class GeneratorEnumerableEx
 {
     /// <summary>
     /// Creates an endless number of elements.
@@ -32,7 +32,7 @@ public static class EnumerableEx
     /// <param name="factory">Factory of elements of type T.</param>
     /// <param name="seed">This is the seed value which is the first element.</param>
     /// <returns></returns>
-    public static IEnumerable<T> Generator<T>(Func<T, T> factory, T seed)
+    public static IEnumerable<T> Create<T>(Func<T, T> factory, T seed)
     {
         factory.ThrowIfNull();
 

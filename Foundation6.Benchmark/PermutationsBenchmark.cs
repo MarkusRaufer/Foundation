@@ -43,8 +43,8 @@ public class PermutationsBenchmark
 
     public PermutationsBenchmark()
     {
-        _charsSmall = Collections.Generic.EnumerableEx.Range('a', 'c').Select(x => (object)x).ToArray();
-        _charsLarge = Collections.Generic.EnumerableEx.Range('a', 'z').Select(x => (object)x).ToArray();
+        _charsSmall = Collections.Generic.Generator.Range('a', 'c').Select(x => (object)x).ToArray();
+        _charsLarge = Collections.Generic.Generator.Range('a', 'z').Select(x => (object)x).ToArray();
         _numbersSmall = Enumerable.Range(1, 2).Select(x => (object)x).ToArray();
         _numbersLarge = Enumerable.Range(1, 1000).Select(x => (object)x).ToArray();
 
