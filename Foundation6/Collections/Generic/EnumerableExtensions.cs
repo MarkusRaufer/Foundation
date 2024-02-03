@@ -2304,12 +2304,10 @@ public static class EnumerableExtensions
         var result = seed;
         var sequence = Enumerable.Empty<T>();
         
-        sequence = sequence.Prepend(result);
-
         while (it.MoveNext())
         {
-            result = func(result, it.Current);
-            sequence= sequence.Prepend(result);
+            result = func(it.Current, result);
+            sequence = sequence.Append(result);
         }
 
         return sequence;

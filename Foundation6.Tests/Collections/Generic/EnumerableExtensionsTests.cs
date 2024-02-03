@@ -2072,9 +2072,6 @@ public class EnumerableExtensionsTests
     [Test]
     public void ScanLeft_Should_ReturnAListOfStrings_When_ItemsIsAListOfStrings()
     {
-        var numbers = new[] { "A", "B", "C" };
-        var scanned = numbers.ScanLeft("z", (x, y) => x + y)
-                             .ToArray();
         var values = new[] { "A", "B", "C" };
         var scanned = values.ScanLeft("z", (x, y) => x + y)
                             .ToArray();
@@ -2091,13 +2088,29 @@ public class EnumerableExtensionsTests
     }
 
     [Test]
-    public void ScanRight_Should_ReturnAListOfValues_When_ItemsNotEmpty()
+    public void ScanRight_Should_ReturnAListOfIntegers_When_ItemsAreIntegers()
     {
         var numbers = Enumerable.Range(1, 5);
         var scanned = numbers.ScanRight(0, (x, y) => x + y)
                              .ToArray();
 
         scanned.Should().BeEquivalentTo(new int[] { 15, 14, 12, 9, 5, 0 });
+    }
+
+    [Test]
+    public void ScanRight_Should_ReturnAListOfStrings_When_ItemsAreStrings()
+    {
+        var values = new[] { "A", "B", "C" };
+        var scanned = values.ScanRight("z", (x, y) => x + y)
+                            .ToArray();
+
+        // scanned == [ "Cz", "BCz", "ABCz" ]
+
+        // method iterations
+        // C + z   = Cz
+        // B + Cz  = BCz
+        // A + BCz = ABCz
+        scanned.Should().BeEquivalentTo(new [] { "Cz", "BCz", "ABCz" });
     }
 
     [Test]
