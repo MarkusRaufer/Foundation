@@ -2112,7 +2112,7 @@ public class EnumerableExtensionsTests
         var scanned = values.ScanRight("z", (x, y) => x + y)
                             .ToArray();
 
-        // scanned == [ "Cz", "BCz", "ABCz" ]
+        // scanned == [ "ABCz", "BCz", "Cz", "z"  ]
 
         // method iterations
         // A + B + C + z = ABCz
