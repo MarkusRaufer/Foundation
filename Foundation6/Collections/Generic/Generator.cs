@@ -23,7 +23,7 @@
 // SOFTWARE.
 ﻿namespace Foundation.Collections.Generic;
 
-public static class GeneratorEnumerableEx
+public static class Generator
 {
     /// <summary>
     /// Creates an endless number of elements.
