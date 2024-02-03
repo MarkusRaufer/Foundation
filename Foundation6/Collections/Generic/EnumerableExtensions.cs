@@ -933,7 +933,7 @@ public static class EnumerableExtensions
     }
 
     /// <summary>
-    /// Returns if the list has at least numberOfElements.
+    /// Returns items if the list has at least numberOfElements.
     /// </summary>
     /// <typeparam name="T">Type of list elements.</typeparam>
     /// <param name="items">List of items.</param>
@@ -1153,6 +1153,14 @@ public static class EnumerableExtensions
         }
     }
 
+    /// <summary>
+    /// Items for which the predicate applies are not returned.
+    /// </summary>
+    /// <typeparam name="T">Type of elements.</typeparam>
+    /// <param name="items"></param>
+    /// <param name="predicate">Element is ignored when predicate returns true.</param>
+    /// <param name="action">Is called when predicate returns true.</param>
+    /// <returns></returns>
     public static IEnumerable<T> Ignore<T>(this IEnumerable<T> items, Func<T, bool> predicate, Action<T> action)
     {
         predicate.ThrowIfNull();
@@ -1174,7 +1182,7 @@ public static class EnumerableExtensions
     /// </summary>
     /// <typeparam name="T"></typeparam>
     /// <param name="items"></param>
-    /// <param name="indices"></param>
+    /// <param name="indices">Elements at indices are not returned.</param>
     /// <returns></returns>
     public static IEnumerable<T> Ignore<T>(this IEnumerable<T> items, params int[] indices)
     {

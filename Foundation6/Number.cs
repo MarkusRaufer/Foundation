@@ -23,6 +23,9 @@
 // SOFTWARE.
 ﻿namespace Foundation;
 
+/// <summary>
+/// Represents a number type.
+/// </summary>
 public sealed class Number : OneOf<byte, char, decimal, int, long, sbyte, short, uint, ulong, ushort>
 {
     public Number()

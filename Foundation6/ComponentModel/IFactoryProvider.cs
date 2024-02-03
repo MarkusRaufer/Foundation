@@ -23,6 +23,11 @@
 // SOFTWARE.
 ﻿namespace Foundation.ComponentModel;
 
+/// <summary>
+/// Contract of a factory provider.
+/// </summary>
+/// <typeparam name="TSelector"></typeparam>
+/// <typeparam name="TFactory"></typeparam>
 public interface IFactoryProvider<TSelector, TFactory>
 {
     TFactory? GetFactory(TSelector selector);

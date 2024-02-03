@@ -15,6 +15,7 @@ public class PropertiesState : IMutableState<DictionaryValue<string, object?>, P
 
     public DictionaryValue<string, object?> State => _state;
 
+    /// <inheritdoc/>
     public void ApplyEvent(PropertiesEvent @event)
     {
         switch (@event)

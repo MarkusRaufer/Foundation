@@ -23,11 +23,23 @@
 // SOFTWARE.
 ﻿namespace Foundation.ComponentModel;
 
+/// <summary>
+/// Contract of a generic event handler.
+/// </summary>
 public interface IEventHandler
 {
+    /// <summary>
+    /// Handles the event.
+    /// </summary>
+    /// <typeparam name="TEvent">Type of event.</typeparam>
+    /// <param name="event"></param>
     void HandleEvent<TEvent>(TEvent @event);
 }
 
+/// <summary>
+/// Contract of an event handler.
+/// </summary>
+/// <typeparam name="TEvent">Type of event.</typeparam>
 public interface IEventHandler<TEvent>
 {
     void HandleEvent(TEvent @event);

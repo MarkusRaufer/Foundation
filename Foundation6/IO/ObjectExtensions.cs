@@ -23,41 +23,40 @@
 // SOFTWARE.
 ﻿using System.Reflection;
 
-namespace Foundation.IO
+namespace Foundation.IO;
+
+public static class ObjectExtensions
 {
-    public static class ObjectExtensions
+    public static byte[] ToByteArray(this object obj)
     {
-        public static byte[] ToByteArray(this object obj)
-        {
-            obj.ThrowIfNull();
+        obj.ThrowIfNull();
 
-            var stream = new MemoryStream();
-            var writer = new BinaryWriter(stream);
+        var stream = new MemoryStream();
+        var writer = new BinaryWriter(stream);
 
-            writer.WriteObject(obj);
-            return stream.ToArray();
-        }
+        writer.WriteObject(obj);
+        return stream.ToArray();
+    }
 
-        public static byte[] ToByteArray(this object obj, IEnumerable<string> memberNames)
-        {
-            obj.ThrowIfNull();
+    public static byte[] ToByteArray(this object obj, IEnumerable<string> memberNames)
+    {
+        obj.ThrowIfNull();
 
-            var stream = new MemoryStream();
-            var writer = new BinaryWriter(stream);
+        var stream = new MemoryStream();
+        var writer = new BinaryWriter(stream);
 
-            writer.WriteObject(obj, memberNames);
-            return stream.ToArray();
-        }
+        writer.WriteObject(obj, memberNames);
+        return stream.ToArray();
+    }
 
-        public static byte[] ToByteArray(this object obj, IEnumerable<MemberInfo> members)
-        {
-            obj.ThrowIfNull();
+    public static byte[] ToByteArray(this object obj, IEnumerable<MemberInfo> members)
+    {
+        obj.ThrowIfNull();
 
-            var stream = new MemoryStream();
-            var writer = new BinaryWriter(stream);
+        var stream = new MemoryStream();
+        var writer = new BinaryWriter(stream);
 
-            writer.WriteObject(obj, members);
-            return stream.ToArray();
-        }
+        writer.WriteObject(obj, members);
+        return stream.ToArray();
     }
 }

@@ -23,6 +23,9 @@
 // SOFTWARE.
 ﻿namespace Foundation.ComponentModel;
 
+/// <summary>
+/// 
+/// </summary>
 public class Transaction : Transaction<Guid, Unit, Action>
 {
     public Transaction() : this(Guid.NewGuid())
@@ -67,6 +70,12 @@ public class Transaction<TId, TChange> : Transaction<TId, TChange, Action<IEnume
     }
 }
 
+/// <summary>
+/// With this class you can record changes and on <see cref="Commit"/> the event <see cref="Committed"/> is called.
+/// </summary>
+/// <typeparam name="TId">The type of the transaction identifier.</typeparam>
+/// <typeparam name="TChange">The type of the change.</typeparam>
+/// <typeparam name="TDelegate">The delegate type.</typeparam>
 public class Transaction<TId, TChange, TDelegate>
     : ITransaction<TId, TDelegate>
     , IEquatable<Transaction<TId, TChange, TDelegate>>

@@ -23,17 +23,34 @@
 // SOFTWARE.
 ﻿namespace Foundation.ComponentModel;
 
+/// <summary>
+/// Contract of a generic command handler.
+/// </summary>
 public interface ICommandHandler
 {
     void HandleCommand<TCommand>(TCommand command);
 }
 
+/// <summary>
+/// Contract of a command handler.
+/// </summary>
+/// <typeparam name="TCommand">The type of the command.</typeparam>
 public interface ICommandHandler<TCommand>
 {
     void HandleCommand(TCommand command);
 }
 
+/// <summary>
+/// Contract of a command handler that creates an event.
+/// </summary>
+/// <typeparam name="TCommand"></typeparam>
+/// <typeparam name="TEvent"></typeparam>
 public interface ICommandHandler<TCommand, TEvent>
 {
+    /// <summary>
+    /// Creates an event.
+    /// </summary>
+    /// <param name="command"></param>
+    /// <returns></returns>
     TEvent HandleCommand(TCommand command);
 }

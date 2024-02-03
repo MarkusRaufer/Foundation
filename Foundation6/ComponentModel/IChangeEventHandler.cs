@@ -23,7 +23,15 @@
 // SOFTWARE.
 ﻿namespace Foundation.ComponentModel;
 
+/// <summary>
+/// Contract of an event handler that can apply changes.
+/// </summary>
+/// <typeparam name="TEvent"></typeparam>
 public interface IChangeEventHandler<TEvent>
 {
+    /// <summary>
+    /// Applies an event that causes changes.
+    /// </summary>
+    /// <param name="ev"></param>
     void ApplyEvent(TEvent ev);
 }
