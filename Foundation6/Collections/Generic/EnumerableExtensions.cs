@@ -2282,8 +2282,6 @@ public static class EnumerableExtensions
         var it = items.GetEnumerator();
         var result = seed;
 
-        yield return result;
-
         while (it.MoveNext())
         {
             result = func(result, it.Current);

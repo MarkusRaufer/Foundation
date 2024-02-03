@@ -2050,23 +2050,43 @@ public class EnumerableExtensionsTests
     }
 
     [Test]
-    public void ScanLeft_Should_ReturnAListOfValues_When_ItemsNotEmpty()
+    public void ScanLeft_Should_ReturnAListOfIntegers_When_ItemsIsAListOfIntegers()
     {
         var numbers = Enumerable.Range(1, 5);
         var scanned = numbers.ScanLeft(0, (x, y) => x + y)
                              .ToArray();
 
-        // scanned == [0, 1, 3, 6, 10, 15]
+        // scanned == [1, 3, 6, 10, 15]
 
         // method iterations
-        // 0                 =  0 (seed)
         // 0 + 1             =  1
         // 1 + 2             =  3
         // 1 + 2 + 3         =  6
         // 1 + 2 + 3 + 4     = 10
         // 1 + 2 + 3 + 4 + 5 = 15
 
-        scanned.Should().BeEquivalentTo(new int[] { 0, 1, 3, 6, 10, 15 });
+        scanned.Should().BeEquivalentTo(new int[] { 1, 3, 6, 10, 15 });
+
+    }
+
+    [Test]
+    public void ScanLeft_Should_ReturnAListOfStrings_When_ItemsIsAListOfStrings()
+    {
+        var numbers = new[] { "A", "B", "C" };
+        var scanned = numbers.ScanLeft("z", (x, y) => x + y)
+                             .ToArray();
+        var values = new[] { "A", "B", "C" };
+        var scanned = values.ScanLeft("z", (x, y) => x + y)
+                            .ToArray();
+
+        // scanned == ["zA", "zAB", "zABC"]
+
+        // method iterations
+        // z   + A   = zA
+        // zA  + B   = zAB
+        // zAB + C   = zABC
+
+        scanned.Should().BeEquivalentTo(new [] { "zA", "zAB", "zABC" });
 
     }
 
