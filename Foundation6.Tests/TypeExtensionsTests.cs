@@ -2,16 +2,13 @@
 using NUnit.Framework;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Foundation;
 
 [TestFixture]
 public class TypeExtensionsTests
 {
-    private record MyType<T>(T Value);
+    private record MyRecord<T>(T Value);
 
     private class MutableType1
     {
@@ -19,11 +16,11 @@ public class TypeExtensionsTests
         public int Number { get; set; }
     }
 
-    private class MutableType2
+    private class ImmutableType1
     {
         private readonly int _number;
 
-        public MutableType2(int number)
+        public ImmutableType1(int number)
         {
             _number = number;
         }
@@ -65,38 +62,48 @@ public class TypeExtensionsTests
     [Test]
     public void IsImmutable_Should_ReturnFalse_When_TypeIsMutable()
     {
-        {
-            var type = typeof(MutableType1);
-            var isImmutable = type.IsImmutable();
-            isImmutable.Should().BeFalse();
-        }
-        
+        var type = typeof(MutableType1);
+        var isImmutable = type.IsImmutable();
+        isImmutable.Should().BeFalse();
     }
 
     [Test]
-    public void IsImmutable_Should_ReturnTrue_When_TypeIsImmutable()
+    public void IsImmutable_Should_ReturnTrue_When_TypeIsImmutableClass()
     {
-        {
-            var type = typeof(MyType<int>);
-            var isImmutable = type.IsImmutable();
-            isImmutable.Should().BeTrue();
-        }
-        {
-            var type = typeof(int);
-            var isImmutable = type.IsImmutable();
-            isImmutable.Should().BeTrue();
-        }
-        {
-            var type = typeof(MutableType2);
-            var isImmutable = type.IsImmutable();
-            isImmutable.Should().BeTrue();
-        }
+
+        var type = typeof(ImmutableType1);
+        var isImmutable = type.IsImmutable();
+        isImmutable.Should().BeTrue();
+    }
+
+    [Test]
+    public void IsImmutable_Should_ReturnTrue_When_TypeIsInteger()
+    {
+        var type = typeof(int);
+        var isImmutable = type.IsImmutable();
+        isImmutable.Should().BeTrue();
+    }
+
+    [Test]
+    public void IsImmutable_Should_ReturnTrue_When_TypeIsGenericRecordWithReferenceType()
+    {
+        var type = typeof(MyRecord<string>);
+        var isImmutable = type.IsImmutable();
+        isImmutable.Should().BeTrue();
+    }
+
+    [Test]
+    public void IsImmutable_Should_ReturnTrue_When_TypeIsGenericRecordWithValueType()
+    {
+        var type = typeof(MyRecord<int>);
+        var isImmutable = type.IsImmutable();
+        isImmutable.Should().BeTrue();
     }
 
     [Test]
     public void IsOfGenericType_Should_ReturnFalse_When_TypesAreNotGeneric()
     {
-        var type = typeof(MyType<int>);
+        var type = typeof(MyRecord<int>);
         {
             //right not generic
             Assert.IsFalse(type.IsOfGenericType(typeof(int)));
@@ -114,8 +121,8 @@ public class TypeExtensionsTests
     [Test]
     public void IsOfGenericType_Should_ReturnTrue_When_Other_IsSameTypeWithoutGenericParameter()
     {
-        var type = typeof(MyType<int>);
-        var genType = typeof(MyType<>);
+        var type = typeof(MyRecord<int>);
+        var genType = typeof(MyRecord<>);
 
         Assert.IsTrue(type.IsOfGenericType(genType));
     }
@@ -123,8 +130,8 @@ public class TypeExtensionsTests
     [Test]
     public void IsOfGenericType_Should_ReturnTrue_When_Other_IsSameButDifferentGenericParameter()
     {
-        var type = typeof(MyType<int>);
-        var genType = typeof(MyType<string>);
+        var type = typeof(MyRecord<int>);
+        var genType = typeof(MyRecord<string>);
 
         Assert.IsTrue(type.IsOfGenericType(genType));
     }

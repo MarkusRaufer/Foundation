@@ -32,6 +32,7 @@ using System.Text;
 public static class TypeExtensions
 {
     private readonly static Type _anyType = typeof(Any);
+    private readonly static Type _isExternalInitType = typeof(IsExternalInit);
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static int Compare(this Type type, Type other, Func<Type, IComparable> selector)
@@ -240,8 +241,22 @@ public static class TypeExtensions
     {
         ArgumentNullException.ThrowIfNull(type);
 
-        return type.GetFields().Where(x => !x.IsStatic && x != type).All(x => x.IsInitOnly) &&
-               type.GetProperties().Where(x => x.PropertyType != type && !isStatic(x)).All(x => !x.CanWrite);
+        if (!type.GetFields().Where(x => !x.IsStatic && x != type).All(x => x.IsInitOnly)) return false;
+
+        foreach (var property in type.GetProperties())
+        {
+            if (property.PropertyType == type) continue;
+            if (isStatic(property)) continue;
+
+            if (!property.CanWrite) continue;
+
+            if (property.SetMethod == null || !property.SetMethod.IsPublic) continue;
+
+            var types = property.SetMethod.ReturnParameter.GetRequiredCustomModifiers();
+            if (!types.Contains(_isExternalInitType)) return false;
+        }
+
+        return true;
 
         static bool isStatic(PropertyInfo pi)
         {
