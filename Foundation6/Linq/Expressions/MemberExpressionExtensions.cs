@@ -39,4 +39,8 @@ public static class MemberExpressionExtensions
         expression.ThrowIfNull();
         return HashCode.FromOrderedObject(expression.Member, expression.Type);
     }
+
+    public static ParameterExpression? GetParameter(this MemberExpression member)
+        => member.Expression is ParameterExpression p ? p : null;
+
 }

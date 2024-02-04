@@ -21,7 +21,7 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
-﻿using System.Linq.Expressions;
+using System.Linq.Expressions;
 
 namespace Foundation.Linq.Expressions;
 
@@ -35,4 +35,6 @@ public static class UnaryExpressionExtensions
                                             expression.Type.GetHashCode(),
                                             expression.Operand.GetExpressionHashCode(ignoreName));
     }
+
+    public static ParameterExpression? GetParameter(this UnaryExpression expression) => expression.Operand as ParameterExpression;
 }

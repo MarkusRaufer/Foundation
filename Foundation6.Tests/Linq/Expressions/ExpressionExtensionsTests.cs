@@ -2,6 +2,7 @@
 using FluentAssertions.Execution;
 using NUnit.Framework;
 using System;
+using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
 
@@ -124,6 +125,78 @@ public class ExpressionExtensionsTests
         var hashCode2 = Expression.Parameter(typeof(string), "a").GetExpressionHashCode(true);
 
         hashCode1.Should().Be(hashCode2);
+    }
+
+    [Test]
+    public void GetParameters_Should_Return1parameter_When_UsingParameterExpression()
+    {
+        var p = Expression.Parameter(typeof(string), "x");
+        
+        var parameters = p.GetParameters().ToArray();
+
+        parameters.Length.Should().Be(1);
+        parameters.Should().Contain(p);
+    }
+
+    [Test]
+    public void GetParameters_Should_Return1parameters_When_UsingTerminalBinaryExpression()
+    {
+        var p = Expression.Parameter(typeof(string), "x");
+        var c = Expression.Constant("test");
+        var be = Expression.MakeBinary(ExpressionType.Equal, p, c);
+
+        var parameters = be.GetParameters().ToArray();
+
+        parameters.Length.Should().Be(1);
+        parameters.Should().Contain(p);
+    }
+
+    [Test]
+    public void GetParameters_Should_Return1parameters_When_UsingComplexBinaryExpression()
+    {
+        var pX = Expression.Parameter(typeof(int), "x");
+        var c2 = Expression.Constant(2);
+        var xGreaterThanC2 = Expression.MakeBinary(ExpressionType.GreaterThan, pX, c2);
+
+        var c6 = Expression.Constant(6);
+        var xLessThanC6 = Expression.MakeBinary(ExpressionType.LessThan, pX, c6);
+
+        var and = Expression.MakeBinary(ExpressionType.And, xGreaterThanC2, xLessThanC6);
+
+        var parameters = and.GetParameters().ToArray();
+
+        parameters.Length.Should().Be(1);
+        parameters.Should().Contain(pX);
+    }
+
+
+    [Test]
+    public void GetParameters_Should_Return1parameters_When_UsingUnaryExpression()
+    {
+        Expression<Func<int, string, bool>> lambda = (number, name) => number == 2 && name == "John";
+
+        var parameters = lambda.GetParameters().ToArray();
+
+        var expected1 = Expression.Parameter(typeof(int), "number");
+        var expected2 = Expression.Parameter(typeof(string), "name");
+
+        parameters.Length.Should().Be(2);
+
+        var expected = new[] { expected1, expected2 };
+        parameters.Should().BeEquivalentTo(expected);
+    }
+
+    [Test]
+    public void GetParameters_Should_Return2parameters_When_UsingLambdaExpression()
+    {
+        var p = Expression.Parameter(typeof(int), "x");
+        var n = Expression.Negate(p);
+
+        var parameters = n.GetParameters().ToArray();
+
+        parameters.Length.Should().Be(1);
+
+        parameters[0].Should().Be(p);
     }
 
     [Test]

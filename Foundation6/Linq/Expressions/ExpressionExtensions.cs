@@ -22,6 +22,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 ﻿using System.Linq.Expressions;
+using System.Runtime.CompilerServices;
 
 namespace Foundation.Linq.Expressions;
 
@@ -59,6 +60,43 @@ public static class ExpressionExtensions
             ParameterExpression e => e.GetExpressionHashCode(ignoreName),
             UnaryExpression e     => e.GetExpressionHashCode(ignoreName),
             _ => 0
+        };
+    }
+
+    /// <summary>
+    /// Returns parameters of the expression. If expression does not include any parameter an empty list is returned.
+    /// </summary>
+    /// <param name="expression"></param>
+    /// <returns></returns>
+    public static IEnumerable<ParameterExpression> GetParameters(this Expression expression)
+    {
+        expression.ThrowIfNull();
+        switch(expression)
+        {
+            case BinaryExpression be:
+                foreach (var p in GetParameters(be.Left).Concat(GetParameters(be.Right)).Distinct())
+                    yield return p;
+
+                break;
+            case LambdaExpression lambda:
+                foreach (var p in lambda.Parameters) yield return p;
+
+                break;
+            case MemberExpression e:
+                {
+                    var p = e.GetParameter();
+                    if (null != p) yield return p;
+                }
+                break;
+            case ParameterExpression p:
+                yield return p;
+                break;
+            case UnaryExpression ue:
+                {
+                    var p = ue.GetParameter();
+                    if(null != p) yield return p;
+                }
+                break;
         };
     }
 
