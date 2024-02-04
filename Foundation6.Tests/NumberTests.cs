@@ -7,7 +7,18 @@ namespace Foundation;
 public class NumberTests
 {
     [Test]
-    public void CastOperator_Should_ShouldHaveDecimalValue_When_AssigningDecimal()
+    public void CastOperator_Should_HaveCharValue_When_AssigningChar()
+    {
+        var expected = '7';
+
+        Number sut = expected;
+
+        sut.TryGet(out char number).Should().BeTrue();
+        number.Should().Be(expected);
+    }
+
+    [Test]
+    public void CastOperator_Should_HaveDecimalValue_When_AssigningDecimal()
     {
         var expected = 12345M;
 
@@ -18,17 +29,17 @@ public class NumberTests
     }
 
     [Test]
-    public void TryGet_Should_ShouldReturnFalse_When_AssigningInt()
+    public void TryGet_Should_ReturnFalse_When_AssigningInt()
     {
         var expected = 12345M;
 
         Number sut = expected;
 
-        sut.TryGet(out int number).Should().BeFalse();
+        sut.TryGet(out int _).Should().BeFalse();
     }
 
     [Test]
-    public void TryGet_Should_ShouldReturnTrue_When_AssigningDecimal()
+    public void TryGet_Should_ReturnTrue_When_AssigningDecimal()
     {
         var expected = 12345M;
 

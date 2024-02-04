@@ -24,7 +24,7 @@
 ﻿namespace Foundation;
 
 /// <summary>
-/// Inherits from <see cref=OneOf{}/> and represents a number type.
+/// Inherits from <see cref=OneOf{}/> and represents any number type.
 /// </summary>
 public sealed class Number : OneOf<byte, char, decimal, int, long, sbyte, short, uint, ulong, ushort>
 {
