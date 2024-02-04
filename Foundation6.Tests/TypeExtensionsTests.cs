@@ -1,4 +1,5 @@
-﻿using NUnit.Framework;
+﻿using FluentAssertions;
+using NUnit.Framework;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,6 +12,24 @@ namespace Foundation;
 public class TypeExtensionsTests
 {
     private record MyType<T>(T Value);
+
+    private class MutableType1
+    {
+        public string? Name { get; set; }
+        public int Number { get; set; }
+    }
+
+    private class MutableType2
+    {
+        private readonly int _number;
+
+        public MutableType2(int number)
+        {
+            _number = number;
+        }
+
+        public int Number => _number;
+    }
 
     [Test]
     public void ImplementsInterface_Should_ReturnFalse_When_String_DoesNotImplementInterface()
@@ -40,6 +59,37 @@ public class TypeExtensionsTests
         {
             var result = type.ImplementsInterface(typeof(IComparable<>));
             Assert.IsTrue(result);
+        }
+    }
+
+    [Test]
+    public void IsImmutable_Should_ReturnFalse_When_TypeIsMutable()
+    {
+        {
+            var type = typeof(MutableType1);
+            var isImmutable = type.IsImmutable();
+            isImmutable.Should().BeFalse();
+        }
+        
+    }
+
+    [Test]
+    public void IsImmutable_Should_ReturnTrue_When_TypeIsImmutable()
+    {
+        {
+            var type = typeof(MyType<int>);
+            var isImmutable = type.IsImmutable();
+            isImmutable.Should().BeTrue();
+        }
+        {
+            var type = typeof(int);
+            var isImmutable = type.IsImmutable();
+            isImmutable.Should().BeTrue();
+        }
+        {
+            var type = typeof(MutableType2);
+            var isImmutable = type.IsImmutable();
+            isImmutable.Should().BeTrue();
         }
     }
 

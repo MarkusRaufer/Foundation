@@ -2300,14 +2300,13 @@ public static class EnumerableExtensions
     /// <returns></returns>
     public static IEnumerable<T> ScanRight<T>(this IEnumerable<T> items, T seed, Func<T, T, T> func)
     {
-        var it = items.Reverse().GetEnumerator();
-        var result = seed;
-        var sequence = Enumerable.Empty<T>();
 
-        return fold(it, seed, func).Reverse();
+        return fold(items, seed, func).Reverse();
 
-        IEnumerable<T> fold(IEnumerator<T> it, T seed, Func<T, T, T> func)
+        static IEnumerable<T> fold(IEnumerable<T> items, T seed, Func<T, T, T> func)
         {
+            var it = items.Reverse().GetEnumerator();
+
             var result = seed;
             yield return result;
 
