@@ -22,6 +22,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 ﻿using System.Linq.Expressions;
+using System.Runtime.CompilerServices;
 
 namespace Foundation.Linq.Expressions;
 
@@ -40,6 +41,36 @@ public static class BinaryExpressionExtensions
             && lhs.Type == rhs.Type
             && lhs.Left.EqualsToExpression(rhs.Left)
             && lhs.Right.EqualsToExpression(rhs.Right);
+    }
+
+    public static IEnumerable<BinaryExpression> GetBinaryExpressions(this BinaryExpression expression)
+    {
+        var left = getBinaryExpressions(expression.Left);
+        if (left != null)
+        {
+            yield return left;
+            foreach (var l in left.GetBinaryExpressions())
+                yield return l;
+        }
+
+        var right = getBinaryExpressions(expression.Right);
+        if (right != null)
+        {
+            yield return right;
+            foreach (var r in right.GetBinaryExpressions())
+                yield return r;
+        }
+
+        static BinaryExpression? getBinaryExpressions(Expression e)
+        {
+            return e is BinaryExpression be ? be : null;
+        }
+    }
+
+    public static IEnumerable<Expression> GetLeftAndRightExpression(this BinaryExpression expression)
+    {
+        yield return expression.Left;
+        yield return expression.Right;
     }
 
     public static int GetExpressionHashCode(this BinaryExpression expression, bool ignoreName = false)
