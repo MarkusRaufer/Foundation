@@ -82,6 +82,9 @@ public static class BinaryExpressionExtensions
                                             expression.Right.GetExpressionHashCode(ignoreName));
     }
 
+    public static bool HasConstant(this BinaryExpression expression)
+        => expression.Left.IsConstant() || expression.Right.IsConstant();
+
     public static bool IsPredicate(this BinaryExpression expression)
     {
         return expression.ThrowIfNull().NodeType.IsPredicate();

@@ -7,7 +7,7 @@ using System.Linq.Expressions;
 namespace Foundation.Linq.Expressions;
 
 [TestFixture]
-public class BinaryExpressionExtensions
+public class BinaryExpressionExtensionsTests
 {
     [Test]
     public void GetBinaryExpressions_Should_ReturnBinaryExpressions_When_LambdaHasHierarchicalBinaryExpressions()
