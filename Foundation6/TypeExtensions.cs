@@ -23,7 +23,9 @@
 // SOFTWARE.
 ﻿namespace Foundation;
 
+using System;
 using System.Collections;
+using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Text;
 
@@ -231,6 +233,22 @@ public static class TypeExtensions
         if (generic.Namespace != "System") return false;
         if (generic.BaseType != typeof(MulticastDelegate)) return false;
         return generic.Name.StartsWith("Func`");
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static bool IsImmutable(this Type? type)
+    {
+        ArgumentNullException.ThrowIfNull(type);
+
+        return type.GetFields().Where(x => !x.IsStatic && x != type).All(x => x.IsInitOnly) &&
+               type.GetProperties().Where(x => x.PropertyType != type && !isStatic(x)).All(x => !x.CanWrite);
+
+        static bool isStatic(PropertyInfo pi)
+        {
+            if (pi.GetMethod is MethodInfo m && m.IsStatic) return true;
+
+            return false;
+        }
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
