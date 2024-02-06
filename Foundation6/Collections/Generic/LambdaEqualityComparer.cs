@@ -25,6 +25,13 @@
 
 namespace Foundation.Collections.Generic;
 
+public static class LambdaEqualityComparer
+{
+    public static LambdaEqualityComparer<T> New<T>(Func<T?, T?, bool> equals) => new(equals);
+    public static LambdaEqualityComparer<T> New<T>(Func<T?, int>? hashCodeFunc) => new(hashCodeFunc);
+    public static LambdaEqualityComparer<T> New<T>(Func<T?, T?, bool> equals, Func<T?, int>? hashCodeFunc) => new(equals, hashCodeFunc);
+}
+
 public class LambdaEqualityComparer<T> : EqualityComparer<T>
 {
     private readonly Func<T?, int> _hashCodeFunc;

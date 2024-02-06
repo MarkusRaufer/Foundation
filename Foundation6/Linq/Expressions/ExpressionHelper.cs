@@ -91,8 +91,11 @@ public static class ExpressionHelper
     //    return true;
     //}
 
-    public static bool AreEqualTerminators(Expression lhs, Expression rhs)
+    public static bool AreEqualTerminators(Expression? lhs, Expression? rhs)
     {
+        if (lhs is null) return rhs is null;
+        if (rhs is null) return false;
+
         return AreEqualTerminators(lhs, rhs, false);
     }
 
@@ -110,8 +113,11 @@ public static class ExpressionHelper
         };
     }
 
-    public static bool AreSameTerminators(Expression lhs, Expression rhs)
+    public static bool AreSameTerminators(Expression? lhs, Expression? rhs)
     {
+        if (lhs is null) return rhs is null;
+        if (rhs is null) return false;
+
         return AreEqualTerminators(lhs, rhs, true);
     }
 
