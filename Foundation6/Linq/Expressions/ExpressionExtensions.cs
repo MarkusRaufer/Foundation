@@ -21,22 +21,21 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
-﻿using System.Linq.Expressions;
-using System.Runtime.CompilerServices;
+using System.Linq.Expressions;
 
 namespace Foundation.Linq.Expressions;
 
 public static class ExpressionExtensions
 {
-    public static bool EqualsToExpression(this Expression lhs, Expression rhs)
+    public static bool EqualsToExpression(this Expression lhs, Expression rhs, bool ignoreNames = true)
     {
         return lhs switch
         {
-            BinaryExpression l => rhs is BinaryExpression r && l.EqualsToExpression(r),
+            BinaryExpression l => rhs is BinaryExpression r && l.EqualsToExpression(r, ignoreNames),
             ConstantExpression l => rhs is ConstantExpression r && l.EqualsToExpression(r),
-            LambdaExpression l => rhs is LambdaExpression r && l.EqualsToExpression(r),
+            LambdaExpression l => rhs is LambdaExpression r && l.EqualsToExpression(r, ignoreParameterNames: ignoreNames),
             MemberExpression l => rhs is MemberExpression r && l.EqualsToExpression(r),
-            ParameterExpression l => rhs is ParameterExpression r && l.EqualsToExpression(r),
+            ParameterExpression l => rhs is ParameterExpression r && l.EqualsToExpression(r, ignoreName: ignoreNames),
             UnaryExpression l => rhs is UnaryExpression r && l.EqualsToExpression(r),
             _ => false
         };

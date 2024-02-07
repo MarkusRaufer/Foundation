@@ -28,7 +28,7 @@ namespace Foundation.Linq.Expressions;
 
 public static class LambdaExpressionExtensions
 {
-    public static bool EqualsToExpression(this LambdaExpression lhs, LambdaExpression rhs, bool ignoreParameterName = true)
+    public static bool EqualsToExpression(this LambdaExpression lhs, LambdaExpression rhs, bool ignoreParameterNames = true)
     {
         if (null == lhs) return null == rhs;
         if (null== rhs) return false;
@@ -37,11 +37,11 @@ public static class LambdaExpressionExtensions
             && lhs.NodeType == rhs.NodeType
             && lhs.Type == rhs.Type
             && lhs.ReturnType == rhs.ReturnType
-            && lhs.Parameters.SequenceEqual(rhs.Parameters, (l, r) => l.EqualsToExpression(r, ignoreParameterName))
+            && lhs.Parameters.SequenceEqual(rhs.Parameters, (l, r) => l.EqualsToExpression(r, ignoreParameterNames))
             && lhs.Body.EqualsToExpression(rhs.Body);
     }
 
-    public static int GetExpressionHashCode(this LambdaExpression expression, bool ignoreParameterName = true)
+    public static int GetExpressionHashCode(this LambdaExpression expression, bool ignoreParameterNames = true)
     {
         expression.ThrowIfNull();
 
@@ -50,9 +50,9 @@ public static class LambdaExpressionExtensions
             expression.NodeType.GetHashCode(),
             expression.Type.GetHashCode(),
             expression.ReturnType.GetHashCode(),
-            expression.Body.GetExpressionHashCode(ignoreParameterName)
+            expression.Body.GetExpressionHashCode(ignoreParameterNames)
         };
-        expression.Parameters.Select(x => x.GetExpressionHashCode(ignoreParameterName))
+        expression.Parameters.Select(x => x.GetExpressionHashCode(ignoreParameterNames))
                              .ForEach(hashCodes.Add);
         
         return HashCode.FromOrderedHashCodes(hashCodes);
