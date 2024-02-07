@@ -21,8 +21,7 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
-﻿using System.Linq.Expressions;
-using System.Runtime.CompilerServices;
+using System.Linq.Expressions;
 
 namespace Foundation.Linq.Expressions;
 
@@ -36,11 +35,12 @@ public static class BinaryExpressionExtensions
     public static bool EqualsToExpression(this BinaryExpression lhs, BinaryExpression rhs)
     {
         if (null == lhs) return null == rhs;
+        if (null == rhs) return false;
 
         return lhs.NodeType == rhs.NodeType
             && lhs.Type == rhs.Type
-            && lhs.Left.EqualsToExpression(rhs.Left)
-            && lhs.Right.EqualsToExpression(rhs.Right);
+            && (lhs.Left.EqualsToExpression(rhs.Left) && lhs.Right.EqualsToExpression(rhs.Right)
+            || lhs.Left.EqualsToExpression(rhs.Right) && lhs.Right.EqualsToExpression(rhs.Left));
     }
 
     public static IEnumerable<BinaryExpression> GetBinaryExpressions(this BinaryExpression expression)

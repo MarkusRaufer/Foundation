@@ -22,11 +22,17 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 using System.Linq.Expressions;
+using System.Reflection.Metadata;
 
 namespace Foundation.Linq.Expressions;
 
 public static class UnaryExpressionExtensions
 {
+    public static bool EqualsToExpression(this UnaryExpression lhs, UnaryExpression rhs)
+    {
+        return lhs.NodeType == rhs.NodeType && lhs.Type == rhs.Type && lhs.Operand.EqualsToExpression(rhs.Operand);
+    }
+
     public static int GetExpressionHashCode(this UnaryExpression expression, bool ignoreName = true)
     {
         expression.ThrowIfNull();

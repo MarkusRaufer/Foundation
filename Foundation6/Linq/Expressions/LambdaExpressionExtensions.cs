@@ -31,16 +31,13 @@ public static class LambdaExpressionExtensions
     public static bool EqualsToExpression(this LambdaExpression lhs, LambdaExpression rhs, bool ignoreParameterName = true)
     {
         if (null == lhs) return null == rhs;
-
-        Func<ParameterExpression, ParameterExpression, bool> equal = ignoreParameterName
-        ? (ParameterExpression left, ParameterExpression right) => left.Type == right.Type
-        : (ParameterExpression left, ParameterExpression right) => left.Name == right.Name && left.Type == right.Type;
+        if (null== rhs) return false;
 
         return null != rhs
             && lhs.NodeType == rhs.NodeType
             && lhs.Type == rhs.Type
             && lhs.ReturnType == rhs.ReturnType
-            && lhs.Parameters.SequenceEqual(rhs.Parameters, (l, r) => equal(l, r))
+            && lhs.Parameters.SequenceEqual(rhs.Parameters, (l, r) => l.EqualsToExpression(r, ignoreParameterName))
             && lhs.Body.EqualsToExpression(rhs.Body);
     }
 
