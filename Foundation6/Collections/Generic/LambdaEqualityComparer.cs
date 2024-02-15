@@ -28,7 +28,7 @@ namespace Foundation.Collections.Generic;
 public static class LambdaEqualityComparer
 {
     public static LambdaEqualityComparer<T> New<T>(Func<T?, T?, bool> equals) => new(equals);
-    public static LambdaEqualityComparer<T> New<T>(Func<T?, int>? hashCodeFunc) => new(hashCodeFunc);
+    public static LambdaEqualityComparer<T> New<T>(Func<T?, int> hashCodeFunc) => new(hashCodeFunc);
     public static LambdaEqualityComparer<T> New<T>(Func<T?, T?, bool> equals, Func<T?, int>? hashCodeFunc) => new(equals, hashCodeFunc);
 }
 
@@ -49,7 +49,7 @@ public class LambdaEqualityComparer<T> : EqualityComparer<T>
     /// Default predicate uses Equals method.
     /// </summary>
     /// <param name="hashCodeFunc"></param>
-    public LambdaEqualityComparer(Func<T?, int>? hashCodeFunc) : this(DefaultEquals, hashCodeFunc)
+    public LambdaEqualityComparer(Func<T?, int> hashCodeFunc) : this(DefaultEquals, hashCodeFunc)
     {
     }
 

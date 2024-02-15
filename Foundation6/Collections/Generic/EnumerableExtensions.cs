@@ -294,11 +294,12 @@ public static class EnumerableExtensions
     public static IEnumerable<T> DistinctBy<T>(
         this IEnumerable<T> items,
         Func<T?, T?, bool> comparer,
-        Func<T?, int>? hashFunc)
+        Func<T?, int>? hashFunc = null)
     {
         comparer.ThrowIfNull();
 
-        return items.Distinct(new LambdaEqualityComparer<T>(comparer, hashFunc));
+        var eqComparer = hashFunc is null ? new LambdaEqualityComparer<T>(comparer) : new LambdaEqualityComparer<T>(comparer, hashFunc);
+        return items.Distinct(eqComparer);
     }
 
     /// <summary>
