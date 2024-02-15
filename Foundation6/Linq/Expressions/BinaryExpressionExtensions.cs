@@ -87,6 +87,17 @@ public static class BinaryExpressionExtensions
                                             expression.Right.GetExpressionHashCode(ignoreName));
     }
 
+    public static IEnumerable<ParameterExpression> GetParameters(this BinaryExpression? expression)
+    {
+        if (expression == null) yield break;
+
+        foreach(var l in expression.Left.GetParameters())
+            yield return l;
+
+        foreach (var r in expression.Right.GetParameters())
+            yield return r;
+    }
+
     public static bool HasConstant(this BinaryExpression expression)
         => expression.Left.IsConstant() || expression.Right.IsConstant();
 

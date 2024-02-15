@@ -11,7 +11,7 @@
 // copies of the Software, and to permit persons to whom the Software is
 // furnished to do so, subject to the following conditions:
 //
-// The above copyright notice and this permission notice shall be included in all
+// The above copyright notice and this permission notice shall binaryExpression included in all
 // copies or substantial portions of the Software.
 //
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
@@ -41,6 +41,16 @@ public static class LambdaExpressionExtensions
             && lhs.Body.EqualsToExpression(rhs.Body);
     }
 
+    public static IEnumerable<BinaryExpression> GetBinaryExpressions(this LambdaExpression lambda)
+    {
+        if (lambda.Body is not BinaryExpression binaryExpression) yield break;
+
+        yield return binaryExpression;
+
+        foreach(var be in binaryExpression.GetBinaryExpressions())
+            yield return be;
+    }
+    
     public static int GetExpressionHashCode(this LambdaExpression? expression, bool ignoreParameterNames = true)
     {
         if(expression == null) return 0;
