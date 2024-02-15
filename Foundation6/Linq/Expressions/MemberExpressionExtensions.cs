@@ -41,6 +41,11 @@ public static class MemberExpressionExtensions
     }
 
     public static ParameterExpression? GetParameter(this MemberExpression member)
-        => member.Expression is ParameterExpression p ? p : null;
+    {
+        if (member.Expression is ParameterExpression p) return p;
 
+        if (member.Expression is MemberExpression me) return GetParameter(me);
+
+        return null;
+    }
 }

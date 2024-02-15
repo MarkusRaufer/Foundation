@@ -128,6 +128,16 @@ public class ExpressionExtensionsTests
     }
 
     [Test]
+    public void GetParameters_Should_Return1parameter_When_UsingMemberExpression()
+    {
+        Expression<Func<Person, bool>> expression = (Person person) => person.Name.Length == 0;
+
+        var parameter = expression.Body.GetParameters().Single();
+
+        parameter.Name.Should().Be("person");
+    }
+
+    [Test]
     public void GetParameters_Should_Return1parameter_When_UsingParameterExpression()
     {
         var p = Expression.Parameter(typeof(string), "x");
@@ -136,6 +146,19 @@ public class ExpressionExtensionsTests
 
         parameters.Length.Should().Be(1);
         parameters.Should().Contain(p);
+    }
+
+    [Test]
+    public void GetParameters_Should_Return1parameter_When_UsingSubtractExpression()
+    {
+        Expression<Func<int, int, bool>> expression = (a, b) => (a - b) == 0;
+
+        var parameters = expression.Body.GetParameters().ToArray();
+
+        parameters.Length.Should().Be(2);
+
+        parameters[0].Name.Should().Be("a");
+        parameters[1].Name.Should().Be("b");
     }
 
     [Test]
@@ -217,5 +240,14 @@ public class ExpressionExtensionsTests
         var binary = (BinaryExpression)lambda.Body;
         Assert.IsTrue(binary.Left.IsTerminal());
         Assert.IsTrue(binary.Right.IsTerminal());
+    }
+
+
+    [Test]
+    public void IsTerminal_Should_ReturnTrue_When_Expression_LeftIsSubtractAndRightIsConstant()
+    {
+        Expression<Func<int, int, bool>> expression = (a, b) => (a - b) == 2;
+
+        expression.Body.IsTerminal().Should().BeTrue();
     }
 }

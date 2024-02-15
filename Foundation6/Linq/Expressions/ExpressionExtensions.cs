@@ -130,10 +130,14 @@ public static class ExpressionExtensions
 
         static bool isTerminalNode(Expression exp) => exp.NodeType switch
         {
+            ExpressionType.Add or
             ExpressionType.Constant or
+            ExpressionType.Divide or
             ExpressionType.MemberAccess or
-            ExpressionType.Parameter => true,
-            ExpressionType.Convert => exp is UnaryExpression unary && isTerminalNode(unary.Operand),
+            ExpressionType.Parameter or
+            ExpressionType.Subtract => true,
+            ExpressionType.Convert or
+            ExpressionType.Negate => exp is UnaryExpression unary && isTerminalNode(unary.Operand),
             ExpressionType.Modulo => exp is BinaryExpression be && isTerminalNode(be.Left) && isTerminalNode(be.Right),
             _ => false
         };
