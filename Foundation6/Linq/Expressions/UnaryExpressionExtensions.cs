@@ -35,7 +35,7 @@ public static class UnaryExpressionExtensions
 
     public static int GetExpressionHashCode(this UnaryExpression expression, bool ignoreName = true)
     {
-        expression.ThrowIfNull();
+        if(expression == null) return 0;
 
         return HashCode.FromOrderedHashCode(expression.NodeType.GetHashCode(),
                                             expression.Type.GetHashCode(),

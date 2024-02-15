@@ -39,7 +39,8 @@ public static class ParameterExpressionExtensions
 
     public static int GetExpressionHashCode(this ParameterExpression expression, bool ignoreName = true)
     {
-        expression.ThrowIfNull();
+        if(expression == null) return 0;
+
         return ignoreName ? expression.Type.GetHashCode()
                           : HashCode.FromOrderedHashCode(expression.Type.GetHashCode(),
                                                          expression.Name.GetNullableHashCode());

@@ -36,7 +36,7 @@ public static class MemberExpressionExtensions
 
     public static int GetExpressionHashCode(this MemberExpression expression)
     {
-        expression.ThrowIfNull();
+        if(expression is null) return 0;
         return HashCode.FromOrderedObject(expression.Member, expression.Type);
     }
 

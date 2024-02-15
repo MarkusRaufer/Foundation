@@ -52,7 +52,8 @@ public static class ExpressionExtensions
 
     public static int GetExpressionHashCode(this Expression expression, bool ignoreName = true)
     {
-        expression.ThrowIfNull();
+        if(null == expression) return 0;
+
         return expression switch
         {
             BinaryExpression e    => e.GetExpressionHashCode(ignoreName),

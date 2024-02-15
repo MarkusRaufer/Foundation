@@ -35,6 +35,7 @@ public static class ConstantExpressionExtensions
 
     public static int GetExpressionHashCode(this ConstantExpression expression)
     {
-        return expression.ThrowIfNull().Value.GetNullableHashCode();
+        if (expression is null) return 0;
+        return expression.Value.GetNullableHashCode();
     }
 }

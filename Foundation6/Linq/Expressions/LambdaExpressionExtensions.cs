@@ -43,7 +43,7 @@ public static class LambdaExpressionExtensions
 
     public static int GetExpressionHashCode(this LambdaExpression expression, bool ignoreParameterNames = true)
     {
-        expression.ThrowIfNull();
+        if(expression == null) return 0;
 
         var hashCodes = new List<int>
         {
