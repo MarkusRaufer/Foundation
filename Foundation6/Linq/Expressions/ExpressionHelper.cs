@@ -30,67 +30,6 @@ namespace Foundation.Linq.Expressions;
 
 public static class ExpressionHelper
 {
-    //public static bool AreEqual(Expression lhs, Expression rhs)
-    //{
-    //    lhs.ThrowIfEnumerableIsNull();
-    //    rhs.ThrowIfEnumerableIsNull();
-
-    //    return AreEqual(lhs.Flatten(), rhs.Flatten());
-    //}
-
-    //public static bool AreEqual(IEnumerable<Expression> lhs, IEnumerable<Expression> rhs)
-    //{
-    //    var flatLhs = lhs.ToArray();
-    //    var flatRhs = rhs.ToArray();
-
-    //    if (flatLhs.Length != flatRhs.Length) return false;
-
-    //    foreach (var (l, r) in flatLhs.Zip(flatRhs, (l, r) => (l, r)))
-    //    {
-    //        if (l.NodeType != r.NodeType) return false;
-    //        if (l.Type != r.Type) return false;
-
-    //        if (ExpressionType.Constant == l.NodeType)
-    //        {
-    //            if (l is not ConstantExpression lhsConstant || r is not ConstantExpression rhsConstant)
-    //                return false;
-
-    //            if (!lhsConstant.EqualsToExpression(rhsConstant)) return false;
-
-    //            continue;
-    //        }
-
-    //        if (ExpressionType.Lambda == l.NodeType)
-    //        {
-    //            if (l is not LambdaExpression lhsLambda || r is not LambdaExpression rhsLambda) return false;
-
-    //            if (!lhsLambda.EqualsToExpression(rhsLambda)) return false;
-
-    //            continue;
-    //        }
-
-    //        if (ExpressionType.MemberAccess == l.NodeType)
-    //        {
-    //            if (l is not MemberExpression lhsMember || r is not MemberExpression rhsMember) return false;
-
-    //            if (!lhsMember.EqualsToExpression(rhsMember)) return false;
-
-    //            continue;
-    //        }
-
-    //        if (ExpressionType.Parameter == l.NodeType)
-    //        {
-    //            if (l is not ParameterExpression lhsParameter || r is not ParameterExpression rhsParameter)
-    //                return false;
-
-    //            if (!lhsParameter.EqualsToExpression(rhsParameter)) return false;
-
-    //            continue;
-    //        }
-    //    }
-    //    return true;
-    //}
-
     public static bool AreEqualTerminators(Expression? lhs, Expression? rhs)
     {
         if (lhs is null) return rhs is null;

@@ -32,19 +32,21 @@ public static class BinaryExpressionExtensions
         return ExpressionHelper.Concat(expressions, binaryType);
     }
 
-    public static bool EqualsToExpression(this BinaryExpression lhs, BinaryExpression rhs)
+    public static bool EqualsToExpression(this BinaryExpression? lhs, BinaryExpression? rhs, bool ignoreNames = true)
     {
         if (null == lhs) return null == rhs;
         if (null == rhs) return false;
 
         return lhs.NodeType == rhs.NodeType
             && lhs.Type == rhs.Type
-            && (lhs.Left.EqualsToExpression(rhs.Left) && lhs.Right.EqualsToExpression(rhs.Right)
-            || lhs.Left.EqualsToExpression(rhs.Right) && lhs.Right.EqualsToExpression(rhs.Left));
+            && (lhs.Left.EqualsToExpression(rhs.Left, ignoreNames) && lhs.Right.EqualsToExpression(rhs.Right, ignoreNames)
+            || lhs.Left.EqualsToExpression(rhs.Right, ignoreNames) && lhs.Right.EqualsToExpression(rhs.Left, ignoreNames));
     }
 
-    public static IEnumerable<BinaryExpression> GetBinaryExpressions(this BinaryExpression expression)
+    public static IEnumerable<BinaryExpression> GetBinaryExpressions(this BinaryExpression? expression)
     {
+        if (expression is null) yield break;
+
         var left = getBinaryExpressions(expression.Left);
         if (left != null)
         {
@@ -69,13 +71,16 @@ public static class BinaryExpressionExtensions
 
     public static IEnumerable<Expression> GetLeftAndRightExpression(this BinaryExpression expression)
     {
+        expression.ThrowIfNull();
+
         yield return expression.Left;
         yield return expression.Right;
     }
 
     public static int GetExpressionHashCode(this BinaryExpression expression, bool ignoreName = false)
     {
-        expression.ThrowIfNull();
+        if(null == expression) return 0;
+
         return HashCode.FromOrderedHashCode(expression.NodeType.GetHashCode(),
                                             expression.Type.GetHashCode(),
                                             expression.Left.GetExpressionHashCode(ignoreName),

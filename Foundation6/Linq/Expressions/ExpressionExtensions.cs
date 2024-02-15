@@ -27,8 +27,11 @@ namespace Foundation.Linq.Expressions;
 
 public static class ExpressionExtensions
 {
-    public static bool EqualsToExpression(this Expression lhs, Expression rhs, bool ignoreNames = true)
+    public static bool EqualsToExpression(this Expression? lhs, Expression? rhs, bool ignoreNames = true)
     {
+        if (null == lhs) return null == rhs;
+        if (rhs == null) return false;
+
         return lhs switch
         {
             BinaryExpression l => rhs is BinaryExpression r && l.EqualsToExpression(r, ignoreNames),
