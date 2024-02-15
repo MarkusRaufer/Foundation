@@ -33,7 +33,7 @@ namespace Foundation.Benchmark
         private readonly SortedList<int, int> _msSortedList = new();
         private readonly Random _random = new(1);
 
-        [Params(100000)]
+        [Params(100, 1000, 10000)]
         public int NumberOfIterations;
 
 #pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.

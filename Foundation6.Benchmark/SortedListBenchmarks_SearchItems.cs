@@ -69,6 +69,5 @@ namespace Foundation.Benchmark
             var value = _values[Index];
             return _msSortedList.ContainsKey(value);
         }
-
     }
 }
