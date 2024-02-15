@@ -33,7 +33,7 @@ public static class UnaryExpressionExtensions
         return lhs.NodeType == rhs.NodeType && lhs.Type == rhs.Type && lhs.Operand.EqualsToExpression(rhs.Operand);
     }
 
-    public static int GetExpressionHashCode(this UnaryExpression expression, bool ignoreName = true)
+    public static int GetExpressionHashCode(this UnaryExpression? expression, bool ignoreName = true)
     {
         if(expression == null) return 0;
 

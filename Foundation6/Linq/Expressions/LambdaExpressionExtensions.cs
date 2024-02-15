@@ -41,7 +41,7 @@ public static class LambdaExpressionExtensions
             && lhs.Body.EqualsToExpression(rhs.Body);
     }
 
-    public static int GetExpressionHashCode(this LambdaExpression expression, bool ignoreParameterNames = true)
+    public static int GetExpressionHashCode(this LambdaExpression? expression, bool ignoreParameterNames = true)
     {
         if(expression == null) return 0;
 

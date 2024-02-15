@@ -37,7 +37,7 @@ public static class ParameterExpressionExtensions
             : lhs.Name.EqualsNullable(rhs.Name) && lhs.Type == rhs.Type;
     }
 
-    public static int GetExpressionHashCode(this ParameterExpression expression, bool ignoreName = true)
+    public static int GetExpressionHashCode(this ParameterExpression? expression, bool ignoreName = true)
     {
         if(expression == null) return 0;
 

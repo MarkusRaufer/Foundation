@@ -34,7 +34,7 @@ public static class MemberExpressionExtensions
         return rhs is not null && lhs.Member.Equals(rhs.Member);
     }
 
-    public static int GetExpressionHashCode(this MemberExpression expression)
+    public static int GetExpressionHashCode(this MemberExpression? expression)
     {
         if(expression is null) return 0;
         return HashCode.FromOrderedObject(expression.Member, expression.Type);

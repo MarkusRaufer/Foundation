@@ -77,7 +77,7 @@ public static class BinaryExpressionExtensions
         yield return expression.Right;
     }
 
-    public static int GetExpressionHashCode(this BinaryExpression expression, bool ignoreName = false)
+    public static int GetExpressionHashCode(this BinaryExpression? expression, bool ignoreName = false)
     {
         if(null == expression) return 0;
 
