@@ -82,8 +82,13 @@ public static class ExpressionExtensions
 
                 break;
             case LambdaExpression lambda:
-                foreach (var p in lambda.Parameters) yield return p;
+                foreach (var p in lambda.Parameters)
+                    yield return p;
 
+                break;
+            case MethodCallExpression mc:
+                foreach (var p in mc.GetParameters())
+                    yield return p;
                 break;
             case MemberExpression e:
                 {

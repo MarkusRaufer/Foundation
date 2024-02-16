@@ -46,6 +46,10 @@ public static class MemberExpressionExtensions
 
         if (member.Expression is MemberExpression me) return GetParameter(me);
 
+        if (member.Expression is MethodCallExpression mc)
+        {
+            
+        }
         return null;
     }
 }

@@ -17,6 +17,8 @@ public class ExpressionExtensionsTests
         Male
     };
 
+    private record BirthDayChild(string Name, DateTime BrithDay);
+
     private record Person(string Name, Gender Gender, int Age);
 
     [Test]
@@ -175,21 +177,31 @@ public class ExpressionExtensionsTests
     }
 
     [Test]
-    public void GetParameters_Should_Return1parameters_When_UsingComplexBinaryExpression()
+    public void GetParameters_Should_Return1parameter_When_UsingTMethodCallExpression()
     {
-        var pX = Expression.Parameter(typeof(int), "x");
-        var c2 = Expression.Constant(2);
-        var xGreaterThanC2 = Expression.MakeBinary(ExpressionType.GreaterThan, pX, c2);
+        Expression<Func<IDateTimeProvider, bool>> expression = x => x.DayNow() == 5;
 
-        var c6 = Expression.Constant(6);
-        var xLessThanC6 = Expression.MakeBinary(ExpressionType.LessThan, pX, c6);
-
-        var and = Expression.MakeBinary(ExpressionType.And, xGreaterThanC2, xLessThanC6);
-
-        var parameters = and.GetParameters().ToArray();
+        var parameters = expression.Body.GetParameters().ToArray();
 
         parameters.Length.Should().Be(1);
-        parameters.Should().Contain(pX);
+        var parameter = parameters[0];
+        parameter.Name.Should().Be("x");
+    }
+
+    [Test]
+    public void GetParameters_Should_Return1parameters_When_UsingComplexBinaryExpression()
+    {
+        Expression<Func<int, bool>> lambda = x => x > 2 && x < 6;
+
+        var parameters = lambda.GetParameters().ToArray();
+
+        parameters.Length.Should().Be(1);
+        parameters[0].Name.Should().Be("x");
+
+        parameters = lambda.Body.GetParameters().ToArray();
+
+        parameters.Length.Should().Be(1);
+        parameters[0].Name.Should().Be("x");
     }
 
 
@@ -250,4 +262,8 @@ public class ExpressionExtensionsTests
 
         expression.Body.IsTerminal().Should().BeTrue();
     }
+}
+public static class ProviderExtensions
+{
+    public static int DayNow(this IDateTimeProvider provider) => provider.Now.Day;
 }
