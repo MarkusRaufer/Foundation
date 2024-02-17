@@ -21,17 +21,21 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
-﻿using System.Linq.Expressions;
+using Foundation.Reflection;
+using System.Linq.Expressions;
 
 namespace Foundation.Linq.Expressions;
 
 public static class MemberExpressionExtensions
 {
-    public static bool EqualsToExpression(this MemberExpression lhs, MemberExpression rhs)
+    public static bool EqualsToExpression(this MemberExpression lhs, MemberExpression rhs, bool ignoreName = true)
     {
         if (lhs is null) return rhs is null;
+        if (rhs is null) return false;
 
-        return rhs is not null && lhs.Member.Equals(rhs.Member);
+        return lhs.NodeType == rhs.NodeType 
+            && lhs.Member.EqualsToMemberInfo(rhs.Member, ignoreName)
+            && lhs.Expression.EqualsToExpression(rhs.Expression, ignoreName);
     }
 
     public static int GetExpressionHashCode(this MemberExpression? expression)
@@ -62,17 +66,4 @@ public static class MemberExpressionExtensions
                 yield return parameter;
         }
     }
-
-    //public static ParameterExpression? GetParameter(this MemberExpression member)
-    //{
-    //    if (member.Expression is ParameterExpression p) return p;
-
-    //    if (member.Expression is MemberExpression me) return GetParameter(me);
-
-    //    if (member.Expression is MethodCallExpression mc)
-    //    {
-    //        mc.
-    //    }
-    //    return null;
-    //}
 }

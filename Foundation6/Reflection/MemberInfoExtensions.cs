@@ -26,6 +26,15 @@
 using System.Reflection;
 public static class MemberInfoExtensions
 {
+    public static bool EqualsToMemberInfo(this MemberInfo lhs, MemberInfo rhs, bool ignoreName = false)
+    {
+        if (lhs is null) return rhs is null;
+        if (rhs is null) return false;
+        return ignoreName
+            ? lhs.MemberType == rhs.MemberType && lhs.DeclaringType == rhs.DeclaringType
+            : lhs.MemberType == rhs.MemberType && lhs.Name == rhs.Name && lhs.DeclaringType == rhs.DeclaringType;
+    }
+
     public static Type GetMemberType(this MemberInfo memberInfo)
     {
         return memberInfo switch

@@ -37,7 +37,7 @@ public static class ExpressionExtensions
             BinaryExpression l => rhs is BinaryExpression r && l.EqualsToExpression(r, ignoreNames),
             ConstantExpression l => rhs is ConstantExpression r && l.EqualsToExpression(r),
             LambdaExpression l => rhs is LambdaExpression r && l.EqualsToExpression(r, ignoreParameterNames: ignoreNames),
-            MemberExpression l => rhs is MemberExpression r && l.EqualsToExpression(r),
+            MemberExpression l => rhs is MemberExpression r && l.EqualsToExpression(r, ignoreName: ignoreNames),
             ParameterExpression l => rhs is ParameterExpression r && l.EqualsToExpression(r, ignoreName: ignoreNames),
             UnaryExpression l => rhs is UnaryExpression r && l.EqualsToExpression(r),
             _ => false
