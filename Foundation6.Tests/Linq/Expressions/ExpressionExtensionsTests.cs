@@ -240,7 +240,7 @@ public class ExpressionExtensionsTests
         Expression<Func<Person, bool>> expression = p => p.Gender == Gender.Male;
         var lambda = expression as LambdaExpression;
 
-        Assert.IsTrue(lambda.Body.IsTerminal());
+        lambda.Body.IsTerminal().Should().BeTrue();
     }
 
     [Test]
@@ -250,8 +250,10 @@ public class ExpressionExtensionsTests
         var lambda = expression as LambdaExpression;
 
         var binary = (BinaryExpression)lambda.Body;
-        Assert.IsTrue(binary.Left.IsTerminal());
-        Assert.IsTrue(binary.Right.IsTerminal());
+
+        binary.IsTerminal().Should().BeTrue();
+        binary.Left.IsTerminal().Should().BeTrue();
+        binary.Right.IsTerminal().Should().BeTrue();
     }
 
 

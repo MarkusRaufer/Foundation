@@ -40,16 +40,39 @@ public static class MemberExpressionExtensions
         return HashCode.FromOrderedObject(expression.Member, expression.Type);
     }
 
-    public static ParameterExpression? GetParameter(this MemberExpression member)
+    public static IEnumerable<ParameterExpression> GetParameters(this MemberExpression member)
     {
-        if (member.Expression is ParameterExpression p) return p;
+        if (member.Expression is ParameterExpression p)
+        {
+            yield return p;
+            yield break;
+        }
 
-        if (member.Expression is MemberExpression me) return GetParameter(me);
+        if (member.Expression is MemberExpression me)
+        {
+            foreach(var parameter in GetParameters(me))
+                yield return parameter;
+
+            yield break;
+        }
 
         if (member.Expression is MethodCallExpression mc)
         {
-            
+            foreach (var parameter in mc.GetParameters())
+                yield return parameter;
         }
-        return null;
     }
+
+    //public static ParameterExpression? GetParameter(this MemberExpression member)
+    //{
+    //    if (member.Expression is ParameterExpression p) return p;
+
+    //    if (member.Expression is MemberExpression me) return GetParameter(me);
+
+    //    if (member.Expression is MethodCallExpression mc)
+    //    {
+    //        mc.
+    //    }
+    //    return null;
+    //}
 }

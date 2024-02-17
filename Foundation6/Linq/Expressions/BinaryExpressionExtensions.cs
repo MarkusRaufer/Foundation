@@ -105,4 +105,9 @@ public static class BinaryExpressionExtensions
     {
         return expression.ThrowIfNull().NodeType.IsPredicate();
     }
+
+    public static bool IsTerminal(this BinaryExpression expression)
+    {
+        return expression.Left.IsTerminal() && expression.Right.IsTerminal();
+    }
 }

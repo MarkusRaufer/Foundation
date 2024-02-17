@@ -77,7 +77,7 @@ public static class ExpressionExtensions
         switch(expression)
         {
             case BinaryExpression be:
-                foreach (var p in GetParameters(be.Left).Concat(GetParameters(be.Right)).Distinct())
+                foreach (var p in be.GetParameters().Distinct())
                     yield return p;
 
                 break;
@@ -92,8 +92,8 @@ public static class ExpressionExtensions
                 break;
             case MemberExpression e:
                 {
-                    var p = e.GetParameter();
-                    if (null != p) yield return p;
+                    foreach (var p in e.GetParameters())
+                        yield return p;
                 }
                 break;
             case ParameterExpression p:
