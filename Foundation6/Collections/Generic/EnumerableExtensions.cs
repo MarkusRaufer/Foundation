@@ -222,52 +222,6 @@ public static class EnumerableExtensions
     }
 
     /// <summary>
-    /// Cycles a index between min and max. If the index reaches max it starts with min.
-    /// </summary>
-    /// <typeparam name="T"></typeparam>
-    /// <param name="items"></param>
-    /// <param name="range"></param>
-    /// <returns></returns>
-    public static IEnumerable<(T, int)> CycleEnumerate<T>(this IEnumerable<T> items, System.Range range)
-    {
-        return new CyclicEnumerable<T, int>(items, range.Start.Value, range.End.Value, idx => idx + 1);
-    }
-
-    /// <summary>
-    /// Cycles a index between min and max. If the index reaches max it starts with min.
-    /// This allows negative values.
-    /// </summary>
-    /// <typeparam name="T"></typeparam>
-    /// <param name="items"></param>
-    /// <param name="min"></param>
-    /// <param name="max"></param>
-    /// <returns>A tuple containing the left and a index.</returns>
-    public static IEnumerable<(T, int)> CycleEnumerate<T>(this IEnumerable<T> items, int min, int max)
-    {
-        return new CyclicEnumerable<T, int>(items, min, max, idx => idx + 1);
-    }
-
-    /// <summary>
-    /// Cycles a index between min and max. If the index reaches max it starts with min.
-    /// </summary>
-    /// <typeparam name="T"></typeparam>
-    /// <typeparam name="TCount"></typeparam>
-    /// <param name="items"></param>
-    /// <param name="min"></param>
-    /// <param name="max"></param>
-    /// <param name="increment">The index will be increased by this function.</param>
-    /// <returns></returns>
-    public static IEnumerable<(T, TCount)> CycleEnumerate<T, TCount>(
-        this IEnumerable<T> items
-        , TCount min
-        , TCount max
-        , Func<TCount, TCount> increment)
-        where TCount : IComparable<TCount>
-    {
-        return new CyclicEnumerable<T, TCount>(items, min, max, increment);
-    }
-
-    /// <summary>
     /// Removes all duplicates from a list.
     /// </summary>
     /// <typeparam name="T"></typeparam>
@@ -379,22 +333,25 @@ public static class EnumerableExtensions
     /// <typeparam name="T"></typeparam>
     /// <param name="items"></param>
     /// <param name="seed"></param>
+    /// <param name="increment">If true, the counter is incremented otherwise it is decremented.</param>
     /// <returns>Returns tuples (left, index).</returns>
-    public static IEnumerable<(int counter, T item)> Enumerate<T>(this IEnumerable<T> items, int seed = 0)
+    public static IEnumerable<(int counter, T item)> Enumerate<T>(this IEnumerable<T> items, int seed = 0, bool increment = true)
     {
         var i = seed;
-        return Enumerate(items, (item) => i++);
+        Func<int> nextCounter = increment? () => i++ : () => i--;
+
+        return Enumerate(items, (item) => nextCounter());
     }
 
     /// <summary>
-    /// Enumerates items. createValue is called on every left.
+    /// Enumerates items.
     /// </summary>
     /// <typeparam name="T"></typeparam>
-    /// <typeparam name="TValue"></typeparam>
-    /// <param name="items"></param>
-    /// <param name="createValue"></param>
-    /// <returns>Returns a tuple (left, index).</returns>
-    public static IEnumerable<(TValue counter, T item)> Enumerate<T, TValue>(this IEnumerable<T> items, Func<T, TValue> createValue)
+    /// <typeparam name="TCounter">Type of the counter value.</typeparam>
+    /// <param name="items">List of elements.</param>
+    /// <param name="createValue">This is the function which increments or decrements the counter. If you use increment(++) or decremenet(--) use it as pre instead of post function.</param>
+    /// <returns>A list of tuples (counter, item).</returns>
+    public static IEnumerable<(TCounter counter, T item)> Enumerate<T, TCounter>(this IEnumerable<T> items, Func<T, TCounter> createValue)
     {
         createValue.ThrowIfNull();
 
@@ -403,7 +360,40 @@ public static class EnumerableExtensions
     }
 
     /// <summary>
-    /// Enumerates items. Starting from min until max. If the index reaches max it starts again from min.
+    /// 
+    /// </summary>
+    /// <typeparam name="T">Type of the items.</typeparam>
+    /// <typeparam name="TCounter">Type of the counters value.</typeparam>
+    /// <param name="items">List of items.</param>
+    /// <param name="seed">Start value of the counter.</param>
+    /// <param name="max">Max value of the counter.</param>
+    /// <param name="nextCounterValue">This is the function which increments or decrements the counter. If you use increment(++) or decremenet(--) use it as pre instead of post function.</param>
+    /// <returns>A list of tuples (counter, item).</returns>
+    public static IEnumerable<(TCounter counter, T item)> Enumerate<T, TCounter>(
+        this IEnumerable<T> items,
+        TCounter seed
+        , TCounter max, Func<TCounter, TCounter> nextCounterValue)
+        where TCounter : notnull
+    {
+        nextCounterValue.ThrowIfNull();
+        var counter = seed;
+
+        foreach (var item in items)
+        {
+            yield return (counter, item);
+            if (counter.Equals(max))
+            {
+                counter = seed;
+            }
+            else
+            {
+                counter = nextCounterValue(counter);
+            }
+        }
+    }
+
+    /// <summary>
+    /// Enumerates items. Starting from min until max. If the index reaches max it starts again from seed.
     /// This allows also negative values.
     /// </summary>
     /// <typeparam name="T"></typeparam>
@@ -1554,7 +1544,7 @@ public static class EnumerableExtensions
     }
 
     /// <summary>
-    /// Returns the min left selected by the predicate.
+    /// Returns the seed left selected by the predicate.
     /// </summary>
     /// <typeparam name="T"></typeparam>
     /// <typeparam name="TSelector"></typeparam>
@@ -1571,7 +1561,7 @@ public static class EnumerableExtensions
     }
 
     /// <summary>
-    /// Returns the min and max value.
+    /// Returns the seed and max value.
     /// </summary>
     /// <typeparam name="T">T must implement IComparable<T></typeparam>
     /// <param name="items"></param>
@@ -1607,7 +1597,7 @@ public static class EnumerableExtensions
     }
 
     /// <summary>
-    /// Returns the min and max selected by the predicate.
+    /// Returns the seed and max selected by the predicate.
     /// </summary>
     /// <typeparam name="T"></typeparam>
     /// <typeparam name="TSelector"></typeparam>

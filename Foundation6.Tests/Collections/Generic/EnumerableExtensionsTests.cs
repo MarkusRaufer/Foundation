@@ -263,16 +263,68 @@ public class EnumerableExtensionsTests
     }
 
     [Test]
-    public void CyclicEnumerate_MinMax()
+    public void Enumerate_Should_Return5TuplesWithIncrementedCounter_When_Using_Default()
     {
         var items = new List<string> { "A", "B", "C", "D", "E" };
 
-        var enumerated = items.CycleEnumerate(1, 2).Take(5).ToArray();
-        enumerated[0].Should().Be(("A", 1));
-        enumerated[1].Should().Be(("B", 2));
-        enumerated[2].Should().Be(("C", 1));
-        enumerated[3].Should().Be(("D", 2));
-        enumerated[4].Should().Be(("E", 1));
+        var enumerated = items.Enumerate().ToArray();
+        enumerated[0].Should().Be((0, "A"));
+        enumerated[1].Should().Be((1, "B"));
+        enumerated[2].Should().Be((2, "C"));
+        enumerated[3].Should().Be((3, "D"));
+        enumerated[4].Should().Be((4, "E"));
+    }
+
+    [Test]
+    public void Enumerate_Should_Return5TuplesWithIncrementedCounter_When_Using_Min()
+    {
+        var items = new List<string> { "A", "B", "C", "D", "E" };
+
+        var enumerated = items.Enumerate(2).ToArray();
+        enumerated[0].Should().Be((2, "A"));
+        enumerated[1].Should().Be((3, "B"));
+        enumerated[2].Should().Be((4, "C"));
+        enumerated[3].Should().Be((5, "D"));
+        enumerated[4].Should().Be((6, "E"));
+
+    }
+    [Test]
+    public void Enumerate_Should_Return5TuplesWithIncrementedCounter_When_Used_MinMaxAndIncrement()
+    {
+        var items = new List<string> { "A", "B", "C", "D", "E" };
+
+        var enumerated = items.Enumerate(1, 2).ToArray();
+        enumerated[0].Should().Be((1, "A"));
+        enumerated[1].Should().Be((2, "B"));
+        enumerated[2].Should().Be((1, "C"));
+        enumerated[3].Should().Be((2, "D"));
+        enumerated[4].Should().Be((1, "E"));
+    }
+
+    [Test]
+    public void Enumerate_Should_Return5TuplesWithIncrementedCounter_When_Used_MinMaxAndNextCounterValueDecrementingCounterValue()
+    {
+        var items = new List<string> { "A", "B", "C", "D", "E" };
+
+        var enumerated = items.Enumerate(1, -1, x => --x).ToArray();
+        enumerated[0].Should().Be(( 1, "A"));
+        enumerated[1].Should().Be(( 0, "B"));
+        enumerated[2].Should().Be((-1, "C"));
+        enumerated[3].Should().Be(( 1, "D"));
+        enumerated[4].Should().Be(( 0, "E"));
+    }
+
+    [Test]
+    public void Enumerate_Should_Return5TuplesWithIncrementedCounter_When_Used_MinMaxAndNextCounterValueIncrementingCounterValue()
+    {
+        var items = new List<string> { "A", "B", "C", "D", "E" };
+
+        var enumerated = items.Enumerate(2, 6, x => x + 2).ToArray();
+        enumerated[0].Should().Be((2, "A"));
+        enumerated[1].Should().Be((4, "B"));
+        enumerated[2].Should().Be((6, "C"));
+        enumerated[3].Should().Be((2, "D"));
+        enumerated[4].Should().Be((4, "E"));
     }
 
     [Test]

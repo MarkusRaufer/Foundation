@@ -24,6 +24,7 @@
 ﻿namespace Foundation;
 
 using Foundation.Collections.Generic;
+using System.Linq;
 
 public class PeriodGeneratorHelper
 {
@@ -81,12 +82,15 @@ public class PeriodGeneratorHelper
     {
         if (days < 0) throw new ArgumentOutOfRangeException(nameof(days));
 
+        var count = 0;
+
         return new PeriodGenerator(period =>
         {
             return period.Days()
-                         .CycleEnumerate(0, int.MaxValue, count => count + 1)
-                         .Where(tuple => 0 == (tuple.Item2 % days))
-                         .Select(tuple => tuple.Item1);
+                         .Cycle()
+                         .Enumerate(0, int.MaxValue, x => count + 1)
+                         .Where(tuple => 0 == (tuple.counter % days))
+                         .Select(tuple => tuple.item);
         });
     }
 
@@ -112,9 +116,10 @@ public class PeriodGeneratorHelper
         return new PeriodGenerator(period =>
         {
             return period.Hours()
-                         .CycleEnumerate(0, int.MaxValue, count => count + 1)
-                         .Where(tuple => 0 == (tuple.Item2 % hours))
-                         .Select(tuple => tuple.Item1);
+                         .Cycle()
+                         .Enumerate(0, int.MaxValue, count => count + 1)
+                         .Where(tuple => 0 == (tuple.counter % hours))
+                         .Select(tuple => tuple.item);
         });
     }
 
@@ -140,9 +145,10 @@ public class PeriodGeneratorHelper
         return new PeriodGenerator(period =>
         {
             return period.Minutes()
-                         .CycleEnumerate(0, int.MaxValue, count => count + 1)
-                         .Where(tuple => 0 == (tuple.Item2 % minutes))
-                         .Select(tuple => tuple.Item1);
+                         .Cycle()
+                         .Enumerate(0, int.MaxValue, count => count + 1)
+                         .Where(tuple => 0 == (tuple.counter % minutes))
+                         .Select(tuple => tuple.item);
         });
     }
 
@@ -169,9 +175,10 @@ public class PeriodGeneratorHelper
         return new PeriodGenerator(period =>
         {
             return period.Months()
-                         .CycleEnumerate(0, int.MaxValue, count => count + 1)
-                         .Where(tuple => 0 == (tuple.Item2 % months))
-                         .Select(tuple => tuple.Item1);
+                         .Cycle()
+                         .Enumerate(0, int.MaxValue, count => count + 1)
+                         .Where(tuple => 0 == (tuple.counter % months))
+                         .Select(tuple => tuple.item);
         });
     }
 
@@ -248,9 +255,10 @@ public class PeriodGeneratorHelper
                          {
                              var max = month.Weeks(start).Count();
                              return month.Weeks(start)
-                                     .CycleEnumerate(1, max)
-                                     .Where(tuple => week.Contains(tuple.Item2))
-                                     .Select(t => t.Item1);
+                                     .Cycle()
+                                     .Enumerate(1, max)
+                                     .Where(tuple => week.Contains(tuple.counter))
+                                     .Select(tuple => tuple.item);
                          });
         });
     }
@@ -279,10 +287,11 @@ public class PeriodGeneratorHelper
                          .SelectMany(month =>
                          {
                              return month.Weeks(start)
-                                         .CycleEnumerate(0, int.MaxValue, count => count + 1);
+                                         .Cycle()
+                                         .Enumerate(0, int.MaxValue, count => count + 1);
                          })
-                         .Where(tuple => 0 == (tuple.Item2 % weeks))
-                         .Select(t => t.Item1);
+                         .Where(tuple => 0 == (tuple.counter % weeks))
+                         .Select(t => t.item);
         });
     }
 
@@ -309,9 +318,10 @@ public class PeriodGeneratorHelper
         return new PeriodGenerator(period =>
         {
             return period.Years()
-                         .CycleEnumerate(0, int.MaxValue)
-                         .Where(tuple => 0 == (tuple.Item2 % years))
-                         .Select(tuple => tuple.Item1);
+                         .Cycle()
+                         .Enumerate(0, int.MaxValue)
+                         .Where(tuple => 0 == (tuple.counter % years))
+                         .Select(tuple => tuple.item);
         });
     }
 
