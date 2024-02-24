@@ -198,6 +198,22 @@ public static class ObjectExtensions
         return generic == type;
     }
 
+    [return: NotNull]
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static TResult EitherNullable<T, TResult>(this T? item, Func<T, TResult> notNull, Func<TResult> isNull)
+    {
+        notNull.ThrowIfNull();
+        isNull.ThrowIfNull();
+
+        if (item is T t)
+        {
+            var result = notNull(t);
+            return result ?? throw new ArgumentNullException(nameof(isNull), $"{nameof(notNull)} returned null");
+        }
+        var alternative = isNull();
+        return alternative ?? throw new ArgumentNullException(nameof(isNull), $"{nameof(isNull)} returned null");
+    }
+
     /// <summary>
     /// Throws an exception if <paramref name="predicate"/> returns true.
     /// </summary>
