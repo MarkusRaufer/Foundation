@@ -32,23 +32,58 @@ public static class ExpressionTypeExtensions
     /// </summary>
     /// <param name="type"></param>
     /// <returns></returns>
-    public static bool IsPredicate(this ExpressionType type)
+    public static bool IsBinary(this ExpressionType type)
     {
         return type switch
         {
+            ExpressionType.Add or
             ExpressionType.And or
             ExpressionType.AndAlso or
+            ExpressionType.Divide or
             ExpressionType.Equal or
             ExpressionType.ExclusiveOr or
             ExpressionType.GreaterThan or
             ExpressionType.GreaterThanOrEqual or
             ExpressionType.LessThan or
             ExpressionType.LessThanOrEqual or
+            ExpressionType.Multiply or
+            ExpressionType.MultiplyAssign or
             ExpressionType.Not or
             ExpressionType.NotEqual or
             ExpressionType.Or or
-            ExpressionType.OrElse => true,
+            ExpressionType.OrElse or
+            ExpressionType.Subtract => true,
             _ => false,
+        };
+    }
+
+    public static bool IsTerminalBinary(this ExpressionType expressionType)
+    {
+        return expressionType switch
+        {
+            ExpressionType.Add or
+            ExpressionType.Divide or
+            ExpressionType.Equal or
+            ExpressionType.GreaterThan or
+            ExpressionType.GreaterThanOrEqual or
+            ExpressionType.LessThan or
+            ExpressionType.LessThanOrEqual or
+            ExpressionType.Multiply or
+            ExpressionType.Not or
+            ExpressionType.NotEqual or
+            ExpressionType.Subtract => true,
+            _ => false,
+        };
+    }
+
+    public static bool IsTerminal(this ExpressionType expressionType)
+    {
+        return expressionType switch
+        {
+            ExpressionType.Constant or
+            ExpressionType.MemberAccess or
+            ExpressionType.Parameter => true,
+            _ => IsTerminalBinary(expressionType),
         };
     }
 
@@ -58,7 +93,7 @@ public static class ExpressionTypeExtensions
         {
             ExpressionType.And => "&&",
             ExpressionType.AndAlso => "&&",
-            ExpressionType.Equal => "=",
+            ExpressionType.Equal => "==",
             ExpressionType.ExclusiveOr => "^",
             ExpressionType.GreaterThan => ">",
             ExpressionType.GreaterThanOrEqual => ">=",

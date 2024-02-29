@@ -21,7 +21,9 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
+using System.Diagnostics.Metrics;
 using System.Linq.Expressions;
+using System.Runtime.CompilerServices;
 
 namespace Foundation.Linq.Expressions;
 
@@ -38,6 +40,7 @@ public static class ExpressionExtensions
             ConstantExpression l => rhs is ConstantExpression r && l.EqualsToExpression(r),
             LambdaExpression l => rhs is LambdaExpression r && l.EqualsToExpression(r, ignoreParameterNames: ignoreNames),
             MemberExpression l => rhs is MemberExpression r && l.EqualsToExpression(r, ignoreName: ignoreNames),
+            MethodCallExpression l => rhs is MethodCallExpression r && l.EqualsToExpression(r, ignoreName: ignoreNames),
             ParameterExpression l => rhs is ParameterExpression r && l.EqualsToExpression(r, ignoreName: ignoreNames),
             UnaryExpression l => rhs is UnaryExpression r && l.EqualsToExpression(r),
             _ => false
@@ -77,7 +80,7 @@ public static class ExpressionExtensions
         switch(expression)
         {
             case BinaryExpression be:
-                foreach (var p in be.GetParameters().Distinct())
+                foreach (var p in be.GetParameters())
                     yield return p;
 
                 break;
@@ -108,6 +111,12 @@ public static class ExpressionExtensions
         };
     }
 
+    public static IEnumerable<BinaryExpression> GetTerminalBinaryExpressions(this Expression expression)
+    {
+        var extractor = new TerminalBinaryExpressionExtractor();
+        return extractor.Extract(expression);
+    }
+
     public static bool IsConstant(this Expression expression)
     {
         return expression.NodeType == ExpressionType.Constant;
@@ -127,24 +136,36 @@ public static class ExpressionExtensions
 
     public static bool IsTerminal(this Expression expression)
     {
-        if(isTerminalNode(expression)) return true;
+        expression.ThrowIfNull();
 
-        if (expression is not BinaryExpression binary) return false;
+        if (expression.NodeType.IsTerminal()) return true;
 
-        return isTerminalNode(binary.Left) && isTerminalNode(binary.Right);
-
-        static bool isTerminalNode(Expression exp) => exp.NodeType switch
+        return expression.NodeType switch
         {
-            ExpressionType.Add or
-            ExpressionType.Constant or
-            ExpressionType.Divide or
-            ExpressionType.MemberAccess or
-            ExpressionType.Parameter or
-            ExpressionType.Subtract => true,
             ExpressionType.Convert or
-            ExpressionType.Negate => exp is UnaryExpression unary && isTerminalNode(unary.Operand),
-            ExpressionType.Modulo => exp is BinaryExpression be && isTerminalNode(be.Left) && isTerminalNode(be.Right),
+            ExpressionType.Negate => expression is UnaryExpression unary && IsTerminal(unary.Operand),
+            ExpressionType.Modulo => expression is BinaryExpression be && IsTerminal(be.Left) && IsTerminal(be.Right),
             _ => false
         };
+    }
+
+    public static bool IsTerminalBinary(this Expression expression)
+    {
+        if (expression is not BinaryExpression be) return false;
+
+        return be.Left.IsTerminal() && be.Right.IsTerminal();
+    }
+
+    /// <summary>
+    /// Replaces an expression in an expression tree.
+    /// </summary>
+    /// <param name="expression">The expression including the expression which should be replaced.</param>
+    /// <param name="toBeReplaced">The expression which should be replaced. Must be part of expression.</param>
+    /// <param name="replacement">The replacement of <paramref name="toBeReplaced"/></param>
+    /// <returns></returns>
+    public static Expression? Replace(this Expression expression, Expression toBeReplaced, Expression replacement)
+    {
+        var replacer = new ExpressionReplacer();
+        return replacer.Replace(expression, toBeReplaced, replacement);
     }
 }

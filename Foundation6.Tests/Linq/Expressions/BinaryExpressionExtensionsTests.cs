@@ -76,6 +76,35 @@ public class BinaryExpressionExtensionsTests
 
         var expressions = be!.GetBinaryExpressions().ToArray();
 
-        expressions.Length.Should().Be(8);
+        expressions.Length.Should().Be(9);
+    }
+
+    [Test]
+    public void GetPredicates_Should_Return2BinaryExpressions_When_LambdaHas3ParametersIncludingSubtractExpression()
+    {
+        Expression<Func<IDateTimeProvider, int, DateTime, bool>> lambda = (IDateTimeProvider dtp, int x, DateTime dt) => (dtp.Now.Year - dt.Year) >= 18 && x == 2;
+
+        var be = lambda.Body as BinaryExpression;
+        be.Should().NotBeNull();
+
+        var predicates = be!.GetPredicates().ToArray();
+
+        predicates.Length.Should().Be(3);
+        predicates.All(x => x.NodeType.IsBinary());
+    }
+
+    [Test]
+    public void IsTerminalPredicate_Should_Return2BinaryExpressions_When_LambdaHas3ParametersIncludingSubtractExpression()
+    {
+        Expression<Func<IDateTimeProvider, int, DateTime, bool>> lambda = (IDateTimeProvider dtp, int x, DateTime dt) => (dtp.Now.Year - dt.Year) >= 18 && x == 2;
+
+        var be = lambda.Body as BinaryExpression;
+        be.Should().NotBeNull();
+
+        var expressions = be.GetBinaryExpressions().ToArray();
+        var terminals = expressions.Where(x => x.IsTerminalPredicate()).ToArray();
+
+        terminals.Length.Should().Be(2);
+        terminals.All(x => x.IsPredicate());
     }
 }

@@ -21,19 +21,15 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
-﻿using System.Linq.Expressions;
+using System.Diagnostics.CodeAnalysis;
+using System.Linq.Expressions;
 
 namespace Foundation.Linq.Expressions
 {
     public class ExpressionExtractor : ExpressionVisitor
     {
-        private readonly List<Expression> _expressions;
+        private readonly List<Expression> _expressions = new();
         private Func<Expression, bool>? _predicate;
-
-        public ExpressionExtractor()
-        {
-            _expressions = new List<Expression>();
-        }
 
         protected void AddExpression(Expression expression)
         {
@@ -47,67 +43,39 @@ namespace Foundation.Linq.Expressions
             return Extract(expression, typeof(TExpression)).OfType<TExpression>();
         }
 
-        public IEnumerable<Expression> Extract(Expression expression, ExpressionType type)
+        public IEnumerable<Expression> Extract(Expression expression, Func<Expression, bool> predicate)
         {
-            _predicate = (e) => e.NodeType == type;
+            expression.ThrowIfNull();
+            _predicate = predicate.ThrowIfNull();
             _expressions.Clear();
 
             Visit(expression);
 
             return _expressions;
+        }
+
+        public IEnumerable<Expression> Extract(Expression expression, ExpressionType type)
+        {
+            return Extract(expression, e => e.NodeType == type);
         }
 
         public IEnumerable<Expression> Extract(Expression expression, Type expressionType)
         {
-            _predicate = (e) => expressionType.IsAssignableFrom(e.GetType());
-            _expressions.Clear();
-
-            Visit(expression);
-
-            return _expressions;
+            return Extract(expression, e => expressionType.IsAssignableFrom(e.GetType()));
         }
 
-        public static IEnumerable<TExpression> ExtractExpressions<TExpression>(Expression expression)
+        public IEnumerable<TExpression> ExtractExpressions<TExpression>(Expression expression)
             where TExpression : Expression
         {
-            var extractor = new ExpressionExtractor();
-            return extractor.Extract<TExpression>(expression);
+            return Extract(expression, typeof(TExpression)).OfType<TExpression>();
         }
 
-        public static IEnumerable<Expression> ExtractExpressions(Expression expression, ExpressionType type)
+        [return: NotNullIfNotNull("node")]
+        public override Expression? Visit(Expression? node)
         {
-            var extractor = new ExpressionExtractor();
-            return extractor.Extract(expression, type);
-        }
+            if (node is not null) AddExpression(node);
 
-        public static IEnumerable<Expression> ExtractExpressions(Expression expression, Type expressionType)
-        {
-            var extractor = new ExpressionExtractor();
-            return extractor.Extract(expression, expressionType);
-        }
-
-        protected override Expression VisitBinary(BinaryExpression node)
-        {
-            AddExpression(node);
-            return base.VisitBinary(node);
-        }
-
-        protected override Expression VisitConstant(ConstantExpression node)
-        {
-            AddExpression(node);
-            return base.VisitConstant(node);
-        }
-
-        protected override Expression VisitMember(MemberExpression node)
-        {
-            AddExpression(node);
-            return base.VisitMember(node);
-        }
-
-        protected override Expression VisitParameter(ParameterExpression node)
-        {
-            AddExpression(node);
-            return base.VisitParameter(node);
+            return base.Visit(node);
         }
     }
 }

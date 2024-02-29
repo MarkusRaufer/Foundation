@@ -7,7 +7,7 @@ namespace Foundation.Linq.Expressions;
 [TestFixture]
 public class ExpressionReplacerTests
 {
-    private record Person(string Name, DateTime BirtDay);
+    private record Person(string Name, DateTime BirthDay);
 
     [Test]
     public void Replace_Should_ReturnTheExpressionWithTheReplacedExpression_When_Using_MemeberAccessAndGreaterThanConstant()
@@ -32,20 +32,22 @@ public class ExpressionReplacerTests
     [Test]
     public void Replace_Should_ReturnTheExpressionWithTheReplacedExpression_When_Using_MemberAccessAndSubtractAndGreatherThanConstant()
     {
-        Expression<Func<IDateTimeProvider, Person, bool>> lambda = (dtp, p) => (dtp.Now.Year - p.BirtDay.Year) >= 18;
+        Expression<Func<IDateTimeProvider, Person, bool>> lambda = (dtp, p) => (dtp.Now.Year - p.BirthDay.Year) >= 18;
 
         var be = (BinaryExpression)lambda.Body;
         var subtract = (BinaryExpression)be.Left;
-        var member = (MemberExpression)subtract.Left;
+        var dtpNowYear = (MemberExpression)subtract.Left;
+        var pBirthDayYear = (MemberExpression)subtract.Right;
 
         var replacement = Expression.Constant(2000);
         var constant = Expression.Constant(18);
 
         var sut = new ExpressionReplacer();
 
-        var actual = sut.Replace(lambda, member, replacement);
+        var actual = sut.Replace(lambda, dtpNowYear, replacement);
 
-        var expectedBinary = Expression.MakeBinary(ExpressionType.GreaterThan, replacement, constant);
+        var expectedBinary = Expression.MakeBinary(ExpressionType.Subtract, replacement, pBirthDayYear);
+
         var expectedLambda = Expression.Lambda(expectedBinary, Expression.Parameter(typeof(DateTime), "dtp"), Expression.Parameter(typeof(Person), "p"));
 
         expectedLambda.EqualsToExpression(actual, ignoreNames: false);

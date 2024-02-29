@@ -45,28 +45,10 @@ public static class BinaryExpressionExtensions
 
     public static IEnumerable<BinaryExpression> GetBinaryExpressions(this BinaryExpression? expression)
     {
-        if (expression is null) yield break;
+        if(null == expression) return [];
 
-        var left = getBinaryExpressions(expression.Left);
-        if (left != null)
-        {
-            yield return left;
-            foreach (var l in left.GetBinaryExpressions())
-                yield return l;
-        }
-
-        var right = getBinaryExpressions(expression.Right);
-        if (right != null)
-        {
-            yield return right;
-            foreach (var r in right.GetBinaryExpressions())
-                yield return r;
-        }
-
-        static BinaryExpression? getBinaryExpressions(Expression e)
-        {
-            return e is BinaryExpression be ? be : null;
-        }
+        var extractor = new ExpressionExtractor();
+        return extractor.Extract<BinaryExpression>(expression);
     }
 
     public static IEnumerable<Expression> GetLeftAndRightExpression(this BinaryExpression expression)
@@ -98,16 +80,35 @@ public static class BinaryExpressionExtensions
             yield return r;
     }
 
+    public static IEnumerable<BinaryExpression> GetPredicates(this BinaryExpression? expression)
+    {
+        foreach(var binaryExpression in expression.GetBinaryExpressions())
+        {
+            if(binaryExpression.IsPredicate()) yield return binaryExpression;
+        }
+    }
+
     public static bool HasConstant(this BinaryExpression expression)
         => expression.Left.IsConstant() || expression.Right.IsConstant();
 
     public static bool IsPredicate(this BinaryExpression expression)
     {
-        return expression.ThrowIfNull().NodeType.IsPredicate();
+        expression.ThrowIfNull();
+        
+        return expression.NodeType.IsBinary() && expression.Type == typeof(bool);
     }
 
-    public static bool IsTerminal(this BinaryExpression expression)
+    public static bool IsTerminalBinary(this BinaryExpression expression)
     {
+        if (!expression.ThrowIfNull().NodeType.IsTerminalBinary()) return false;
+
         return expression.Left.IsTerminal() && expression.Right.IsTerminal();
+    }
+
+    public static bool IsTerminalPredicate(this BinaryExpression expression)
+    {
+        expression.ThrowIfNull();
+
+        return expression.IsPredicate() && expression.IsTerminalBinary();
     }
 }

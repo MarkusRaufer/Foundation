@@ -1,10 +1,8 @@
 ﻿using FluentAssertions;
-using FluentAssertions.Execution;
 using NUnit.Framework;
 using System;
 using System.Linq;
 using System.Linq.Expressions;
-using System.Reflection;
 
 namespace Foundation.Linq.Expressions;
 
@@ -200,8 +198,10 @@ public class ExpressionExtensionsTests
 
         parameters = lambda.Body.GetParameters().ToArray();
 
-        parameters.Length.Should().Be(1);
+        parameters.Length.Should().Be(2);
         parameters[0].Name.Should().Be("x");
+        parameters[1].Name.Should().Be("x");
+
     }
 
 
@@ -240,31 +240,51 @@ public class ExpressionExtensionsTests
         Expression<Func<Person, bool>> expression = p => p.Gender == Gender.Male;
         var lambda = expression as LambdaExpression;
 
-        lambda.Body.IsTerminal().Should().BeTrue();
+        lambda.Body.IsTerminalBinary().Should().BeTrue();
     }
 
     [Test]
-    public void IsTerminal_Should_ReturnTrue_When_Expression_ContainsModulo_BinaryExpressionLeftAndRightAreTerminal()
+    public void IsTerminal_Should_ReturnTrue_When_Expression_ContainsModulo()
     {
-        Expression<Func<Person, bool>> expression = p => p.Gender == Gender.Male && p.Age % 2 == 0;
+        Expression<Func<Person, bool>> expression = p =>p.Age % 2 == 0;
         var lambda = expression as LambdaExpression;
 
         var binary = (BinaryExpression)lambda.Body;
 
-        binary.IsTerminal().Should().BeTrue();
-        binary.Left.IsTerminal().Should().BeTrue();
-        binary.Right.IsTerminal().Should().BeTrue();
+        binary.IsTerminalBinary().Should().BeTrue();
     }
-
 
     [Test]
     public void IsTerminal_Should_ReturnTrue_When_Expression_LeftIsSubtractAndRightIsConstant()
     {
         Expression<Func<int, int, bool>> expression = (a, b) => (a - b) == 2;
 
-        expression.Body.IsTerminal().Should().BeTrue();
+        expression.Body.IsTerminalBinary().Should().BeTrue();
+    }
+
+    [Test]
+    public void IsTerminalPredicatel_Should_ReturnFalse_When_Expression_ContainsModulo_BinaryExpressionLeftAndRightAreTerminal()
+    {
+        Expression<Func<Person, bool>> expression = p => p.Gender == Gender.Male && p.Age % 2 == 0;
+        var lambda = expression as LambdaExpression;
+
+        var binary = (BinaryExpression)lambda.Body;
+
+        binary.IsTerminalBinary().Should().BeFalse();
+    }
+
+    [Test]
+    public void IsTerminalPredicate_Should_ReturnTrue_When_Expression_ContainsModulo()
+    {
+        Expression<Func<IDateTimeProvider, BirthDayChild, bool>> expression = (dtp, c) => (dtp.Now.Year - c.BrithDay.Year) >= 18; ;
+        var lambda = expression as LambdaExpression;
+
+        var binary = (BinaryExpression)lambda.Body;
+
+        binary.IsTerminalPredicate().Should().BeTrue();
     }
 }
+
 public static class ProviderExtensions
 {
     public static int DayNow(this IDateTimeProvider provider) => provider.Now.Day;

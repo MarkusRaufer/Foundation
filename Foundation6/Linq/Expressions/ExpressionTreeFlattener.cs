@@ -21,18 +21,14 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
-﻿using System.Linq.Expressions;
+using System.Diagnostics.CodeAnalysis;
+using System.Linq.Expressions;
 
 namespace Foundation.Linq.Expressions;
 
 public class ExpressionTreeFlattener : ExpressionVisitor
 {
-    private readonly ICollection<Expression> _expressions;
-
-    public ExpressionTreeFlattener()
-    {
-        _expressions = new List<Expression>();
-    }
+    private readonly List<Expression> _expressions = new();
 
     public void ClearExpressions()
     {
@@ -46,46 +42,12 @@ public class ExpressionTreeFlattener : ExpressionVisitor
         Visit(expression);
         return _expressions;
     }
-    
-    protected override Expression VisitBinary(BinaryExpression node)
-    {
-        _expressions.Add(node);
-        return base.VisitBinary(node);
-    }
 
-    protected override Expression VisitConstant(ConstantExpression node)
+    [return: NotNullIfNotNull("node")]
+    public override Expression? Visit(Expression? node)
     {
-        _expressions.Add(node);
-        return base.VisitConstant(node);
-    }
+        if(node is not null) _expressions.Add(node);
 
-    protected override Expression VisitLambda<T>(Expression<T> node)
-    {
-        _expressions.Add(node);
-        return base.VisitLambda(node);
-    }
-
-    protected override Expression VisitMember(MemberExpression node)
-    {
-        _expressions.Add(node);
-        return base.VisitMember(node);
-    }
-
-    protected override Expression VisitMethodCall(MethodCallExpression node)
-    {
-        _expressions.Add(node);
-        return base.VisitMethodCall(node);
-    }
-
-    protected override Expression VisitParameter(ParameterExpression node)
-    {
-        _expressions.Add(node);
-        return base.VisitParameter(node);
-    }
-
-    protected override Expression VisitUnary(UnaryExpression node)
-    {
-        _expressions.Add(node);
-        return base.VisitUnary(node);
+        return base.Visit(node);
     }
 }
