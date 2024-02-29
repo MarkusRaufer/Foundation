@@ -1,6 +1,7 @@
 ﻿using FluentAssertions;
 using Foundation.Collections.Generic;
 using NUnit.Framework;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -9,6 +10,38 @@ namespace Foundation.Collections;
 [TestFixture]
 public class EnumerableExtensionsTests
 {
+    [Test]
+    public void AllOfSameType_Should_ReturnFalse_When_AllItemsAreObjectAndNotOfSameType()
+    {
+        var numbers = new object[] { 1, "2", 3, "4" };
+
+        var allSame = numbers.AllOfSameType(x => x);
+
+        allSame.Should().BeFalse();
+    }
+
+    [Test]
+    public void AllOfSameType_Should_ReturnTrue_When_AllItemsAreObjectAndOfSameType()
+    {
+        var numbers = new object[] { 1, 2, 3, 4 };
+
+        var allSame = numbers.AllOfSameType(x => x);
+
+        allSame.Should().BeTrue();
+    }
+
+    [Test]
+    public void AllOfSameType_Should_ReturnTrue_When_AllItemsAreDateTimeAndSelectionOfSameType()
+    {
+        static DateTime create(int day) => new DateTime(2020, 1, day);
+
+        var dts = Enumerable.Range(1, 10).Select(create);
+
+        var allSame = dts.AllOfSameType(x => x.Year);
+
+        allSame.Should().BeTrue();
+    }
+
     [Test]
     public void Occurrencies_Should_Return3Tuples_When_Added3DifferentItems()
     {

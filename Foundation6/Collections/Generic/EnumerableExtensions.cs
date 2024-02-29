@@ -27,6 +27,7 @@ using Foundation;
 using System;
 using System.Data;
 using System.Diagnostics.CodeAnalysis;
+using static System.Net.Mime.MediaTypeNames;
 
 public static class EnumerableExtensions
 {
@@ -81,8 +82,8 @@ public static class EnumerableExtensions
     /// <returns></returns>
     public static bool AllEqual<T, TSelector>(this IEnumerable<T> items, Func<T, TSelector> selector)
     {
-        selector.ThrowIfNull(nameof(selector));
-        var it = items.ThrowIfEnumerableIsNull(nameof(items)).GetEnumerator();
+        selector.ThrowIfNull();
+        var it = items.ThrowIfEnumerableIsNull().GetEnumerator();
 
         if (!it.MoveNext()) return true;
 
@@ -93,6 +94,28 @@ public static class EnumerableExtensions
             if (!EqualityComparer<TSelector>.Default.Equals(selector(it.Current), first))
                 return false;
         }
+        return true;
+    }
+
+    /// <summary>
+    /// Checks if the selected values of the items are of the same type.
+    /// </summary>
+    /// <typeparam name="T">Type of the item.</typeparam>
+    /// <typeparam name="TSelector">Type of the selected value of the item.</typeparam>
+    /// <param name="items">List of items.</param>
+    /// <param name="selector"></param>
+    /// <returns></returns>
+    public static bool AllOfSameType<T, TSelector>(this IEnumerable<T> items, Func<T, TSelector> selector)
+    {
+        selector.ThrowIfNull();
+
+        Type? first = null;
+        foreach (var item in items.OnFirst(x => first = x?.GetType())
+                                  .Skip(1))
+        {
+            if (!first.EqualsNullable(item?.GetType())) return false;
+        }
+        
         return true;
     }
 
