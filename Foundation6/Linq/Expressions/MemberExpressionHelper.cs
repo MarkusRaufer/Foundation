@@ -21,26 +21,15 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
-using System.Linq.Expressions;
-using System.Reflection.Metadata;
+﻿using System.Linq.Expressions;
 
 namespace Foundation.Linq.Expressions;
 
-public static class UnaryExpressionExtensions
+public static class MemberExpressionHelper
 {
-    public static bool EqualsToExpression(this UnaryExpression lhs, UnaryExpression rhs, bool ignoreName = true)
+    public static MemberExpression? ToMemberExpression<T, TMember>(Expression<Func<T, TMember>> func)
     {
-        return lhs.NodeType == rhs.NodeType && lhs.Type == rhs.Type && lhs.Operand.EqualsToExpression(rhs.Operand, ignoreNames: ignoreName);
+        if (func.ThrowIfNull().Body is MemberExpression memberExpression) return memberExpression;
+        return null;
     }
-
-    public static int GetExpressionHashCode(this UnaryExpression? expression, bool ignoreName = true)
-    {
-        if(expression == null) return 0;
-
-        return HashCode.FromOrderedHashCode(expression.NodeType.GetHashCode(),
-                                            expression.Type.GetHashCode(),
-                                            expression.Operand.GetExpressionHashCode(ignoreName));
-    }
-
-    public static ParameterExpression? GetParameter(this UnaryExpression expression) => expression.Operand as ParameterExpression;
 }

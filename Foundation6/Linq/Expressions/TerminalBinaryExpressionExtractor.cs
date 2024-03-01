@@ -21,26 +21,30 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
-using System.Linq.Expressions;
-using System.Reflection.Metadata;
+﻿using System.Linq.Expressions;
 
 namespace Foundation.Linq.Expressions;
 
-public static class UnaryExpressionExtensions
+/// <summary>
+/// This class filters all terminal BinaryExpression expressions which means left and right must not be a hierarchical type.
+/// </summary>
+public class TerminalBinaryExpressionExtractor : ExpressionVisitor
 {
-    public static bool EqualsToExpression(this UnaryExpression lhs, UnaryExpression rhs, bool ignoreName = true)
+    private readonly List<BinaryExpression> _binaryExpressions = new();
+
+    public IEnumerable<BinaryExpression> Extract(Expression expression)
     {
-        return lhs.NodeType == rhs.NodeType && lhs.Type == rhs.Type && lhs.Operand.EqualsToExpression(rhs.Operand, ignoreNames: ignoreName);
+        _binaryExpressions.Clear();
+
+        Visit(expression);
+        return _binaryExpressions;
     }
 
-    public static int GetExpressionHashCode(this UnaryExpression? expression, bool ignoreName = true)
+    protected override Expression VisitBinary(BinaryExpression node)
     {
-        if(expression == null) return 0;
+        if (node.IsTerminalBinary())
+            _binaryExpressions.Add(node);
 
-        return HashCode.FromOrderedHashCode(expression.NodeType.GetHashCode(),
-                                            expression.Type.GetHashCode(),
-                                            expression.Operand.GetExpressionHashCode(ignoreName));
+        return base.VisitBinary(node);
     }
-
-    public static ParameterExpression? GetParameter(this UnaryExpression expression) => expression.Operand as ParameterExpression;
 }
