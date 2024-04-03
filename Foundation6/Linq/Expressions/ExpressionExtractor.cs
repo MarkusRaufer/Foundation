@@ -28,7 +28,7 @@ namespace Foundation.Linq.Expressions
 {
     public class ExpressionExtractor : ExpressionVisitor
     {
-        private readonly List<Expression> _expressions = new();
+        private readonly List<Expression> _expressions = [];
         private Func<Expression, bool>? _predicate;
 
         protected void AddExpression(Expression expression)
@@ -70,7 +70,7 @@ namespace Foundation.Linq.Expressions
             return Extract(expression, typeof(TExpression)).OfType<TExpression>();
         }
 
-        [return: NotNullIfNotNull("node")]
+        [return: NotNullIfNotNull(nameof(node))]
         public override Expression? Visit(Expression? node)
         {
             if (node is not null) AddExpression(node);
