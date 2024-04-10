@@ -30,24 +30,24 @@ namespace Foundation.Linq.Expressions;
 
 public static class ExpressionHelper
 {
-    public static bool AreEqualTerminators(Expression? lhs, Expression? rhs)
+    public static bool AreEqualTerminators(Expression? lhs, Expression? rhs, bool ignoreNames)
     {
         if (lhs is null) return rhs is null;
         if (rhs is null) return false;
 
-        return AreEqualTerminators(lhs, rhs, false);
+        return AreEqualTerminators(lhs, rhs, false, ignoreNames);
     }
 
-    public static bool AreEqualTerminators(Expression lhs, Expression rhs, bool same)
+    public static bool AreEqualTerminators(Expression lhs, Expression rhs, bool same, bool ignoreNames)
     {
         if (lhs.NodeType != rhs.NodeType) return false;
         if (lhs.Type != rhs.Type) return false;
 
         return lhs switch
         {
-            ConstantExpression l => rhs is ConstantExpression r && (same ? ReferenceEquals(l, r) : l.EqualsToExpression(r)),
-            MemberExpression l => rhs is MemberExpression r && (same ? ReferenceEquals(l, r) : l.EqualsToExpression(r)),
-            ParameterExpression l => rhs is ParameterExpression r && (same ? ReferenceEquals(l, r) : l.EqualsToExpression(r)),
+            ConstantExpression l => rhs is ConstantExpression r && (same ? ReferenceEquals(l, r) : l.EqualsToExpression(r, ignoreNames)),
+            MemberExpression l => rhs is MemberExpression r && (same ? ReferenceEquals(l, r) : l.EqualsToExpression(r, ignoreNames)),
+            ParameterExpression l => rhs is ParameterExpression r && (same ? ReferenceEquals(l, r) : l.EqualsToExpression(r, ignoreNames)),
             _ => false
         };
     }

@@ -21,9 +21,7 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
-using System.Diagnostics.Metrics;
 using System.Linq.Expressions;
-using System.Runtime.CompilerServices;
 
 namespace Foundation.Linq.Expressions;
 
@@ -36,15 +34,24 @@ public static class ExpressionExtensions
 
         return lhs switch
         {
+            LambdaExpression l => rhs is LambdaExpression r && l.EqualsToExpression(r, ignoreParameterNames: ignoreNames),
             BinaryExpression l => rhs is BinaryExpression r && l.EqualsToExpression(r, ignoreNames),
             ConstantExpression l => rhs is ConstantExpression r && l.EqualsToExpression(r),
-            LambdaExpression l => rhs is LambdaExpression r && l.EqualsToExpression(r, ignoreParameterNames: ignoreNames),
             MemberExpression l => rhs is MemberExpression r && l.EqualsToExpression(r, ignoreName: ignoreNames),
             MethodCallExpression l => rhs is MethodCallExpression r && l.EqualsToExpression(r, ignoreName: ignoreNames),
             ParameterExpression l => rhs is ParameterExpression r && l.EqualsToExpression(r, ignoreName: ignoreNames),
             UnaryExpression l => rhs is UnaryExpression r && l.EqualsToExpression(r),
             _ => false
         };
+    }
+
+    public static IEnumerable<TExpression> ExtractExpressions<TExpression>(this Expression expression)
+        where TExpression : Expression
+    {
+        if (null == expression) return [];
+
+        var extractor = new ExpressionExtractor();
+        return extractor.Extract<TExpression>(expression);
     }
 
     public static IEnumerable<Expression> Flatten(this Expression expression)

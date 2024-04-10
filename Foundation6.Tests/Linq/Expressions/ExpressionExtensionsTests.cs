@@ -20,6 +20,33 @@ public class ExpressionExtensionsTests
     private record Person(string Name, Gender Gender, int Age);
 
     [Test]
+    public void ExtractExpressions_Should_Return1MemberExpression_When_UsingLambdaExpression_WithObjectProperty()
+    {
+        LambdaExpression lambda = (DateTime x) => x.Day > 5;
+
+        var memberExpressions = lambda.ExtractExpressions<MemberExpression>().ToArray();
+
+        memberExpressions.Length.Should().Be(1);
+        
+        var memberExpression = memberExpressions[0];
+        memberExpression.ToString().Should().Be("x.Day");
+    }
+
+    [Test]
+    public void ExtractExpressions_Should_Return1MemberExpression_When_UsingLambdaExpression_WithMemberAccessAndObjectProperty()
+    {
+        LambdaExpression lambda = (DateTime x) => x.EndOfWeek().Day == 7;
+
+        var memberExpressions = lambda.ExtractExpressions<MemberExpression>().ToArray();
+
+        memberExpressions.Length.Should().Be(1);
+
+        var memberExpression = memberExpressions[0];
+        LambdaExpression lambda2 = (DateTime x) => true;
+        memberExpression.ToString().Should().Be("x.EndOfWeek().Day");
+    }
+
+    [Test]
     public void GetExpressionHashCode_Should_ReturnDifferentHashCodes_When_UsingBinaryExpressionIsEqual_DifferentParameterTypes()
     {
         var hashCode1 = Scope.Returns(() =>

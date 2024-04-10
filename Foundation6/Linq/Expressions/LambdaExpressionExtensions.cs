@@ -89,15 +89,6 @@ public static class LambdaExpressionExtensions
         return HashCode.FromOrderedHashCodes(hashCodes);
     }
 
-    public static IEnumerable<TExpression> GetExpressions<TExpression>(this LambdaExpression lambda)
-        where TExpression : Expression
-    {
-        if (null == lambda) return [];
-
-        var extractor = new ExpressionExtractor();
-        return extractor.Extract<TExpression>(lambda);
-    }
-
     public static MemberExpression? GetMember(this LambdaExpression lambda)
     {
         return lambda.Body switch
