@@ -34,12 +34,13 @@ public static class ExpressionExtensions
 
         return lhs switch
         {
-            LambdaExpression l => rhs is LambdaExpression r && l.EqualsToExpression(r, ignoreParameterNames: ignoreNames),
+            LambdaExpression l => rhs is LambdaExpression r && l.EqualsToExpression(r, ignoreNames),
             BinaryExpression l => rhs is BinaryExpression r && l.EqualsToExpression(r, ignoreNames),
             ConstantExpression l => rhs is ConstantExpression r && l.EqualsToExpression(r),
-            MemberExpression l => rhs is MemberExpression r && l.EqualsToExpression(r, ignoreName: ignoreNames),
-            MethodCallExpression l => rhs is MethodCallExpression r && l.EqualsToExpression(r, ignoreName: ignoreNames),
-            ParameterExpression l => rhs is ParameterExpression r && l.EqualsToExpression(r, ignoreName: ignoreNames),
+            MemberExpression l => rhs is MemberExpression r && l.EqualsToExpression(r, ignoreNames),
+            MethodCallExpression l => rhs is MethodCallExpression r && l.EqualsToExpression(r, ignoreNames),
+            NewExpression l => rhs is NewExpression r && l.EqualsToExpression(r, ignoreNames),
+            ParameterExpression l => rhs is ParameterExpression r && l.EqualsToExpression(r, ignoreNames),
             UnaryExpression l => rhs is UnaryExpression r && l.EqualsToExpression(r),
             _ => false
         };
@@ -70,6 +71,7 @@ public static class ExpressionExtensions
             ConstantExpression e  => e.GetExpressionHashCode(),
             LambdaExpression e    => e.GetExpressionHashCode(ignoreName),
             MemberExpression e    => e.GetExpressionHashCode(),
+            NewExpression e       => e.GetExpressionHashCode(),
             ParameterExpression e => e.GetExpressionHashCode(ignoreName),
             UnaryExpression e     => e.GetExpressionHashCode(ignoreName),
             _ => 0

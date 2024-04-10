@@ -20,6 +20,18 @@ public class ExpressionExtensionsTests
     private record Person(string Name, Gender Gender, int Age);
 
     [Test]
+    public void EqualsToExpression_Should_True_When_UsingBinaryExpressionWithSameDateOnly()
+    {
+        LambdaExpression lambda = (DateOnly x) => x == new DateOnly(2020, 1, 10) || x == new DateOnly(2020, 1, 10);
+
+        var be = lambda.Body as BinaryExpression;
+        be.Should().NotBeNull();
+
+        var eq = be!.Left.EqualsToExpression(be!.Right);
+        eq.Should().BeTrue();
+    }
+
+    [Test]
     public void ExtractExpressions_Should_Return1MemberExpression_When_UsingLambdaExpression_WithObjectProperty()
     {
         LambdaExpression lambda = (DateTime x) => x.Day > 5;
