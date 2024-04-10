@@ -21,6 +21,7 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
+using Foundation.Collections.Generic;
 using Foundation.Reflection;
 using System.Linq.Expressions;
 
@@ -28,7 +29,7 @@ namespace Foundation.Linq.Expressions;
 
 public static class MemberExpressionExtensions
 {
-    public static bool EqualsToExpression(this MemberExpression lhs, MemberExpression rhs, bool ignoreName = true)
+    public static bool EqualsToExpression(this MemberExpression lhs, MemberExpression rhs, bool ignoreName)
     {
         if (lhs is null) return rhs is null;
         if (rhs is null) return false;
@@ -36,6 +37,13 @@ public static class MemberExpressionExtensions
         return lhs.NodeType == rhs.NodeType 
             && lhs.Member.EqualsToMemberInfo(rhs.Member, ignoreName)
             && lhs.Expression.EqualsToExpression(rhs.Expression, ignoreName);
+    }
+
+    public static IEnumerable<MemberExpression> DistinctMembers(this IEnumerable<MemberExpression> members)
+    {
+        var hs = new HashSet<MemberExpression>(MemberExpressionHelper.CreateExpressionEqualityComparer());
+        members.ForEach(x => hs.Add(x));
+        return hs;
     }
 
     public static int GetExpressionHashCode(this MemberExpression? expression)

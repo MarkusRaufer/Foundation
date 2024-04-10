@@ -41,6 +41,19 @@ public static class MethodCallExpressionExtensions
             && lhs.Arguments.SequenceEqual(rhs.Arguments, (l, r) => l.EqualsToExpression(r, ignoreName));
     }
 
+    public static IEnumerable<MethodCallExpression> DistinctMembers(this IEnumerable<MethodCallExpression> members)
+    {
+        var hs = new HashSet<MethodCallExpression>(MethodCallExpressionHelper.CreateExpressionEqualityComparer());
+        members.ForEach(x => hs.Add(x));
+        return hs;
+    }
+
+    public static int GetExpressionHashCode(this MethodCallExpression? expression)
+    {
+        if (expression is null) return 0;
+        return HashCode.FromOrderedObject<object>(expression.Method, expression.Type);
+    }
+
     public static IEnumerable<ParameterExpression> GetParameters(this MethodCallExpression? expression)
     {
         return expression == null ? [] : expression.Arguments.SelectMany(x => x.GetParameters());

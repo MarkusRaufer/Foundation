@@ -21,28 +21,19 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
-﻿using System.Linq.Expressions;
+﻿using System.Diagnostics.CodeAnalysis;
+using System.Linq.Expressions;
 
 namespace Foundation.Linq.Expressions;
 
-public static class MemberExpressionHelper
+public class ExpressionEqualityComparer<TExpression>(Func<TExpression?, TExpression?, bool> equals, Func<TExpression, int> hash)
+    : IEqualityComparer<TExpression>
+    where TExpression : Expression
 {
-    public static ExpressionEqualityComparer<MemberExpression> CreateExpressionEqualityComparer(bool ignoreName = false)
-    {
-        return new ExpressionEqualityComparer<MemberExpression>(equals, MemberExpressionExtensions.GetExpressionHashCode);
+    private readonly Func<TExpression?, TExpression?, bool> _equals = equals.ThrowIfNull();
+    private readonly Func<TExpression, int> _hash = hash.ThrowIfNull();
 
-        bool equals(MemberExpression? lhs, MemberExpression? rhs)
-        {
-            if (lhs is null) return rhs is null;
-            if (rhs is null) return false;
+    public bool Equals(TExpression? x, TExpression? y) => _equals(x, y);
 
-            return lhs.EqualsToExpression(rhs, ignoreName);
-        }
-    }
-
-    public static MemberExpression? ToMemberExpression<T, TMember>(Expression<Func<T, TMember>> func)
-    {
-        if (func.ThrowIfNull().Body is MemberExpression memberExpression) return memberExpression;
-        return null;
-    }
+    public int GetHashCode([DisallowNull] TExpression obj) => _hash(obj);
 }
