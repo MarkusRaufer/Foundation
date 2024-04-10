@@ -98,6 +98,33 @@ public static class EnumerableExtensions
     }
 
     /// <summary>
+    /// checks if all elements of items are equal.
+    /// </summary>
+    /// <typeparam name="T">Type of the elements.</typeparam>
+    /// <typeparam name="TSelector">Type of selected value.</typeparam>
+    /// <param name="items">Elements.</param>
+    /// <param name="selector">selection function.</param>
+    /// <param name="equals">Function to check equality.</param>
+    /// <returns></returns>
+    public static bool AllEqual<T, TSelector>(this IEnumerable<T> items, Func<T, TSelector> selector, Func<TSelector, TSelector, bool> equals)
+    {
+        selector.ThrowIfNull();
+        equals.ThrowIfNull();
+
+        var it = items.ThrowIfEnumerableIsNull().GetEnumerator();
+
+        if (!it.MoveNext()) return true;
+
+        var first = selector(it.Current);
+
+        while (it.MoveNext())
+        {
+            if (!equals(selector(it.Current), first)) return false;
+        }
+        return true;
+    }
+
+    /// <summary>
     /// Checks if the selected values of the items are of the same type.
     /// </summary>
     /// <typeparam name="T">Type of the item.</typeparam>
