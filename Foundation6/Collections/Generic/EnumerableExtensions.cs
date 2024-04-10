@@ -280,7 +280,7 @@ public static class EnumerableExtensions
     }
 
     /// <summary>
-    /// This Distinct preserves the ordinal position.
+    /// This DistinctMembers preserves the ordinal position.
     /// </summary>
     /// <typeparam name="T"></typeparam>
     /// <param name="items"></param>
