@@ -33,7 +33,7 @@ public static class Option
 
     public static Option<T> MaybeOfType<T>(object? value) => value is T t ? new Option<T>(t) : Option.None<T>();
 
-    public static Option<TResult> MaybeOfType<T, TResult>(T? value) => value is TResult result ? new(result) : Option.None<TResult>();
+    public static Option<TResult> MaybeOfType<T, TResult>(T? value) => value is TResult result ? Option.Some(result) : Option.None<TResult>();
 
     public static Option<T> None<T>() => Option<T>.None;
 
