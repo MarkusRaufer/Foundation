@@ -25,9 +25,14 @@
 
 namespace Foundation.DesignPatterns.MutableState;
 
-public interface IMutableState<TState, TCommand, TEvent>
-    : ICommandHandler<TCommand, TEvent>
-    , IChangeEventHandler<TEvent>
+public interface IMutableState<TState>
 {
     TState State { get; }
+}
+
+public interface IMutableState<TState, TCommand, TEvent>
+    : IMutableState<TState>
+    , ICommandHandler<TCommand, TEvent>
+    , IChangeEventHandler<TEvent>
+{
 }
