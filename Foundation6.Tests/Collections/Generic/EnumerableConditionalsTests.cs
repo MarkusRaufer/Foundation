@@ -19,6 +19,31 @@ public class EnumerableConditionalsTests
     private record C(string Name, string? NickName) : A(Guid.NewGuid(), Name);
 
     [Test]
+    public void AllIfAny_Should_Return_False_When_SequenceIsEmpty()
+    {
+        var emptySequence = Enumerable.Empty<int>();
+
+        var all = emptySequence.All(x => x % 2 == 0);
+        all.Should().BeTrue();
+
+        all = emptySequence.AllIfAny(x => x % 2 == 0);
+        all.Should().BeFalse();
+    }
+
+    [Test]
+    public void AllIfAny_Should_Return_True_When_AllElementsMatchThePredicate()
+    {
+        int[] emptySequence = [2, 4, 6, 8, 10];
+
+        var all = emptySequence.All(x => x % 2 == 0);
+        all.Should().BeTrue();
+
+        all = emptySequence.AllIfAny(x => x % 2 == 0);
+        all.Should().BeTrue();
+    }
+
+
+    [Test]
     public void If_Should_ExecuteAction_When_Predicate_IsTrue()
     {
         {
