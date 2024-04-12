@@ -158,6 +158,25 @@ public static class EnumerableConditionals
     }
 
     /// <summary>
+    /// Determines whether all elements of a sequence satisfy a condition. Works like LINQ All method but returns false if it is emtpy.
+    /// </summary>
+    /// <typeparam name="T">Type of elements.</typeparam>
+    /// <param name="items">List of elements</param>
+    /// <param name="predicate">Predicate used to check all elements.</param>
+    /// <returns>Returns true if all elements satisfy the predicate. Returns false if sequence is empty.</returns>
+    public static bool AllIfAny<T>(this IEnumerable<T> items, Func<T, bool> predicate)
+    {
+        var result = false;
+        foreach (var item in items)
+        {
+            if (!predicate(item)) return false;
+            result = true;
+        }
+
+        return result;
+    }
+
+    /// <summary>
     /// Returns an empty enumerable if items is null.
     /// </summary>
     /// <typeparam name="T"></typeparam>
