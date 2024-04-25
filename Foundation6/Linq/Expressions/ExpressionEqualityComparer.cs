@@ -26,12 +26,36 @@ using System.Linq.Expressions;
 
 namespace Foundation.Linq.Expressions;
 
-public class ExpressionEqualityComparer<TExpression>(Func<TExpression?, TExpression?, bool> equals, Func<TExpression, int> hash)
-    : IEqualityComparer<TExpression>
+public class ExpressionEqualityComparer : ExpressionEqualityComparer<Expression>
+{
+    public ExpressionEqualityComparer() : base()
+    {
+    }
+
+    public ExpressionEqualityComparer(Func<Expression?, Expression?, bool> equals, Func<Expression, int> hash) : base(equals, hash)
+    {
+    }
+}
+
+public class ExpressionEqualityComparer<TExpression> : IEqualityComparer<TExpression>
     where TExpression : Expression
 {
-    private readonly Func<TExpression?, TExpression?, bool> _equals = equals.ThrowIfNull();
-    private readonly Func<TExpression, int> _hash = hash.ThrowIfNull();
+    private readonly IEqualityComparer<TExpression>? _comparer;
+    private readonly Func<TExpression?, TExpression?, bool> _equals;
+    private readonly Func<TExpression, int> _hash;
+
+    public ExpressionEqualityComparer()
+    {
+        _comparer = new ExpressionEqualityComparer<TExpression>();
+        _equals = _comparer.Equals;
+        _hash = _comparer.GetHashCode;
+    }
+
+    public ExpressionEqualityComparer(Func<TExpression?, TExpression?, bool> equals, Func<TExpression, int> hash)
+    {
+        _equals = equals.ThrowIfNull();
+        _hash = hash.ThrowIfNull();
+    }
 
     public bool Equals(TExpression? x, TExpression? y) => _equals(x, y);
 
