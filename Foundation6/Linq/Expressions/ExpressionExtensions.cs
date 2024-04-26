@@ -126,6 +126,8 @@ public static class ExpressionExtensions
         return extractor.Extract(expression);
     }
 
+    public static bool HasParameter(this Expression expression, ParameterExpression parameter) => expression.GetParameters().Any(x => x.EqualsToExpression(parameter));
+
     public static bool IsConstant(this Expression expression)
     {
         return expression.NodeType == ExpressionType.Constant;

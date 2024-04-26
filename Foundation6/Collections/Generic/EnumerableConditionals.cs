@@ -184,7 +184,7 @@ public static class EnumerableConditionals
     /// <returns></returns>
     public static IEnumerable<T> EmptyIfNull<T>(this IEnumerable<T>? items)
     {
-        return items ?? Enumerable.Empty<T>();
+        return items ?? [];
     }
 
     /// <summary>
@@ -648,6 +648,23 @@ public static class EnumerableConditionals
     public static IEnumerable<T> ToEmptyIfNull<T>(this IEnumerable<T>? items)
     {
         return items ?? Enumerable.Empty<T>();
+    }
+
+    /// <summary>
+    /// Returns all elements when <paramref name="predicate"/> is true for all elements otherwise it returns an empty list.
+    /// </summary>
+    /// <typeparam name="T">Type of elements.</typeparam>
+    /// <param name="items">List of elements.</param>
+    /// <param name="predicate">Predicate of elements.</param>
+    /// <returns>All elements when <paramref name="predicate"/> is true for all elements otherwise it returns an empty list.</returns>
+    public static IEnumerable<T> WhereAll<T>(this IEnumerable<T> items, Func<T, bool> predicate)
+    {
+        foreach (var item in items)
+        {
+            if (!predicate(item)) return [];
+        }
+
+        return items;
     }
 }
 
