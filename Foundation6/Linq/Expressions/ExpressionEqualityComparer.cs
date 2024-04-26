@@ -28,7 +28,7 @@ namespace Foundation.Linq.Expressions;
 
 public class ExpressionEqualityComparer : ExpressionEqualityComparer<Expression>
 {
-    public ExpressionEqualityComparer() : base()
+    public ExpressionEqualityComparer(bool ignoreNames = false) : base(ignoreNames)
     {
     }
 
@@ -40,24 +40,30 @@ public class ExpressionEqualityComparer : ExpressionEqualityComparer<Expression>
 public class ExpressionEqualityComparer<TExpression> : IEqualityComparer<TExpression>
     where TExpression : Expression
 {
-    private readonly IEqualityComparer<TExpression>? _comparer;
     private readonly Func<TExpression?, TExpression?, bool> _equals;
     private readonly Func<TExpression, int> _hash;
-
-    public ExpressionEqualityComparer()
+    private readonly bool _ignoreNames;
+    public ExpressionEqualityComparer(bool ignoreNames = false)
     {
-        _comparer = new ExpressionEqualityComparer<TExpression>();
-        _equals = _comparer.Equals;
-        _hash = _comparer.GetHashCode;
+        _equals = AreEqual;
+        _hash = GetHash;
     }
 
-    public ExpressionEqualityComparer(Func<TExpression?, TExpression?, bool> equals, Func<TExpression, int> hash)
+    public ExpressionEqualityComparer(Func<TExpression?, TExpression?, bool> equals, Func<TExpression, int> hash, bool ignoreNames = false)
     {
         _equals = equals.ThrowIfNull();
         _hash = hash.ThrowIfNull();
+        _ignoreNames = ignoreNames;
     }
 
     public bool Equals(TExpression? x, TExpression? y) => _equals(x, y);
 
-    public int GetHashCode([DisallowNull] TExpression obj) => _hash(obj);
+    private bool AreEqual(TExpression? x, TExpression? y)
+    {
+        return x.EqualsToExpression(y, _ignoreNames);
+    }
+
+    private int GetHash(TExpression expression) => expression.GetExpressionHashCode();
+
+    public int GetHashCode([DisallowNull] TExpression expression) => _hash(expression);
 }
