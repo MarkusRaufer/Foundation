@@ -51,7 +51,7 @@ namespace Foundation.Linq.Expressions;
 
 public static class LambdaExpressionExtensions
 {
-    public static bool EqualsToExpression(this LambdaExpression lhs, LambdaExpression rhs, bool ignoreParameterNames = true)
+    public static bool EqualsToExpression(this LambdaExpression lhs, LambdaExpression rhs, bool ignoreNames = false)
     {
         if (null == lhs) return null == rhs;
         if (null== rhs) return false;
@@ -60,8 +60,8 @@ public static class LambdaExpressionExtensions
             && lhs.NodeType == rhs.NodeType
             && lhs.Type == rhs.Type
             && lhs.ReturnType == rhs.ReturnType
-            && lhs.Parameters.SequenceEqual(rhs.Parameters, (l, r) => l.EqualsToExpression(r, ignoreParameterNames))
-            && lhs.Body.EqualsToExpression(rhs.Body);
+            && lhs.Parameters.SequenceEqual(rhs.Parameters, (l, r) => l.EqualsToExpression(r, ignoreNames))
+            && lhs.Body.EqualsToExpression(rhs.Body, ignoreNames);
     }
 
     public static IEnumerable<BinaryExpression> GetBinaryExpressions(this LambdaExpression lambda)
@@ -72,7 +72,7 @@ public static class LambdaExpressionExtensions
         return extractor.Extract<BinaryExpression>(lambda);
     }
     
-    public static int GetExpressionHashCode(this LambdaExpression? expression, bool ignoreParameterNames = true)
+    public static int GetExpressionHashCode(this LambdaExpression? expression, bool ignoreNames = false)
     {
         if(expression == null) return 0;
 
@@ -81,9 +81,9 @@ public static class LambdaExpressionExtensions
             expression.NodeType.GetHashCode(),
             expression.Type.GetHashCode(),
             expression.ReturnType.GetHashCode(),
-            expression.Body.GetExpressionHashCode(ignoreParameterNames)
+            expression.Body.GetExpressionHashCode(ignoreNames)
         };
-        expression.Parameters.Select(x => x.GetExpressionHashCode(ignoreParameterNames))
+        expression.Parameters.Select(x => x.GetExpressionHashCode(ignoreNames))
                              .ForEach(hashCodes.Add);
         
         return HashCode.FromOrderedHashCodes(hashCodes);

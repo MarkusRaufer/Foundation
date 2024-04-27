@@ -32,7 +32,7 @@ public static class BinaryExpressionExtensions
         return ExpressionHelper.Concat(expressions, binaryType);
     }
 
-    public static bool EqualsToExpression(this BinaryExpression? lhs, BinaryExpression? rhs, bool ignoreNames = true)
+    public static bool EqualsToExpression(this BinaryExpression? lhs, BinaryExpression? rhs, bool ignoreNames = false)
     {
         if (null == lhs) return null == rhs;
         if (null == rhs) return false;
@@ -99,24 +99,12 @@ public static class BinaryExpressionExtensions
         return GetParameters(expression).Any(x => x.EqualsToExpression(parameter, ignoreNames));
     }
 
-    public static bool IsPredicate(this BinaryExpression expression)
-    {
-        expression.ThrowIfNull();
-        
-        return expression.NodeType.IsBinary() && expression.Type == typeof(bool);
-    }
-
-    public static bool IsTerminalBinary(this BinaryExpression expression)
-    {
-        if (!expression.ThrowIfNull().NodeType.IsTerminalBinary()) return false;
-
-        return expression.Left.IsTerminal() && expression.Right.IsTerminal();
-    }
+    public static bool IsPredicate(this BinaryExpression expression) => expression.ThrowIfNull().Type == typeof(bool);
 
     public static bool IsTerminalPredicate(this BinaryExpression expression)
     {
-        expression.ThrowIfNull();
+        if (!expression.ThrowIfNull().IsPredicate()) return false;
 
-        return expression.IsPredicate() && expression.IsTerminalBinary();
+        return expression.Left.IsTerminal() && expression.Right.IsTerminal();
     }
 }

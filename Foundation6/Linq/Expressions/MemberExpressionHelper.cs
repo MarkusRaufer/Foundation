@@ -29,7 +29,7 @@ public static class MemberExpressionHelper
 {
     public static ExpressionEqualityComparer<MemberExpression> CreateExpressionEqualityComparer(bool ignoreName = false)
     {
-        return new ExpressionEqualityComparer<MemberExpression>(equals, MemberExpressionExtensions.GetExpressionHashCode);
+        return new ExpressionEqualityComparer<MemberExpression>(equals, x => MemberExpressionExtensions.GetExpressionHashCode(x, ignoreName));
 
         bool equals(MemberExpression? lhs, MemberExpression? rhs)
         {

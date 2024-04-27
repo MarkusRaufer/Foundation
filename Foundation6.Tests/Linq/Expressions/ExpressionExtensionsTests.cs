@@ -107,10 +107,10 @@ public class ExpressionExtensionsTests
     public void GetExpressionHashCode_Should_ReturnSameHashCodes_When_UsingLambdaExpression_BodyIsConstant_DifferentParameterNames()
     {
         Expression<Func<string, bool>> expression1 = x => true;
-        var hashCodeWithX = expression1.GetExpressionHashCode();
+        var hashCodeWithX = expression1.GetExpressionHashCode(ignoreName: true);
 
         Expression<Func<string, bool>> expression2 = a => true;
-        var hashCodeWithA = expression2.GetExpressionHashCode();
+        var hashCodeWithA = expression2.GetExpressionHashCode(ignoreName: true);
 
         hashCodeWithX.Should().Be(hashCodeWithA);
     }
@@ -125,10 +125,10 @@ public class ExpressionExtensionsTests
         var hc2 = p2.GetExpressionHashCode();
 
         Expression<Func<int, bool>> expression1 = x => x != 12;
-        var hashCodeWithX = expression1.GetExpressionHashCode();
+        var hashCodeWithX = expression1.GetExpressionHashCode(ignoreName: true);
 
         Expression<Func<int, bool>> expression2 = a => 12 != a;
-        var hashCodeWithA = expression2.GetExpressionHashCode();
+        var hashCodeWithA = expression2.GetExpressionHashCode(ignoreName: true);
 
         hashCodeWithX.Should().Be(hashCodeWithA);
     }
@@ -137,10 +137,10 @@ public class ExpressionExtensionsTests
     public void GetExpressionHashCode_Should_ReturnSameHashCodes_When_LambdaExpression_BodyOr()
     {
         Expression<Func<int, bool>> expression1 = x => x == 5 || x == 7;
-        var hashCodeWithX = expression1.GetExpressionHashCode();
+        var hashCodeWithX = expression1.GetExpressionHashCode(ignoreName: true);
 
         Expression<Func<int, bool>> expression2 = a => 7 == a || a == 5;
-        var hashCodeWithA = expression2.GetExpressionHashCode();
+        var hashCodeWithA = expression2.GetExpressionHashCode(ignoreName: true);
 
         hashCodeWithX.Should().Be(hashCodeWithA);
     }
@@ -274,23 +274,22 @@ public class ExpressionExtensionsTests
     }
 
     [Test]
-    public void IsTerminal_Should_ReturnTrue_When_Expression_ContainsConvert_BinaryExpressionLeftAndRightAreTerminal()
+    public void IsTerminalPredicate_Should_ReturnTrue_When_Expression_ContainsConvert_BinaryExpressionLeftAndRightAreTerminal()
     {
-        Expression<Func<Person, bool>> expression = p => p.Gender == Gender.Male;
-        var lambda = expression as LambdaExpression;
+        LambdaExpression lambda = (Person p) => p.Gender == Gender.Male;
 
-        lambda.Body.IsTerminalBinary().Should().BeTrue();
+        lambda.Body.IsTerminalPredicate().Should().BeTrue();
     }
 
     [Test]
-    public void IsTerminal_Should_ReturnTrue_When_Expression_ContainsModulo()
+    public void IsTerminalPredicate_Should_ReturnTrue_When_Expression_ContainsModulo()
     {
         Expression<Func<Person, bool>> expression = p =>p.Age % 2 == 0;
         var lambda = expression as LambdaExpression;
 
         var binary = (BinaryExpression)lambda.Body;
 
-        binary.IsTerminalBinary().Should().BeTrue();
+        binary.IsTerminalPredicate().Should().BeTrue();
     }
 
     [Test]
@@ -298,7 +297,7 @@ public class ExpressionExtensionsTests
     {
         Expression<Func<int, int, bool>> expression = (a, b) => (a - b) == 2;
 
-        expression.Body.IsTerminalBinary().Should().BeTrue();
+        expression.Body.IsTerminalPredicate().Should().BeTrue();
     }
 
     [Test]
@@ -309,13 +308,13 @@ public class ExpressionExtensionsTests
 
         var binary = (BinaryExpression)lambda.Body;
 
-        binary.IsTerminalBinary().Should().BeFalse();
+        binary.IsTerminalPredicate().Should().BeFalse();
     }
 
     [Test]
-    public void IsTerminalPredicate_Should_ReturnTrue_When_Expression_ContainsModulo()
+    public void IsTerminalPredicate_Should_ReturnTrue_When_Expression_Contains_InterfaceAndClassType_LeftBinaryIsSubtract_RightConstant()
     {
-        Expression<Func<IDateTimeProvider, BirthDayChild, bool>> expression = (dtp, c) => (dtp.Now.Year - c.BrithDay.Year) >= 18; ;
+        Expression<Func<IDateTimeProvider, BirthDayChild, bool>> expression = (dtp, c) => (dtp.Now.Year - c.BrithDay.Year) >= 18;
         var lambda = expression as LambdaExpression;
 
         var binary = (BinaryExpression)lambda.Body;

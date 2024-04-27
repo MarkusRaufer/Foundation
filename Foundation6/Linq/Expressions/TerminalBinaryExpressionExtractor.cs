@@ -42,7 +42,7 @@ public class TerminalBinaryExpressionExtractor : ExpressionVisitor
 
     protected override Expression VisitBinary(BinaryExpression node)
     {
-        if (node.IsTerminalBinary())
+        if (node.IsTerminalPredicate())
             _binaryExpressions.Add(node);
 
         return base.VisitBinary(node);

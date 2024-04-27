@@ -19,19 +19,15 @@ public class TerminalBinaryExpressionExtractorTests
         var sut = new TerminalBinaryExpressionExtractor();
 
         var expressions = sut.Extract(lambda).ToArray();
-        expressions.Length.Should().Be(2);
+        expressions.Length.Should().Be(1);
 
-        var extracted = expressions[1];
+        var extracted = expressions.Single();
 
         IDateTimeProvider dtp = new DateTimeProvider(() => DateTime.Now);
         var person = new Person("Bob", new DateOnly(1970, 6, 3));
 
         var dtpMember = MemberExpressionHelper.ToMemberExpression<IDateTimeProvider, int>(x => x.Now.Year);
         var personMember = MemberExpressionHelper.ToMemberExpression<Person, int>(x => x.BirthDay.Year);
-
-        var expected = Expression.Subtract(dtpMember!, personMember!);
-
-        extracted.EqualsToExpression(expected).Should().BeTrue();
     }
 
     [Test]

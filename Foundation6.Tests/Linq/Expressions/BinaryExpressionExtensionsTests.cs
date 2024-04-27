@@ -39,7 +39,7 @@ public class BinaryExpressionExtensionsTests
         Expression<Func<int, int, string, bool>> lambda1 = (x, y, name) => (x == 2 || y == 5) && name == "two" || x == 3 && name == "three";
         Expression<Func<int, int, string, bool>> lambda2 = (a, b, name) => (b == 5 || 2 == a) && name == "two" || a == 3 && "three" == name;
 
-        var eq = lambda1.EqualsToExpression(lambda2);
+        var eq = lambda1.EqualsToExpression(lambda2, ignoreNames: true);
 
         eq.Should().BeTrue();
     }
@@ -61,7 +61,7 @@ public class BinaryExpressionExtensionsTests
         Expression<Func<int, int, string, bool>> lambda1 = (x, y, name) => x == 2 && y == 5 && name == "two" || x == 3 && name == "three";
         Expression<Func<int, int, string, bool>> lambda2 = (a, b, name) => a == 2 && b == 5 && name == "two" || a == 3 && name == "three";
 
-        var eq = lambda1.EqualsToExpression(lambda2);
+        var eq = lambda1.EqualsToExpression(lambda2, ignoreNames: true);
 
         eq.Should().BeTrue();
     }

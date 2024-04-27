@@ -46,10 +46,12 @@ public static class MemberExpressionExtensions
         return hs;
     }
 
-    public static int GetExpressionHashCode(this MemberExpression? expression)
+    public static int GetExpressionHashCode(this MemberExpression? expression, bool ignoreName = false)
     {
-        if(expression is null) return 0;
-        return HashCode.FromOrderedObject(expression.Member, expression.Type);
+        if (expression is null) return 0;
+        return (ignoreName)
+            ? HashCode.FromOrderedObject(expression.Member, expression.Type)
+            : HashCode.FromOrderedObject<object>(expression.Member, expression.Member.Name, expression.Type);
     }
 
     public static IEnumerable<ParameterExpression> GetParameters(this MemberExpression member)

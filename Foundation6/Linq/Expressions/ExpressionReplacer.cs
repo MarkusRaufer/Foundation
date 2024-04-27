@@ -27,15 +27,17 @@ namespace Foundation.Linq.Expressions;
 
 public class ExpressionReplacer : ExpressionVisitor
 {
+    private bool _ignoreNames = false;
     private bool _isInitialized;
     private Expression? _replacement;
     private Expression? _toBeReplaced;
 
-    public Expression? Replace(Expression source, Expression toBeReplaced, Expression replacement)
+    public Expression? Replace(Expression source, Expression toBeReplaced, Expression replacement, bool ignoreNames = false)
     {
         source.ThrowIfNull();
         _toBeReplaced = toBeReplaced.ThrowIfNull();
         _replacement = replacement.ThrowIfNull();
+        _ignoreNames = ignoreNames;
         _isInitialized = true;
 
         return Visit(source);
@@ -50,21 +52,21 @@ public class ExpressionReplacer : ExpressionVisitor
 
     protected override Expression VisitBinary(BinaryExpression node)
     {
-        if (_toBeReplaced is BinaryExpression x && node.EqualsToExpression(x, ignoreNames: false)) return _replacement!;
+        if (_toBeReplaced is BinaryExpression x && node.EqualsToExpression(x, _ignoreNames)) return _replacement!;
 
         return base.VisitBinary(node);
     }
 
     protected override Expression VisitBlock(BlockExpression node)
     {
-        if (_toBeReplaced is BlockExpression x && node.EqualsToExpression(x, ignoreNames: false)) return _replacement!;
+        if (_toBeReplaced is BlockExpression x && node.EqualsToExpression(x, _ignoreNames)) return _replacement!;
 
         return base.VisitBlock(node);
     }
 
     protected override Expression VisitConditional(ConditionalExpression node)
     {
-        if (_toBeReplaced is ConditionalExpression x && node.EqualsToExpression(x, ignoreNames: false)) return _replacement!;
+        if (_toBeReplaced is ConditionalExpression x && node.EqualsToExpression(x, _ignoreNames)) return _replacement!;
 
         return base.VisitConditional(node);
     }
@@ -78,28 +80,28 @@ public class ExpressionReplacer : ExpressionVisitor
 
     protected override Expression VisitMember(MemberExpression node)
     {
-        if (_toBeReplaced is MemberExpression x && node.EqualsToExpression(x, ignoreName: false)) return _replacement!;
+        if (_toBeReplaced is MemberExpression x && node.EqualsToExpression(x, _ignoreNames)) return _replacement!;
 
         return base.VisitMember(node);
     }
 
     protected override Expression VisitMethodCall(MethodCallExpression node)
     {
-        if (_toBeReplaced is MethodCallExpression x && node.EqualsToExpression(x, ignoreName: false)) return _replacement!;
+        if (_toBeReplaced is MethodCallExpression x && node.EqualsToExpression(x, _ignoreNames)) return _replacement!;
 
         return base.VisitMethodCall(node);
     }
 
     protected override Expression VisitParameter(ParameterExpression node)
     {
-        if (_toBeReplaced is ParameterExpression x && node.EqualsToExpression(x, ignoreName: false)) return _replacement!;
+        if (_toBeReplaced is ParameterExpression x && node.EqualsToExpression(x, _ignoreNames)) return _replacement!;
 
         return base.VisitParameter(node);
     }
 
     protected override Expression VisitUnary(UnaryExpression node)
     {
-        if (_toBeReplaced is UnaryExpression x && node.EqualsToExpression(x, ignoreName: false)) return _replacement!;
+        if (_toBeReplaced is UnaryExpression x && node.EqualsToExpression(x, _ignoreNames)) return _replacement!;
 
         return base.VisitUnary(node);
     }

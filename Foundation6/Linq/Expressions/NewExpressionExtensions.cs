@@ -13,12 +13,12 @@ public static class NewExpressionExtensions
             && lhs.Arguments.SequenceEqual(rhs.Arguments, (l, r) => l.EqualsToExpression(r, ignoreNames));
     }
 
-    public static int GetExpressionHashCode(this NewExpression expression)
+    public static int GetExpressionHashCode(this NewExpression expression, bool ignoreName = false)
     {
         if (expression is null) return 0;
         return HashCode.CreateBuilder()
             .AddObject(expression.NodeType)
-            .AddObjects(expression.Arguments)
+            .AddHashCodes(expression.Arguments.Select(x => x.GetExpressionHashCode(ignoreName)))
             .GetHashCode();
     }
 }

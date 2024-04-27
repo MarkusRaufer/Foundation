@@ -63,11 +63,6 @@ public static class ExpressionTypeExtensions
         {
             ExpressionType.Add or
             ExpressionType.Divide or
-            ExpressionType.Equal or
-            ExpressionType.GreaterThan or
-            ExpressionType.GreaterThanOrEqual or
-            ExpressionType.LessThan or
-            ExpressionType.LessThanOrEqual or
             ExpressionType.Multiply or
             ExpressionType.Not or
             ExpressionType.NotEqual or

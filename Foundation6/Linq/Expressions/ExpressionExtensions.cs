@@ -27,7 +27,7 @@ namespace Foundation.Linq.Expressions;
 
 public static class ExpressionExtensions
 {
-    public static bool EqualsToExpression(this Expression? lhs, Expression? rhs, bool ignoreNames = true)
+    public static bool EqualsToExpression(this Expression? lhs, Expression? rhs, bool ignoreNames = false)
     {
         if (null == lhs) return null == rhs;
         if (rhs == null) return false;
@@ -70,8 +70,8 @@ public static class ExpressionExtensions
             BinaryExpression e    => e.GetExpressionHashCode(ignoreName),
             ConstantExpression e  => e.GetExpressionHashCode(),
             LambdaExpression e    => e.GetExpressionHashCode(ignoreName),
-            MemberExpression e    => e.GetExpressionHashCode(),
-            NewExpression e       => e.GetExpressionHashCode(),
+            MemberExpression e    => e.GetExpressionHashCode(ignoreName),
+            NewExpression e       => e.GetExpressionHashCode(ignoreName),
             ParameterExpression e => e.GetExpressionHashCode(ignoreName),
             UnaryExpression e     => e.GetExpressionHashCode(ignoreName),
             _ => 0
@@ -126,7 +126,8 @@ public static class ExpressionExtensions
         return extractor.Extract(expression);
     }
 
-    public static bool HasParameter(this Expression expression, ParameterExpression parameter) => expression.GetParameters().Any(x => x.EqualsToExpression(parameter));
+    public static bool HasParameter(this Expression expression, ParameterExpression parameter, bool ignoreNames = false)
+        => expression.GetParameters().Any(x => x.EqualsToExpression(parameter, ignoreNames));
 
     public static bool IsConstant(this Expression expression)
     {
@@ -155,14 +156,27 @@ public static class ExpressionExtensions
         {
             ExpressionType.Convert or
             ExpressionType.Negate => expression is UnaryExpression unary && IsTerminal(unary.Operand),
-            ExpressionType.Modulo => expression is BinaryExpression be && IsTerminal(be.Left) && IsTerminal(be.Right),
-            _ => false
+            _ => IsTerminalBinary(expression)
         };
     }
 
+    /// <summary>
+    /// Checks if expression is a BinaryExpression which is not a predicate and where Left and Right does not contain a predicate.
+    /// </summary>
+    /// <param name="expression"></param>
+    /// <returns></returns>
     public static bool IsTerminalBinary(this Expression expression)
     {
         if (expression is not BinaryExpression be) return false;
+        if (be.IsPredicate()) return false;
+
+        return be.Left.IsTerminal() && be.Right.IsTerminal();
+    }
+
+    public static bool IsTerminalPredicate(this Expression expression)
+    {
+        if (expression is not BinaryExpression be) return false;
+        if (!be.IsPredicate()) return false;
 
         return be.Left.IsTerminal() && be.Right.IsTerminal();
     }
