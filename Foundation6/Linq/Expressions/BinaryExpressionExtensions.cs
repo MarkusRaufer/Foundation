@@ -91,12 +91,12 @@ public static class BinaryExpressionExtensions
     public static bool HasConstant(this BinaryExpression expression)
         => expression.Left.IsConstant() || expression.Right.IsConstant();
 
-    public static bool HasParameter(this BinaryExpression? expression, ParameterExpression parameter)
+    public static bool HasParameter(this BinaryExpression? expression, ParameterExpression parameter, bool ignoreNames = false)
     {
         expression.ThrowIfNull();
         parameter.ThrowIfNull();
 
-        return GetParameters(expression).Any(x => x.EqualsToExpression(parameter));
+        return GetParameters(expression).Any(x => x.EqualsToExpression(parameter, ignoreNames));
     }
 
     public static bool IsPredicate(this BinaryExpression expression)
