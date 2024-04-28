@@ -27,7 +27,7 @@ namespace Foundation.Linq.Expressions;
 
 public static class ParameterExpressionExtensions
 {
-    public static bool EqualsToExpression(this ParameterExpression lhs, ParameterExpression rhs, bool ignoreName = true)
+    public static bool EqualsToExpression(this ParameterExpression lhs, ParameterExpression rhs, bool ignoreName = false)
     {
         if (null == lhs) return null == rhs;
         if (null == rhs) return false;
@@ -37,7 +37,7 @@ public static class ParameterExpressionExtensions
             : lhs.Name.EqualsNullable(rhs.Name) && lhs.Type == rhs.Type;
     }
 
-    public static int GetExpressionHashCode(this ParameterExpression? expression, bool ignoreName = true)
+    public static int GetExpressionHashCode(this ParameterExpression? expression, bool ignoreName = false)
     {
         if(expression == null) return 0;
 

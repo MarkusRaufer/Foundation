@@ -28,12 +28,12 @@ namespace Foundation.Linq.Expressions;
 
 public static class UnaryExpressionExtensions
 {
-    public static bool EqualsToExpression(this UnaryExpression lhs, UnaryExpression rhs, bool ignoreName = true)
+    public static bool EqualsToExpression(this UnaryExpression lhs, UnaryExpression rhs, bool ignoreName = false)
     {
         return lhs.NodeType == rhs.NodeType && lhs.Type == rhs.Type && lhs.Operand.EqualsToExpression(rhs.Operand, ignoreNames: ignoreName);
     }
 
-    public static int GetExpressionHashCode(this UnaryExpression? expression, bool ignoreName = true)
+    public static int GetExpressionHashCode(this UnaryExpression? expression, bool ignoreName = false)
     {
         if(expression == null) return 0;
 

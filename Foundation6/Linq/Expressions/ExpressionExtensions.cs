@@ -61,7 +61,7 @@ public static class ExpressionExtensions
         return flattener.Flatten(expression);
     }
 
-    public static int GetExpressionHashCode(this Expression expression, bool ignoreName = true)
+    public static int GetExpressionHashCode(this Expression expression, bool ignoreName = false)
     {
         if(null == expression) return 0;
 

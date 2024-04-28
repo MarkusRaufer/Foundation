@@ -29,7 +29,7 @@ namespace Foundation.Linq.Expressions;
 
 public static class MethodCallExpressionExtensions
 {
-    public static bool EqualsToExpression(this MethodCallExpression? lhs, MethodCallExpression? rhs, bool ignoreName = true)
+    public static bool EqualsToExpression(this MethodCallExpression? lhs, MethodCallExpression? rhs, bool ignoreName = false)
     {
         if (lhs == null) return rhs == null;
         if (rhs == null) return false;
