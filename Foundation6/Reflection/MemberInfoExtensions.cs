@@ -26,7 +26,7 @@
 using System.Reflection;
 public static class MemberInfoExtensions
 {
-    public static bool EqualsToMemberInfo(this MemberInfo lhs, MemberInfo rhs, bool ignoreName = true)
+    public static bool EqualsToMemberInfo(this MemberInfo lhs, MemberInfo rhs, bool ignoreName = false)
     {
         if (lhs is null) return rhs is null;
         if (rhs is null) return false;
