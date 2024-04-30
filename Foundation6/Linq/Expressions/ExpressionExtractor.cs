@@ -28,21 +28,33 @@ namespace Foundation.Linq.Expressions
 {
     public class ExpressionExtractor : ExpressionVisitor
     {
-        private readonly List<Expression> _expressions = [];
+        private readonly HashSet<Expression> _expressions = new HashSet<Expression>(new ExpressionEqualityComparer());
         private Func<Expression, bool>? _predicate;
 
         protected void AddExpression(Expression expression)
         {
-            if (null != _predicate && _predicate(expression))
+            if (null != _predicate && expression.NodeType != ExpressionType.Lambda && _predicate(expression))
                 _expressions.Add(expression);
         }
 
+        /// <summary>
+        /// Extracts all expressions of type TExpression.
+        /// </summary>
+        /// <typeparam name="TExpression">Expression type to be extracted.</typeparam>
+        /// <param name="expression">Expression from which the typed expressions are to be extracted.</param>
+        /// <returns></returns>
         public IEnumerable<TExpression> Extract<TExpression>(Expression expression)
             where TExpression : Expression
         {
             return Extract(expression, typeof(TExpression)).OfType<TExpression>();
         }
 
+        /// <summary>
+        /// Extracts all expression with specific <paramref name="predicate"/>
+        /// </summary>
+        /// <param name="expression"></param>
+        /// <param name="predicate"></param>
+        /// <returns></returns>
         public IEnumerable<Expression> Extract(Expression expression, Func<Expression, bool> predicate)
         {
             expression.ThrowIfNull();
@@ -54,20 +66,41 @@ namespace Foundation.Linq.Expressions
             return _expressions;
         }
 
+        /// <summary>
+        /// Extracts all expressions of a specific type with specific <paramref name="predicate"/>
+        /// </summary>
+        /// <typeparam name="TExpression">Type of the expression.</typeparam>
+        /// <param name="expression"></param>
+        /// <param name="predicate"></param>
+        /// <returns></returns>
+        public IEnumerable<TExpression> Extract<TExpression>(Expression expression, Func<TExpression, bool> predicate)
+            where TExpression : Expression
+        {
+            expression.ThrowIfNull();
+            predicate.ThrowIfNull();
+            return Extract<TExpression>(expression).Where(predicate);
+        }
+
+        /// <summary>
+        /// Extracts expressions of a specific <see cref="ExpressionType"/>
+        /// </summary>
+        /// <param name="expression"></param>
+        /// <param name="type"></param>
+        /// <returns></returns>
         public IEnumerable<Expression> Extract(Expression expression, ExpressionType type)
         {
             return Extract(expression, e => e.NodeType == type);
         }
 
+        /// <summary>
+        /// Extracts all expressions of a specific type including assignable types.
+        /// </summary>
+        /// <param name="expression"></param>
+        /// <param name="expressionType"></param>
+        /// <returns></returns>
         public IEnumerable<Expression> Extract(Expression expression, Type expressionType)
         {
             return Extract(expression, e => expressionType.IsAssignableFrom(e.GetType()));
-        }
-
-        public IEnumerable<TExpression> ExtractExpressions<TExpression>(Expression expression)
-            where TExpression : Expression
-        {
-            return Extract(expression, typeof(TExpression)).OfType<TExpression>();
         }
 
         [return: NotNullIfNotNull(nameof(node))]

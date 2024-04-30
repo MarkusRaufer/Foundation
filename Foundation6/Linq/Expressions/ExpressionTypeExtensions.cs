@@ -77,6 +77,7 @@ public static class ExpressionTypeExtensions
         {
             ExpressionType.Constant or
             ExpressionType.MemberAccess or
+            ExpressionType.Call or
             ExpressionType.New or
             ExpressionType.Parameter => true,
             _ => IsTerminalBinary(expressionType),
