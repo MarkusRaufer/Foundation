@@ -139,6 +139,8 @@ public static class ExpressionExtensions
         return expression.NodeType == ExpressionType.Convert;
     }
 
+    public static bool IsMethodCall(this Expression expression) => expression.NodeType == ExpressionType.Call;
+
     public static bool IsPredicate(this Expression expression)
     {
         return expression is LambdaExpression lambda
