@@ -53,7 +53,7 @@ public struct PeriodOfHours : ISerializable
     public PeriodOfHours(SerializationInfo info, StreamingContext context)
     {
         Start = info.GetValue(nameof(Start), typeof(TimeOnly)) is TimeOnly start ? start : default;
-        End = info.GetValue(nameof(End), typeof(TimeOnly)) is TimeOnly end ? end : start;
+        End = info.GetValue(nameof(End), typeof(TimeOnly)) is TimeOnly end ? end : Start;
 
         _hashCode = HashCode.FromObject(Start, End);
     }

@@ -1,21 +1,22 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
 	<PropertyGroup>
-		<TargetFramework>net6.0</TargetFramework>
+		<TargetFrameworks>net6.0;net8.0</TargetFrameworks>
 		<ImplicitUsings>enable</ImplicitUsings>
 		<Nullable>enable</Nullable>
 		<LangVersion>latest</LangVersion>
 		<GeneratePackageOnBuild>True</GeneratePackageOnBuild>
 		<PackageOutputPath>$(LOCAL_NUGET)\</PackageOutputPath>
 		<BaseOutputPath>bin\</BaseOutputPath>
-
-		<Copyright>Markus Raufer</Copyright>
+		<NuspecFile>Foundation.nuspec</NuspecFile>
+		
+		<!--<Copyright>Markus Raufer</Copyright>
 		<Authors>Markus Raufer</Authors>
 		<Description>A base C# framework as extension to .NET.</Description>
 		<PackageId>Foundation</PackageId>
 		<PackageTags>LINQ, additional standard types, .NET extension</PackageTags>
 		<ProductName>Foundation</ProductName>
-		<Version>1.0.0-rc.81</Version>
+		<Version>1.0.0-rc.110</Version>-->
 	</PropertyGroup>
 
   <ItemGroup>

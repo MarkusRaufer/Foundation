@@ -387,7 +387,11 @@ public static class ObjectExtensions
             UInt16 ui16 => BitConverter.GetBytes(ui16),
             UInt32 ui32 => BitConverter.GetBytes(ui32),
             UInt64 ui64 => BitConverter.GetBytes(ui64),
+#if NET6
             SByte sb => BitConverter.GetBytes(sb),
+#elif NET8
+            SByte sb => BitConverter.GetBytes((sbyte)sb),
+#endif
             string str => null != encoding ? encoding.GetBytes(str) : Encoding.UTF8.GetBytes(str),
             _ => []
         };

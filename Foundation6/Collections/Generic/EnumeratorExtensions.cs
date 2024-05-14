@@ -40,4 +40,21 @@ public static class EnumeratorExtensions
             yield return enumerator.Current;
         }
     }
+
+    /// <summary>
+    /// Creates an enumerable from an enumerator. Only elements which match the predicate are included.
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <param name="enumerator"></param>
+    /// <param name="predicate">Only if predicate returns true the element is returned.</param>
+    /// <returns></returns>
+    public static IEnumerable<T> ToEnumerable<T>(this IEnumerator<T> enumerator, Func<T, bool> predicate)
+    {
+        ArgumentNullException.ThrowIfNull(enumerator);
+
+        while (enumerator.MoveNext())
+        {
+            if (predicate(enumerator.Current)) yield return enumerator.Current;
+        }
+    }
 }
