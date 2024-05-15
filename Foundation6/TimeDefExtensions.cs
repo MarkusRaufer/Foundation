@@ -97,56 +97,33 @@ public static class TimeDefExtensions
 
     public static bool Equals(this TimeDef lhs, TimeDef rhs)
     {
-        static bool equals<T>(IEnumerable<T> lhs, IEnumerable<T> rhs)
-        {
-            return lhs.OrderBy(x => x).SequenceEqual(rhs.OrderBy(x => x));
-        }
-
         return lhs switch
         {
-            TimeDef.And l => rhs is TimeDef.And r
-                             && Equals(l.Lhs, r.Lhs)
-                             && Equals(l.Rhs, r.Rhs),
+            TimeDef.And l => rhs is TimeDef.And r && Equals(l.Lhs, r.Lhs) && Equals(l.Rhs, r.Rhs),
 #if NET6_0_OR_GREATER
-            TimeDef.DateSpan l => rhs is TimeDef.DateSpan r
-                                    && l.From.Equals(r.From)
-                                    && l.To.Equals(r.To),
+            TimeDef.DateSpan l => rhs is TimeDef.DateSpan r && l.Equals(r),
 #endif
-            TimeDef.DateTimeSpan l => rhs is TimeDef.DateTimeSpan r
-                                      && Equals(l.From, r.From)
-                                      && Equals(l.To, r.To),
-            TimeDef.Day l => rhs is TimeDef.Day r && equals(l.DaysOfMonth, r.DaysOfMonth),
-            TimeDef.Days l => rhs is TimeDef.Days r && l.Quantity == r.Quantity,
-            TimeDef.Difference l => rhs is TimeDef.Difference r
-                                    && Equals(l.Lhs, r.Lhs)
-                                    && Equals(l.Rhs, r.Rhs),
-            TimeDef.Hour l => rhs is TimeDef.Hour r && equals(l.HoursOfDay, r.HoursOfDay),
-            TimeDef.Hours l => rhs is TimeDef.Hours r && l.Quantity == r.Quantity,
-            TimeDef.Minute l => rhs is TimeDef.Minute r && equals(l.MinutesOfHour, r.MinutesOfHour),
-            TimeDef.Minutes l => rhs is TimeDef.Minutes r && l.Quantity == r.Quantity,
-            TimeDef.Month l => rhs is TimeDef.Month r && equals(l.MonthsOfYear, r.MonthsOfYear),
-            TimeDef.Months l => rhs is TimeDef.Months r && l.Quantity == r.Quantity,
+            TimeDef.DateTimeSpan l => rhs is TimeDef.DateTimeSpan r && l.Equals(r),
+            TimeDef.Day l => rhs is TimeDef.Day r && l.Equals(r),
+            TimeDef.Days l => rhs is TimeDef.Days r && l.Equals(r),
+            TimeDef.Difference l => rhs is TimeDef.Difference r && Equals(l.Lhs, r.Lhs) && Equals(l.Rhs, r.Rhs),
+            TimeDef.Hour l => rhs is TimeDef.Hour r && l.Equals(r),
+            TimeDef.Hours l => rhs is TimeDef.Hours r && l.Equals(r),
+            TimeDef.Minute l => rhs is TimeDef.Minute r && l.Equals(r),
+            TimeDef.Minutes l => rhs is TimeDef.Minutes r && l.Equals(r),
+            TimeDef.Month l => rhs is TimeDef.Month r && l.Equals(r),
+            TimeDef.Months l => rhs is TimeDef.Months r && l.Equals(r),
             TimeDef.Not l => rhs is TimeDef.Not r && Equals(l.TimeDef, r.TimeDef),
-            TimeDef.Or l => rhs is TimeDef.Or r
-                            && Equals(l.Lhs, r.Lhs)
-                            && Equals(l.Rhs, r.Rhs),
+            TimeDef.Or l => rhs is TimeDef.Or r && Equals(l.Lhs, r.Lhs) && Equals(l.Rhs, r.Rhs),
 #if NET6_0_OR_GREATER
-            TimeDef.Timespan l => rhs is TimeDef.Timespan r
-                                  && Equals(l.From, r.From)
-                                  && Equals(l.To, r.To),
+            TimeDef.Timespan l => rhs is TimeDef.Timespan r && l.Equals(r),
 #endif
-            TimeDef.Union l => rhs is TimeDef.Union r
-                               && Equals(l.Lhs, r.Lhs)
-                               && Equals(l.Rhs, r.Rhs),
-            TimeDef.Weekday l => rhs is TimeDef.Weekday r && equals(l.DaysOfWeek, r.DaysOfWeek),
-            TimeDef.WeekOfMonth l => rhs is TimeDef.WeekOfMonth r
-                                     && equals(l.Week, r.Week)
-                                     && l.WeekStartsWith == r.WeekStartsWith,
-            TimeDef.Weeks l => rhs is TimeDef.Weeks r
-                               && l.Quantity == r.Quantity
-                               && l.WeekStartsWith == r.WeekStartsWith,
-            TimeDef.Year l => rhs is TimeDef.Year r && equals(l.YearsOfPeriod, r.YearsOfPeriod),
-            TimeDef.Years l => rhs is TimeDef.Years r && l.Quantity == r.Quantity,
+            TimeDef.Union l => rhs is TimeDef.Union r && Equals(l.Lhs, r.Lhs) && Equals(l.Rhs, r.Rhs),
+            TimeDef.Weekday l => rhs is TimeDef.Weekday r && l.Equals(r),
+            TimeDef.WeekOfMonth l => rhs is TimeDef.WeekOfMonth r && l.Equals(r),
+            TimeDef.Weeks l => rhs is TimeDef.Weeks r && l.Equals(r),
+            TimeDef.Year l => rhs is TimeDef.Year r && l.Equals(r),
+            TimeDef.Years l => rhs is TimeDef.Years r && l.Equals(r),
             _ => throw new NotImplementedException($"{lhs}")
         };
     }
@@ -222,9 +199,11 @@ public static class TimeDefExtensions
     public static TimeSpan ToTimeSpan(this TimeDef.Minutes minutes) => TimeSpan.FromMinutes(minutes.Quantity);
     public static TimeSpan ToTimeSpan(this TimeDef.Hours hours) => TimeSpan.FromHours(hours.Quantity);
     public static TimeSpan ToTimeSpan(this TimeDef.Days days) => TimeSpan.FromDays(days.Quantity);
-    public static TimeSpan ToTimeSpan(this TimeDef.Weeks weeks) => TimeSpan.FromDays(weeks.Quantity * 7);
+    public static TimeSpan ToTimeSpan(this TimeDef.Weeks weeks) => TimeSpan.FromDays(weeks.Quantity);
+
+#if NET6_0_OR_GREATER
     public static TimeSpan ToTimeSpan(this TimeDef.DateSpan dateSpan) => dateSpan.To.Subtract(dateSpan.From);
     public static TimeSpan ToTimeSpan(this TimeDef.Timespan dateSpan) => dateSpan.To.Subtract(dateSpan.From);
-
+#endif
 }
 
