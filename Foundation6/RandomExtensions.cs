@@ -109,12 +109,21 @@ public static class RandomExtensions
     /// <returns></returns>
     public static Guid NextGuid(this Random random, byte[] guidBuffer)
     {
-        random.ThrowIfNull(nameof(random));
-        guidBuffer.ThrowIfNull(nameof(guidBuffer));
+        random.ThrowIfNull();
+        guidBuffer.ThrowIfNull();
         guidBuffer.ThrowIf(() => 16 != guidBuffer.Length, nameof(guidBuffer), "buffer for guid must have the size of 16");
 
         random.NextBytes(guidBuffer);
         return new Guid(guidBuffer);
     }
+
+#if NETSTANDARD2_0
+    public static long NextInt64(this Random random, long minValue, long maxValue)
+    {
+        var bytes = new byte[sizeof(long)];
+        random.NextBytes(bytes);
+        return BitConverter.ToInt64(bytes, 0);
+    }
+#endif
 }
 

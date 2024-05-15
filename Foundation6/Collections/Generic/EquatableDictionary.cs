@@ -247,8 +247,11 @@ public class EquatableDictionary<TKey, TValue>
     }
 
     /// <inheritdoc/>
+#if NETSTANDARD2_0
+    public bool TryGetValue(TKey key, out TValue value) => _keyValues.TryGetValue(key, out value);
+#else
     public bool TryGetValue(TKey key, [MaybeNullWhen(false)] out TValue value) => _keyValues.TryGetValue(key, out value);
-
+#endif
     /// <inheritdoc/>
     public ICollection<TValue> Values => _keyValues.Values;
 }

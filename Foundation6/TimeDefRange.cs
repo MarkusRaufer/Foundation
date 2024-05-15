@@ -29,10 +29,10 @@ public class TimeDefRange : TimeDefVisitor
 
     protected bool SetGreatest(TimeDef? td)
     {
-        ArgumentNullException.ThrowIfNull(td);
+        td.ThrowIfNull();
 
-        if (!Greatest.TryGet(out var timeDef) || timeDef.CompareTo(td) == -1)
-            Greatest = Option.Some(td);
+        if (!Greatest.TryGet(out var timeDef) || timeDef.CompareTo(td!) == -1)
+            Greatest = Option.Some(td!);
 
         return true;
     }
@@ -47,6 +47,7 @@ public class TimeDefRange : TimeDefVisitor
 
     public Option<TimeDef> Smallest { get; private set; }
 
+#if NET6_0_OR_GREATER
     protected override bool VisitDateSpan(TimeDef.DateSpan td)
     {
         SetGreatest(td);
@@ -54,6 +55,7 @@ public class TimeDefRange : TimeDefVisitor
 
         return true;
     }
+#endif
 
     protected override bool VisitDateTimeSpan(TimeDef.DateTimeSpan td)
     {
@@ -127,6 +129,7 @@ public class TimeDefRange : TimeDefVisitor
         return true;
     }
 
+#if NET6_0_OR_GREATER
     protected override bool VisitTimespan(TimeDef.Timespan td)
     {
         SetGreatest(td);
@@ -134,6 +137,7 @@ public class TimeDefRange : TimeDefVisitor
 
         return true;
     }
+#endif
 
     protected override bool VisitWeekday(TimeDef.Weekday td)
     {

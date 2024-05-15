@@ -65,5 +65,9 @@ public class ExpressionEqualityComparer<TExpression> : IEqualityComparer<TExpres
 
     private int GetHash(TExpression expression) => expression.GetExpressionHashCode();
 
+#if NETSTANDARD2_0
+    public int GetHashCode(TExpression expression) => _hash(expression);
+#else
     public int GetHashCode([DisallowNull] TExpression expression) => _hash(expression);
+#endif
 }

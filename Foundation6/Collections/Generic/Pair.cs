@@ -56,7 +56,7 @@ public static class Pair
         this KeyValuePair<TKey, TValue> pair,
         string name)
     {
-        name.ThrowIfEnumerableIsNullOrEmpty(nameof(name));
+        name.ThrowIfEnumerableIsNullOrEmpty();
 
         if (!pair.IsInitialized()) throw new ArgumentException("not initialized", name);
         return pair;

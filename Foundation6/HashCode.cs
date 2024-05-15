@@ -123,7 +123,7 @@ public static class HashCode
 
             foreach (var value in objects)
             {
-                if (null == value) continue;
+                if (value is null) continue;
 
                 hash = CreateHashCode(hash, value.GetHashCode());
             }
@@ -139,11 +139,11 @@ public static class HashCode
 
             foreach (var pair in pairs)
             {
-                if (null == pair.Key) continue;
+                if (pair.Key is null) continue;
 
                 hash = CreateHashCode(hash, pair.Key.GetHashCode());
 
-                if (null == pair.Value) continue;
+                if (pair.Value is null) continue;
 
                 hash = CreateHashCode(hash, pair.Value.GetHashCode());
             }
@@ -270,7 +270,7 @@ public static class HashCode
     }
 
 
-    public static int FromObject(params object[] objects)
+    public static int FromObject(params object?[] objects)
     {
         return FromObjects(objects);
     }

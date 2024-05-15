@@ -118,10 +118,15 @@ public readonly struct Result<TError>
             && EqualityComparer<TError>.Default.Equals(_error, other._error);
     }
 
+#if NETSTANDARD2_0
+    public override int GetHashCode() => IsOk 
+                                         ? typeof(Result<TError>).GetHashCode()
+                                         : Foundation.HashCode.FromObject(typeof(Result<TError>), _error);
+#else
     public override int GetHashCode() => IsOk 
                                          ? typeof(Result<TError>).GetHashCode()
                                          : System.HashCode.Combine(typeof(Result<TError>), _error);
-
+#endif
     /// <summary>
     /// Is true if Result has a value <see cref="IsOk"/> otherwise false;
     /// </summary>
@@ -165,9 +170,15 @@ public readonly struct Result<TOk, TError>
         _ok = ok;
         _error = error;
 
+#if NETSTANDARD2_0
+        _hashCode = ok.IsSome
+            ? Foundation.HashCode.FromObject(typeof(Result<TOk, TError>), ok.OrThrow())
+            : Foundation.HashCode.FromObject(typeof(Result<TOk, TError>), error.OrThrow());
+#else
         _hashCode = ok.IsSome
             ? System.HashCode.Combine(typeof(Result<TOk, TError>), ok.OrThrow())
             : System.HashCode.Combine(typeof(Result<TOk, TError>), error.OrThrow());
+#endif
     }
 
     public static bool operator ==(Result<TOk, TError> left, Result<TOk, TError> right)

@@ -32,6 +32,10 @@ public class PeriodHelper
     {
         return td switch
         {
+#if NET6_0_OR_GREATER
+            DateSpan _ => period.Days(),
+            Timespan _ => period.Minutes(),
+#endif
             Day _ => period.Days(),
             Days _ => period.Days(),
             Hour _ => period.Hours(),
@@ -40,7 +44,6 @@ public class PeriodHelper
             Minutes _ => period.Minutes(),
             TimeDef.Month _ => period.Months(),
             Months _ => period.Months(),
-            Timespan _ => period.Minutes(),
             Weekday _ => period.Days(),
             WeekOfMonth _ => period.Weeks(),
             Weeks _ => period.Weeks(),

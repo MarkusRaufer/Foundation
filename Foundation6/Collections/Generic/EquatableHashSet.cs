@@ -36,13 +36,17 @@ public static class EquatableHashSet
 /// This hashset considers the equality of all elements <see cref="Equals"/>. The position of the elements are ignored.
 /// </summary>
 /// <typeparam name="T"></typeparam>
+#if NETSTANDARD2_0
 [Serializable]
+#endif
 public class EquatableHashSet<T>
     : HashSet<T>
     , ICollectionChanged<T>
     , IEquatable<EquatableHashSet<T>>
     , IEquatable<IEnumerable<T>>
+#if NETSTANDARD2_0
     , ISerializable
+#endif
 {
     private int _hashCode;
 
@@ -67,13 +71,7 @@ public class EquatableHashSet<T>
         _hashCode = CreateHashCode();
         CollectionChanged = new Event<Action<CollectionEvent<T>>>();
     }
-
-    public EquatableHashSet(int capacity) : base(capacity)
-    {
-        _hashCode = CreateHashCode();
-        CollectionChanged = new Event<Action<CollectionEvent<T>>>();
-    }
-
+    
     /// <summary>
     /// 
     /// </summary>
@@ -86,18 +84,28 @@ public class EquatableHashSet<T>
         CollectionChanged = new Event<Action<CollectionEvent<T>>>();
     }
 
+#if NET6_0_OR_GREATER
+    public EquatableHashSet(int capacity) : base(capacity)
+    {
+        _hashCode = CreateHashCode();
+        CollectionChanged = new Event<Action<CollectionEvent<T>>>();
+    }
+    
     public EquatableHashSet(int capacity, IEqualityComparer<T>? comparer)
         : base(capacity, comparer)
     {
         _hashCode = CreateHashCode();
         CollectionChanged = new Event<Action<CollectionEvent<T>>>();
     }
+#endif
 
+#if NETSTANDARD2_0
     public EquatableHashSet(SerializationInfo info, StreamingContext context) : base(info, context)
     {
         _hashCode = CreateHashCode();
         CollectionChanged = new Event<Action<CollectionEvent<T>>>();
     }
+#endif
 
     /// <inheritdoc/>
     public new bool Add(T item)
@@ -169,10 +177,12 @@ public class EquatableHashSet<T>
     /// <returns></returns>
     public override int GetHashCode() => _hashCode;
 
+#if NETSTANDARD2_0
     public override void GetObjectData(SerializationInfo info, StreamingContext context)
     {
         base.GetObjectData(info, context);
     }
+#endif
 
     /// <inheritdoc/>
     public new bool Remove(T item)

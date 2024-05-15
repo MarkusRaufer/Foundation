@@ -66,10 +66,12 @@ public class DictionaryValue<TKey, TValue>
     {
     }
 
+#if NET6_0_OR_GREATER
     public DictionaryValue(IEnumerable<KeyValuePair<TKey, TValue>> keyValues, IEqualityComparer<TKey> comparer)
         : this(new Dictionary<TKey, TValue>(keyValues, comparer))
     {
     }
+#endif
 
     private DictionaryValue(IDictionary<TKey, TValue> dictionary)
     {
@@ -132,7 +134,11 @@ public class DictionaryValue<TKey, TValue>
     public override string ToString() => string.Join(", ", _dictionary);
 
     /// <inheritdoc/>
+#if NETSTANDARD2_0
+    public bool TryGetValue(TKey key, out TValue value)
+#else
     public bool TryGetValue(TKey key, [MaybeNullWhen(false)] out TValue value)
+#endif
     {
         return _dictionary.TryGetValue(key, out value);
     }

@@ -23,6 +23,9 @@
 // SOFTWARE.
 ﻿namespace Foundation.Buffers;
 
+
+#if NET6_0_OR_GREATER
+
 public static class ReadOnlySpanExtensions
 {
     public static int IndexFromEnd(this ReadOnlySpan<char> span, char value)
@@ -334,3 +337,4 @@ public static class ReadOnlySpanExtensions
     }
 }
 
+#endif

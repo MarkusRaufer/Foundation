@@ -136,14 +136,13 @@ public static  class DictionaryExtensions
         return lhs;
     }
 
-
-    public static IDictionary<TKey, TValue> ThrowIfEmpty<TKey, TValue>(this IDictionary<TKey, TValue> dictionary, [CallerArgumentExpression("dictionary")] string paramName = "")
+    public static IDictionary<TKey, TValue> ThrowIfEmpty<TKey, TValue>(this IDictionary<TKey, TValue> dictionary, [CallerArgumentExpression(nameof(dictionary))] string paramName = "")
         => 0 < dictionary.Count
         ? dictionary
         : throw new ArgumentOutOfRangeException($"{paramName} must not be empty");
 
-    public static IDictionary<TKey, TValue> ThrowIfNull<TKey, TValue>(this IDictionary<TKey, TValue> dictionary, [CallerArgumentExpression("dictionary")] string paramName = "")
+    public static IDictionary<TKey, TValue> ThrowIfNull<TKey, TValue>(this IDictionary<TKey, TValue> dictionary, [CallerArgumentExpression(nameof(dictionary))] string paramName = "")
         => dictionary ?? throw new ArgumentException($"{paramName} must not be empty");
-    public static IDictionary<TKey, TValue> ThrowIfNullOrEmpty<TKey, TValue>(this IDictionary<TKey, TValue> dictionary, [CallerArgumentExpression("dictionary")] string paramName = "")
+    public static IDictionary<TKey, TValue> ThrowIfNullOrEmpty<TKey, TValue>(this IDictionary<TKey, TValue> dictionary, [CallerArgumentExpression(nameof(dictionary))] string paramName = "")
         => ThrowIfNull(dictionary, paramName).ThrowIfEmpty(paramName);
 }

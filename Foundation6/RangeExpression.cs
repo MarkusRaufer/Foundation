@@ -99,8 +99,11 @@ public class Between<T>
 
         Min = min;
         Max = max;
-
+#if NETSTANDARD2_0
+        _hashCode = Foundation.HashCode.FromObject(Min, Max);
+#else
         _hashCode = System.HashCode.Combine(Min, Max);
+#endif
     }
 
     public override bool Equals(object? obj) => obj is IBetweenRangeExpression<T> other && Equals(other);

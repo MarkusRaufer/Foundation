@@ -26,6 +26,8 @@
 using System.Diagnostics;
 using System.Runtime.Serialization;
 
+#if NET6_0_OR_GREATER
+
 //TODO: implement IComparable and refactore the rest.
 [DebuggerDisplay("{Start}-{End}, Duration={Duration}")]
 [Serializable]
@@ -108,7 +110,7 @@ public struct PeriodOfHours : ISerializable
         info.AddValue(nameof(End), End);
     }
 
-    public bool IsEmpty => 0 == _hashCode;
+    public readonly bool IsEmpty => 0 == _hashCode;
 
     /// <summary>
     /// Creates a new DayPeriod-Object.
@@ -156,3 +158,4 @@ public struct PeriodOfHours : ISerializable
     public override string ToString() => $"{Start}-{End}";
 }
 
+#endif

@@ -21,6 +21,7 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
+#if NET6_0_OR_GREATER
 ﻿namespace Foundation.Buffers;
 
 // Must be a ref struct as it contains a ReadOnlySpan<char>
@@ -69,3 +70,4 @@ public ref struct StringSplitEnumerator
     }
 }
 
+#endif

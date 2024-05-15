@@ -23,6 +23,8 @@
 // SOFTWARE.
 ﻿namespace Foundation.Buffers;
 
+#if NET6_0_OR_GREATER
+
 /// <summary>
 /// Splits a text into lines. The lines are represented by ReadOnlySpans.
 /// Must be a ref struct as it contains a ReadOnlySpan<char>
@@ -74,3 +76,4 @@ public ref struct LineSplitEnumerator
     public ReadOnlySpan<char> Current { get; private set; }
 }
 
+#endif

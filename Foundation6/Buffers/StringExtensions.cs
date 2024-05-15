@@ -23,6 +23,7 @@
 // SOFTWARE.
 ﻿namespace Foundation.Buffers;
 
+#if NET6_0_OR_GREATER
 public static class StringExtensions
 {
     public static CharSplitEnumerator SplitToSpans(this string str, char separator)
@@ -37,3 +38,4 @@ public static class StringExtensions
     }
 }
 
+#endif

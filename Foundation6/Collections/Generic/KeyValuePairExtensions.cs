@@ -21,12 +21,20 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
-﻿using System.Runtime.CompilerServices;
+using System.Runtime.CompilerServices;
 
 namespace Foundation.Collections.Generic
 {
     public static class KeyValuePairExtensions
     {
+#if NETSTANDARD2_0
+        public static void Deconstruct<TKey, TValue>(this KeyValuePair<TKey, TValue> keyValue, out TKey key, out TValue value)
+        {
+            key = keyValue.Key;
+            value = keyValue.Value;
+        }
+#endif
+
         /// <summary>
         /// Returns Some(<typeparamref name="TValue"/>) if key found otherwise None.
         /// </summary>
@@ -43,21 +51,21 @@ namespace Foundation.Collections.Generic
 
         public static KeyValuePair<TKey, TValue> ThrowIfKeyOrValueIsNull<TKey, TValue>(
             this KeyValuePair<TKey, TValue> pair,
-            [CallerArgumentExpression("pair")] string name = "")
+            [CallerArgumentExpression(nameof(pair))] string name = "")
         {
             return pair.ThrowIfKeyIsNull(name).ThrowIfValueIsNull(name);
         }
 
         public static KeyValuePair<TKey, TValue> ThrowIfKeyIsNull<TKey, TValue>(
             this KeyValuePair<TKey, TValue> pair,
-            [CallerArgumentExpression("pair")] string name = "")
+            [CallerArgumentExpression(nameof(pair))] string name = "")
         {
             return null != pair.Key ? pair : throw new ArgumentNullException(name);
         }
 
         public static KeyValuePair<string, TValue> ThrowIfKeyIsNullOrWhiteSpace<TValue>(
             this KeyValuePair<string, TValue> pair,
-            [CallerArgumentExpression("pair")] string name = "")
+            [CallerArgumentExpression(nameof(pair))] string name = "")
         {
             if (string.IsNullOrWhiteSpace(pair.Key)) throw new ArgumentNullException(name);
 
@@ -66,28 +74,28 @@ namespace Foundation.Collections.Generic
 
         public static KeyValuePair<string, TValue> ThrowIfKeyIsNullOrWhiteSpaceOrValueIsNull<TValue>(
             this KeyValuePair<string, TValue> pair,
-            [CallerArgumentExpression("pair")] string name = "")
+            [CallerArgumentExpression(nameof(pair))] string name = "")
         {
             return pair.ThrowIfKeyIsNullOrWhiteSpace(name).ThrowIfValueIsNull(name);
         }
 
         public static KeyValuePair<string, string> ThrowIfKeyOrValueIsNullOrWhiteSpace(
             this KeyValuePair<string, string> pair,
-            [CallerArgumentExpression("pair")] string name = "")
+            [CallerArgumentExpression(nameof(pair))] string name = "")
         {
             return pair.ThrowIfKeyIsNullOrWhiteSpace(name).ThrowIfValueIsNullOrWhiteSpace(name);
         }
 
         public static KeyValuePair<TKey, TValue> ThrowIfValueIsNull<TKey, TValue>(
             this KeyValuePair<TKey, TValue> pair,
-            [CallerArgumentExpression("pair")] string name = "")
+            [CallerArgumentExpression(nameof(pair))] string name = "")
         {
             return null != pair.Value ? pair : throw new ArgumentNullException(name);
         }
 
         public static KeyValuePair<TKey, string> ThrowIfValueIsNullOrWhiteSpace<TKey>(
             this KeyValuePair<TKey, string> pair,
-            [CallerArgumentExpression("pair")] string name = "")
+            [CallerArgumentExpression(nameof(pair))] string name = "")
         {
             return !string.IsNullOrWhiteSpace(pair.Value) ? pair : throw new ArgumentNullException(name);
         }

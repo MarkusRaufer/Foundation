@@ -90,7 +90,11 @@ public readonly struct IdResult<TId, TOk, TError>
 
     public TId Id { get; }
 
+#if NETSTANDARD2_0
+    public override int GetHashCode() => HashCode.FromObject(Id, _result);
+#else
     public override int GetHashCode() => System.HashCode.Combine(Id, _result);
+#endif
 
     public bool IsOk => _result.IsOk;
 

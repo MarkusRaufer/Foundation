@@ -114,7 +114,11 @@ public class ImmutablePropertyCollection<TProperty>
     public override string ToString() => string.Join(", ", _properties.Values);
 
     /// <inheritdoc/>
+#if NETSTANDARD2_0
+    public bool TryGetProperty(string key, out TProperty property)
+#else
     public bool TryGetProperty(string key, [MaybeNullWhen(false)] out TProperty property)
+#endif
     {
         return _properties.TryGetValue(key, out property);
     }

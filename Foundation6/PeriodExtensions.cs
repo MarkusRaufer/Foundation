@@ -197,6 +197,7 @@ public static class PeriodExtensions
     /// <param name="start"></param>
     /// <param name="end"></param>
     /// <returns></returns>
+ #if NET6_0_OR_GREATER
     public static bool IsBetween(this Period period, DateOnly start, DateOnly end)
     {
         return period.Start.ToDateOnly() >= start && period.End.ToDateOnly() <= end;
@@ -213,6 +214,7 @@ public static class PeriodExtensions
     {
         return period.Start.ToTimeOnly() >= start && period.End.ToTimeOnly() <= end;
     }
+#endif
 
     /// <summary>
     /// Checks if the period is between the date start and the duration.
@@ -315,10 +317,20 @@ public static class PeriodExtensions
     /// <param name="period"></param>
     /// <param name="time"></param>
     /// <returns></returns>
+
+#if NETSTANDARD2_0
+    public static bool IsTimeBetween(this Period period, DateTime time)
+    {
+        var start = period.Start.TruncateDate();
+        var end = period.End.TruncateDate();
+
+        time = time.TruncateDate();
+#else
     public static bool IsTimeBetween(this Period period, TimeOnly time)
     {
         var start = period.Start.ToTimeOnly();
         var end = period.End.ToTimeOnly();
+#endif
 
         return time >= start && time <= end;
     }
@@ -332,12 +344,19 @@ public static class PeriodExtensions
     /// <returns></returns>
     public static bool IsTimeBetween(this Period period, Period other)
     {
+#if NETSTANDARD2_0
+        var start = period.Start.TruncateDate();
+        var end = period.End.TruncateDate();
+
+        var otherStart = other.Start.TruncateDate();
+        var otherEnd = other.End.TruncateDate();
+#else
         var start = period.Start.ToTimeOnly();
         var end = period.End.ToTimeOnly();
 
         var otherStart = other.Start.ToTimeOnly();
         var otherEnd = other.End.ToTimeOnly();
-
+#endif
         return otherStart >= start && otherEnd <= end;
     }
 

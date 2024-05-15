@@ -50,12 +50,16 @@ public class Property<TValue>
 
     public Property(string name, TValue? value = default)
     {
-        Name = name.ThrowIfNullOrEmpty(nameof(name));
+        Name = name.ThrowIfNullOrEmpty();
         _value = value;
 
         IsPropertyChangedActive = true;
 
+#if NETSTANDARD2_0
+        _hashCode = Foundation.HashCode.FromObject(Name, _value);
+#else
         _hashCode = System.HashCode.Combine(Name, _value);
+#endif
     }
 
     public static bool operator ==(Property<TValue>? lhs, Property<TValue>? rhs)
@@ -80,9 +84,7 @@ public class Property<TValue>
 
     public bool Equals(Property<TValue>? other)
     {
-        return null != other
-            && EqualityComparer<string>.Default.Equals(Name, other.Name)
-            && EqualityComparer<object>.Default.Equals(Value, other.Value);
+        return null != other && Name.EqualsNullable(other.Name) && Value.EqualsNullable(other.Value);
     }
 
     public override int GetHashCode() => _hashCode;
@@ -106,8 +108,11 @@ public class Property<TValue>
             if (IsPropertyChangedActive)
             {
                 IsDirty = true;
+#if NETSTANDARD2_0
+                _hashCode = Foundation.HashCode.FromObject(Name, _value);
+#else
                 _hashCode = System.HashCode.Combine(Name, _value);
-
+#endif
                 PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(Name));
             }
         }

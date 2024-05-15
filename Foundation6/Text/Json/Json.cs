@@ -21,13 +21,9 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
-﻿using Foundation.Collections.Generic;
-using System;
-using System.Collections.Generic;
+using Foundation.Collections.Generic;
 using System.Globalization;
-using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 
 namespace Foundation.Text.Json;
 
@@ -71,11 +67,13 @@ public static class Json
         {
             { IsPrimitive: true } => $"{value}",
             Type _ when scalarType == typeof(DateTime) => $"{value:yyyy-MM-ddTHH:mm:ss}",
+#if NET6_0_OR_GREATER
             Type _ when scalarType == typeof(DateOnly) => $"{value:yyyy-MM-dd}",
-            Type _ when scalarType == typeof(decimal) => string.Create(CultureInfo.InvariantCulture, $"{value}"),
+            Type _ when scalarType == typeof(TimeOnly) => $"\"{value:HH:mm:ss}\"",
+#endif
+            Type _ when scalarType == typeof(decimal) => string.Format(CultureInfo.InvariantCulture, "{0}", value),
             Type _ when scalarType == typeof(Guid) => $"\"{value}\"",
             Type _ when scalarType == typeof(string) => $"\"{value}\"",
-            Type _ when scalarType == typeof(TimeOnly) => $"\"{value:HH:mm:ss}\"",
             Type _ when scalarType == typeof(TimeSpan) => $"\"{value}\"",
             _ => "null"
         };

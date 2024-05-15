@@ -108,7 +108,11 @@ public class TimedRc<T>
         return _rc.Get();
     }
 
+#if NETSTANDARD2_0
+    public override int GetHashCode() => Foundation.HashCode.FromObject(_rc, Timestamp);
+#else
     public override int GetHashCode() => System.HashCode.Combine(_rc, Timestamp);
+#endif
 
     public int CompareTo(TimedRc<T>? other)
     {

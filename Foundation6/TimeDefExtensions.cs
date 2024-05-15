@@ -21,9 +21,7 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
-﻿using Foundation.Collections.Generic;
-using Microsoft.VisualBasic;
-using System.Linq;
+using Foundation.Collections.Generic;
 
 namespace Foundation;
 
@@ -109,6 +107,11 @@ public static class TimeDefExtensions
             TimeDef.And l => rhs is TimeDef.And r
                              && Equals(l.Lhs, r.Lhs)
                              && Equals(l.Rhs, r.Rhs),
+#if NET6_0_OR_GREATER
+            TimeDef.DateSpan l => rhs is TimeDef.DateSpan r
+                                    && l.From.Equals(r.From)
+                                    && l.To.Equals(r.To),
+#endif
             TimeDef.DateTimeSpan l => rhs is TimeDef.DateTimeSpan r
                                       && Equals(l.From, r.From)
                                       && Equals(l.To, r.To),
@@ -127,9 +130,11 @@ public static class TimeDefExtensions
             TimeDef.Or l => rhs is TimeDef.Or r
                             && Equals(l.Lhs, r.Lhs)
                             && Equals(l.Rhs, r.Rhs),
+#if NET6_0_OR_GREATER
             TimeDef.Timespan l => rhs is TimeDef.Timespan r
                                   && Equals(l.From, r.From)
                                   && Equals(l.To, r.To),
+#endif
             TimeDef.Union l => rhs is TimeDef.Union r
                                && Equals(l.Lhs, r.Lhs)
                                && Equals(l.Rhs, r.Rhs),
@@ -176,9 +181,11 @@ public static class TimeDefExtensions
     {
         return timedef switch
         {
+#if NET6_0_OR_GREATER
             TimeDef.DateSpan or
-            TimeDef.DateTimeSpan or
             TimeDef.Timespan => true,
+#endif
+            TimeDef.DateTimeSpan or
             _ => false
         };
     }
@@ -187,9 +194,9 @@ public static class TimeDefExtensions
     {
         return timedef switch
         {
-            TimeDef.Day or
-            TimeDef.Hour or
             TimeDef.Minute or
+            TimeDef.Hour or
+            TimeDef.Day or
             TimeDef.Weekday or
             TimeDef.WeekOfMonth or
             TimeDef.Month or
@@ -198,21 +205,26 @@ public static class TimeDefExtensions
         };
     }
 
-    public static bool IsValueTimeDef(this TimeDef timedef)
+    public static bool IsValueTimeDef(this TimeDef td)
     {
-        return timedef switch
+        return td switch
         {
-            TimeDef.DateSpan or
-            TimeDef.DateTimeSpan or
-            TimeDef.Days or
-            TimeDef.Hours or
             TimeDef.Minutes or
-            TimeDef.Timespan or
+            TimeDef.Hours or
+            TimeDef.Days or
             TimeDef.Weeks or
             TimeDef.Months or
             TimeDef.Years => true,
             _ => false
         };
     }
+
+    public static TimeSpan ToTimeSpan(this TimeDef.Minutes minutes) => TimeSpan.FromMinutes(minutes.Quantity);
+    public static TimeSpan ToTimeSpan(this TimeDef.Hours hours) => TimeSpan.FromHours(hours.Quantity);
+    public static TimeSpan ToTimeSpan(this TimeDef.Days days) => TimeSpan.FromDays(days.Quantity);
+    public static TimeSpan ToTimeSpan(this TimeDef.Weeks weeks) => TimeSpan.FromDays(weeks.Quantity * 7);
+    public static TimeSpan ToTimeSpan(this TimeDef.DateSpan dateSpan) => dateSpan.To.Subtract(dateSpan.From);
+    public static TimeSpan ToTimeSpan(this TimeDef.Timespan dateSpan) => dateSpan.To.Subtract(dateSpan.From);
+
 }
 

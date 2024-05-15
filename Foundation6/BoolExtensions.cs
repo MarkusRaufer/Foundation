@@ -27,7 +27,7 @@ namespace Foundation;
 
 public static class BoolExtensions
 {
-    public static bool ThrowIfFalse(this bool value, [CallerArgumentExpression("value")] string name = "")
+    public static bool ThrowIfFalse(this bool value, [CallerArgumentExpression(nameof(value))] string name = "")
     {
         if (value) return value;
         throw new ArgumentOutOfRangeException(name);

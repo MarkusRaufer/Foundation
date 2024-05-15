@@ -24,7 +24,10 @@
 ﻿namespace Foundation;
 
 using System.Diagnostics.CodeAnalysis;
+
+#if NET6_0_OR_GREATER
 using System.Text.Json.Serialization;
+#endif
 
 /// <summary>
 /// This is a named identifier. The name and value are used for equality and comparison.
@@ -58,10 +61,12 @@ public readonly struct NamedId
         var cmp = Name.CompareNullableTo(other.Name);
         if(cmp != 0) return cmp;
 
-        return _comparable.CompareNullableTo(other._value);
+        return _comparable.CompareToNullable(other._value);
     }
 
+#if NET6_0_OR_GREATER
     [JsonIgnore]
+#endif
     public static readonly NamedId Empty;
 
     public override bool Equals([NotNullWhen(true)] object? obj) => obj is NamedId other && Equals(other);
@@ -74,9 +79,16 @@ public readonly struct NamedId
         return GetHashCode() == other.GetHashCode() && Name == other.Name && _value.EqualsNullable(other._value);
     }
 
-    public override int GetHashCode() => System.HashCode.Combine(Name, Value);
+#if NETSTANDARD2_0
+    public override int GetHashCode() => HashCode.FromObject(Name, Value);
 
+#else
+    public override int GetHashCode() => System.HashCode.Combine(Name, Value);
+#endif
+
+#if NET6_0_OR_GREATER
     [JsonIgnore]
+#endif
     public bool IsEmpty => _name is null;
 
     public string Name
@@ -153,9 +165,15 @@ public readonly struct NamedId<T>
         return GetHashCode() == other.GetHashCode() && Name == other.Name && Value.Equals(other.Value);
     }
 
+#if NETSTANDARD2_0
+    public override int GetHashCode() => HashCode.FromObject(Name, Value);
+#else
     public override int GetHashCode() => System.HashCode.Combine(Name, Value);
+#endif
 
+#if NET6_0_OR_GREATER
     [JsonIgnore]
+#endif
     public readonly bool IsEmpty => string.IsNullOrEmpty(Name);
 
     public string Name

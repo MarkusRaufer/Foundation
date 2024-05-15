@@ -53,6 +53,26 @@ public static class ObjectExtensions
     }
 
     /// <summary>
+    /// Compares to objects. Allows that lhs and rhs are null without throwing an exception.
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <param name="lhs"></param>
+    /// <param name="rhs"></param>
+    /// <returns></returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static Result<int, Error> CompareToNullable<T>(this T? lhs, T? rhs)
+    {
+        if (lhs is null) return rhs is null ? Result.Ok(0) : Result.Ok(-1);
+        if (rhs is null) return Result.Ok(1);
+
+        if (lhs is IComparable<T> lhsComparable) return Result.Ok(lhsComparable.CompareTo(rhs));
+
+        if (rhs is IComparable<T> rhsComparable) return Result.Ok(rhsComparable.CompareTo(lhs));
+
+       return Result.Error<int>(Error.FromException(new ArgumentException($"at least one side must implement IComparable<{nameof(T)}>")));
+    }
+
+    /// <summary>
     /// Converts an object to a target type.
     /// </summary>
     /// <typeparam name="T"></typeparam>
@@ -126,7 +146,7 @@ public static class ObjectExtensions
     }
 
     /// <summary>
-    /// Checks equality of two objects. Allows that lhs and rhs is null without throwing an exception.
+    /// Checks equality of two objects. Allows that lhs and rhs are null without throwing an exception.
     /// </summary>
     /// <param name="lhs"></param>
     /// <param name="rhs"></param>
@@ -138,7 +158,7 @@ public static class ObjectExtensions
     }
 
     /// <summary>
-    /// Checks equality of two objects. Allows that lhs and rhs is null without throwing an exception.
+    /// Checks equality of two objects. Allows that lhs and rhs are null without throwing an exception.
     /// </summary>
     /// <typeparam name="T"></typeparam>
     /// <param name="lhs"></param>
@@ -226,10 +246,10 @@ public static class ObjectExtensions
     [return: NotNull]
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static T ThrowIf<T>(
-        this T? obj, 
-        Func<bool> predicate, 
-        string? message = null, 
-        [CallerArgumentExpression("obj")] string paramName = "")
+        this T? obj,
+        Func<bool> predicate,
+        string? message = null,
+        [CallerArgumentExpression(nameof(obj))] string paramName = "")
     {
         predicate.ThrowIfNull();
 
@@ -263,7 +283,7 @@ public static class ObjectExtensions
     /// <exception cref="ArgumentNullException"></exception>
     [return: NotNull]
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static T ThrowIfNull<T>(this T? obj, [CallerArgumentExpression("obj")] string paramName = "")
+    public static T ThrowIfNull<T>(this T? obj, [CallerArgumentExpression(nameof(obj))] string paramName = "")
     {
         return obj ?? throw new ArgumentNullException(paramName);
     }
@@ -280,9 +300,9 @@ public static class ObjectExtensions
     [return: NotNull]
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static T ThrowIfOutOfRange<T>(
-        this T obj, 
-        Func<bool> outOfRangePredicate, 
-        [CallerArgumentExpression("obj")] string paramName = "")
+        this T obj,
+        Func<bool> outOfRangePredicate,
+        [CallerArgumentExpression(nameof(obj))] string paramName = "")
     {
         return outOfRangePredicate() ? throw new ArgumentOutOfRangeException(paramName) : obj.ThrowIfNull();
     }
@@ -293,7 +313,7 @@ public static class ObjectExtensions
         this T obj,
         Func<bool> outOfRangePredicate,
         Func<string> message,
-        [CallerArgumentExpression("obj")] string paramName = "")
+        [CallerArgumentExpression(nameof(obj))] string paramName = "")
     {
         message.ThrowIfNull();
 
@@ -316,11 +336,11 @@ public static class ObjectExtensions
     [return: NotNull]
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static T ThrowIfOutOfRange<T>(
-        this T obj, 
+        this T obj,
         Func<bool> outOfRangePredicate,
         T min,
-        T max, 
-        [CallerArgumentExpression("obj")] string paramName = "")
+        T max,
+        [CallerArgumentExpression(nameof(obj))] string paramName = "")
     {
         return outOfRangePredicate() 
             ? throw new ArgumentOutOfRangeException(paramName, $"{paramName} must be between {min} and {max}.")
@@ -333,7 +353,7 @@ public static class ObjectExtensions
         this T obj,
         Func<bool> isOutOfRange,
         string message,
-        [CallerArgumentExpression("obj")] string paramName = "")
+        [CallerArgumentExpression(nameof(obj))] string paramName = "")
     {
         return isOutOfRange() ? throw new ArgumentOutOfRangeException(paramName, message) : obj.ThrowIfNull();
     }
@@ -402,11 +422,13 @@ public static class ObjectExtensions
     {
         return value switch
         {
+#if NET6_0_OR_GREATER
             DateOnly d => d.ToDateTime(),
+            TimeOnly to => to.ToDateTime(),
+#endif
             DateTime dt => dt,
             int i => new DateTime(i),
             long l => new DateTime(l),
-            TimeOnly to => to.ToDateTime(),
             _ => null
         };
     }
@@ -416,11 +438,13 @@ public static class ObjectExtensions
     {
         return value switch
         {
+#if NET6_0_OR_GREATER
             DateOnly d => d.ToDateTime(kind),
+            TimeOnly to => to.ToDateTime(kind),
+#endif
             DateTime dt => new DateTime(dt.Ticks, kind),
             int i => new DateTime(i, kind),
             long l => new DateTime(l, kind),
-            TimeOnly to => to.ToDateTime(kind),
             _ => null
         };
     }
@@ -434,7 +458,14 @@ public static class ObjectExtensions
             return result;
 
         if (value is byte[] buffer && 4 == buffer.Length)
+        {
+#if NETSTANDARD2_0
+            return BitConverter.ToInt32(buffer, 0);
+#else
             return BitConverter.ToInt32(buffer);
+#endif
+        }
+            
 
         return null;
     }

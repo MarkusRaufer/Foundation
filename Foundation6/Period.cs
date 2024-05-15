@@ -41,7 +41,11 @@ public readonly struct Period : IComparable<Period>
 
         Start = start;
         End = end;
+#if NETSTANDARD2_0
+        _hashCode = Foundation.HashCode.FromObject(start, end);
+#else
         _hashCode = System.HashCode.Combine(start, end);
+#endif
     }
 
     public static bool operator ==(Period lhs, Period rhs) => lhs.Equals(rhs);
@@ -117,6 +121,7 @@ public readonly struct Period : IComparable<Period>
         return new Period(start, end);
     }
 
+#if NET6_0_OR_GREATER
     public static Period New(DateOnly start, DateOnly end, DateTimeKind kind = DateTimeKind.Utc)
     {
         if (start > end)
@@ -132,6 +137,7 @@ public readonly struct Period : IComparable<Period>
 
         return new Period(start.ToDateTime(kind), end.ToDateTime(kind));
     }
+#endif
 
     /// <summary>
     /// Creates a new Period-Object.

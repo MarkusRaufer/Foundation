@@ -42,10 +42,10 @@ public static class OptionExtensions
         if(lhs.IsNone) return rhs.IsNone ? 0 : - 1;
         if(rhs.IsNone) return 1;
 
-        lhs.TryGet(out T? lhsValue);
-        rhs.TryGet(out T? rhsValue);
-
-        return lhsValue!.CompareTo(rhsValue);
+        if (lhs.TryGet(out T? lhsValue) && rhs.TryGet(out T? rhsValue)) return lhsValue.CompareTo(rhsValue);
+        if (lhs.IsNone) return rhs.IsNone ? 0 : -1;
+        
+        return 1;
     }
 
     /// <summary>

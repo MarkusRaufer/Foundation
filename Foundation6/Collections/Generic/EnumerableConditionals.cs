@@ -240,6 +240,7 @@ public static class EnumerableConditionals
         Func<T, bool> predicate,
         Action<T> action)
     {
+
         predicate.ThrowIfNull();
         action.ThrowIfNull();
 
@@ -559,7 +560,7 @@ public static class EnumerableConditionals
     /// <typeparam name="T"></typeparam>
     /// <param name="items"></param>
     /// <returns></returns>
-    public static IEnumerable<T> ThrowIfEnumerableIsEmpty<T>(this IEnumerable<T> items, [CallerArgumentExpression("items")] string name = "")
+    public static IEnumerable<T> ThrowIfEnumerableIsEmpty<T>(this IEnumerable<T> items, [CallerArgumentExpression(nameof(items))] string name = "")
     {
         return ThrowIfEnumerableIsEmpty(items, () => new ArgumentException("enumerable was empty", name));
     }
@@ -588,11 +589,11 @@ public static class EnumerableConditionals
     /// <param name="items">Elements of the enumerable.</param>
     /// <param name="name">name of the enumerable.</param>
     /// <returns></returns>
-    public static IEnumerable<T> ThrowIfEnumerableIsNull<T>(this IEnumerable<T> items, [CallerArgumentExpression("items")] string name = "")
+    public static IEnumerable<T> ThrowIfEnumerableIsNull<T>(this IEnumerable<T> items, [CallerArgumentExpression(nameof(items))] string name = "")
     {
         return items.ThrowIfNull(name);
     }
-            
+
     /// <summary>
     /// Throws an Exception if items is null or empty.
     /// </summary>
@@ -600,7 +601,7 @@ public static class EnumerableConditionals
     /// <param name="items"></param>
     /// <param name="name"></param>
     /// <returns></returns>
-    public static IEnumerable<T> ThrowIfEnumerableIsNullOrEmpty<T>(this IEnumerable<T> items, [CallerArgumentExpression("items")] string name = "")
+    public static IEnumerable<T> ThrowIfEnumerableIsNullOrEmpty<T>(this IEnumerable<T> items, [CallerArgumentExpression(nameof(items))] string name = "")
     {
         return items.ThrowIfNull(name)
                     .ThrowIfEnumerableIsEmpty(name);
@@ -616,7 +617,6 @@ public static class EnumerableConditionals
     /// <exception cref="ArgumentException"></exception>
     public static IEnumerable<T> ThrowIfEnumerableIsNullOrEmpty<T>(this IEnumerable<T> items, Func<Exception> exceptionFactory)
     {
-        exceptionFactory.ThrowIfNull();
         exceptionFactory.ThrowIfNull();
 
         return items.ThrowIfNull()

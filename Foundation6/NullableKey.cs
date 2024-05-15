@@ -53,10 +53,7 @@ namespace Foundation
 
         public override bool Equals([NotNullWhen(true)] object? obj) => obj is NullableKey<T> other && Equals(other);
         
-        public bool Equals(NullableKey<T> other)
-        {
-            return EqualityComparer<T>.Default.Equals(Value, other.Value);
-        }
+        public bool Equals(NullableKey<T> other) => Value.EqualsNullable(other.Value);
 
         public override int GetHashCode() => Value.GetNullableHashCode();
 

@@ -23,6 +23,7 @@
 // SOFTWARE.
 ﻿namespace Foundation;
 
+#if NET6_0_OR_GREATER
 public static class DateOnlyExtensions
 {
     public static DateOnly Add(this DateOnly date, TimeSpan span)
@@ -59,3 +60,4 @@ public static class DateOnlyExtensions
 
     public static long ToTicks(this DateOnly date, DateTimeKind kind) => date.ToDateTime(kind).Ticks;
 }
+#endif

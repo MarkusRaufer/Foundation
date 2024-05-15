@@ -22,7 +22,10 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 ﻿using System.Diagnostics.CodeAnalysis;
+
+#if NET6_0_OR_GREATER
 using System.Text.Json.Serialization;
+#endif
 
 namespace Foundation;
 
@@ -51,7 +54,7 @@ public readonly struct Id
 
     public static bool operator >=(Id lhs, Id rhs) => 0 <= lhs.CompareTo(rhs);
 
-    public int CompareTo(Id other) => _comparable.CompareNullableTo(other._value);
+    public int CompareTo(Id other) => _comparable.CompareToNullable(other._value);
 
     public int CompareTo(object? obj) => obj is Id other ? CompareTo(other) : 1;
 
@@ -68,7 +71,9 @@ public readonly struct Id
 
     public override int GetHashCode() => _value.GetNullableHashCode();
 
+#if NET6_0_OR_GREATER
     [JsonIgnore]
+#endif
     public readonly bool IsEmpty => _comparable is null;
 
     public static Id New() => New(Guid.NewGuid());

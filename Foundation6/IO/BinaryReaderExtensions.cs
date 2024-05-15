@@ -23,19 +23,19 @@
 // SOFTWARE.
 ﻿using Foundation.Collections.Generic;
 using Foundation.Reflection;
-using System.Diagnostics.Metrics;
 using System.Reflection;
 
 namespace Foundation.IO
 {
     public static class BinaryReaderExtensions
     {
+#if NET6_0_OR_GREATER
         public static DateOnly ReadDateOnly(this BinaryReader reader)
         {
             var dateTime = reader.ReadDateTime();
             return DateOnly.FromDateTime(dateTime);
         }
-
+#endif
         public static DateTime ReadDateTime(this BinaryReader reader)
         {
             var ticks = reader.ReadInt64();
@@ -93,10 +93,12 @@ namespace Foundation.IO
                 Type _ when type == typeof(ulong) => reader.ReadUInt64(),
                 Type _ when type == typeof(ushort) => reader.ReadUInt16(),
                 // --> custom types
+#if NET6_0_OR_GREATER
                 Type _ when type == typeof(DateOnly) => reader.ReadDateOnly(),
+                Type _ when type == typeof(TimeOnly) => reader.ReadTimeOnly(),
+#endif
                 Type _ when type == typeof(DateTime) => reader.ReadDateTime(),
                 Type _ when type == typeof(Guid) => reader.ReadGuid(),
-                Type _ when type == typeof(TimeOnly) => reader.ReadTimeOnly(),
                 // <-- custom types
                 Type _ => throw new NotImplementedException($"{type}")
             };
@@ -118,11 +120,13 @@ namespace Foundation.IO
             return new Guid(bytes);
         }
 
+#if NET6_0_OR_GREATER
         public static TimeOnly ReadTimeOnly(this BinaryReader reader)
         {
             var ticks = reader.ReadInt64();
             return new TimeOnly(ticks);
         }
+#endif
 
         /// <summary>
         /// Reads the values from stream and sets the values of the properties of obj.

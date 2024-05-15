@@ -23,4 +23,8 @@
 // SOFTWARE.
 ﻿namespace Foundation.Buffers;
 
+#if NET6_0_OR_GREATER
+
 public delegate ReadOnlySpan<T> TransformSpan<T>(ReadOnlySpan<T> span);
+
+#endif

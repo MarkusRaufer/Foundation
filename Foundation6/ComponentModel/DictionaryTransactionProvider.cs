@@ -126,7 +126,10 @@ public class DictionaryTransactionProvider<TKey, TValue>
         return false;
     }
 
+#if NETSTANDARD2_0
+    public bool TryGetValue(TKey key, out TValue value) => _dictionary.TryGetValue(key, out value);
+#else
     public bool TryGetValue(TKey key, [MaybeNullWhen(false)] out TValue value) => _dictionary.TryGetValue(key, out value);
-
+#endif
     IEnumerator IEnumerable.GetEnumerator() =>_dictionary.GetEnumerator();
 }

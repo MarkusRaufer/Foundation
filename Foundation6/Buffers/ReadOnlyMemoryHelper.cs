@@ -26,6 +26,8 @@
 using Foundation.Collections.Generic;
 using System.Text;
 
+#if NET6_0_OR_GREATER
+
 public static class ReadOnlyMemoryHelper
 {
     public static string ToString<T>(IEnumerable<ReadOnlyMemory<T>> items, T separator)
@@ -51,3 +53,4 @@ public static class ReadOnlyMemoryHelper
     }
 }
 
+#endif

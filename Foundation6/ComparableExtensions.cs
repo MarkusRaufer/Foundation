@@ -32,7 +32,7 @@ public static class ComparableExtensions
     /// <param name="rhs"></param>
     /// <param name="valueOnNull">In a sorted list it defines if the null values appear at the beginning -1 (Microsoft standard) or at the end 1.</param>
     /// <returns></returns>
-    public static int CompareNullableTo(this IComparable? lhs, object? rhs, int valueOnNull = -1)
+    public static int CompareToNullable(this IComparable? lhs, object? rhs, int valueOnNull = -1)
     {
         if (null == lhs) return null == rhs ? 0 : valueOnNull;
         if (null == rhs) return valueOnNull * -1;

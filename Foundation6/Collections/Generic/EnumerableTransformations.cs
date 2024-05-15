@@ -179,12 +179,7 @@ public static class EnumerableTransformations
             TypeCode.UInt16 => items.OfType<UInt16>().SelectMany(BitConverter.GetBytes),
             TypeCode.UInt32 => items.OfType<UInt32>().SelectMany(BitConverter.GetBytes),
             TypeCode.UInt64 => items.OfType<UInt64>().SelectMany(BitConverter.GetBytes),
-#if NET6
-            TypeCode.SByte => items.OfType<SByte>().SelectMany(x => BitConverter.GetBytes(x)),
-#elif NET8
-
-            TypeCode.SByte => items.OfType<SByte>().SelectMany(x => BitConverter.GetBytes((sbyte)x)),
-#endif            
+            TypeCode.SByte => items.OfType<SByte>().Select(x => (byte)x),           
             TypeCode.Single => items.OfType<float>().SelectMany(BitConverter.GetBytes),
             TypeCode.String => encoding is null ? items.OfType<string>().SelectMany(Encoding.UTF8.GetBytes)
                                                 : items.OfType<string>().SelectMany(encoding.GetBytes),

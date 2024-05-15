@@ -113,8 +113,11 @@ public sealed class Rc<T>
         return _value;
     }
 
+#if NETSTANDARD2_0
+    public override int GetHashCode() => Foundation.HashCode.FromObject(_value, Counter);
+#else
     public override int GetHashCode() => System.HashCode.Combine(_value, Counter);
-
+#endif
     public int GetValueHashCode() => _value.GetHashCode();
 
     /// <summary>
@@ -138,7 +141,7 @@ public sealed class Rc<T>
     /// <returns></returns>
     public bool ValueEquals(T? other)
     {
-        return EqualityComparer<T>.Default.Equals(_value, other);
+        return _value.EqualsNullable(other);
     }
 
     /// <summary>

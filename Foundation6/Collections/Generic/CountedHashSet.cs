@@ -21,6 +21,7 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
+#if NET6_0_OR_GREATER
 ﻿using System.Collections;
 
 namespace Foundation.Collections.Generic;
@@ -123,3 +124,4 @@ public class CountedHashSet<T> : ICollection<T>
         return false;
     }
 }
+#endif

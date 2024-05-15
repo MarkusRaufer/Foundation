@@ -23,6 +23,9 @@
 // SOFTWARE.
 ﻿namespace Foundation.Buffers;
 
+
+#if NET6_0_OR_GREATER
+
 // Must be a ref struct as it contains a ReadOnlySpan<char>
 public ref struct SplitEnumerator<T>
     where T : IEquatable<T>
@@ -82,3 +85,4 @@ public ref struct SplitEnumerator<T>
     ReadOnlySpan<T> Separators { get; }
 }
 
+#endif

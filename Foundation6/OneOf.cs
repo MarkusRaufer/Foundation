@@ -46,7 +46,11 @@ public class OneOf<T1, T2> : IEquatable<OneOf<T1, T2>>
         ItemIndex = 1;
 
         SelectedType = typeof(T1);
+#if NETSTANDARD2_0
+        HashCode = Foundation.HashCode.FromObject(SelectedType, t1);
+#else
         HashCode = System.HashCode.Combine(SelectedType, t1);
+#endif
     }
 
     /// <summary>
@@ -59,7 +63,12 @@ public class OneOf<T1, T2> : IEquatable<OneOf<T1, T2>>
         ItemIndex = 2;
 
         SelectedType = typeof(T2);
+
+#if NETSTANDARD2_0
+        HashCode = Foundation.HashCode.FromObject(SelectedType, t2);
+#else
         HashCode = System.HashCode.Combine(SelectedType, t2);
+#endif
     }
 
     public static implicit operator OneOf<T1, T2>(T1 value) => new(value);
@@ -242,7 +251,12 @@ public class OneOf<T1, T2, T3>
         ItemIndex = 3;
 
         SelectedType = typeof(T3);
+
+#if NETSTANDARD2_0
+        HashCode = Foundation.HashCode.FromObject(SelectedType, t3);
+#else
         HashCode = System.HashCode.Combine(SelectedType, t3);
+#endif
     }
 
     public static implicit operator OneOf<T1, T2, T3>(T1 value) => new(value);
@@ -379,7 +393,12 @@ public class OneOf<T1, T2, T3, T4>
         ItemIndex = 4;
 
         SelectedType = typeof(T4);
+
+#if NETSTANDARD2_0
+        HashCode = Foundation.HashCode.FromObject(SelectedType, t4);
+#else
         HashCode = System.HashCode.Combine(SelectedType, t4);
+#endif
     }
 
     public static implicit operator OneOf<T1, T2, T3, T4>(T1 value) => new(value);
@@ -528,7 +547,12 @@ public class OneOf<T1, T2, T3, T4, T5>
         ItemIndex = 5;
 
         SelectedType = typeof(T5);
+
+#if NETSTANDARD2_0
+        HashCode = Foundation.HashCode.FromObject(SelectedType, t5);
+#else
         HashCode = System.HashCode.Combine(SelectedType, t5);
+#endif
     }
 
     public static implicit operator OneOf<T1, T2, T3, T4, T5>(T1 value) => new(value);
@@ -689,7 +713,12 @@ public class OneOf<T1, T2, T3, T4, T5, T6>
         ItemIndex = 6;
 
         SelectedType = typeof(T6);
+
+#if NETSTANDARD2_0
+        HashCode = Foundation.HashCode.FromObject(SelectedType, t6);
+#else
         HashCode = System.HashCode.Combine(SelectedType, t6);
+#endif
     }
 
     public static implicit operator OneOf<T1, T2, T3, T4, T5, T6>(T1 value) => new(value);
@@ -860,7 +889,12 @@ public class OneOf<T1, T2, T3, T4, T5, T6, T7>
         ItemIndex = 7;
 
         SelectedType = typeof(T7);
+
+#if NETSTANDARD2_0
+        HashCode = Foundation.HashCode.FromObject(SelectedType, t7);
+#else
         HashCode = System.HashCode.Combine(SelectedType, t7);
+#endif 
     }
 
     public static implicit operator OneOf<T1, T2, T3, T4, T5, T6, T7>(T1 value) => new(value);
@@ -1043,7 +1077,12 @@ public class OneOf<T1, T2, T3, T4, T5, T6, T7, T8>
         ItemIndex = 8;
 
         SelectedType = typeof(T8);
+
+#if NETSTANDARD2_0
+        HashCode = Foundation.HashCode.FromObject(SelectedType, t8);
+#else
         HashCode = System.HashCode.Combine(SelectedType, t8);
+#endif
     }
 
     public static implicit operator OneOf<T1, T2, T3, T4, T5, T6, T7, T8>(T1 value) => new(value);
@@ -1237,8 +1276,13 @@ public class OneOf<T1, T2, T3, T4, T5, T6, T7, T8, T9>
         Item9 = t9.ThrowIfNull();
         ItemIndex = 9;
 
-        SelectedType = typeof(T8);
+        SelectedType = typeof(T9);
+
+#if NETSTANDARD2_0
+        HashCode = Foundation.HashCode.FromObject(SelectedType, t9);
+#else
         HashCode = System.HashCode.Combine(SelectedType, t9);
+#endif
     }
 
     public static implicit operator OneOf<T1, T2, T3, T4, T5, T6, T7, T8, T9>(T1 value) => new(value);
@@ -1445,8 +1489,13 @@ public class OneOf<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10>
         Item10 = t10.ThrowIfNull();
         ItemIndex = 10;
 
-        SelectedType = typeof(T8);
+        SelectedType = typeof(T10);
+
+#if NETSTANDARD2_0
+        HashCode = Foundation.HashCode.FromObject(SelectedType, t10);
+#else
         HashCode = System.HashCode.Combine(SelectedType, t10);
+#endif 
     }
 
     public static implicit operator OneOf<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10>(T1 value) => new(value);

@@ -168,9 +168,12 @@ public sealed class Countable<T> : IEquatable<Countable<T>>
     /// <returns></returns>
 	public override int GetHashCode()
 	{
-		if(HashCodeIncludesCount) return Value is null ? System.HashCode.Combine(0, Count) : System.HashCode.Combine(Value, Count);
-
-		return Value.GetNullableHashCode();
+#if NETSTANDARD2_0
+        if(HashCodeIncludesCount) return Value is null ? Foundation.HashCode.FromObject(0, Count) : Foundation.HashCode.FromObject(Value, Count);
+#else
+        if (HashCodeIncludesCount) return Value is null ? System.HashCode.Combine(0, Count) : System.HashCode.Combine(Value, Count);
+#endif
+        return Value.GetNullableHashCode();
 	}
 
     /// <summary>

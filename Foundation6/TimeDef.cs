@@ -35,7 +35,10 @@ public abstract record TimeDef
 
     #region time definitions
     public sealed record And(TimeDef Lhs, TimeDef Rhs) : BinaryTimeDef(Lhs, Rhs);
+#if NET6_0_OR_GREATER
     public sealed record DateSpan(DateOnly From, DateOnly To) : SpanTimeDef<DateOnly>(From, To);
+    public sealed record Timespan(TimeOnly From, TimeOnly To) : SpanTimeDef<TimeOnly>(From, To);
+#endif
     public sealed record DateTimeSpan(DateTime From, DateTime To) : SpanTimeDef<DateTime>(From, To);
     public sealed record Day(NonEmptySetValue<int> DaysOfMonth) : TimeDef;
     public sealed record Days(int Quantity) : QuantityTimeDef(Quantity);
@@ -48,7 +51,6 @@ public abstract record TimeDef
     public sealed record Months(int Quantity) : QuantityTimeDef(Quantity);
     public sealed record Not(TimeDef TimeDef) : TimeDef;
     public sealed record Or(TimeDef Lhs, TimeDef Rhs) : BinaryTimeDef(Lhs, Rhs);
-    public sealed record Timespan(TimeOnly From, TimeOnly To) : SpanTimeDef<TimeOnly>(From, To);
     public sealed record Union(TimeDef Lhs, TimeDef Rhs) : BinaryTimeDef(Lhs, Rhs);
     public sealed record Weekday(NonEmptySetValue<DayOfWeek> DaysOfWeek) : TimeDef;
     public sealed record WeekOfMonth(DayOfWeek WeekStartsWith, NonEmptySetValue<int> Week) : TimeDef;
@@ -87,11 +89,6 @@ public abstract record TimeDef
         return ChainByAnd(dtYear, dtMonth, dtDay);
     }
 
-    public static TimeDef FromDateOnly(DateOnly date)
-    {
-        return FromDate(date.Year, date.Month, date.Day);
-    }
-
     public static TimeDef FromDateTime(DateTime dateTime)
     {
         var year = FromYear(dateTime.Year);
@@ -110,17 +107,23 @@ public abstract record TimeDef
         return new Day(day);
     }
 
-    public static TimeDef FromDay(System.Range range)
-    {
-        var days = range.ToEnumerable();
-        return FromDay(days.ToArray());
-    }
-
     public static TimeDef FromHour(params int[] hour)
     {
         if (hour.Any(h => h is < 0 or > 23)) throw new ArgumentOutOfRangeException(nameof(hour), "must be between [0..23]");
 
         return new Hour(hour);
+    }
+
+#if NET6_0_OR_GREATER
+    public static TimeDef FromDateOnly(DateOnly date)
+    {
+        return FromDate(date.Year, date.Month, date.Day);
+    }
+
+    public static TimeDef FromDay(System.Range range)
+    {
+        var days = range.ToEnumerable();
+        return FromDay(days.ToArray());
     }
 
     public static TimeDef FromHour(System.Range range)
@@ -129,17 +132,32 @@ public abstract record TimeDef
         return FromHour(hours.ToArray());
     }
 
+    public static TimeDef FromMinute(System.Range range)
+    {
+        var minutes = range.ToEnumerable();
+        return FromMinute(minutes.ToArray());
+    }
+
+    public static TimeDef FromTimeOnly(TimeOnly time)
+    {
+        var hour = new Hour(new[] { time.Hour });
+        var minute = new Minute(new[] { time.Minute });
+
+        return new And(hour, minute);
+    }
+
+    public static TimeDef FromYear(System.Range range)
+    {
+        var years = range.ToEnumerable();
+        return new Year(years.ToArray());
+    }
+#endif
+
     public static TimeDef FromMinute(params int[] minute)
     {
         if (minute.Any(m => m is < 0 or > 59)) throw new ArgumentOutOfRangeException(nameof(minute), "must be between [0..59]");
 
         return new Minute(minute);
-    }
-
-    public static TimeDef FromMinute(System.Range range)
-    {
-        var minutes = range.ToEnumerable();
-        return FromMinute(minutes.ToArray());
     }
 
     public static TimeDef FromMonth(params Foundation.Month[] month)
@@ -160,14 +178,6 @@ public abstract record TimeDef
         return new And(tdHour, tdMinute);
     }
 
-    public static TimeDef FromTimeOnly(TimeOnly time)
-    {
-        var hour = new Hour(new[] { time.Hour });
-        var minute = new Minute(new[] { time.Minute });
-
-        return new And(hour, minute);
-    }
-
     public static TimeDef FromWeekday(params DayOfWeek[] dayOfWeek)
     {
         return new Weekday(dayOfWeek);
@@ -181,12 +191,6 @@ public abstract record TimeDef
     public static TimeDef FromYear(params int[] year)
     {
         return new Year(year);
-    }
-
-    public static TimeDef FromYear(System.Range range)
-    {
-        var years = range.ToEnumerable();
-        return new Year(years.ToArray());
     }
 
     # endregion factory methods

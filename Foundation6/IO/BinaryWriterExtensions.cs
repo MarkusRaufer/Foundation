@@ -49,20 +49,24 @@ namespace Foundation.IO
                 case ulong u64: writer.Write(u64); break;
                 case ushort u16: writer.Write(u16); break;
                 // --> custom types
+#if NET6_0_OR_GREATER
                 case DateOnly dateOnly: writer.Write(dateOnly); break;
+                case TimeOnly timeOnly: writer.Write(timeOnly); break;
+#endif
                 case DateTime dt: writer.Write(dt); break;
                 case Guid guid: writer.Write(guid); break;
-                case TimeOnly timeOnly: writer.Write(timeOnly); break;
                 // <-- custom types
                 default:
                    throw new NotSupportedException($"{nameof(value)} of type {value?.GetType()}");
             }
         }
 
+#if NET6_0_OR_GREATER
         public static void Write(this BinaryWriter writer, DateOnly date)
         {
             writer.Write(date.ToDateTime().Ticks);
         }
+#endif
 
         public static void Write(this BinaryWriter writer, DateTime dt)
         {
@@ -74,10 +78,12 @@ namespace Foundation.IO
             writer.Write(guid.ToByteArray());
         }
 
+#if NET6_0_OR_GREATER
         public static void Write(this BinaryWriter writer, TimeOnly time)
         {
             writer.Write(time.Ticks);
         }
+#endif
 
         public static void WriteObject(this BinaryWriter writer, object obj)
         {

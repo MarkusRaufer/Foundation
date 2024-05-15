@@ -43,7 +43,7 @@ public class RollbackProvider<TId, TStrategy> : IRollbackProvider<TId, TStrategy
 
     public RollbackProvider(IEnumerable<TStrategy> strategies)
     {
-        _strategies = strategies.ThrowIfNull(nameof(strategies)).ToArray();
+        _strategies = strategies.ThrowIfNull().ToArray();
     }
 
     public TStrategy GetRollbackStrategy(TId strategyId)

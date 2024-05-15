@@ -23,6 +23,8 @@
 // SOFTWARE.
 ﻿namespace Foundation.Buffers;
 
+#if NET6_0_OR_GREATER
+
 /// <summary>
 /// Splits a string into parts by using indices and lengths. An index means where to split the string and the lenght means how many characters starting from index.
 /// </summary>
@@ -55,3 +57,5 @@ public ref struct IndexSplitEnumerator<T>
         return true;
     }
 }
+
+#endif

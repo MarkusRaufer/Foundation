@@ -286,6 +286,13 @@ public static class EnumerableExtensions
         return DistinctBy(items, comparer, null);
     }
 
+#if NETSTANDARD2_0
+    public static IEnumerable<T> DistinctBy<T, TKey> (this IEnumerable<T> source, Func<T, TKey> keySelector)
+    {
+        return new HashSet<T>(source, new LambdaEqualityComparer<T, TKey>(keySelector));
+    }
+
+#endif
     /// <summary>
     /// Removes all duplicates from a list. With an additional hash function you can change the sorting order.
     /// </summary>
@@ -462,6 +469,7 @@ public static class EnumerableExtensions
         }
     }
 
+#if NET6_0_OR_GREATER
     /// <summary>
     /// Enumerates items. Starting from Min until Max. If the index reaches Max it starts again from Min.
     /// </summary>
@@ -482,6 +490,7 @@ public static class EnumerableExtensions
             i++;
         }
     }
+#endif
 
     /// <summary>
     /// Enumerates items. Starting from Min until Max. If the index reaches Max it starts again from Min.
@@ -756,7 +765,11 @@ public static class EnumerableExtensions
         foreach (var item in items)
         {
             var optional = selector(item);
+#if NETSTANDARD2_0
+            if (optional.TryGet(out TResult value)) yield return value;
+#else
             if (optional.TryGet(out TResult? value)) yield return value;
+#endif
         }
     }
 
@@ -1154,6 +1167,7 @@ public static class EnumerableExtensions
         }
     }
 
+#if NET6_0_OR_GREATER
     /// <summary>
     /// Only items withing the range are returned. If the position is greater than the range end it stops.
     /// </summary>
@@ -1174,6 +1188,7 @@ public static class EnumerableExtensions
             i++;
         }
     }
+#endif
 
     /// <summary>
     /// Items for which the predicate applies are not returned.
@@ -1750,7 +1765,7 @@ public static class EnumerableExtensions
         return Option.None<T>();
     }
 
-
+#if NET6_0_OR_GREATER
     /// <summary>
     /// Returns all items within the range of indices.
     /// </summary>
@@ -1768,6 +1783,7 @@ public static class EnumerableExtensions
             i++;
         }
     }
+#endif
 
     /// <summary>
     /// gets items on the certain indexes.
@@ -1817,6 +1833,7 @@ public static class EnumerableExtensions
         }
     }
 
+#if NET6_0_OR_GREATER
     /// <summary>
     /// Returns all items with their occurrencies.
     /// </summary>
@@ -1842,6 +1859,7 @@ public static class EnumerableExtensions
             yield return (value: item, quantity: count);
         }
     }
+#endif
 
     /// <summary>
     /// Returns all items whose type matches with a list of types.

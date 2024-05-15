@@ -261,16 +261,15 @@ public static class ArrayExtensions
         (items[rhsIndex], items[lhsIndex]) = (items[lhsIndex], items[rhsIndex]);
     }
 
-    public static T[] ThrowIfEmpty<T>(this T[] arr, [CallerArgumentExpression("arr")] string paramName = "")
+    public static T[] ThrowIfEmpty<T>(this T[] arr, [CallerArgumentExpression(nameof(arr))] string paramName = "")
         => 0 == arr.Length ? throw new ArgumentOutOfRangeException($"{paramName} must not be empty") : arr;
 
 
-    public static T[] ThrowIfNull<T>(this T[] arr, [CallerArgumentExpression("arr")] string paramName = "")
+    public static T[] ThrowIfNull<T>(this T[] arr, [CallerArgumentExpression(nameof(arr))] string paramName = "")
             => arr ?? throw new ArgumentNullException($"{paramName} must not be empty");
 
-    public static T[] ThrowIfNullOrEmpty<T>(this T[] arr, [CallerArgumentExpression("arr")] string paramName = "")
+    public static T[] ThrowIfNullOrEmpty<T>(this T[] arr, [CallerArgumentExpression(nameof(arr))] string paramName = "")
             => arr.ThrowIfNull(paramName).ThrowIfEmpty(paramName);
-
 
     public static NonEmptyArrayValue<T> ToNonEmptyArrayValue<T>(this T[] arr) => new (arr);
     public static NonEmptySetValue<T> ToNonEmptySetValue<T>(this T[] arr) => new(arr);

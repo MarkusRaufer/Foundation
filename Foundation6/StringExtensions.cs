@@ -25,6 +25,7 @@
 
 using Foundation.Buffers;
 using Foundation.Collections.Generic;
+using System;
 using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.Runtime.CompilerServices;
@@ -79,7 +80,7 @@ public static class StringExtensions
     /// <param name="str"></param>
     /// <param name="value"></param>
     /// <returns></returns>
-
+    #if NET6_0_OR_GREATER
     public static IEnumerable<int> IndicesFromEnd(this string str, string value)
     {
         if (string.IsNullOrEmpty(str)) return Enumerable.Empty<int>();
@@ -90,6 +91,7 @@ public static class StringExtensions
 
         return strSpan.IndicesFromEnd(valueSpan);
     }
+#endif
 
     /// <summary>
     /// Returns the indices of a substring.
@@ -313,6 +315,7 @@ public static class StringExtensions
     /// <param name="str"></param>
     /// <param name="repeat"></param>
     /// <returns></returns>
+ #if NET6_0_OR_GREATER
     public static string Repeat(this string text, uint n)
     {
         var textAsSpan = text.AsSpan();
@@ -324,6 +327,7 @@ public static class StringExtensions
 
         return span.ToString();
     }
+#endif
 
     /// <summary>
     /// Splits a string at the indexes.
@@ -424,14 +428,14 @@ public static class StringExtensions
 
     [return: NotNull]
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static string ThrowIfNull(this string str, [CallerArgumentExpression("str")] string argumentName = "")
+    public static string ThrowIfNull(this string str, [CallerArgumentExpression(nameof(str))] string argumentName = "")
     {
         return str ?? throw new ArgumentNullException(argumentName); ;
     }
 
     [return: NotNull]
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static string ThrowIfNullOrEmpty(this string str, [CallerArgumentExpression("str")] string argumentName = "")
+    public static string ThrowIfNullOrEmpty(this string str, [CallerArgumentExpression(nameof(str))] string argumentName = "")
     {
         if (string.IsNullOrEmpty(str)) throw new ArgumentNullException(argumentName);
         return str;
@@ -439,7 +443,7 @@ public static class StringExtensions
 
     [return: NotNull]
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static string ThrowIfNullOrWhiteSpace(this string str, [CallerArgumentExpression("str")] string argumentName ="")
+    public static string ThrowIfNullOrWhiteSpace(this string str, [CallerArgumentExpression(nameof(str))] string argumentName = "")
     {
         if (string.IsNullOrWhiteSpace(str)) throw new ArgumentNullException(argumentName);
         return str;

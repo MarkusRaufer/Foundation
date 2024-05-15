@@ -21,8 +21,8 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
-﻿using Foundation.Collections.Generic;
-using System.Reflection;
+#if NET6_0_OR_GREATER
+using Foundation.Collections.Generic;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
@@ -96,3 +96,4 @@ public class NamedIdJsonConverter : JsonConverter<NamedId>
         writer.WriteEndObject();
     }
 }
+#endif

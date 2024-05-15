@@ -122,6 +122,12 @@ public static class DateTimeExtensions
         return DateTime.DaysInMonth(date.Year, date.Month);
     }
 
+    public static string ToIso8601String(this DateTime dt)
+    {
+        return dt.ToString("o");
+    }
+
+#if NET6_0_OR_GREATER
     public static DateTime SetDate(this DateTime dt, DateOnly date)
     {
         return new DateTime(date.Year, date.Month, date.Day, dt.Hour, dt.Minute, dt.Second, dt.Millisecond, dt.Kind);
@@ -131,15 +137,11 @@ public static class DateTimeExtensions
     {
         return new DateTime(dt.Year, dt.Month, dt.Day, time.Hour, time.Minute, time.Second, time.Millisecond, dt.Kind);
     }
-
-    public static string ToIso8601String(this DateTime dt)
-    {
-        return dt.ToString("o");
-    }
-
+    
     public static DateOnly ToDateOnly(this DateTime dt) => DateOnly.FromDateTime(dt);
 
     public static TimeOnly ToTimeOnly(this DateTime dt) => TimeOnly.FromDateTime(dt);
+#endif
 
     public static long ToUnixTimestamp(this DateTime dt)
     {
@@ -157,16 +159,51 @@ public static class DateTimeExtensions
         return new DateTime(date.Ticks - (date.Ticks % resolution), date.Kind);
     }
 
+    /// <summary>
+    /// Truncates the date part.
+    /// </summary>
+    /// <param name="dt"></param>
+    /// <returns></returns>
+    public static DateTime TruncateDate(this DateTime dt)
+    {
+        return new DateTime(Empty.Year, Empty.Month, Empty.Day, dt.Hour, dt.Minute, dt.Second, dt.Millisecond, dt.Kind);
+    }
+
+    /// <summary>
+    /// Truncates the time part of the <see cref="DateTime"/>.
+    /// </summary>
+    /// <param name="dt"></param>
+    /// <returns></returns>
+    public static DateTime TruncateTime(this DateTime dt)
+    {
+        return new DateTime(dt.Year, dt.Month, dt.Day, 0, 0, 0, 0, dt.Kind);
+    }
+
+    /// <summary>
+    /// Truncates the miniutes of the <see cref="DateTime"/>.
+    /// </summary>
+    /// <param name="dt"></param>
+    /// <returns></returns>
     public static DateTime TruncateMinutes(this DateTime dt)
     {
         return new DateTime(dt.Year, dt.Month, dt.Day, dt.Hour, 0, 0, 0, dt.Kind);
     }
 
+    /// <summary>
+    /// Truncates the milliseconds of the <see cref="DateTime"/>.
+    /// </summary>
+    /// <param name="dt"></param>
+    /// <returns></returns>
     public static DateTime TruncateMilliseconds(this DateTime dt)
     {
         return new DateTime(dt.Year, dt.Month, dt.Day, dt.Hour, dt.Minute, dt.Second, 0, dt.Kind);
     }
 
+    /// <summary>
+    /// Truncates the seconds of the <see cref="DateTime"/>.
+    /// </summary>
+    /// <param name="dt"></param>
+    /// <returns></returns>
     public static DateTime TruncateSeconds(this DateTime dt)
     {
         return new DateTime(dt.Year, dt.Month, dt.Day, dt.Hour, dt.Minute, 0, dt.Kind);

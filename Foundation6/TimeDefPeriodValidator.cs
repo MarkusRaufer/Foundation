@@ -60,6 +60,7 @@ namespace Foundation
             return result;
         }
 
+#if NET6_0_OR_GREATER
         protected override bool VisitDateSpan(TimeDef.DateSpan td)
         {
             var period = Period.New(td.From, td.To);
@@ -68,6 +69,7 @@ namespace Foundation
 
             return result;
         }
+#endif
 
         protected override bool VisitDateTimeSpan(TimeDef.DateTimeSpan td)
         {
@@ -142,6 +144,7 @@ namespace Foundation
             return result;
         }
 
+#if NET6_0_OR_GREATER
         protected override bool VisitTimespan(TimeDef.Timespan td)
         {
             var result = _period.IsBetween(td.From, td.To);
@@ -149,6 +152,7 @@ namespace Foundation
 
             return result;
         }
+#endif
 
         protected override bool VisitWeekday(TimeDef.Weekday td)
         {

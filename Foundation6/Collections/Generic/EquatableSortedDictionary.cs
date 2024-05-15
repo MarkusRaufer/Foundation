@@ -226,7 +226,13 @@ public class EquatableSortedDictionary<TKey, TValue>
         return Remove(item.Key);
     }
 
+    public override string ToString() => $"{_keyValues}";
+
+#if NETSTANDARD2_0
+    public bool TryGetValue(TKey key, out TValue value) => _keyValues.TryGetValue(key, out value);
+#else
     public bool TryGetValue(TKey key, [MaybeNullWhen(false)] out TValue value) => _keyValues.TryGetValue(key, out value);
+#endif
 
     public ICollection<TValue> Values => _keyValues.Values;
 }

@@ -37,6 +37,10 @@ public class ReturnValueOutOfRangeException : ReturnValueException
 
     public ReturnValueOutOfRangeException(string? message) : base(message) { }
     public ReturnValueOutOfRangeException(string? message, Exception? inner) : base(message, inner) { }
+
+#if NETSTANDARD2_0
     protected ReturnValueOutOfRangeException(SerializationInfo info, StreamingContext context) : base(info, context) { }
+#endif
+
 }
 

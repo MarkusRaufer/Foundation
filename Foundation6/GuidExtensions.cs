@@ -27,7 +27,11 @@ namespace Foundation;
 
 public static class GuidExtensions
 {
-    public static ref Guid ThrowIfEmpty(this ref Guid guid, [CallerArgumentExpression("guid")] string argumentName = "")
+#if NETSTANDARD2_0
+    public static ref Guid ThrowIfEmpty(this ref Guid guid, string argumentName)
+#else
+    public static ref Guid ThrowIfEmpty(this ref Guid guid, [CallerArgumentExpression(nameof(guid))] string argumentName = "")
+#endif
     {
         if(Guid.Empty == guid) throw new ArgumentNullException(argumentName);
         return ref guid;

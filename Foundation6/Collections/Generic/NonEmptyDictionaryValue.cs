@@ -54,11 +54,17 @@ public class NonEmptyDictionaryValue<TKey, TValue>
     {
     }
 
+#if NETSTANDARD2_0
+    public NonEmptyDictionaryValue(IEnumerable<KeyValuePair<TKey, TValue>> keyValues, IEqualityComparer<TKey> comparer)
+        : this(keyValues.ToDictionary(x => x.Key, x => x.Value, comparer))
+    {
+    }
+#else
     public NonEmptyDictionaryValue(IEnumerable<KeyValuePair<TKey, TValue>> keyValues, IEqualityComparer<TKey> comparer)
         : this(new Dictionary<TKey, TValue>(keyValues, comparer))
     {
     }
-
+#endif
     private NonEmptyDictionaryValue(IDictionary<TKey, TValue> dictionary)
     {
         _dictionary = dictionary.ThrowIfNullOrEmpty();
@@ -101,7 +107,11 @@ public class NonEmptyDictionaryValue<TKey, TValue>
     public IEnumerable<TKey> Keys => _dictionary.Keys;
 
     /// <inheritdoc/>
+#if NETSTANDARD2_0
+    public bool TryGetValue(TKey key, out TValue value)
+#else
     public bool TryGetValue(TKey key, [MaybeNullWhen(false)] out TValue value)
+#endif
     {
         return _dictionary.TryGetValue(key, out value);
     }

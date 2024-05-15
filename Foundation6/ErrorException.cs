@@ -61,9 +61,11 @@ public struct ErrorException<TError, TException>
     public override int GetHashCode()
     {
         if (!IsInitalized) return 0;
-
+#if NETSTANDARD2_0
+        if (0 == _hashCode) _hashCode = Foundation.HashCode.FromObject(Error, Exception);
+#else
         if (0 == _hashCode) _hashCode = System.HashCode.Combine(Error, Exception);
-
+#endif
         return _hashCode;
     }
 

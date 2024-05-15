@@ -38,7 +38,11 @@ public class NullableEqualityComparer<T> : EqualityComparer<T>
         return _predicate(x, y);
     }
 
+#if NETSTANDARD2_0
+    public override int GetHashCode(T obj)
+#else
     public override int GetHashCode([DisallowNull] T obj)
+#endif
     {
         if(null == obj) return 0;
 

@@ -72,7 +72,11 @@ public class LambdaEqualityComparer<T> : EqualityComparer<T>
 
     public override bool Equals(T? x, T? y) => _equals(x, y);
 
+#if NETSTANDARD2_0
+    public override int GetHashCode(T obj) => _hashCodeFunc(obj);
+#else
     public override int GetHashCode([DisallowNull] T obj) => _hashCodeFunc(obj);
+#endif
 }
 
 public class LambdaEqualityComparer<T, TKey> : IEqualityComparer<T>
@@ -101,5 +105,10 @@ public class LambdaEqualityComparer<T, TKey> : IEqualityComparer<T>
         return eq;
     }
 
+
+#if NETSTANDARD2_0
+    public int GetHashCode(T obj) => _hashCodeFunc(_selector(obj));
+#else
     public int GetHashCode([DisallowNull] T obj) => _hashCodeFunc(_selector(obj));
+#endif
 }

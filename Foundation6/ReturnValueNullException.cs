@@ -36,6 +36,9 @@ public class ReturnValueNullException : ReturnValueException
     }
     public ReturnValueNullException(string? message) : base(message) { }
     public ReturnValueNullException(string? message, Exception? inner) : base(message, inner) { }
+
+#if NETSTANDARD2_0
     protected ReturnValueNullException(SerializationInfo info, StreamingContext context) : base(info, context) { }
+#endif
 }
 

@@ -239,7 +239,7 @@ public static class TypeExtensions
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static bool IsImmutable(this Type? type)
     {
-        ArgumentNullException.ThrowIfNull(type);
+        type.ThrowIfNull();
 
         if (!type.GetFields().Where(x => !x.IsStatic && x != type).All(x => x.IsInitOnly)) return false;
 
@@ -305,15 +305,15 @@ public static class TypeExtensions
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static bool IsScalar(this Type? type)
     {
-        ArgumentNullException.ThrowIfNull(type);
+        type.ThrowIfNull();
 
-        return type.IsPrimitive || TypeHelper.ScalarTypes(true).Any(x => x == type);
+        return type!.IsPrimitive || TypeHelper.ScalarTypes(true).Any(x => x == type);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static bool IsScalarArrayType(this Type? type)
     {
-        ArgumentNullException.ThrowIfNull(type);
+        type.ThrowIfNull();
 
         if (!type.IsArray) return false;
 
@@ -323,9 +323,9 @@ public static class TypeExtensions
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static bool IsScalarEnumerableType(this Type? type)
     {
-        ArgumentNullException.ThrowIfNull(type);
+        type.ThrowIfNull();
 
-        if (!type.IsEnumerable()) return false;
+        if (!type!.IsEnumerable()) return false;
         if (!type.IsGenericType) return false;
 
         return type.GenericTypeArguments.All(t => t.IsScalar());
@@ -334,9 +334,9 @@ public static class TypeExtensions
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static string ToGenericsString(this Type? type)
     {
-        ArgumentNullException.ThrowIfNull(type);
+        type.ThrowIfNull();
 
-        if (!type.IsGenericTypeDefinition && !type.IsGenericType)
+        if (!type!.IsGenericTypeDefinition && !type.IsGenericType)
             return type.ToString();
 
         var name = type.Name.Split('`').First();

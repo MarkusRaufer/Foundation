@@ -38,6 +38,7 @@ public static class Is
         return new Between<T>(from, to);
     }
 
+#if NET6_0_OR_GREATER
     /// <summary>
     /// Creates a Between range expression. 
     /// </summary>
@@ -49,6 +50,7 @@ public static class Is
         var max = range.End.IsFromEnd ? int.MaxValue : range.End.Value;
         return Between<int>(min, max);
     }
+#endif
 
     /// <summary>
     /// Creates an Exactly range expression.

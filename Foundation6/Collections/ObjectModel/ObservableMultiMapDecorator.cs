@@ -176,8 +176,13 @@ public class ObservableMultiMapDecorator<TKey, TValue>
 
     public bool RemoveValue(TValue value, IEnumerable<TKey> keys) => _map.RemoveValue(value, keys);
 
+#if NETSTANDARD2_0
+    public bool TryGetValue(TKey key, out TValue value)
+        => _map.TryGetValue(key, out value);
+#else
     public bool TryGetValue(TKey key, [MaybeNullWhen(false)] out TValue value)
         => _map.TryGetValue(key, out value);
+#endif
 
     public bool TryGetValues(TKey key, [NotNullWhen(true)] out ICollection<TValue>? values) => _map.TryGetValues(key, out values);
 

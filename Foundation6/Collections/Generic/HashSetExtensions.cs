@@ -35,10 +35,10 @@ public static class HashSetExtensions
     /// <param name="paramName"></param>
     /// <returns></returns>
     /// <exception cref="ArgumentOutOfRangeException"></exception>
-    public static HashSet<T> ThrowIfEmpty<T>(this HashSet<T> hashSet, [CallerArgumentExpression("hashSet")] string paramName = "")
-    => 0 < hashSet.Count
-       ? hashSet
-       : throw new ArgumentOutOfRangeException($"{paramName} must not be empty");
+    public static HashSet<T> ThrowIfEmpty<T>(this HashSet<T> hashSet, [CallerArgumentExpression(nameof(hashSet))] string paramName = "")
+        => 0 < hashSet.Count
+        ? hashSet
+        : throw new ArgumentOutOfRangeException($"{paramName} must not be empty");
 
     /// <summary>
     /// Throws an exception when hashSet is null.
@@ -48,7 +48,7 @@ public static class HashSetExtensions
     /// <param name="paramName"></param>
     /// <returns></returns>
     /// <exception cref="ArgumentException"></exception>
-    public static HashSet<T> ThrowIfNull<T>(this HashSet<T> hashSet, [CallerArgumentExpression("hashSet")] string paramName = "")
+    public static HashSet<T> ThrowIfNull<T>(this HashSet<T> hashSet, [CallerArgumentExpression(nameof(hashSet))] string paramName = "")
         => hashSet ?? throw new ArgumentException($"{paramName} must not be empty");
 
     /// <summary>
@@ -58,6 +58,7 @@ public static class HashSetExtensions
     /// <param name="hashSet"></param>
     /// <param name="paramName"></param>
     /// <returns></returns>
-    public static HashSet<T> ThrowIfNullOrEmpty<T>(this HashSet<T> hashSet, [CallerArgumentExpression("hashSet")] string paramName = "")
+    public static HashSet<T> ThrowIfNullOrEmpty<T>(this HashSet<T> hashSet, [CallerArgumentExpression(nameof(hashSet))] string paramName = "")
         => ThrowIfNull(hashSet, paramName).ThrowIfEmpty(paramName);
 }
+

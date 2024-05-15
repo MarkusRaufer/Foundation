@@ -33,7 +33,7 @@ public static class EnumeratorExtensions
     /// <returns>IEnumerable<typeparamref name="T"/></returns>
     public static IEnumerable<T> ToEnumerable<T>(this IEnumerator<T> enumerator)
     {
-        ArgumentNullException.ThrowIfNull(enumerator);
+        enumerator.ThrowIfNull();
 
         while(enumerator.MoveNext())
         {
@@ -50,7 +50,7 @@ public static class EnumeratorExtensions
     /// <returns></returns>
     public static IEnumerable<T> ToEnumerable<T>(this IEnumerator<T> enumerator, Func<T, bool> predicate)
     {
-        ArgumentNullException.ThrowIfNull(enumerator);
+        enumerator.ThrowIfNull();
 
         while (enumerator.MoveNext())
         {

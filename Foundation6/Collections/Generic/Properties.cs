@@ -88,7 +88,7 @@ public abstract class Properties<TEvent>
 {
     private readonly bool _mutableKeys;
     private readonly EquatableSortedDictionary<string, object> _properties;
-    private readonly IList<TEvent> _events;
+    private readonly List<TEvent> _events;
 
     protected Properties(bool mutableKeys = true) : this(new EquatableSortedDictionary<string, object>(), mutableKeys)
     {
@@ -210,9 +210,13 @@ public abstract class Properties<TEvent>
         return removed;
     }
 
-    public override string ToString() => $"{string.Join(',', _properties)}";
+    public override string ToString() => $"{_properties}";
 
+#if NETSTANDARD2_0
+    public virtual bool TryGetValue(string key, out object value) => _properties.TryGetValue(key, out value);
+#else
     public virtual bool TryGetValue(string key, [MaybeNullWhen(false)] out object value) => _properties.TryGetValue(key, out value);
+#endif
 
     public ICollection<object> Values => _properties.Values;
 }
