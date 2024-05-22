@@ -77,9 +77,7 @@ public readonly struct NonEmptyArrayValue<T>
 
     public object Clone()
     {
-        return IsEmpty
-            ? new ArrayValue<T>(Array.Empty<T>(), _separator)
-            : new ArrayValue<T>((T[])_values.Clone());
+        return IsEmpty ? new ArrayValue<T>([]) : new ArrayValue<T>((T[])_values.Clone());
     }
 
     public override bool Equals([NotNullWhen(true)] object? obj)

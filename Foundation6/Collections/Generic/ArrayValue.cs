@@ -34,9 +34,6 @@ public static class ArrayValue
     public static ArrayValue<T> New<T>(params T[] values) =>
         new (values);
 
-    public static ArrayValue<T> New<T>(string separator, params T[] values)
-        => new (values, separator);
-
     public static ArrayValue<T> NewWith<T>(
         this ArrayValue<T> arrayValue,
         IEnumerable<T> replacements)
@@ -58,20 +55,17 @@ public readonly struct ArrayValue<T>
     , IEquatable<T[]>
 {
     private readonly int _hashCode;
-    private readonly string _separator;
     private readonly T[] _values;
 
-    public ArrayValue(T[] values, string separator = ", ")
+    public ArrayValue(T[] values)
     {
         _values = values.ThrowIfNull();
-        _separator = separator ?? throw new ArgumentNullException(nameof(separator)); ;
         _hashCode = HashCode.FromObjects(_values);
     }
 
-    public ArrayValue(IEnumerable<T> values, string separator = ", ")
+    public ArrayValue(IEnumerable<T> values)
     {
         _values = values.ThrowIfEnumerableIsNull().ToArray();
-        _separator = separator ?? throw new ArgumentNullException(nameof(separator)); ;
         _hashCode = HashCode.FromObjects(_values);
     }
 
@@ -91,11 +85,15 @@ public readonly struct ArrayValue<T>
 
     public T this[int index] => _values[index];
 
+    /// <summary>
+    /// Returns the internal array.
+    /// </summary>
+    /// <returns></returns>
+    public T[] AsArray() => _values;
+
     public object Clone()
     {
-        return IsEmpty
-            ? new ArrayValue<T>(Array.Empty<T>(), _separator)
-            : new ArrayValue<T>((T[])_values.Clone());
+        return IsEmpty ? new ArrayValue<T>([]) : new ArrayValue<T>((T[])_values.Clone());
     }
 
     public override bool Equals([NotNullWhen(true)] object? obj) => obj is ArrayValue<T> other && Equals(other);
@@ -126,6 +124,24 @@ public readonly struct ArrayValue<T>
             && _values.SequenceEqual(other._values);
     }
 
+    /// <summary>
+    /// Searches for an element that matches the conditions defined by the specified predicate, and returns the first occurrence within the entire array.
+    /// </summary>
+    /// <param name="predicate">The predicate that defines the conditions of the element to search for.</param>
+    /// <returns>The first element that matches the conditions defined by the specified predicate, if found; otherwise, the default value for type T.</returns>
+    public T? Find(Predicate<T> predicate) => Array.Find(_values, predicate);
+
+    /// <summary>
+    /// Searches for an element that matches the conditions defined by the specified predicate, and returns the zero-based index of the first occurrence within the entire Array.
+    /// </summary>
+    /// <param name="predicate">The Predicate<T> that defines the conditions of the element to search for.</param>
+    /// <returns></returns>
+    public int FindIndex(Predicate<T> predicate) => Array.FindIndex(_values, predicate);
+
+    public int FindIndex(int startIndex, Predicate<T> predicate) => Array.FindIndex(_values, startIndex, predicate);
+
+    public int FindIndex(int startIndex, int count, Predicate<T> predicate) => Array.FindIndex(_values, startIndex, count, predicate);
+
     /// <inheritdoc/>
     public IEnumerator<T> GetEnumerator() => _values.GetEnumerator<T>();
 
@@ -149,8 +165,5 @@ public readonly struct ArrayValue<T>
     public int Length => IsEmpty ? 0 : _values.Length;
 
     /// <inheritdoc/>
-    public override string? ToString()
-    {
-        return IsEmpty ? "" : string.Join(_separator, _values);
-    }
+    public override string? ToString() => IsEmpty ? "" : string.Join(",", _values);
 }

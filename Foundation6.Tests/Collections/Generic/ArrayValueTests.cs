@@ -1,4 +1,5 @@
-﻿using NUnit.Framework;
+﻿using FluentAssertions;
+using NUnit.Framework;
 using System;
 using System.Linq;
 
@@ -35,9 +36,9 @@ public class ArrayValueTests
     {
         var array = new int[] { 1, 2, 3 };
 
-        int[] ints = ArrayValue.New(array);
+        int[] sut = ArrayValue.New(array);
 
-        Assert.IsTrue(array.SequenceEqual(ints));
+        Assert.IsTrue(array.SequenceEqual(sut));
     }
 
     [Test]
@@ -48,10 +49,10 @@ public class ArrayValueTests
 
         Assert.IsFalse(arr1.Equals(arr2));
 
-        var eqArr1 = ArrayValue.New(arr1);
-        var eqArr2 = ArrayValue.New(arr2);
+        var sut1 = ArrayValue.New(arr1);
+        var sut2 = ArrayValue.New(arr2);
 
-        Assert.IsFalse(eqArr1.Equals(eqArr2));
+        Assert.IsFalse(sut1.Equals(sut2));
     }
 
     [Test]
@@ -62,10 +63,43 @@ public class ArrayValueTests
 
         Assert.IsFalse(arr1.Equals(arr2));
 
-        var eqArr1 = ArrayValue.New(arr1);
-        var eqArr2 = ArrayValue.New(arr2);
+        var sut1 = ArrayValue.New(arr1);
+        var sut2 = ArrayValue.New(arr2);
 
-        Assert.IsTrue(eqArr1.Equals(eqArr2));
+        Assert.IsTrue(sut1.Equals(sut2));
+    }
+
+    [Test]
+    public void Find_Should_Return4_When_ArrayContains4()
+    {
+        var array = new int[] { 1, 2, 3, 4, 5 };
+
+        var sut = ArrayValue.New(array);
+
+        var result = sut.Find(x => x == 4);
+        result.Should().Be(4);
+    }
+
+    [Test]
+    public void FindIndex_Should_ReturnIndex3_When_Searching4_And_ArrayContains4()
+    {
+        var array = new int[] { 1, 2, 3, 4, 5 };
+
+        var sut = ArrayValue.New(array);
+
+        var index = sut.FindIndex(x => x == 4);
+        index.Should().Be(3);
+    }
+
+    [Test]
+    public void FindIndex_Should_ReturnIndex7_When_Searching4_And_StartIndexIs4_And_ArrayContains4()
+    {
+        var array = new int[] { 1, 2, 3, 4, 5, 6, 7, 4, 8, 9 };
+
+        var sut = ArrayValue.New(array);
+
+        var index = sut.FindIndex(4, x => x == 4);
+        index.Should().Be(7);
     }
 
     [Test]
