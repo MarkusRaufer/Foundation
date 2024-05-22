@@ -241,7 +241,7 @@ public static class TypeExtensions
     {
         type.ThrowIfNull();
 
-        if (!type.GetFields().Where(x => !x.IsStatic && x != type).All(x => x.IsInitOnly)) return false;
+        if (!type!.GetFields().Where(x => !x.IsStatic && x != type).All(x => x.IsInitOnly)) return false;
 
         foreach (var property in type.GetProperties())
         {
@@ -313,20 +313,16 @@ public static class TypeExtensions
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static bool IsScalarArrayType(this Type? type)
     {
-        type.ThrowIfNull();
+        if (!type.ThrowIfNull().IsArray) return false;
 
-        if (!type.IsArray) return false;
-
-        return type.GetElementType().IsScalar();
+        return type!.GetElementType().IsScalar();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static bool IsScalarEnumerableType(this Type? type)
     {
-        type.ThrowIfNull();
-
-        if (!type!.IsEnumerable()) return false;
-        if (!type.IsGenericType) return false;
+        if (!type.ThrowIfNull().IsEnumerable()) return false;
+        if (!type!.IsGenericType) return false;
 
         return type.GenericTypeArguments.All(t => t.IsScalar());
     }
