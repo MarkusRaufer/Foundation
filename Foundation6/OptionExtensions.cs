@@ -77,6 +77,20 @@ public static class OptionExtensions
     }
 
     /// <summary>
+    /// Calls <paramref name="predicate"/> if <paramref name="option"/> IsSome is true and returns the result of the <paramref name="predicate"/>.
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <param name="option"></param>
+    /// <param name="predicate"></param>
+    /// <returns></returns>
+    [return: NotNull]
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static bool IsSomeAndAlso<T>(this Option<T> option, Func<T, bool> predicate)
+    {
+        return option.TryGet(out var value) && predicate(value);
+    }
+
+    /// <summary>
     /// Calls <paramref name="some"/> if IsSome is true. Calls <paramref name="none"/> if IsSome is false.
     /// </summary>
     /// <typeparam name="T"></typeparam>
@@ -116,7 +130,7 @@ public static class OptionExtensions
     }
 
     /// <summary>
-    /// Calls <paramref name="action"/> if <paramref name="option"/> is some.
+    /// Calls <paramref name="action"/> if <paramref name="option"/> IsSome is true.
     /// </summary>
     /// <typeparam name="T"></typeparam>
     /// <param name="option"></param>

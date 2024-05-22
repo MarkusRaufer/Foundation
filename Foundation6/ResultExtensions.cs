@@ -63,29 +63,67 @@
         }
 
         /// <summary>
+        /// Calls <paramref name="predicate"/> if result IsOk is false and returns the result of the predicate.
+        /// </summary>
+        /// <typeparam name="TOk"></typeparam>
+        /// <typeparam name="TError"></typeparam>
+        /// <param name="result"></param>
+        /// <param name="predicate"></param>
+        /// <returns></returns>
+        public static bool IsErrorAndAlso<TOk, TError>(this Result<TOk, TError> result, Func<TError, bool> predicate)
+        {
+            predicate.ThrowIfNull();
+
+            if (!result.IsOk && result.TryGetError(out TError? errorValue)) return predicate(errorValue!);
+
+            return false;
+        }
+
+        /// <summary>
+        /// Calls <paramref name="predicate"/> if result IsOk is true then the predicate is called and the result is returned.
+        /// </summary>
+        /// <typeparam name="TOk"></typeparam>
+        /// <typeparam name="TError"></typeparam>
+        /// <param name="result"></param>
+        /// <param name="predicate"></param>
+        /// <returns></returns>
+        public static bool IsOkAndAlso<TOk, TError>(this Result<TOk, TError> result, Func<TOk, bool> predicate)
+        {
+            predicate.ThrowIfNull();
+
+            if (result.TryGetOk(out TOk? okValue)) return predicate(okValue!);
+
+            return false;
+        }
+
+        /// <summary>
+        /// Calls <paramref name="error"/> if result IsOk is false.
+        /// </summary>
         /// <paramref name="error"/> is only called when IsOk is false.
         /// </summary>
         /// <typeparam name="TOk"></typeparam>
         /// <typeparam name="TError"></typeparam>
         /// <param name="result"></param>
-        /// <param name="error"></param>
+        /// <param name="predicate"></param>
         /// <returns></returns>
         public static Unit OnError<TOk, TError>(this Result<TOk, TError> result, Action<TError> error)
         {
             error.ThrowIfNull();
 
             if (!result.IsOk && result.TryGetError(out TError? errorValue)) error(errorValue!);
-            
+
             return new Unit();
         }
 
         /// <summary>
+        /// Calls <paramref name="ok"/> if result IsOk is true.
+        /// </summary>
         /// <paramref name="ok"/> is only called when IsOk is true.
         /// </summary>
         /// <typeparam name="TOk"></typeparam>
         /// <typeparam name="TError"></typeparam>
         /// <param name="result"></param>
-        /// <param name="ok"></param>
+        /// <param name="predicate"></param>
         /// <returns></returns>
         public static Unit OnOk<TOk, TError>(this Result<TOk, TError> result, Action<TOk> ok)
         {
@@ -131,13 +169,13 @@
         }
 
         /// <summary>
-        /// If result contains an error an error is returned otherwise an exception is thrown.
+        /// If result contains an predicate an predicate is returned otherwise an exception is thrown.
         /// </summary>
         /// <typeparam name="TOk"></typeparam>
         /// <typeparam name="TError"></typeparam>
         /// <param name="result"></param>
         /// <returns></returns>
-        /// <exception cref="ArgumentException">Is thrown if result does not contain an error.</exception>
+        /// <exception cref="ArgumentException">Is thrown if result does not contain an predicate.</exception>
         public static TError ToError<TError>(this Result<TError> result)
         {
             if (result.TryGetError(out TError? error)) return error!;
@@ -146,13 +184,13 @@
         }
 
         /// <summary>
-        /// If result contains an error an error is returned otherwise an exception is thrown.
+        /// If result contains an predicate an predicate is returned otherwise an exception is thrown.
         /// </summary>
         /// <typeparam name="TOk"></typeparam>
         /// <typeparam name="TError"></typeparam>
         /// <param name="result"></param>
         /// <returns></returns>
-        /// <exception cref="ArgumentException">Is thrown if result does not contain an error.</exception>
+        /// <exception cref="ArgumentException">Is thrown if result does not contain an predicate.</exception>
         public static TError ToError<TOk, TError>(this Result<TOk, TError> result)
         {
             if (result.TryGetError(out TError? error)) return error!;
@@ -167,7 +205,7 @@
         /// <typeparam name="TError"></typeparam>
         /// <param name="result"></param>
         /// <returns></returns>
-        /// <exception cref="ArgumentException">Is thrown if result does contain an error.</exception>
+        /// <exception cref="ArgumentException">Is thrown if result does contain an predicate.</exception>
         public static TOk ToOk<TOk, TError>(this Result<TOk, TError> result)
         {
             if (result.TryGetOk(out TOk? ok)) return ok!;
