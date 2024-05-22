@@ -418,4 +418,31 @@ public static class EnumerableTransformations
         items.ThrowIfEnumerableIsNull();
         return ReadOnlyCollection.New(items);
     }
+
+    /// <summary>
+    /// Works like Zip with comparer. Maps only maching items.
+    /// </summary>
+    /// <typeparam name="T1"></typeparam>
+    /// <typeparam name="T2"></typeparam>
+    /// <typeparam name="TResult"></typeparam>
+    /// <param name="first"></param>
+    /// <param name="second"></param>
+    /// <param name="comparer"></param>
+    /// <param name="resultSelector"></param>
+    /// <returns></returns>
+    public static IEnumerable<TResult> Zip<T1, T2, TResult>(
+        this IEnumerable<T1> first,
+        IEnumerable<T2> second,
+        Func<T1, T2, bool> comparer,
+        Func<T1, T2, TResult> resultSelector)
+    {
+        second.ThrowIfEnumerableIsNull();
+        comparer.ThrowIfNull();
+        resultSelector.ThrowIfNull();
+
+        return from firstItem in first
+               from secondItem in second
+               where comparer(firstItem, secondItem)
+               select resultSelector(firstItem, secondItem);
+    }
 }
