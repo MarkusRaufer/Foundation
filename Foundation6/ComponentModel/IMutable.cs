@@ -25,6 +25,6 @@
 
 public interface IMutable
 {
-    bool IsDirty { get; }
+    bool IsDirty { get; set; }
 }
 

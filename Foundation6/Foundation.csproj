@@ -5,10 +5,8 @@
 		<ImplicitUsings>enable</ImplicitUsings>
 		<Nullable>enable</Nullable>
 		<LangVersion>latest</LangVersion>
-		<!--<GeneratePackageOnBuild>True</GeneratePackageOnBuild>-->
 		<PackageOutputPath>$(LOCAL_NUGET)\</PackageOutputPath>
 		<BaseOutputPath>bin\</BaseOutputPath>
-		<!--<NuspecFile>Foundation.nuspec</NuspecFile>-->
 		
 		<Copyright>Markus Raufer</Copyright>
 		<Authors>Markus Raufer</Authors>
@@ -16,7 +14,7 @@
 		<PackageId>Foundation</PackageId>
 		<PackageTags>LINQ, additional standard types, .NET extension</PackageTags>
 		<ProductName>Foundation</ProductName>
-		<Version>1.0.0-rc.121</Version>
+		<Version>1.0.0-rc.123</Version>
 		<UserSecretsId>4a3dcddf-c97c-408a-aad6-93090d4c1c18</UserSecretsId>
 	</PropertyGroup>
 
