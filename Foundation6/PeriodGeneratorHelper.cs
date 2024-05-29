@@ -261,7 +261,7 @@ public class PeriodGeneratorHelper
                              var max = month.Weeks(start).Count();
                              return month.Weeks(start)
                                      .Cycle()
-                                     .Enumerate(1, max)
+                                     .EnumerateRange(1, max)
                                      .Where(tuple => week.Contains(tuple.counter))
                                      .Select(tuple => tuple.item);
                          });
@@ -324,7 +324,7 @@ public class PeriodGeneratorHelper
         {
             return period.Years()
                          .Cycle()
-                         .Enumerate(0, int.MaxValue)
+                         .EnumerateRange(0, int.MaxValue)
                          .Where(tuple => 0 == (tuple.counter % years))
                          .Select(tuple => tuple.item);
         });

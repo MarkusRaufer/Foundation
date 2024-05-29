@@ -392,12 +392,28 @@ public static class EnumerableExtensions
     /// <param name="seed"></param>
     /// <param name="increment">If true, the counter is incremented otherwise it is decremented.</param>
     /// <returns>Returns tuples (left, index).</returns>
-    public static IEnumerable<(int counter, T item)> Enumerate<T>(this IEnumerable<T> items, int seed = 0, bool increment = true)
+    //public static IEnumerable<(int counter, T item)> Enumerate<T>(this IEnumerable<T> items, int seed = 0, bool increment = true)
+    //{
+    //    var i = seed;
+    //    Func<int> nextCounter = increment ? () => i++ : () => i--;
+
+    //    return Enumerate(items, (item) => nextCounter());
+    //}
+
+    public static IEnumerable<(int counter, T item)> Enumerate<T>(this IEnumerable<T> items, int seed = 0, int increment = 1)
     {
         var i = seed;
-        Func<int> nextCounter = increment? () => i++ : () => i--;
+        int nextCounter() => i += increment;
 
-        return Enumerate(items, (item) => nextCounter());
+        var it = items.GetEnumerator();
+        if (!it.MoveNext()) yield break;
+
+        yield return (i, it.Current);
+
+        while (it.MoveNext())
+        {
+            yield return (nextCounter(), it.Current);
+        }
     }
 
     /// <summary>
@@ -428,8 +444,9 @@ public static class EnumerableExtensions
     /// <returns>A list of tuples (counter, item).</returns>
     public static IEnumerable<(TCounter counter, T item)> Enumerate<T, TCounter>(
         this IEnumerable<T> items,
-        TCounter seed
-        , TCounter max, Func<TCounter, TCounter> nextCounterValue)
+        TCounter seed,
+        TCounter max,
+        Func<TCounter, TCounter> nextCounterValue)
         where TCounter : notnull
     {
         nextCounterValue.ThrowIfNull();
@@ -457,7 +474,7 @@ public static class EnumerableExtensions
     /// <param name="items"></param>
     /// <param name="minMax">Allows also negative numbers.</param>
     /// <returns></returns>
-    public static IEnumerable<(int counter, T item)> Enumerate<T>(this IEnumerable<T> items, int min, int max)
+    public static IEnumerable<(int counter, T item)> EnumerateRange<T>(this IEnumerable<T> items, int min, int max)
     {
         var i = min;
         foreach (var item in items)
@@ -469,7 +486,6 @@ public static class EnumerableExtensions
         }
     }
 
-#if NET6_0_OR_GREATER
     /// <summary>
     /// Enumerates items. Starting from Min until Max. If the index reaches Max it starts again from Min.
     /// </summary>
@@ -477,7 +493,7 @@ public static class EnumerableExtensions
     /// <param name="items"></param>
     /// <param name="minMax"></param>
     /// <returns></returns>
-    public static IEnumerable<(int counter, T item)> Enumerate<T>(this IEnumerable<T> items, System.Range range)
+    public static IEnumerable<(int counter, T item)> EnumerateRange<T>(this IEnumerable<T> items, System.Range range)
     {
         if (range.End.IsFromEnd) throw new ArgumentException($"{range.End}.IsFromEnd is not allowed");
 
@@ -490,10 +506,9 @@ public static class EnumerableExtensions
             i++;
         }
     }
-#endif
 
     /// <summary>
-    /// Enumerates items. Starting from Min until Max. If the index reaches Max it starts again from Min.
+    /// Enumerates items. Creates tuples with two different counters and the item.
     /// </summary>
     /// <typeparam name="T"></typeparam>
     /// <typeparam name="TValue1"></typeparam>

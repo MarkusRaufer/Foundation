@@ -293,7 +293,7 @@ public class EnumerableExtensionsTests
     {
         var items = new List<string> { "A", "B", "C", "D", "E" };
 
-        var enumerated = items.Enumerate(1, 2).ToArray();
+        var enumerated = items.EnumerateRange(1, 2).ToArray();
         enumerated[0].Should().Be((1, "A"));
         enumerated[1].Should().Be((2, "B"));
         enumerated[2].Should().Be((1, "C"));
@@ -518,7 +518,7 @@ public class EnumerableExtensionsTests
     {
         var items = Enumerable.Range(1, 10).Select(x => x.ToString());
 
-        var enumerated = items.Enumerate(min: -1, max: 1).ToArray();
+        var enumerated = items.EnumerateRange(min: -1, max: 1).ToArray();
 
         enumerated[0].Should().Be((-1, "1"));
         enumerated[1].Should().Be(( 0, "2"));
@@ -537,9 +537,9 @@ public class EnumerableExtensionsTests
     {
         var items = Enumerable.Range(1, 10).Select(x => x.ToString());
 
-        var x = items.Enumerate(10..12).ToArray();
+        var x = items.EnumerateRange(10..12).ToArray();
 
-        var enumerated = items.Enumerate(10..12).ToArray();
+        var enumerated = items.EnumerateRange(10..12).ToArray();
 
         enumerated[0].Should().Be((10, "1"));
         enumerated[1].Should().Be((11, "2"));
