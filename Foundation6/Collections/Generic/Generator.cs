@@ -46,14 +46,14 @@ public static class Generator
     }
 
     /// <summary>
-    /// Generates a sequence of characters between a minimum and maximum. The number of items is not needed. E.g. min == 'A' and max == 'Z'.
+    /// Generates a sequence of int values between a <paramref name="min"/> and <paramref name="max"/> increased by <paramref name="increment"/>.
     /// </summary>
     /// <param name="min">The start value.</param>
     /// <param name="max">The end value.</param>
     /// <returns></returns>
-    public static IEnumerable<char> Range(char min, char max)
+    public static IEnumerable<int> Range(int min, int max, int increment)
     {
-        for (var i = min; i <= max; i++)
+        for (var i = min; i <= max; i += increment)
             yield return i;
     }
 
