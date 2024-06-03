@@ -375,7 +375,7 @@ public class EnumerableExtensionsTests
         var items1 = new int[] { 1, 1, 1, 1 };
         var items2 = new int[] { 1, 1, 2, 2, 3 };
 
-        var diff = items1.SymmetricDifference(items2, retainDuplicates: false).ToArray();
+        var diff = items1.SymmetricDifference(items2, preserveDuplicates: false).ToArray();
 
         diff.Length.Should().Be(2);
         diff.Should().BeEquivalentTo(new[] { 2, 3 });
@@ -387,7 +387,7 @@ public class EnumerableExtensionsTests
         var items1 = new int[] { 1, 1, 1, 1 };
         var items2 = new int[] { 1, 1, 2, 2, 3 };
 
-        var diff = items1.SymmetricDifference(items2, retainDuplicates: true).ToArray();
+        var diff = items1.SymmetricDifference(items2, preserveDuplicates: true).ToArray();
 
         diff.Length.Should().Be(5);
         diff.Should().BeEquivalentTo(new[] { 1, 1, 2, 2, 3 });
@@ -409,6 +409,67 @@ public class EnumerableExtensionsTests
         result[1].Should().Be(date(4));
         result[2].Should().Be(date(5));
     }
+
+    [Test]
+    public void SymmetricDifferenceWithSideIndication_Should_ReturnDifferentItemsFromBothLists_When_UsingPreserveDuplicatesFalse()
+    {
+        var items1 = new List<int> { 1, 2, 3, 4, 5 };
+        var items2 = new List<int> { 2, 4, 6 };
+
+        // return items of both lists that don't match
+        var (lhs, rhs) = items1.SymmetricDifferenceWithSideIndication(items2);
+
+        var lhsArray = lhs.ToArray();
+        var rhsArray = rhs.ToArray();
+
+        lhsArray.Length.Should().Be(3);
+        lhsArray.Should().BeEquivalentTo([1, 3, 5]);
+
+        rhsArray.Length.Should().Be(1);
+        rhsArray.Should().BeEquivalentTo([6]);
+    }
+
+    [Test]
+    public void SymmetricDifferenceWithSideIndication_Should_ReturnDifferentItemsFromBothLists_When_UsingSelector()
+    {
+
+        DateTime date(int day) => new DateTime(2020, 5, day);
+
+        var dates1 = new DateTime[] { date(1), date(2), date(1), date(3), date(4), date(6) };
+        var dates2 = new DateTime[] { date(1), date(2), date(3), date(5), date(7) };
+
+        var (lhs, rhs) = dates1.SymmetricDifferenceWithSideIndication(dates2, x => x.Day);
+
+        var lhsArray = lhs.ToArray();
+        var rhsArray = rhs.ToArray();
+
+        lhsArray.Length.Should().Be(2);
+        lhsArray.Should().BeEquivalentTo([date(4), date(6)]);
+
+        rhsArray.Length.Should().Be(2);
+        rhsArray.Should().BeEquivalentTo([date(5), date(7)]);
+    }
+
+    [Test]
+    public void SymmetricDifferenceWithSideIndication_Should_Return3DateTimes1Doublet_When_Using_Selector_And_PreserveDuplicates()
+    {
+        static DateTime date(int day) => new (2020, 5, day);
+
+        var dates1 = new DateTime[] { date(1), date(2), date(1), date(3), date(4) };
+        var dates2 = new DateTime[] { date(2), date(3), date(5), date(6) };
+
+        var (lhs, rhs) = dates1.SymmetricDifferenceWithSideIndication(dates2, x => x.Day, true);
+
+        var lhsArray = lhs.ToArray();
+        var rhsArray = rhs.ToArray();
+
+        lhsArray.Length.Should().Be(3);
+        lhsArray.Should().BeEquivalentTo([date(1), date(1), date(4)]);
+
+        rhsArray.Length.Should().Be(2);
+        rhsArray.Should().BeEquivalentTo([date(5), date(6)]);
+    }
+
 
     [Test]
     public void Duplicates_DistinctIsFalse_WithMultipleDuplicateValues()

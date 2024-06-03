@@ -21,13 +21,12 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
-﻿namespace Foundation.Collections.Generic;
+namespace Foundation.Collections.Generic;
 
 using Foundation;
 using System;
 using System.Data;
 using System.Diagnostics.CodeAnalysis;
-using static System.Net.Mime.MediaTypeNames;
 
 public static class EnumerableExtensions
 {
@@ -538,7 +537,7 @@ public static class EnumerableExtensions
         if (null == lhs) return null == rhs;
         if (null == rhs) return false;
 
-        return !lhs.SymmetricDifference(rhs, retainDuplicates: true).Any();
+        return !lhs.SymmetricDifference(rhs, preserveDuplicates: true).Any();
     }
 
     /// <summary>
@@ -554,11 +553,11 @@ public static class EnumerableExtensions
         if (null == lhs) return null == rhs;
         if (null == rhs) return false;
 
-        return !lhs.SymmetricDifference(rhs, selector, retainDuplicates: true).Any();
+        return !lhs.SymmetricDifference(rhs, selector, preserveDuplicates: true).Any();
     }
 
     /// <summary>
-    /// Returns all lhs elements which are not in rhs. The comparision is made between the TKey values.
+    /// Returns all lhs elements which are not in rhs. The comparison is made between the TKey values.
     /// </summary>
     /// <typeparam name="T"></typeparam>
     /// <typeparam name="TKey"></typeparam>
@@ -571,7 +570,7 @@ public static class EnumerableExtensions
     public static IEnumerable<TResult> ExceptBy<T, TKey, TResult>(
         this IEnumerable<T> lhs,
         IEnumerable<T> rhs,
-        Func<T, TKey> keySelector,
+        Func<T, TKey?> keySelector,
         Func<T?, TResult> resultSelector)
     {
         rhs.ThrowIfEnumerableIsNull();
@@ -581,7 +580,7 @@ public static class EnumerableExtensions
         return lhs.Except(rhs, new LambdaEqualityComparer<T>((T? a, T? b) =>
         {
             if (null == a) return null == b;
-            if (null == b) return true;
+            if (null == b) return false;
 
             var selectedA = keySelector(a);
             var selectedB = keySelector(b);
@@ -608,8 +607,8 @@ public static class EnumerableExtensions
     public static IEnumerable<TResult> ExceptBy<T1, T2, TKey, TResult>(
         this IEnumerable<T1> lhs,
         IEnumerable<T2> rhs,
-        Func<T1, TKey> lhsKeySelector,
-        Func<T2, TKey> rhsKeySelector,
+        Func<T1, TKey?> lhsKeySelector,
+        Func<T2, TKey?> rhsKeySelector,
         Func<T1, TResult> resultSelector)
     {
         rhs.ThrowIfEnumerableIsNull();
@@ -617,8 +616,14 @@ public static class EnumerableExtensions
         rhsKeySelector.ThrowIfNull();
         resultSelector.ThrowIfNull();
 
-        var hashedRhs = new HashSet<TKey>(rhs.Select(rhsKeySelector));
-        return lhs.Where(l => !hashedRhs.Contains(lhsKeySelector(l))).Select(resultSelector);
+        var hashedRhs = new HashSet<TKey>(rhs.Select(rhsKeySelector).NotNull());
+        foreach (var l in lhs)
+        {
+            var lhsSelected = lhsKeySelector(l);
+            if (lhsSelected is null) continue;
+
+            if (!hashedRhs.Contains(lhsSelected)) yield return resultSelector(l);
+        }
     }
 
     /// <summary>
@@ -2741,14 +2746,14 @@ public static class EnumerableExtensions
     /// <typeparam name="T"></typeparam>
     /// <param name="lhs"></param>
     /// <param name="rhs"></param>
-    /// <param name="retainDuplicates">If true then duplicates are taken into account.</param>
+    /// <param name="preserveDuplicates">If true then duplicates are taken into account.</param>
     /// <returns></returns>
     public static IEnumerable<T> SymmetricDifference<T>(
         this IEnumerable<T> lhs,
         IEnumerable<T> rhs,
-        bool retainDuplicates = false)
+        bool preserveDuplicates = false)
     {
-        if (!retainDuplicates)
+        if (!preserveDuplicates)
         {
             var set = new HashSet<T>(lhs);
             set.SymmetricExceptWith(rhs);
@@ -2766,15 +2771,15 @@ public static class EnumerableExtensions
     /// <param name="lhs"></param>
     /// <param name="rhs"></param>
     /// <param name="selector">Selects the value of each left to compare.</param>
-    /// <param name="retainDuplicates"></param>
+    /// <param name="preserveDuplicates"></param>
     /// <returns></returns>
     public static IEnumerable<T> SymmetricDifference<T, TKey>(
         this IEnumerable<T> lhs,
         IEnumerable<T> rhs,
         Func<T, TKey?> selector,
-        bool retainDuplicates = false)
+        bool preserveDuplicates = false)
     {
-        if (!retainDuplicates)
+        if (!preserveDuplicates)
         {
             var set = new HashSet<T>(lhs, new LambdaEqualityComparer<T, TKey>(selector));
             set.SymmetricExceptWith(rhs);
@@ -2784,14 +2789,22 @@ public static class EnumerableExtensions
         return lhs.ExceptWithDuplicates(rhs, selector).Concat(rhs.ExceptWithDuplicates(lhs, selector));
     }
 
+    /// <summary>
+    /// Returns the symmetric difference of two lists.
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <param name="lhs"></param>
+    /// <param name="rhs"></param>
+    /// <param name="preserveDuplicates">preserves duplicates</param>
+    /// <returns>A tuple with elements only on lefthand side <paramref name="lhs"/> and elements only on righthand side <paramref name="rhs"/></returns>
     public static IEnumerable<T> SymmetricDifferenceSorted<T>(
         this IEnumerable<T> lhs,
         IEnumerable<T> rhs,
-        bool retainDuplicates = false)
+        bool preserveDuplicates = false)
         where T : IComparable<T>
 
     {
-        if (!retainDuplicates)
+        if (!preserveDuplicates)
         {
             var set = new HashSet<T>(lhs);
             set.SymmetricExceptWith(rhs);
@@ -2799,6 +2812,50 @@ public static class EnumerableExtensions
         }
 
         return lhs.ExceptWithDuplicatesSorted(rhs).Concat(rhs.ExceptWithDuplicatesSorted(lhs));
+    }
+
+    /// <summary>
+    /// Returns the symmetric difference of two lists. This is slower than <see cref="SymmetricDifference{T}(IEnumerable{T}, IEnumerable{T}, bool)"/>
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <param name="lhs"></param>
+    /// <param name="rhs"></param>
+    /// <param name="preserveDuplicates"></param>
+    /// <returns></returns>
+    public static (IEnumerable<T> lhs, IEnumerable<T> rhs) SymmetricDifferenceWithSideIndication<T>(
+        this IEnumerable<T> lhs,
+        IEnumerable<T> rhs,
+        bool preserveDuplicates = false)
+    {
+        return preserveDuplicates
+            ? (lhs.ExceptWithDuplicates(rhs), rhs.ExceptWithDuplicates(lhs))
+            : (lhs.Except(rhs), rhs.Except(lhs));
+    }
+
+    /// <summary>
+    /// <summary>
+    /// Returns the symmetric difference of two lists. This is slower than <see cref="SymmetricDifference{T, TKey}(IEnumerable{T}, IEnumerable{T}, Func{T, TKey?}, bool)"/>
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <typeparam name="TKey"></typeparam>
+    /// <param name="lhs"></param>
+    /// <param name="rhs"></param>
+    /// <param name="selector"></param>
+    /// <param name="preserveDuplicates"></param>
+    /// <returns></returns>
+    public static (IEnumerable<T> lhs, IEnumerable<T> rhs) SymmetricDifferenceWithSideIndication<T, TKey>(
+        this IEnumerable<T> lhs,
+        IEnumerable<T> rhs,
+        Func<T, TKey?> selector,
+        bool preserveDuplicates = false)
+    {
+        lhs.ThrowIfNull();
+        rhs.ThrowIfNull();
+        selector.ThrowIfNull();
+
+        return preserveDuplicates
+            ? (lhs.ExceptWithDuplicates(rhs, selector), rhs.ExceptWithDuplicates(lhs, selector))
+            : (lhs.ExceptBy(rhs, selector, x => x).NotNull(), rhs.ExceptBy(lhs, selector, x => x).NotNull());
     }
 
     /// <summary>
