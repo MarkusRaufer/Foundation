@@ -52,6 +52,28 @@ public static class Utf8JsonReaderExtensions
         return Result.Ok(new KeyValuePair<string, object?>(name, value));
     }
 
+    public static object? GetValue(this Utf8JsonReader reader, TypeCode typeCode)
+    {
+        return typeCode switch
+        {
+            TypeCode.Boolean => reader.GetBoolean(),
+            TypeCode.Byte => reader.GetByte(),
+            TypeCode.Char => reader.GetString(),
+            TypeCode.DateTime => reader.GetDateTime(),
+            TypeCode.Decimal => reader.GetDecimal(),
+            TypeCode.Double => reader.GetDouble(),
+            TypeCode.Int16 => reader.GetInt16(),
+            TypeCode.Int32 => reader.GetInt32(),
+            TypeCode.Int64 => reader.GetInt64(),
+            TypeCode.UInt16 => reader.GetUInt16(),
+            TypeCode.UInt32 => reader.GetUInt32(),
+            TypeCode.UInt64 => reader.GetUInt64(),
+            TypeCode.SByte => reader.GetSByte(),
+            TypeCode.Single => reader.GetSingle(),
+            TypeCode.String => reader.GetString(),
+            _ => default,
+        };
+    }
     public static object? GetValue(this Utf8JsonReader reader, Type type)
     {
         switch (Type.GetTypeCode(type))
