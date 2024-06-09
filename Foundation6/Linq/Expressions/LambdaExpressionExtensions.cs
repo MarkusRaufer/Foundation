@@ -112,6 +112,11 @@ public static class LambdaExpressionExtensions
         return lambda.ReturnType == typeof(bool);
     }
 
+    public static bool IsTerminalPredicate(this LambdaExpression lambda)
+    {
+        return lambda.IsPredicate() && lambda.Body.IsTerminal();
+    }
+
     public static Delegate ToDelegate(this LambdaExpression lambda)
     {
         return lambda.Compile();

@@ -148,6 +148,11 @@ public static class ExpressionExtensions
         return expression is BinaryExpression binary && binary.IsPredicate();
     }
 
+    /// <summary>
+    /// <paramref name="expression"/> Left and Right are terminal expressions which means they are not composite expressions.
+    /// </summary>
+    /// <param name="expression"></param>
+    /// <returns></returns>
     public static bool IsTerminal(this Expression expression)
     {
         expression.ThrowIfNull();
@@ -169,18 +174,14 @@ public static class ExpressionExtensions
     /// <returns></returns>
     public static bool IsTerminalBinary(this Expression expression)
     {
-        if (expression is not BinaryExpression be) return false;
-        if (be.IsPredicate()) return false;
-
-        return be.Left.IsTerminal() && be.Right.IsTerminal();
+        return expression is BinaryExpression be && !be.NodeType.IsNoneTerminalBinary() && be.IsTerminalBinary();
     }
 
     public static bool IsTerminalPredicate(this Expression expression)
     {
-        if (expression is not BinaryExpression be) return false;
-        if (!be.IsPredicate()) return false;
+        if (expression is LambdaExpression lambda && lambda.IsTerminalPredicate()) return true;
 
-        return be.Left.IsTerminal() && be.Right.IsTerminal();
+        return expression is BinaryExpression be && be.IsTerminalPredicate();
     }
 
     /// <summary>

@@ -46,6 +46,7 @@ public static class ExpressionTypeExtensions
             ExpressionType.GreaterThanOrEqual or
             ExpressionType.LessThan or
             ExpressionType.LessThanOrEqual or
+            ExpressionType.Modulo or
             ExpressionType.Multiply or
             ExpressionType.MultiplyAssign or
             ExpressionType.Not or
@@ -57,12 +58,31 @@ public static class ExpressionTypeExtensions
         };
     }
 
+    /// <summary>
+    /// Can be And, AndAlso, ExclusiveOr, Or, OrElse.
+    /// </summary>
+    /// <param name="type"></param>
+    /// <returns></returns>
+    public static bool IsNoneTerminalBinary(this ExpressionType type)
+    {
+        return type switch
+        {
+            ExpressionType.And or
+            ExpressionType.AndAlso or
+            ExpressionType.ExclusiveOr or
+            ExpressionType.Or or
+            ExpressionType.OrElse => true,
+            _ => false,
+        };
+    }
+
     public static bool IsTerminalBinary(this ExpressionType expressionType)
     {
         return expressionType switch
         {
             ExpressionType.Add or
             ExpressionType.Divide or
+            ExpressionType.Modulo or
             ExpressionType.Multiply or
             ExpressionType.Not or
             ExpressionType.NotEqual or

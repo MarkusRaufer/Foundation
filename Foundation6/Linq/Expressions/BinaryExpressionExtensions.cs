@@ -99,13 +99,26 @@ public static class BinaryExpressionExtensions
         return GetParameters(expression).Any(x => x.EqualsToExpression(parameter, ignoreNames));
     }
 
+    /// <summary>
+    /// <paramref name="expression"/> returns a boolean.
+    /// </summary>
+    /// <param name="expression"></param>
+    /// <returns></returns>
     public static bool IsPredicate(this BinaryExpression expression) => expression.ThrowIfNull().Type == typeof(bool);
 
-    public static bool IsTerminalPredicate(this BinaryExpression expression)
+    /// <summary>
+    /// <paramref name="expression"/> Left and Right are terminal expressions which means they are not composite expressions.
+    /// </summary>
+    /// <param name="expression"></param>
+    /// <returns></returns>
+    public static bool IsTerminalBinary(this BinaryExpression expression)
     {
         expression.ThrowIfNull();
-        if (!expression.IsPredicate()) return false;
+
+        if (expression.NodeType.IsNoneTerminalBinary()) return false;
 
         return expression.Left.IsTerminal() && expression.Right.IsTerminal();
     }
+
+    public static bool IsTerminalPredicate(this BinaryExpression expression) => expression.IsPredicate() && expression.IsTerminalBinary();
 }
