@@ -57,6 +57,20 @@ public class RandomTests
     }
 
     [Test]
+    public void NextAlphaChar_Should_ReturnACharBetweenAandz_When_CalledOnce()
+    {
+        var random = new Random(1);
+
+        for (var i = 0; i<100; i++)
+        {
+            var c = random.NextAlphaChar();
+            var inRange = c >= 'A' && c <= 'z';
+            inRange.Should().BeTrue();
+        }
+    }
+
+
+    [Test]
     public void NextDateTime_Should_ReturnTheSameDateTime_When_CalledOnce()
     {
         var seed = 1;

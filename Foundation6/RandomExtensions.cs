@@ -27,6 +27,11 @@ using Foundation.Collections.Generic;
 
 public static class RandomExtensions
 {
+    private static readonly char _maxLowerChar = 'z';
+    private static readonly char _minUpperChar = 'A';
+
+    private static char[] AlphaChars { get; } = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz".ToCharArray();
+
     public static T GetItem<T>(this Random random, T[] items)
     {
         random.ThrowIfNull();
@@ -66,6 +71,35 @@ public static class RandomExtensions
     public static bool NextBoolean(this Random random)
     {
         return 0 != random.Next(0, 1);
+    }
+
+    /// <summary>
+    /// Returns a random alpha char between 'A' and 'z'.
+    /// </summary>
+    /// <param name="random"></param>
+    /// <returns></returns>
+    public static char NextAlphaChar(this Random random)
+    {
+        return random.NextAlphaChar(_minUpperChar, _maxLowerChar);
+    }
+
+
+    /// <summary>
+    /// Returns a random alpha char between <paramref name="min"/> and <paramref name="max"/>.
+    /// If <paramref name="min"/> is smaller than 'A', 'A' is taken. If <paramref name="max"/> is greater than 'z', 'z' is taken.
+    /// </summary>
+    /// <param name="random"></param>
+    /// <param name="min"></param>
+    /// <param name="max"></param>
+    /// <returns></returns>
+    public static char NextAlphaChar(this Random random, char min, char max)
+    {
+        if (!AlphaChars.Contains(min)) min = _minUpperChar;
+        if (!AlphaChars.Contains(max)) max = _maxLowerChar;
+
+        max++;
+
+        return random.GetItem(AlphaChars);
     }
 
     public static DateTime NextDateTime(this Random random, DateTime min, DateTime max)
