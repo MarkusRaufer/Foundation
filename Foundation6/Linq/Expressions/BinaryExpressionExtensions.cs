@@ -103,7 +103,8 @@ public static class BinaryExpressionExtensions
 
     public static bool IsTerminalPredicate(this BinaryExpression expression)
     {
-        if (!expression.ThrowIfNull().IsPredicate()) return false;
+        expression.ThrowIfNull();
+        if (!expression.IsPredicate()) return false;
 
         return expression.Left.IsTerminal() && expression.Right.IsTerminal();
     }

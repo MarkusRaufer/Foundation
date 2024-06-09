@@ -293,6 +293,25 @@ public class ExpressionExtensionsTests
     }
 
     [Test]
+    public void IsPredicate_Should_ReturnTrue_When_Expression_IsABinaryExpression_And_IsTerminal()
+    {
+        var a = Expression.Parameter(typeof(int), "a");
+        var b = Expression.Parameter(typeof(int), "b");
+
+        var expression = Expression.MakeBinary(ExpressionType.Equal, a, b);
+
+        expression.IsPredicate().Should().BeTrue();
+    }
+
+    [Test]
+    public void IsPredicate_Should_ReturnTrue_When_Expression_IsAnExpressionThatRepresentsABinaryExpression_And_IsTerminal()
+    {
+        Expression<Func<int, int, bool>> expression = (a, b) => a == b;
+
+        expression.Body.IsPredicate().Should().BeTrue();
+    }
+
+    [Test]
     public void IsTerminal_Should_ReturnTrue_When_Expression_LeftIsSubtractAndRightIsConstant()
     {
         Expression<Func<int, int, bool>> expression = (a, b) => (a - b) == 2;

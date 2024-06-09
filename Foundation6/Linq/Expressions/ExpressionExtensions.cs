@@ -143,9 +143,9 @@ public static class ExpressionExtensions
 
     public static bool IsPredicate(this Expression expression)
     {
-        return expression is LambdaExpression lambda
-            && lambda.Body is BinaryExpression binaryExpression
-            && binaryExpression.IsPredicate();
+        if (expression is LambdaExpression lambda) return lambda.IsPredicate();
+
+        return expression is BinaryExpression binary && binary.IsPredicate();
     }
 
     public static bool IsTerminal(this Expression expression)
