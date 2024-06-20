@@ -27,12 +27,12 @@ using System.Text.Json.Serialization;
 
 namespace Foundation.Text.Json.Serialization;
 
-public class CollectionConverter<T, TCollection> : JsonConverter<TCollection>
-    where TCollection : ICollection<T>
+public class EnumerableConverter<T, TCollection> : JsonConverter<TCollection>
+    where TCollection : IEnumerable<T>
 {
     private readonly Func<IEnumerable<T>, TCollection> _factory;
 
-    public CollectionConverter(Func<IEnumerable<T>, TCollection> factory)
+    public EnumerableConverter(Func<IEnumerable<T>, TCollection> factory)
     {
         _factory = factory.ThrowIfNull();
     }
