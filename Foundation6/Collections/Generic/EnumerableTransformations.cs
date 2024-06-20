@@ -224,6 +224,12 @@ public static class EnumerableTransformations
         return DictionaryValue.New(newItems);
     }
 
+    public static HashSetValue<T> ToHashSetValue<T>(this IEnumerable<T> items)
+    {
+        items.ThrowIfEnumerableIsNull();
+        return new HashSetValue<T>(items);
+    }
+
     /// <summary>
     /// Creates a <see cref="IMultiValueMap{TKey, TValue}"/> from an enumerable.
     /// </summary>

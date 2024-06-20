@@ -30,7 +30,7 @@ namespace Foundation.Collections.Generic;
 /// Immutable set that considers the equality and number of all elements <see cref="Equals"/>. 
 /// By definition a set only includes unique values. The position of the elements are ignored.
 /// </summary>
-public static class SetValue
+public static class HashSetValue
 {
     /// <summary>
     /// Creates a new <see cref="=SetValue<typeparamref name="T"/>"/> from values.
@@ -38,7 +38,7 @@ public static class SetValue
     /// <typeparam name="T">The type of the values.</typeparam>
     /// <param name="values">The values in the <see cref="=SetValue<typeparamref name="T"/>.</param>
     /// <returns>a <see cref="=SetValue<typeparamref name="T"/> object.</returns>
-    public static SetValue<T> New<T>(params T[] values) => new(values);
+    public static HashSetValue<T> New<T>(params T[] values) => new(values);
 }
 
 /// <summary>
@@ -47,15 +47,15 @@ public static class SetValue
 /// </summary>
 /// <typeparam name="T"></typeparam>
 [Serializable]
-public readonly struct SetValue<T>
+public readonly struct HashSetValue<T>
     : IReadOnlyCollection<T>
-    , IEquatable<SetValue<T>>
+    , IEquatable<HashSetValue<T>>
 {
     private readonly int _hashCode = 0;
     private readonly HashSet<T> _values;
 
     /// <inheritdoc/>
-    public SetValue(IEnumerable<T> values) : this(new HashSet<T>(values))
+    public HashSetValue(IEnumerable<T> values) : this(new HashSet<T>(values))
     {
     }
 
@@ -63,7 +63,7 @@ public readonly struct SetValue<T>
     /// Constructor
     /// </summary>
     /// <param name="values">The unique values. Duplicates are ignored.</param>
-    private SetValue(HashSet<T> values)
+    private HashSetValue(HashSet<T> values)
     {
         _values = values.ThrowIfNull();
         _hashCode = HashCode.FromOrderedObjects(_values);
@@ -74,7 +74,7 @@ public readonly struct SetValue<T>
     /// </summary>
     /// <param name="values">The unique values. Duplicates are ignored.</param>
     /// <param name="comparer">Comparer to change the default comparison of the values.</param>
-    public SetValue(IEnumerable<T> values, IEqualityComparer<T>? comparer)
+    public HashSetValue(IEnumerable<T> values, IEqualityComparer<T>? comparer)
         : this(new HashSet<T>(values, comparer))
     {
     }
@@ -85,7 +85,7 @@ public readonly struct SetValue<T>
     /// <param name="left"></param>
     /// <param name="right"></param>
     /// <returns>True if all elements of <paramref name="left"/> are same than <paramref name="right"/></returns>
-    public static bool operator ==(SetValue<T> left, SetValue<T> right) => left.Equals(right);
+    public static bool operator ==(HashSetValue<T> left, HashSetValue<T> right) => left.Equals(right);
 
     /// <summary>
     /// All elements of <paramref name="lhs"/> are compared with <paramref name="rhs"/>.
@@ -93,9 +93,9 @@ public readonly struct SetValue<T>
     /// <param name="left"></param>
     /// <param name="right"></param>
     /// <returns>True if not all elements of <paramref name="left"/> are same than <paramref name="right"/></returns>
-    public static bool operator !=(SetValue<T> left, SetValue<T> right) => !(left == right);
+    public static bool operator !=(HashSetValue<T> left, HashSetValue<T> right) => !(left == right);
 
-    public static implicit operator SetValue<T>(T[] values) => new(values);
+    public static implicit operator HashSetValue<T>(T[] values) => new(values);
 
     /// <inheritdoc/>
     public int Count => IsEmpty ? 0 : _values.Count;
@@ -106,14 +106,14 @@ public readonly struct SetValue<T>
     /// <param name="obj"></param>
     /// <returns></returns>
     public override bool Equals([NotNullWhen(true)] object? obj)
-        => obj is SetValue<T> other && Equals(other);
+        => obj is HashSetValue<T> other && Equals(other);
 
     /// <summary>
     /// Considers the equality and number of all elements <see cref="Equals"/>. The position of the elements are ignored.
     /// </summary>
     /// <param name="other"></param>
     /// <returns></returns>
-    public bool Equals(SetValue<T> other)
+    public bool Equals(HashSetValue<T> other)
     {
         if (GetHashCode() != other.GetHashCode()) return false;
 
