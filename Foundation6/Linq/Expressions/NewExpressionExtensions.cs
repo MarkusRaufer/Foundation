@@ -28,6 +28,25 @@ namespace Foundation.Linq.Expressions;
 
 public static class NewExpressionExtensions
 {
+#if NET6_0_OR_GREATER
+    public static object? CreateInstance(this NewExpression expression)
+    {
+        var args = expression.Arguments.Select(x => GetArgument((dynamic)x)).ToArray();
+        return expression.Constructor?.Invoke(args);
+    }
+    
+    private static object? GetArgument(ConstantExpression expression) => expression.Value;
+
+    private static object GetArgument(UnaryExpression expression) => GetArgument((dynamic)expression.Operand);
+
+    private static object GetArgument(Expression expression)
+    {
+        var convertExpr = Expression.Convert(expression, typeof(object));
+        var lambda = Expression.Lambda<Func<object>>(convertExpr);
+        return lambda.Compile().Invoke();
+    }
+#endif
+
     public static bool EqualsToExpression(this NewExpression lhs, NewExpression rhs, bool ignoreNames = false)
     {
         if (lhs is null) return rhs is null;

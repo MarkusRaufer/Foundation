@@ -32,7 +32,10 @@ public static class MethodCallExpressionExtensions
     public static object? Call(this MethodCallExpression expression, object obj)
     {
         var arguments = expression.Arguments.OfType<ConstantExpression>().Select(x => x.Value);
-        if (expression.Method.IsExtensionMethod()) arguments = arguments.InsertAt(obj, 0);
+        if (expression.Method.IsExtensionMethod())
+        {
+            arguments = arguments.InsertAt(obj, 0);
+        }
 
         return expression.ThrowIfNull().Method.Invoke(obj, arguments.ToArray());
     }

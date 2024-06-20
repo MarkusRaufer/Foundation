@@ -31,7 +31,7 @@ namespace Foundation.Linq.Expressions
         private readonly HashSet<Expression> _expressions = new HashSet<Expression>(new ExpressionEqualityComparer());
         private Func<Expression, bool>? _predicate;
 
-        protected void AddExpression(Expression expression)
+        protected void AddExpressionToExtractedExpressions(Expression expression)
         {
             if (null != _predicate && expression.NodeType != ExpressionType.Lambda && _predicate(expression))
                 _expressions.Add(expression);
@@ -106,7 +106,7 @@ namespace Foundation.Linq.Expressions
         [return: NotNullIfNotNull(nameof(node))]
         public override Expression? Visit(Expression? node)
         {
-            if (node is not null) AddExpression(node);
+            if (node is not null) AddExpressionToExtractedExpressions(node);
 
             return base.Visit(node);
         }

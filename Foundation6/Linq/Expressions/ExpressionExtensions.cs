@@ -129,6 +129,25 @@ public static class ExpressionExtensions
     public static bool HasParameter(this Expression expression, ParameterExpression parameter, bool ignoreNames = false)
         => expression.GetParameters().Any(x => x.EqualsToExpression(parameter, ignoreNames));
 
+    public static bool IsArithmeticBinary(this Expression expression) => expression.NodeType switch
+    {
+        ExpressionType.Add or
+        ExpressionType.AddAssign or
+        ExpressionType.AddAssignChecked or
+        ExpressionType.AddChecked or
+        ExpressionType.Divide or
+        ExpressionType.DivideAssign or
+        ExpressionType.Multiply or
+        ExpressionType.MultiplyAssign or
+        ExpressionType.MultiplyAssignChecked or
+        ExpressionType.MultiplyChecked => true,
+        ExpressionType.Subtract or
+        ExpressionType.SubtractAssign or
+        ExpressionType.SubtractAssignChecked or
+        ExpressionType.SubtractChecked => true,
+        _ => false
+    };
+
     public static bool IsConstant(this Expression expression)
     {
         return expression.NodeType == ExpressionType.Constant;
