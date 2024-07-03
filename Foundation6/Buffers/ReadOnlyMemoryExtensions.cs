@@ -25,8 +25,6 @@
 
 using Foundation.Collections.Generic;
 
-#if NET6_0_OR_GREATER
-
 public static class ReadOnlyMemoryExtensions
 {
     /// <summary>
@@ -166,5 +164,3 @@ public static class ReadOnlyMemoryExtensions
         return true;
     }
 }
-
-#endif

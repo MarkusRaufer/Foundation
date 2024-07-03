@@ -23,9 +23,6 @@
 // SOFTWARE.
 ﻿namespace Foundation.Buffers;
 
-
-#if NET6_0_OR_GREATER
-
 public static class ReadOnlySpanExtensions
 {
     public static int IndexFromEnd(this ReadOnlySpan<char> span, char value)
@@ -318,10 +315,12 @@ public static class ReadOnlySpanExtensions
         return new SplitEnumerator<T>(span, separators, notFoundReturnsNothing);
     }
 
+#if NET6_0_OR_GREATER
     public static StringSplitEnumerator SplitAtPart(this ReadOnlySpan<char> span, ReadOnlySpan<char> part, StringComparison comparison)
     {
         return new StringSplitEnumerator(span, part, comparison);
     }
+#endif
 
     public static ReadOnlySpan<char> TrimAll(this ReadOnlySpan<char> span, char value)
     {
@@ -337,4 +336,3 @@ public static class ReadOnlySpanExtensions
     }
 }
 
-#endif

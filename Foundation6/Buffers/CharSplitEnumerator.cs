@@ -22,7 +22,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 ﻿namespace Foundation.Buffers;
-#if NET6_0_OR_GREATER
+
 /// <summary>
 /// Splits strings as spans.
 /// Must be a ref struct as it contains a ReadOnlySpan<char>
@@ -73,5 +73,3 @@ public ref struct CharSplitEnumerator
 
     public char Separator { get; }
 }
-
-#endif

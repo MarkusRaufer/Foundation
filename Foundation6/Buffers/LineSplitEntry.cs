@@ -23,7 +23,6 @@
 // SOFTWARE.
 ﻿namespace Foundation.Buffers;
 
-#if NET6_0_OR_GREATER
 public readonly ref struct LineSplitEntry
 {
     public LineSplitEntry(ReadOnlySpan<char> line, ReadOnlySpan<char> separator)
@@ -45,5 +44,3 @@ public readonly ref struct LineSplitEntry
     // foreach (ReadOnlySpan<char> entry in str.SplitLines())
     public static implicit operator ReadOnlySpan<char>(LineSplitEntry entry) => entry.Line;
 }
-
-#endif
