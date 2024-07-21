@@ -21,84 +21,96 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
-﻿namespace Foundation.Collections.Generic
+﻿namespace Foundation.Collections.Generic;
+
+public static class ReadOnlyDictionaryExtensions
 {
-    public static class ReadOnlyDictionaryExtensions
+    /// <summary>
+    /// Intersects the keys of lhs with the keys of rhs.
+    /// </summary>
+    /// <typeparam name="TKey"></typeparam>
+    /// <typeparam name="TValue"></typeparam>
+    /// <typeparam name="TResult"></typeparam>
+    /// <param name="lhs"></param>
+    /// <param name="rhs"></param>
+    /// <param name="selector">Expects the common key followed by the lhs value and rhs value.</param>
+    /// <returns></returns>
+    public static IEnumerable<TResult> IntersectBy<TKey, TValue, TResult>(
+        this IReadOnlyDictionary<TKey, TValue> lhs,
+        IEnumerable<KeyValuePair<TKey, TValue>> rhs,
+        Func<TKey, TValue, TValue, TResult> selector)
     {
-        /// <summary>
-        /// Intersects the keys of lhs with the keys of rhs.
-        /// </summary>
-        /// <typeparam name="TKey"></typeparam>
-        /// <typeparam name="TValue"></typeparam>
-        /// <typeparam name="TResult"></typeparam>
-        /// <param name="lhs"></param>
-        /// <param name="rhs"></param>
-        /// <param name="selector">Expects the common key followed by the lhs value and rhs value.</param>
-        /// <returns></returns>
-        public static IEnumerable<TResult> IntersectBy<TKey, TValue, TResult>(
-            this IReadOnlyDictionary<TKey, TValue> lhs,
-            IEnumerable<KeyValuePair<TKey, TValue>> rhs,
-            Func<TKey, TValue, TValue, TResult> selector)
+        foreach (var right in rhs)
         {
-            foreach (var right in rhs)
-            {
-                if (!lhs.TryGetValue(right.Key, out TValue? lhsValue)) continue;
+            if (!lhs.TryGetValue(right.Key, out TValue? lhsValue)) continue;
 
-                yield return selector(right.Key, lhsValue, right.Value);
+            yield return selector(right.Key, lhsValue, right.Value);
+        }
+    }
+
+    public static bool IsEqualTo<TKey, TValue>(this IReadOnlyDictionary<TKey, TValue> lhs, IReadOnlyDictionary<TKey, TValue> rhs)
+        where TKey : notnull
+    {
+        if (null == lhs) return null == rhs;
+        if (null == rhs) return false;
+        if (lhs.Count != rhs.Count) return false;
+
+        foreach (var kvp in lhs)
+        {
+            if (!rhs.TryGetValue(kvp.Key, out TValue? rhsValue)) return false;
+            if (!kvp.Value.EqualsNullable(rhsValue)) return false;
+        }
+        return true;
+    }
+
+    /// <summary>
+    /// Returns all key values from dictionary. Existing key values of dictionary are replaced by the values of replacements.
+    /// </summary>
+    /// <typeparam name="TKey">Type of keys.</typeparam>
+    /// <typeparam name="TValue">Type of values.</typeparam>
+    /// <param name="dictionary">Dictionary which key values should be replaced.</param>
+    /// <param name="replacements"></param>
+    /// <param name="addNonExistingReplacements">Add key value from replacements which do not exist in dictionary.</param>
+    /// <returns></returns>
+    public static IEnumerable<KeyValuePair<TKey, TValue>> Replace<TKey, TValue>(
+        this IReadOnlyDictionary<TKey, TValue> dictionary,
+        IEnumerable<KeyValuePair<TKey, TValue>> replacements,
+        bool addNonExistingReplacements = false)
+        where TKey : notnull
+    {
+        var rhs = replacements.ToDictionary(x => x.Key, x => x.Value);
+
+        foreach (var lhs in dictionary)
+        {
+            if (rhs.TryGetValue(lhs.Key, out TValue? rhsValue))
+            {
+                yield return new KeyValuePair<TKey, TValue>(lhs.Key, rhsValue);
+                rhs.Remove(lhs.Key);
+
+                continue;
             }
+
+            yield return lhs;
         }
 
-        public static bool IsEqualTo<TKey, TValue>(this IReadOnlyDictionary<TKey, TValue> lhs, IReadOnlyDictionary<TKey, TValue> rhs)
-            where TKey : notnull
+        if (!addNonExistingReplacements) yield break;
+
+        foreach(var r in rhs)
         {
-            if (null == lhs) return null == rhs;
-            if (null == rhs) return false;
-            if (lhs.Count != rhs.Count) return false;
-
-            foreach (var kvp in lhs)
-            {
-                if (!rhs.TryGetValue(kvp.Key, out TValue? rhsValue)) return false;
-                if (!kvp.Value.EqualsNullable(rhsValue)) return false;
-            }
-            return true;
+            if (!dictionary.ContainsKey(r.Key)) yield return r;
         }
+    }
 
-        /// <summary>
-        /// Returns all key values from dictionary. Existing key values of dictionary are replaced by the values of replacements.
-        /// </summary>
-        /// <typeparam name="TKey">Type of keys.</typeparam>
-        /// <typeparam name="TValue">Type of values.</typeparam>
-        /// <param name="dictionary">Dictionary which key values should be replaced.</param>
-        /// <param name="replacements"></param>
-        /// <param name="addNonExistingReplacements">Add key value from replacements which do not exist in dictionary.</param>
-        /// <returns></returns>
-        public static IEnumerable<KeyValuePair<TKey, TValue>> Replace<TKey, TValue>(
-            this IReadOnlyDictionary<TKey, TValue> dictionary,
-            IEnumerable<KeyValuePair<TKey, TValue>> replacements,
-            bool addNonExistingReplacements = false)
-            where TKey : notnull
-        {
-            var rhs = replacements.ToDictionary(x => x.Key, x => x.Value);
-
-            foreach (var lhs in dictionary)
-            {
-                if (rhs.TryGetValue(lhs.Key, out TValue? rhsValue))
-                {
-                    yield return new KeyValuePair<TKey, TValue>(lhs.Key, rhsValue);
-                    rhs.Remove(lhs.Key);
-
-                    continue;
-                }
-
-                yield return lhs;
-            }
-
-            if (!addNonExistingReplacements) yield break;
-
-            foreach(var r in rhs)
-            {
-                if (!dictionary.ContainsKey(r.Key)) yield return r;
-            }
-        }
+    /// <summary>
+    /// Converts a <see cref="IReadOnlyDictionary{TKey, TValue}"/> to a <see cref="DictionaryValue{TKey, TValue}"./>
+    /// </summary>
+    /// <typeparam name="TKey">The item's key.</typeparam>
+    /// <typeparam name="TValue">The items's value.</typeparam>
+    /// <param name="dictionary">Dictionary which should be converted.</param>
+    /// <returns></returns>
+    public static DictionaryValue<TKey, TValue> ToDictionaryValue<TKey, TValue>(this IReadOnlyDictionary<TKey, TValue> dictionary)
+        where TKey : notnull
+    {
+        return DictionaryValue.New(dictionary);
     }
 }

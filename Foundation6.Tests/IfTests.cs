@@ -12,7 +12,7 @@ public class IfTests
         var x = 10;
         var expected = 100;
 
-        var result = If.Value(x).Is(x => x == 1).Then(x => expected).Else(x => 20);
+        var result = If.Value(x).Is(x => x == 1, _ => expected).Else(x => 20);
 
         result.Should().Be(20);
     }
@@ -23,9 +23,36 @@ public class IfTests
         var x = 10;
         var expected = 100;
 
-        var result = If.Value(x).Is(x => x == 10).Then(x => expected).Else(x => 20);
+        var result = If.Value(x).Is(x => x == 10, _ => expected).Else(x => 20);
 
         result.Should().Be(100);
+    }
+
+    [Test]
+    public void EagerValue_Should_ReturnValue2_When_Is_PredicateIsFalse_And_ElseIf_IsFalse()
+    {
+        var x = 10;
+        var expected = 100;
+
+        var result = If.Value(x)
+                       .Is(x => x == 1, x => x)
+                       .ElseIf(x => x == 10, _ => expected)
+                       .Else(_ => 50);
+
+        result.Should().Be(expected);
+    }
+
+    [Test]
+    public void EagerValue_Should_ReturnValue2_When_Is_PredicateIsFalse_And_ElseIf_IsTrue()
+    {
+        var x = 10;
+
+        var result = If.Value(x).Is(x => x == 1, x => x)
+                       .ElseIf(x => x == 10, x => x * 10)
+                       .Else(_ => 22);
+
+        var expected = 100;
+        result.Should().Be(expected);
     }
 
     [Test]
@@ -34,7 +61,7 @@ public class IfTests
         var x = 10;
         var expected = 100;
 
-        var result = If.True(x == 10).Then(() => expected).Else(() => 20);
+        var result = If.True(() => x == 10, () => expected).Else(() => 20);
 
         result.Should().Be(100);
     }
@@ -46,7 +73,7 @@ public class IfTests
         string? value = null;
         string elseValue = "default";
 
-        var result = If.Value(value).NotNull().Then(x => x).Else(() => elseValue);
+        var result = If.Value(value).NotNull(x => x).Else(() => elseValue);
 
         result.Should().Be(elseValue);
     }
@@ -57,7 +84,7 @@ public class IfTests
         string? x = null;
         var expected = 1;
 
-        var result = If.Value(() => x).NotNull().Then(x => int.Parse(x)).Else(() => expected);
+        var result = If.Value(() => x).NotNull(x => int.Parse(x)).Else(() => expected);
 
         result.Should().Be(expected);
     }
@@ -68,7 +95,7 @@ public class IfTests
         var x = "12";
         var expected = int.Parse(x);
 
-        var result = If.Value(() => x).NotNull().Then(x => int.Parse(x)).Else(() => 1);
+        var result = If.Value(() => x).NotNull(int.Parse).Else(() => 1);
 
         result.Should().Be(expected);
     }
@@ -79,7 +106,7 @@ public class IfTests
         var x = 10;
         var expected = 100;
 
-        var result = If.Value(() => x).Is(x => x == 1).Then(x => expected).Else(x => 20);
+        var result = If.Value(() => x).Is(x => x == 1, _ => expected).Else(x => 20);
 
         result.Should().Be(20);
     }
@@ -90,7 +117,7 @@ public class IfTests
         var x = 10;
         var expected = 100;
 
-        var result = If.Value(() => x).Is(x => x == 10).Then(x => expected).Else(x => 20);
+        var result = If.Value(() => x).Is(x => x == 10, _ => expected).Else(x => 20);
 
         result.Should().Be(100);
     }
@@ -100,7 +127,7 @@ public class IfTests
     {
         var x = "test";
 
-        var result = If.Value(() => x).NotNull().Then(x => x).Else(() => "default");
+        var result = If.Value(() => x).NotNull(x => x).Else(() => "default");
 
         result.Should().Be(x);
     }
@@ -111,7 +138,7 @@ public class IfTests
         var x = 10;
         var expected = 100;
 
-        var result = If.True(() => x == 5).Then(() => expected).Else(() => 20);
+        var result = If.True(() => x == 5, () => expected).Else(() => 20);
 
         result.Should().Be(20);
     }
@@ -122,7 +149,7 @@ public class IfTests
         var x = 10;
         var expected = 100;
 
-        var result = If.True(() => x == 10).Then(() => expected).Else(() => 20);
+        var result = If.True(() => x == 10, () => expected).Else(() => 20);
 
         result.Should().Be(100);
     }
