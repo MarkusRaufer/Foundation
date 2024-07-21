@@ -1977,7 +1977,7 @@ public static class EnumerableExtensions
     }
 
     /// <summary>
-    /// Calls predicate on all adjacent elements and transforms each element into TReturn.
+    /// Calls predicate on all adjacent elements and transforms each element into TResult.
     /// </summary>
     /// <typeparam name="T"></typeparam>
     /// <param name="items"></param>
