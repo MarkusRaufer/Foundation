@@ -48,6 +48,19 @@ public sealed record Error(string Id, string Message, Error[]? InnerErrors = nul
     }
 
     /// <summary>
+    /// Creates an Error instance from a list of exceptions.
+    /// </summary>
+    /// <param name="id">The error id which is typically an exception type name.</param>
+    /// <param name="message">The error message.</param>
+    /// <param name="exceptions">A list of exceptions and all their inner exceptions.</param>
+    /// <returns>An Error where the Id is the exception type.</returns>
+    public static Error FromExceptions(string id, string message, IEnumerable<Exception> exceptions)
+    {
+        var errors = exceptions.Select(FromException).ToArray();
+        return new Error(id, message, errors);
+    }
+
+    /// <summary>
     /// Creates an Error instance from a specific type.
     /// </summary>
     /// <typeparam name="T">The type of the error.</typeparam>
