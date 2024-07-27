@@ -304,6 +304,39 @@ public class FixedKeysMultiMap<TKey, TValue> : IReadOnlyMultiValueMap<TKey, TVal
         return false;
     }
 
+    public bool TryGetKey(TValue value, out TKey? key)
+    {
+        foreach (var dictionary in _dictionary)
+        {
+            if (dictionary.Value.Contains(value))
+            {
+                key = dictionary.Key;
+                return true;
+            }
+        }
+
+        key = default;
+        return false;
+    }
+
+    public bool TryGetKeys(TValue value, out IEnumerable<TKey> keys)
+    {
+        var foundKeys = new List<TKey>();
+
+        foreach (var dictionary in _dictionary)
+        {
+            if (dictionary.Value.Contains(value)) foundKeys.Add(dictionary.Key);
+        }
+
+        if (foundKeys.Count > 0)
+        {
+            keys = foundKeys;
+            return true;
+        }
+        keys = Enumerable.Empty<TKey>();
+        return false;
+    }
+
     public virtual TValue this[TKey key]
     {
         get => _dictionary[key].First();

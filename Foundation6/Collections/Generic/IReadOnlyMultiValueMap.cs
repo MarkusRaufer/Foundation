@@ -101,5 +101,27 @@ public interface IReadOnlyMultiValueMap<TKey, TValue, TValueCollection>
     /// </summary>
     public int KeyCount { get; }
 
+    /// <summary>
+    /// Returns the first found key of a specific value and returns true otherwise false.
+    /// </summary>
+    /// <param name="value">The value of the key.</param>
+    /// <param name="key">The found key of the value.</param>
+    /// <returns></returns>
+    bool TryGetKey(TValue value, out TKey? key);
+
+    /// <summary>
+    /// Returns keys of a specific value and returns true otherwise false and an empty list.
+    /// </summary>
+    /// <param name="value">The value of the keys.</param>
+    /// <param name="keys">The found keys of the value.</param>
+    /// <returns></returns>
+    bool TryGetKeys(TValue value, out IEnumerable<TKey> keys);
+
+    /// <summary>
+    /// Returns values of key if true otherwise an empty list.
+    /// </summary>
+    /// <param name="key">The key of the values.</param>
+    /// <param name="values">The found values.</param>
+    /// <returns></returns>
     bool TryGetValues(TKey key, [NotNullWhen(true)] out TValueCollection? values);
 }

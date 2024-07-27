@@ -321,11 +321,7 @@ public class MultiValueMap<TKey, TValue, TValueCollection>
             : _dictionary.Values.SelectMany(values => values);
     }
 
-    /// <summary>
-    /// Returns the keys containing the value.
-    /// </summary>
-    /// <param name="value"></param>
-    /// <returns></returns>
+    /// <inheritdoc/>
     public IEnumerable<TKey> GetKeys(IEnumerable<TValue> values)
     {
         if (!values.Any())
@@ -343,11 +339,7 @@ public class MultiValueMap<TKey, TValue, TValueCollection>
         }
     }
 
-    /// <summary>
-    /// Returns all keys with their values.
-    /// </summary>
-    /// <param name="keys"></param>
-    /// <returns></returns>
+    /// <inheritdoc/>
     public IEnumerable<KeyValuePair<TKey, IEnumerable<TValue>>> GetKeyValues(IEnumerable<TKey>? keys = default)
     {
         if (null == keys || !keys.Any())
@@ -367,7 +359,7 @@ public class MultiValueMap<TKey, TValue, TValueCollection>
         }
     }
 
-
+    /// <inheritdoc/>
     public IEnumerable<TValue> GetValues(TKey key)
     {
         if (!_dictionary.TryGetValue(key, out TValueCollection? values)) yield break;
@@ -377,11 +369,7 @@ public class MultiValueMap<TKey, TValue, TValueCollection>
         }
     }
 
-    /// <summary>
-    /// Returns the values of the keys.
-    /// </summary>
-    /// <param name="keys"></param>
-    /// <returns></returns>
+    /// <inheritdoc/>
     public IEnumerable<TValue> GetValues(IEnumerable<TKey> keys)
     {
         foreach (var key in keys)
@@ -393,11 +381,7 @@ public class MultiValueMap<TKey, TValue, TValueCollection>
         }
     }
 
-    /// <summary>
-    /// Returns the number of values of the key.
-    /// </summary>
-    /// <param name="key"></param>
-    /// <returns></returns>
+    /// <inheritdoc/>
     public int GetValuesCount(TKey key)
     {
         if (_dictionary.TryGetValue(key, out TValueCollection? values))
@@ -406,6 +390,7 @@ public class MultiValueMap<TKey, TValue, TValueCollection>
         return 0;
     }
 
+    /// <inheritdoc/>
     public bool IsReadOnly => _dictionary.IsReadOnly;
 
     /// <summary>
@@ -418,10 +403,13 @@ public class MultiValueMap<TKey, TValue, TValueCollection>
         get { return _dictionary.Keys; }
     }
 
+    /// <inheritdoc/>
     public virtual bool Remove(TKey key) => _dictionary.Remove(key);
 
+    /// <inheritdoc/>
     public virtual bool Remove(KeyValuePair<TKey, TValue> item) => Remove(item.Key, item.Value);
 
+    /// <inheritdoc/>
     public virtual bool Remove(TKey key, TValue value)
     {
         if (_dictionary.TryGetValue(key, out TValueCollection? values))
@@ -436,11 +424,7 @@ public class MultiValueMap<TKey, TValue, TValueCollection>
         return false;
     }
 
-    /// <summary>
-    /// Removes value from all keys.
-    /// </summary>
-    /// <param name="value"></param>
-    /// <returns></returns>
+    /// <inheritdoc/>
     public virtual bool RemoveValue(TValue value)
     {
         var removed = Fused.Value(false).BlowIfChanged();
@@ -452,12 +436,7 @@ public class MultiValueMap<TKey, TValue, TValueCollection>
         return removed.Value;
     }
 
-    /// <summary>
-    /// Removes value from keys.
-    /// </summary>
-    /// <param name=""></param>
-    /// <param name="keys"></param>
-    /// <returns></returns>
+    /// <inheritdoc/>
     public virtual bool RemoveValue(TValue value, IEnumerable<TKey> keys)
     {
         var removed = Fused.Value(false).BlowIfChanged();
@@ -477,7 +456,43 @@ public class MultiValueMap<TKey, TValue, TValueCollection>
         return removed.Value;
     }
 
+    /// <inheritdoc/>
+    public bool TryGetKey(TValue value, out TKey? key)
+    {
+        foreach (var dictionary in _dictionary)
+        {
+            if (dictionary.Value.Contains(value))
+            {
+                key = dictionary.Key;
+                return true;
+            }
+        }
+
+        key = default;
+        return false;
+    }
+
+    /// <inheritdoc/>
+    public bool TryGetKeys(TValue value, out IEnumerable<TKey> keys)
+    {
+        var foundKeys = new List<TKey>();
+
+        foreach(var dictionary in _dictionary)
+        {
+            if (dictionary.Value.Contains(value)) foundKeys.Add(dictionary.Key);
+        }
+
+        if (foundKeys.Count > 0)
+        {
+            keys = foundKeys;
+            return true;
+        }
+        keys = Enumerable.Empty<TKey>();
+        return false;
+    }
+
 #pragma warning disable CS8767
+    /// <inheritdoc/>
     public bool TryGetValue(TKey key, out TValue value)
     {
         if (_dictionary.TryGetValue(key, out TValueCollection? values))
@@ -514,6 +529,7 @@ public class MultiValueMap<TKey, TValue, TValueCollection>
         return false;
     }
 
+    /// <inheritdoc/>
     public virtual TValue this[TKey key]
     {
         get { return _dictionary[key].First(); }
