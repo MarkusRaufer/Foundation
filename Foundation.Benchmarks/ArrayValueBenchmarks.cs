@@ -64,7 +64,6 @@ public class ArrayValueBenchmarks
         _stringArrayValue2 = new ArrayValue<string>(_stringValues2);
     }
 
-    [Benchmark]
     public bool Array_int_SequenceEqual_Array()
     {
         return _intValues.SequenceEqual(_intValues2);

@@ -37,7 +37,7 @@ namespace Foundation.Benchmark
         public int NumberOfItems;
 
         //[Params(5000)]
-        //public int Search;
+        //public int IntValue;
 
         [GlobalSetup]
         public void Setup()
