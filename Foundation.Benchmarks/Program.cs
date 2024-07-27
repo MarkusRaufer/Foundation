@@ -37,7 +37,7 @@ public class Program
         //BenchmarkRunner.Run<CollectionsSearchBenchmarks>();
         //BenchmarkRunner.Run<EnumerableBenchMarks>();
         //BenchmarkRunner.Run<HashCodeBenchMarks>();
-        BenchmarkRunner.Run<HashedValueDictionaryBenchmarks>();
+        //BenchmarkRunner.Run<HashCollectionBenchmarks>();
         //BenchmarkRunner.Run<OptionBenchmarks>();
         //BenchmarkRunner.Run<PermutationsBenchmark>();
         //BenchmarkRunner.Run<ReadOnlySpanAndMemoryExtensionsBenchmarks>();
