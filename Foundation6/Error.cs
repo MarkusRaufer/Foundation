@@ -36,12 +36,13 @@ public sealed record Error(string Id, string Message, Error[]? InnerErrors = nul
     /// </summary>
     /// <param name="exception">The exception and all inner exceptions are fetched and created as a list of Errors.</param>
     /// <returns>An Error where the Id is the exception type.</returns>
-    public static Error FromException(Exception exception)
+    public static Error FromException(Exception exception, params Error[] errors)
     {
         var id = exception.GetType().Name;
 
         var innerErrors = exception.Flatten()
                                    .Select(x => FromException(x))
+                                   .Concat(errors)
                                    .ToArray();
 
         return new Error(id, exception.Message, innerErrors);
@@ -56,7 +57,7 @@ public sealed record Error(string Id, string Message, Error[]? InnerErrors = nul
     /// <returns>An Error where the Id is the exception type.</returns>
     public static Error FromExceptions(string id, string message, IEnumerable<Exception> exceptions)
     {
-        var errors = exceptions.Select(FromException).ToArray();
+        var errors = exceptions.Select(x => FromException(x)).ToArray();
         return new Error(id, message, errors);
     }
 
@@ -67,10 +68,12 @@ public sealed record Error(string Id, string Message, Error[]? InnerErrors = nul
     /// <param name="error">The error instance.</param>
     /// <param name="selector">A selector for the error message.</param>
     /// <returns>An Error where the Id is the error type.</returns>
-    public static Error FromType<T>(T error, Func<T, string> selector)
+    public static Error FromType<T>(T error, Func<T, string> selector, params Error[] errors)
     {
         var id = error.ThrowIfNull().GetType().Name;
 
-        return new Error(id, selector(error));
+        return errors is null 
+            ? new Error(id, selector(error))
+            : new Error(id, selector(error), errors);
     }
 }
