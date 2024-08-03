@@ -21,7 +21,7 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
-﻿namespace Foundation.Collections.Generic;
+namespace Foundation.Collections.Generic;
 
 using Foundation;
 
@@ -34,8 +34,16 @@ public static class DictionaryValue
         where TKey : notnull
         => new(keyValues);
 
+    public static DictionaryValue<TKey, TValue> New<TKey, TValue>(IEnumerable<(TKey, TValue)> keyValues)
+        where TKey : notnull
+        => new(keyValues);
+
     public static DictionaryValue<TKey, TValue> New<TKey, TValue>(params KeyValuePair<TKey, TValue>[] keyValues)
         where TKey: notnull
+        => new(keyValues);
+
+    public static DictionaryValue<TKey, TValue> New<TKey, TValue>(params (TKey key, TValue value)[] keyValues)
+        where TKey : notnull
         => new(keyValues);
 
     public static DictionaryValue<TKey, TValue> NewWith<TKey, TValue>(
@@ -63,6 +71,11 @@ public class DictionaryValue<TKey, TValue>
 
     public DictionaryValue(IEnumerable<KeyValuePair<TKey, TValue>> keyValues)
         : this(keyValues.ToDictionary(kvp => kvp.Key, kvp => kvp.Value))
+    {
+    }
+
+    public DictionaryValue(IEnumerable<(TKey key, TValue value)> keyValues)
+        : this(keyValues.ToDictionary(x => x.key, x => x.value))
     {
     }
 

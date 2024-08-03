@@ -1,13 +1,33 @@
 ﻿using FluentAssertions;
 using NUnit.Framework;
 using System.Collections.Generic;
-using System.Linq;
 
 namespace Foundation.Collections.Generic;
 
 [TestFixture]
 public class DictionaryValueTests
 {
+    [Test]
+    public void Ctor_Should_ReturnValidDictionaryValue_When_Using_Tuples()
+    {
+        var sut = new DictionaryValue<string, int>(
+        [
+            ("one", 1),
+            ("two", 2),
+            ("three", 3)
+        ]);
+
+        var expected = new DictionaryValue<string, int>(new Dictionary<string, int>
+        {
+            ["one"] = 1,
+            ["two"] = 2,
+            ["three"] = 3
+        });
+
+        sut.Should().NotBeNull();
+        sut.Should().BeEquivalentTo(expected);
+    }
+
     [Test]
     public void Equals_Should_ReturnFalse_When_KeysAreDifferent()
     {
@@ -102,6 +122,43 @@ public class DictionaryValueTests
 
         Assert.AreEqual(sut1, sut2);
         Assert.AreEqual(sut1.GetHashCode(), sut2.GetHashCode());
+    }
+
+    [Test]
+    public void New_Should_ReturnDictionaryValue_When_Using_Tuples()
+    {
+        var sut = DictionaryValue.New<string, object>(("one", 1), ("two", 2), ("three", 3));
+
+        var expected = new DictionaryValue<string, int>(new Dictionary<string, int>
+        {
+            ["one"] = 1,
+            ["two"] = 2,
+            ["three"] = 3
+        });
+
+        sut.Should().NotBeNull();
+        sut.Should().BeEquivalentTo(expected);
+
+    }
+    [Test]
+    public void New_Should_ReturnDictionaryValue_When_Using_TupleList()
+    {
+        var sut = DictionaryValue.New<string, object>(
+        [
+            ("one",   1),
+            ("two",   2),
+            ("three", 3)
+        ]);
+
+        var expected = new DictionaryValue<string, int>(new Dictionary<string, int>
+        {
+            ["one"] = 1,
+            ["two"] = 2,
+            ["three"] = 3
+        });
+
+        sut.Should().NotBeNull();
+        sut.Should().BeEquivalentTo(expected);
     }
 
     [Test]
