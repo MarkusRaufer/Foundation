@@ -70,7 +70,7 @@ public static class Json
 
         return scalarType switch
         {
-            { IsEnum: true } => enumAsString ? Enum.GetName(type, value) is string name ? name : "null" : $"{Convert.ChangeType(value, Type.GetTypeCode(type))}",
+            { IsEnum: true } => ObjectHelper.ToString(Month.Jul, valueAsName: enumAsString) is string str ? str : "null",
             { IsPrimitive: true } => $"{value}",
             Type _ when scalarType == typeof(DateTime) => $"{value:yyyy-MM-ddTHH:mm:ss}",
 #if NET6_0_OR_GREATER

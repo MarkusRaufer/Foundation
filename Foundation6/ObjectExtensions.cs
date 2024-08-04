@@ -145,6 +145,22 @@ public static class ObjectExtensions
         return castMethod?.Invoke(null, new[] { obj });
     }
 
+    [return: NotNull]
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static TResult EitherNullable<T, TResult>(this T? item, Func<T, TResult> notNull, Func<TResult> isNull)
+    {
+        notNull.ThrowIfNull();
+        isNull.ThrowIfNull();
+
+        if (item is T t)
+        {
+            var result = notNull(t);
+            return result ?? throw new ArgumentNullException(nameof(isNull), $"{nameof(notNull)} returned null");
+        }
+        var alternative = isNull();
+        return alternative ?? throw new ArgumentNullException(nameof(isNull), $"{nameof(isNull)} returned null");
+    }
+
     /// <summary>
     /// Checks equality of two objects. Allows that lhs and rhs are null without throwing an exception.
     /// </summary>
@@ -218,20 +234,27 @@ public static class ObjectExtensions
         return generic == type;
     }
 
+    /// <summary>
+    /// Returns a default value when <paramref name="obj"/> is null.
+    /// </summary>
+    /// <typeparam name="T">The type of the value.</typeparam>
+    /// <param name="obj">The value that can be null.</param>
+    /// <param name="default">The default value that may not be null.</param>
+    /// <param name="paramName">the name of the parameter which is by default the caller name.</param>
+    /// <returns></returns>
+    /// <exception cref="ArgumentNullException"></exception>
     [return: NotNull]
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static TResult EitherNullable<T, TResult>(this T? item, Func<T, TResult> notNull, Func<TResult> isNull)
+    public static T OrDefault<T>(this T? obj, [NotNull] Func<T> @default, [CallerArgumentExpression(nameof(obj))] string paramName = "")
     {
-        notNull.ThrowIfNull();
-        isNull.ThrowIfNull();
+        if (@default is null) throw new ArgumentNullException(nameof(@default));
 
-        if (item is T t)
+        if (obj is null)
         {
-            var result = notNull(t);
-            return result ?? throw new ArgumentNullException(nameof(isNull), $"{nameof(notNull)} returned null");
+            if (@default() is T value) return value;
+            throw new ArgumentNullException(paramName, $"{nameof(@default)} may not be null");
         }
-        var alternative = isNull();
-        return alternative ?? throw new ArgumentNullException(nameof(isNull), $"{nameof(isNull)} returned null");
+        return obj;
     }
 
     /// <summary>
