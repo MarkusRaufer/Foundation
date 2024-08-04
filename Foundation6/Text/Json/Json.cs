@@ -58,10 +58,10 @@ public static class Json
     {
         if (value is null) return "null";
 
-        var type = value.GetType();
+        var type = value is Id id ? id.Type : value.GetType();
 
         var scalarType = TypeHelper.GetScalarType(type);
-        if (scalarType is null) return "null";
+        if (scalarType is null)  return "null";
 
         return scalarType switch
         {
