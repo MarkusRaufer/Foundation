@@ -22,6 +22,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 using Foundation.Collections.Generic;
+using System.Drawing;
 using System.Globalization;
 using System.Text;
 
@@ -54,17 +55,22 @@ public static class Json
 
     public static string ToJson(this string str) => $@"""{str}""";
 
-    public static string ToJson<T>(this T? value)
+    public static string ToJson<T>(this T? value, bool enumAsString = true)
     {
         if (value is null) return "null";
 
         var type = value is Id id ? id.Type : value.GetType();
 
         var scalarType = TypeHelper.GetScalarType(type);
-        if (scalarType is null)  return "null";
+        if (scalarType is null)
+        {
+            if (type.IsEnum) scalarType = type;
+            else return "null";
+        }
 
         return scalarType switch
         {
+            { IsEnum: true } => enumAsString ? Enum.GetName(type, value) is string name ? name : "null" : $"{Convert.ChangeType(value, Type.GetTypeCode(type))}",
             { IsPrimitive: true } => $"{value}",
             Type _ when scalarType == typeof(DateTime) => $"{value:yyyy-MM-ddTHH:mm:ss}",
 #if NET6_0_OR_GREATER

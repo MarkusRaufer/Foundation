@@ -12,6 +12,22 @@ namespace Foundation.Text.Json;
 public class JsonTests
 {
     [Test]
+    public void ToJson_Should_ReturnValidString_WhenUsingEnumType_And_EnumAsStringIsFalse()
+    {
+        var str = Json.ToJson(Month.Jul, enumAsString: false);
+        var expected = $"{7}";
+        str.Should().Be(expected);
+    }
+
+    [Test]
+    public void ToJson_Should_ReturnValidString_WhenUsingEnumType_AsString()
+    {
+        var str = Json.ToJson(Month.Jul);                
+        var expected = $"{Month.Jul}";
+        str.Should().Be(expected);
+    }
+
+    [Test]
     public void ToJson_Should_ReturnValidString_WhenUsingInt()
     {
         var str = Json.ToJson(123);
