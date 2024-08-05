@@ -23,12 +23,37 @@
 // SOFTWARE.
 #if NET6_0_OR_GREATER
 
+using System;
+using System.Collections.Generic;
 using System.Text.Json;
 
 namespace Foundation.Text.Json;
 
 public static class Utf8JsonReaderExtensions
 {
+    public static Result<KeyValuePair<string, object?>, Error> GetProperty(this ref Utf8JsonReader reader)
+    {
+        if (reader.TokenType != JsonTokenType.PropertyName)
+        {
+            var error = new Error($"{nameof(JsonTokenType)}", $"expected {nameof(JsonTokenType.PropertyName)}");
+            return Result.Error<KeyValuePair<string, object?>>(error);
+        }
+
+        var name = reader.GetString();
+        if (null == name)
+        {
+            return Result.Error<KeyValuePair<string, object?>>(new Error("property name", "property has no name"));
+        }
+
+        if (!reader.Read())
+        {
+            return Result.Error<KeyValuePair<string, object?>>(new Error("property value", $"property {name} has no value"));
+        }
+
+        var value = reader.GetValue(reader.TokenType);
+        return Result.Ok(new KeyValuePair<string, object?>(name, value));
+    }
+
     public static Result<KeyValuePair<string, object?>, Error> GetProperty(this ref Utf8JsonReader reader, Type type)
     {
         if (reader.TokenType != JsonTokenType.PropertyName)
@@ -50,6 +75,44 @@ public static class Utf8JsonReaderExtensions
 
         var value = reader.GetValue(type);
         return Result.Ok(new KeyValuePair<string, object?>(name, value));
+    }
+
+    public static Result<object?, Error> GetValue(this Utf8JsonReader reader)
+    {
+        if (!reader.TokenType.IsValue())
+        {
+            return Result.Error<object?>(new Error("property value", "property value not found"));
+        }
+
+        switch (reader.TokenType)
+        {
+            case JsonTokenType.False: return Result.Ok<object?>(false);
+            case JsonTokenType.Null: return Result.Ok<object?>(default);
+            case JsonTokenType.Number:
+                if (reader.TryGetInt64(out var i64)) return Result.Ok<object?>(i64);
+                if (reader.TryGetDecimal(out var real)) return Result.Ok<object?>(real);
+
+                return Result.Error<object?>(new Error("property value", "elegal number format"));
+            case JsonTokenType.String: return Result.Ok<object?>(reader.GetString());
+            case JsonTokenType.True: return Result.Ok<object?>(true);
+            default: return Result.Error<object?>(new Error("property value", "format not supported"));
+        }
+    }
+
+    public static object? GetValue(this Utf8JsonReader reader, JsonTokenType tokenType)
+    {
+        switch(tokenType)
+        {
+            case JsonTokenType.False: return false;
+            case JsonTokenType.True: return true;
+            case JsonTokenType.Null: return default;
+            case JsonTokenType.Number:
+                if (reader.TryGetInt64(out var i64)) return i64;
+                if (reader.TryGetDecimal(out var real)) return real;
+                return null;
+            case JsonTokenType.String: return reader.GetString();
+            default: return default;
+        };
     }
 
     public static object? GetValue(this Utf8JsonReader reader, TypeCode typeCode)
@@ -74,6 +137,7 @@ public static class Utf8JsonReaderExtensions
             _ => default,
         };
     }
+
     public static object? GetValue(this Utf8JsonReader reader, Type type)
     {
         switch (Type.GetTypeCode(type))

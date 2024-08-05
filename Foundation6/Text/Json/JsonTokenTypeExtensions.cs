@@ -32,7 +32,11 @@ public static class JsonTokenTypeExtensions
     {
         return tokenType switch
         {
-            JsonTokenType.Number or JsonTokenType.String => true,
+            JsonTokenType.Null or
+            JsonTokenType.Number or
+            JsonTokenType.String or
+            JsonTokenType.False or
+            JsonTokenType.True => true,
             _ => false,
         };
     }
