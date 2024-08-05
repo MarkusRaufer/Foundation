@@ -110,7 +110,7 @@
         {
             error.ThrowIfNull();
 
-            if (!result.IsOk && result.TryGetError(out TError? errorValue)) error(errorValue!);
+            if (result.TryGetError(out TError? errorValue)) error(errorValue!);
 
             return new Unit();
         }
@@ -129,7 +129,7 @@
         {
             ok.ThrowIfNull();
 
-            if (!result.IsOk && result.TryGetOk(out TOk? okValue)) ok(okValue!);
+            if (result.TryGetOk(out TOk? okValue)) ok(okValue!);
 
             return new Unit();
         }
