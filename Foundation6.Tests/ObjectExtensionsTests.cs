@@ -44,13 +44,6 @@ public class ObjectExtensionsTests
     }
 
     [Test]
-    public void OrThrow_Should_ReturnStringDefaultValue_When_IntValueNotNull()
-    {
-        int number = 123;
-        var result = number.OrThrow(x => $"{x}", () => new ArgumentException(nameof(number)));
-    }
-
-    [Test]
     public void ThrowIfOutOfRange_Should_ReturnValue_When_InRange()
     {
         var min = 5;
@@ -85,4 +78,16 @@ public class ObjectExtensionsTests
             var number = value.ThrowIfOutOfRange(() => value < min || value > max, 1, max);
         });
     }
+
+    [Test]
+    public void ToType_Should_ReturnStringDefaultValue_When_IntValueNotNull()
+    {
+        var str = "123";
+
+        var result = str.ToType(Int32.Parse);
+
+        var expected = Int32.Parse(str);
+        result.Should().Be(expected);
+    }
+
 }

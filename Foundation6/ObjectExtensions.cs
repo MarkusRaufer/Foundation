@@ -24,6 +24,7 @@
 ﻿namespace Foundation;
 
 using System.ComponentModel;
+using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
 using System.Text;
@@ -234,6 +235,7 @@ public static class ObjectExtensions
         return generic == type;
     }
 
+  
     /// <summary>
     /// Returns a default value when <paramref name="obj"/> is null.
     /// </summary>
@@ -280,31 +282,6 @@ public static class ObjectExtensions
             if (@default() is TResult value) return value;
             throw new ArgumentNullException(paramName, $"{nameof(@default)} may not return null");
         }
-        if (notNull(obj) is TResult result) return result;
-
-        throw new ArgumentNullException(paramName, $"{nameof(notNull)} may not return null");
-    }
-
-    /// <summary>
-    /// Returns a transformed value when value is not null or throws an exception.
-    /// </summary>
-    /// <typeparam name="T">The type of the value.</typeparam>
-    /// <typeparam name="TResult">The transformed type of the value.</typeparam>
-    /// <param name="obj">The value.</param>
-    /// <param name="notNull">The projection method.</param>
-    /// <param name="exception">The exception method.</param>
-    /// <param name="paramName">The callers name.</param>
-    /// <returns></returns>
-    /// <exception cref="ArgumentNullException"></exception>
-    [return: NotNull]
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static TResult OrThrow<T, TResult>(this T? obj, [NotNull] Func<T, TResult> notNull, [NotNull] Func<Exception> exception, [CallerArgumentExpression(nameof(obj))] string paramName = "")
-    {
-        if (notNull is null) throw new ArgumentNullException(nameof(notNull));
-        if (exception is null) throw new ArgumentNullException(nameof(exception));
-
-        if (obj is null) throw exception();
-        
         if (notNull(obj) is TResult result) return result;
 
         throw new ArgumentNullException(paramName, $"{nameof(notNull)} may not return null");
@@ -361,7 +338,22 @@ public static class ObjectExtensions
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static T ThrowIfNull<T>(this T? obj, [CallerArgumentExpression(nameof(obj))] string paramName = "")
     {
-        return obj ?? throw new ArgumentNullException(paramName);
+        return ThrowIfNull(obj, () => new ArgumentNullException(paramName));
+    }
+
+    /// <summary>
+    /// Throws Exception if <paramref name="obj"/> is null.
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <param name="obj">Object that can be null.</param>
+    /// <param name="paramName">The name of the caller.</param>
+    /// <returns></returns>
+    /// <exception cref="ArgumentNullException"></exception>
+    [return: NotNull]
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static T ThrowIfNull<T>(this T? obj, Func<Exception> exeption, [CallerArgumentExpression(nameof(obj))] string paramName = "")
+    {
+        return obj ?? throw exeption();
     }
 
     /// <summary>
@@ -563,7 +555,22 @@ public static class ObjectExtensions
         return obj.ToString() ?? String.Empty;
     }
 
+    /// <summary>
+    /// Returns a value of type <typeparamref name="TResult"/> or null.
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <typeparam name="TResult"></typeparam>
+    /// <param name="obj"></param>
+    /// <param name="exception"></param>
+    /// <param name="paramName"></param>
+    /// <returns></returns>
+    /// <exception cref="ArgumentNullException"></exception>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static T ValueOr<T>(this object? value, T or) => value is T t ? t : or;
+    public static TResult? ToType<T, TResult>(this T? obj, Func<T, TResult> project, [CallerArgumentExpression(nameof(obj))] string paramName = "")
+    {
+        if (obj is null) return default;
+
+        return project(obj);
+    }
 }
 
