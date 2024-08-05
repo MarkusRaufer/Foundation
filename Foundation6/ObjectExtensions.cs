@@ -556,6 +556,20 @@ public static class ObjectExtensions
     }
 
     /// <summary>
+    /// Returns a value of type <typeparamref name="T"/> or null.
+    /// </summary>
+    /// <typeparam name="T">The type of the returned value.</typeparam>
+    /// <param name="obj">The object which is casted to <typeparamref name="T"/></param>
+    /// <param name="paramName"></param>
+    /// <returns>Value of type <typeparamref name="T"/> if compatible otherwise null</returns>
+    /// <exception cref="ArgumentNullException"></exception>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static T? ToType<T>(this object? obj, [CallerArgumentExpression(nameof(obj))] string paramName = "")
+    {
+        return obj is T t ? t : default;
+    }
+
+    /// <summary>
     /// Returns a value of type <typeparamref name="TResult"/> or null.
     /// </summary>
     /// <typeparam name="T"></typeparam>
