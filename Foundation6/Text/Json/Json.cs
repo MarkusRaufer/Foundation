@@ -55,7 +55,7 @@ public static class Json
 
     public static string ToJson(this string str) => $@"""{str}""";
 
-    public static string ToJson<T>(this T? value, bool enumAsString = true)
+    public static string ToJson<T>(this T? value, bool enumAsName = true)
     {
         if (value is null) return "null";
 
@@ -70,7 +70,7 @@ public static class Json
 
         return scalarType switch
         {
-            { IsEnum: true } => EnumHelper.ToString(Month.Jul, valueAsName: enumAsString).OrDefault(() => "null"),
+            { IsEnum: true } => EnumHelper.ToString(Month.Jul, nameAsValue: enumAsName).OrDefault(() => "null"),
             { IsPrimitive: true } => $"{value}",
             Type _ when scalarType == typeof(DateTime) => $"{value:yyyy-MM-ddTHH:mm:ss}",
 #if NET6_0_OR_GREATER
