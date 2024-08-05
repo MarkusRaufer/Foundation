@@ -80,6 +80,33 @@ public class ObjectExtensionsTests
     }
 
     [Test]
+    public void ToResult_Should_ReturnAnErrorResult_When_ValueIsNull()
+    {
+        string? str = null;
+
+        var expected = -1;
+
+        var result = str.ToResult(Int32.Parse, () => expected);
+
+        result.IsOk.Should().BeFalse();
+        result.TryGetError(out var error).Should().BeTrue();
+        error.Should().Be(expected);
+    }
+
+    [Test]
+    public void ToResult_Should_ReturnAnOkResult_When_ValueNotNull()
+    {
+        var str = "123";
+
+        var result = str.ToResult(Int32.Parse, () => -1);
+
+        var expected = Int32.Parse(str);
+        result.IsOk.Should().BeTrue();
+        result.TryGetOk(out var ok).Should().BeTrue();
+        ok.Should().Be(expected);
+    }
+
+    [Test]
     public void ToType_Should_ReturnStringDefaultValue_When_IntValueNotNull()
     {
         var str = "123";

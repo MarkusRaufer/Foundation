@@ -547,6 +547,22 @@ public static class ObjectExtensions
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static Option<T> ToOption<T>(this T? value) => Option.Maybe(value);
 
+    /// <summary>
+    /// Transforms <paramref name="value"/> into a <see cref="Result{TOk, TError}"/>.
+    /// </summary>
+    /// <typeparam name="T">The type of the value.</typeparam>
+    /// <typeparam name="TOk">Is called when value is not null.</typeparam>
+    /// <typeparam name="TError">Is called when value is null.</typeparam>
+    /// <param name="value"></param>
+    /// <param name="onOk"></param>
+    /// <param name="onError"></param>
+    /// <returns></returns>
+    public static Result<TOk, TError> ToResult<T, TOk, TError>(this T? value, Func<T, TOk> onOk, Func<TError> onError)
+    {
+        if (value is not null) return Result.Ok<TOk, TError>(onOk(value));
+        return Result.Error<TOk, TError>(onError());
+    }
+
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static string ToStringOrEmpty(this object? obj)
     {
