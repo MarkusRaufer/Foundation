@@ -37,6 +37,20 @@ public class ObjectExtensionsTests
     }
 
     [Test]
+    public void OrDefault_Should_ReturnStringDefaultValue_When_IntValueIsNull()
+    {
+        int? number = null;
+        number.OrDefault(x => $"{x}", () => "default").Should().Be("default");
+    }
+
+    [Test]
+    public void OrThrow_Should_ReturnStringDefaultValue_When_IntValueNotNull()
+    {
+        int number = 123;
+        var result = number.OrThrow(x => $"{x}", () => new ArgumentException(nameof(number)));
+    }
+
+    [Test]
     public void ThrowIfOutOfRange_Should_ReturnValue_When_InRange()
     {
         var min = 5;

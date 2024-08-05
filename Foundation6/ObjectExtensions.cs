@@ -258,6 +258,59 @@ public static class ObjectExtensions
     }
 
     /// <summary>
+    /// Returns a transformed value when value is not null or a transformed default value when <paramref name="obj"/> is null.
+    /// </summary>
+    /// <typeparam name="T">The type of the value.</typeparam>
+    /// <typeparam name="TResult">The type of the transformed value.</typeparam>
+    /// <param name="obj">The value.</param>
+    /// <param name="notNull">Is called when value is not null.</param>
+    /// <param name="default">Is called when value is null.</param>
+    /// <param name="paramName">The callers name.</param>
+    /// <returns></returns>
+    /// <exception cref="ArgumentNullException"></exception>
+    [return: NotNull]
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static TResult OrDefault<T, TResult>(this T? obj, [NotNull] Func<T, TResult> notNull, [NotNull] Func<TResult> @default, [CallerArgumentExpression(nameof(obj))] string paramName = "")
+    {
+        if (notNull is null) throw new ArgumentNullException(nameof(notNull));
+        if (@default is null) throw new ArgumentNullException(nameof(@default));
+
+        if (obj is null)
+        {
+            if (@default() is TResult value) return value;
+            throw new ArgumentNullException(paramName, $"{nameof(@default)} may not return null");
+        }
+        if (notNull(obj) is TResult result) return result;
+
+        throw new ArgumentNullException(paramName, $"{nameof(notNull)} may not return null");
+    }
+
+    /// <summary>
+    /// Returns a transformed value when value is not null or throws an exception.
+    /// </summary>
+    /// <typeparam name="T">The type of the value.</typeparam>
+    /// <typeparam name="TResult">The transformed type of the value.</typeparam>
+    /// <param name="obj">The value.</param>
+    /// <param name="notNull">The projection method.</param>
+    /// <param name="exception">The exception method.</param>
+    /// <param name="paramName">The callers name.</param>
+    /// <returns></returns>
+    /// <exception cref="ArgumentNullException"></exception>
+    [return: NotNull]
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static TResult OrThrow<T, TResult>(this T? obj, [NotNull] Func<T, TResult> notNull, [NotNull] Func<Exception> exception, [CallerArgumentExpression(nameof(obj))] string paramName = "")
+    {
+        if (notNull is null) throw new ArgumentNullException(nameof(notNull));
+        if (exception is null) throw new ArgumentNullException(nameof(exception));
+
+        if (obj is null) throw exception();
+        
+        if (notNull(obj) is TResult result) return result;
+
+        throw new ArgumentNullException(paramName, $"{nameof(notNull)} may not return null");
+    }
+
+    /// <summary>
     /// Throws an exception if <paramref name="predicate"/> returns true.
     /// </summary>
     /// <typeparam name="T"></typeparam>
