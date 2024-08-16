@@ -21,7 +21,9 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
-﻿namespace Foundation.Buffers;
+using Foundation.Collections.Generic;
+
+namespace Foundation.Buffers;
 
 public static class ReadOnlySpanExtensions
 {
@@ -139,6 +141,7 @@ public static class ReadOnlySpanExtensions
         var numberOfHits = 0;
         var pos = -1;
         int index;
+        
         while (-1 != (index = span.IndexOf(search, comparisonType)))
         {
             if (-1 == pos) pos = index;
@@ -150,6 +153,57 @@ public static class ReadOnlySpanExtensions
             numberOfHits++;
 
             span = span.Slice(index + search.Length);
+        }
+
+        return indices;
+    }
+
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="span"></param>
+    /// <param name="search"></param>
+    /// <param name="stopAfterNumberOfHits"></param>
+    /// <returns></returns>
+    public static int[] IndicesOf(
+        this ReadOnlySpan<char> span,
+        char search,
+        int stopAfterNumberOfHits = 0)
+    {
+        int index = 0;
+
+        var indices = new List<int>();
+
+        while (-1 != (index = span.IndexOf(index, search)))
+        {
+            indices.Add(index);
+
+            if (stopAfterNumberOfHits > 0 && indices.Count <= stopAfterNumberOfHits) break;
+            index++;
+        }
+
+        return [.. indices];
+    }
+
+    /// <summary>
+    /// Returns all indices of all characters.
+    /// </summary>
+    /// <param name="span"></param>
+    /// <param name="characters"></param>
+    /// <param name="stopAfterNumberOfHits"></param>
+    /// <returns></returns>
+    public static IReadOnlyCollection<int> IndicesOfSingleCharacters(this ReadOnlySpan<char> span, char[] characters, int stopAfterNumberOfHits = 0)
+    {
+        var indices = new SortedSet<int>();
+
+        foreach (var ch in characters)
+        {
+            foreach (var index in span.IndicesOf(ch))
+            {
+                indices.Add(index);
+
+                if (stopAfterNumberOfHits > 0 && indices.Count <= stopAfterNumberOfHits) break;
+            }
         }
 
         return indices;
@@ -303,7 +357,7 @@ public static class ReadOnlySpanExtensions
     /// </summary>
     /// <typeparam name="T"></typeparam>
     /// <param name="span"></param>
-    /// <param name="separators">Any of the separators will split the span.</param>
+    /// <param name="separators">Any of the characters will split the span.</param>
     /// <param name="notFoundReturnsNothing"></param>
     /// <returns></returns>
     public static SplitEnumerator<T> Split<T>(

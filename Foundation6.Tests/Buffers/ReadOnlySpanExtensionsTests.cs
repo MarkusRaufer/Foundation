@@ -1,5 +1,6 @@
 ﻿namespace Foundation.Buffers;
 
+using FluentAssertions;
 using NUnit.Framework;
 using System;
 using System.Buffers;
@@ -45,6 +46,23 @@ public class ReadOnlySpanExtensionsTests
     }
 
     [Test]
+    public void IndicesOf_Should_Return_EmptyArray_When_Using_EmptySpan()
+    {
+        var sut = "".AsSpan();
+        var indices = sut.IndicesOf('.').ToArray();
+        indices.Length.Should().Be(0);
+    }
+
+    [Test]
+    public void IndicesOf_Should_Return_ArrayWithOneElement_When_Using_ASpanOnlyContainingTheSeparator()
+    {
+        var sut = ".".AsSpan();
+        var indices = sut.IndicesOf('.').ToArray();
+        indices.Length.Should().Be(1);
+        indices[0].Should().Be(0);
+    }
+
+    [Test]
     public void IndicesOf_Should_Return_Indices_When_Using_AStringWithSingleSeparatorAndMultipleOccurrencies()
     {
         var sut = "123.4567.89".AsSpan();
@@ -59,7 +77,7 @@ public class ReadOnlySpanExtensionsTests
     public void IndicesOf_Should_Return_1Index_When_Using_AStringWithSingleSeparatorAndMultipleOccurrenciesAndStopAfter1Hit()
     {
         var sut = "123.4567.89".AsSpan();
-        var indices = sut.IndicesOfAny(new[] { '.' }.AsSpan(), 1).ToArray();
+        var indices = sut.IndicesOfAny(['.'], 1).ToArray();
 
         Assert.AreEqual(1, indices.Length);
         Assert.AreEqual(3, indices[0]);
@@ -69,7 +87,20 @@ public class ReadOnlySpanExtensionsTests
     public void IndicesOf_Should_Return_Indices_When_Using_MultipleSeparators()
     {
         var sut = "123_4567.89".AsSpan();
-        var indices = sut.IndicesOfAny(new[] { '.', '_' }.AsSpan()).ToArray();
+        var indices = sut.IndicesOf(['.', '_']).ToArray();
+
+        Assert.AreEqual(2, indices.Length);
+
+        Assert.AreEqual(3, indices[0]);
+        Assert.AreEqual(8, indices[1]);
+    }
+
+    [Test]
+    public void IndicesOfAny_Should_Return_Indices_When_Using_MultipleSeparators()
+    {
+        var sut = "123_4567.89".AsSpan();
+        var indices = sut.IndicesOfAny(['.', '_']).ToArray();
+
         Assert.AreEqual(2, indices.Length);
 
         Assert.AreEqual(3, indices[0]);

@@ -21,7 +21,9 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
-﻿namespace Foundation.Buffers;
+using Foundation.Collections.Generic;
+
+namespace Foundation.Buffers;
 
 /// <summary>
 /// Splits strings as spans.
@@ -29,14 +31,28 @@
 /// </summary>
 public ref struct CharSplitEnumerator
 {
+    private readonly int[] _indices;
+    private int _indexSelector = 0;
     private readonly bool _notFoundReturnsNothing;
     private bool _passed;
+    private int _rightIndex = 0;
     private ReadOnlySpan<char> _span;
 
-    public CharSplitEnumerator(ReadOnlySpan<char> span, char separator, bool notFoundReturnsNothing = true)
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="span"></param>
+    /// <param name="notFoundReturnsNothing"></param>
+    /// <param name="separators"></param>
+    public CharSplitEnumerator(ReadOnlySpan<char> span, bool notFoundReturnsNothing, params char[] separators)
     {
         _span = span;
-        Separator = separator;
+        
+        separators.ThrowIfOutOfRange(() => separators.Length == 0);
+
+        Separators = separators;
+        _indices = span.IndicesOfSingleCharacters(separators).ToArray();
+
         _notFoundReturnsNothing = notFoundReturnsNothing;
 
         Current = default;
@@ -51,25 +67,39 @@ public ref struct CharSplitEnumerator
 
     public bool MoveNext()
     {
-        var span = _span;
-        if (span.Length == 0) return false; // span is empty
+        if (_span.Length == 0) return false; // span is empty
 
-        var index = span.IndexOf(Separator);
-        if (index == -1) // separator not found
+        if (_indices.Length == 0) // no separator found
         {
-            _span = ReadOnlySpan<char>.Empty; // The remaining span is an empty span
+            if (_passed || _notFoundReturnsNothing) return false;
 
-            if (!_passed && _notFoundReturnsNothing) return false;
+            _passed = true;
 
-            Current = span;
+            Current = _span;
             return true;
         }
-        _passed = true;
 
-        Current = span.Slice(0, index);
-        _span = span.Slice(index + 1);
+        int leftIndex;
+        if (_indexSelector >= _indices.Length)
+        {
+            if (_passed || _rightIndex >= _span.Length) return false;
+
+            _passed = true;
+            leftIndex = _rightIndex + 1;
+            _rightIndex = _span.Length;
+        }
+        else
+        {
+            leftIndex = 0 == _indexSelector ? 0 : _rightIndex + 1;
+
+            _rightIndex = _indices[_indexSelector];
+            _indexSelector++;
+        }
+
+        Current = _span[leftIndex.._rightIndex];
+
         return true;
     }
 
-    public char Separator { get; }
+    public char[] Separators { get; }
 }
