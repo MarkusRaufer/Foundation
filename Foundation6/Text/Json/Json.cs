@@ -44,9 +44,9 @@ public static class Json
     {
         var sb = new StringBuilder();
 
-        foreach (var (name, value) in properties.AfterEach(() => sb.Append(',')))
+        foreach (var kvp in properties.AfterEach(() => sb.Append(',')))
         {
-            sb.Append(Property(name, value));
+            sb.Append(Property(kvp.Key, kvp.Value));
         }
         return sb.ToString();
     }

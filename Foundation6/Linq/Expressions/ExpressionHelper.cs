@@ -62,7 +62,7 @@ public static class ExpressionHelper
 
     public static BinaryExpression? Concat(IEnumerable<BinaryExpression> expressions, ExpressionType binaryType)
     {
-        return expressions.Aggregate(x => x, (acc, x) => Expression.MakeBinary(binaryType, acc, x))
+        return expressions.AggregateAsOption(x => x, (acc, x) => Expression.MakeBinary(binaryType, acc, x))
                           .TryGet(out var binaryExpression) ? binaryExpression : null;
     }
 

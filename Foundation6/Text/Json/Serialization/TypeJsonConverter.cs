@@ -37,7 +37,7 @@ public class TypeJsonConverter : JsonConverter<Type>
     private readonly Assembly[] _assemblies;
     private readonly string[] _propertyNames;
 
-    public TypeJsonConverter() : this(GetAssemblies(Assembly.GetExecutingAssembly().Location), new[] {nameof(Type.FullName)})
+    public TypeJsonConverter() : this(GetAssemblies(Assembly.GetExecutingAssembly().Location), [nameof(Type.FullName)])
     {
     }
 

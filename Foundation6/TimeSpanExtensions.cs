@@ -81,7 +81,7 @@ public static class TimeSpanExtensions
             sb.Append('F');
         }
 
-        return sb.ToString();
+        return sb.Length > 2 ? sb.ToString() : Iso8601Period.Zero;
     }
 
     public static IEnumerable<string> ToIso8601PeriodParts(this TimeSpan duration)

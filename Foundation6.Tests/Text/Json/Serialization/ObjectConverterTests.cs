@@ -21,14 +21,17 @@ public class ObjectConverterTests
         var intValue = 12345;
         var strValue = "12345";
         var timeOnlyValue = dateTimeValue.ToTimeOnly();
+        var timeSpan = TimeSpan.FromMilliseconds(1);
+        
+        var xxx = timeSpan.ToIso8601Period();
 
-        List<object?> values = [dateTimeValue, dateOnlyValue, doubleValue, intValue, strValue, timeOnlyValue];
+        List<object?> values = [dateTimeValue, dateOnlyValue, doubleValue, intValue, strValue, timeOnlyValue, timeSpan];
 
         var serializeOptions = new JsonSerializerOptions
         {
             Converters =
             {
-                new ObjectConverter()
+                new Foundation.Text.Json.Serialization.Tests.ObjectConverter()
             }
         };
 
@@ -39,7 +42,7 @@ public class ObjectConverterTests
 
         if (null != desirialized)
         {
-            desirialized.Count.Should().Be(6);
+            desirialized.Count.Should().Be(7);
             {
                 var value = desirialized[0];
                 value.Should().NotBeNull();
@@ -93,6 +96,16 @@ public class ObjectConverterTests
                 {
                     if (value is TimeOnly timeOnly) timeOnly.Should().Be(timeOnlyValue);
                     else Assert.Fail($"{nameof(value)} is not of type {nameof(TimeOnly)}.");
+
+                }
+            }
+            {
+                var value = desirialized[6];
+                value.Should().NotBeNull();
+                if (value != null)
+                {
+                    if (value is TimeSpan ts) ts.Should().Be(timeSpan);
+                    else Assert.Fail($"{nameof(value)} is not of type {nameof(TimeSpan)}.");
 
                 }
             }

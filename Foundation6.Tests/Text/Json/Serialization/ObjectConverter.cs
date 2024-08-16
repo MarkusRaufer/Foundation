@@ -1,33 +1,10 @@
-// The MIT License (MIT)
-//
-// Copyright (c) 2020 Markus Raufer
-//
-// All rights reserved.
-//
-// Permission is hereby granted, free of charge, to any person obtaining a copy
-// of this software and associated documentation files (the "Software"), to deal
-// in the Software without restriction, including without limitation the rights
-// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-// copies of the Software, and to permit persons to whom the Software is
-// furnished to do so, subject to the following conditions:
-//
-// The above copyright notice and this permission notice shall be included in all
-// copies or substantial portions of the Software.
-//
-// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-// SOFTWARE.
 ﻿#if NET6_0_OR_GREATER
 using System;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using System.Text.RegularExpressions;
 
-namespace Foundation.Text.Json.Serialization;
+namespace Foundation.Text.Json.Serialization.Tests;
 
 public class ObjectConverter : JsonConverter<object?>
 {
@@ -35,21 +12,39 @@ public class ObjectConverter : JsonConverter<object?>
     private readonly TypeCode _floatFormat;
     private readonly bool _supportDateOnly;
     private readonly bool _supportTimeOnly;
+    private readonly bool _supportTimeSpan;
 
     private readonly Regex? _dateTimeRegex;
+    private readonly Regex? _timeSpanRegex;
 
     public ObjectConverter(
         TypeCode integerFormat = TypeCode.Int32,
         TypeCode floatFormat = TypeCode.Double,
         bool supportDateOnly = true,
-        bool supportTimeOnly = true)
+        bool supportTimeOnly = true,
+        bool supportTimeSpan = true)
     {
         _integerFormat = integerFormat;
         _floatFormat = floatFormat;
         _supportDateOnly = supportDateOnly;
         _supportTimeOnly = supportTimeOnly;
+        _supportTimeSpan = supportTimeSpan;
 
         if (_supportDateOnly) _dateTimeRegex = new Regex(RegularExpressions.DateTimeExpression);
+        if (_supportTimeSpan) _timeSpanRegex = new Regex(RegularExpressions.TimeSpanExpression);
+    }
+
+    private static Result<TimeSpan, string?> GetTimeSpan(Utf8JsonReader reader, Regex? regex)
+    {
+        var str = reader.GetString();
+        if (null == regex) return Result.Error<TimeSpan, string?>(str);
+
+        if (string.IsNullOrEmpty(str)) return Result.Error<TimeSpan, string?>(str);
+        if (!regex.IsMatch(str)) return Result.Error<TimeSpan, string?>(str);
+
+        if (TimeSpan.TryParse(str, out var value)) return Result.Ok<TimeSpan, string?>(value);
+
+        return Result.Error<TimeSpan, string?>(str);
     }
 
     public override object? Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
@@ -63,7 +58,7 @@ public class ObjectConverter : JsonConverter<object?>
             JsonTokenType.String when TryGetDateTime(reader, _dateTimeRegex, out var dateTime) => dateTime,
             JsonTokenType.String when _supportDateOnly && TryGetDateOnly(reader, out var dateOnly) => dateOnly,
             JsonTokenType.String when _supportTimeOnly && TryGetTimeOnly(reader, out var timeOnly) => timeOnly,
-            JsonTokenType.String => reader.GetString()!,
+            JsonTokenType.String => GetTimeSpan(reader, _timeSpanRegex).Either(x => (object)x, x => x),
             _ => JsonDocument.ParseValue(ref reader).RootElement.Clone()
         };
     }
