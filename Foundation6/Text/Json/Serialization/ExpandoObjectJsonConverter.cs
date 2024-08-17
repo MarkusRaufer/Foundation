@@ -28,7 +28,7 @@ using System.Text.Json;
 using System.Text.Json.Serialization;
 
 namespace Foundation.Text.Json.Serialization;
-public class ExpandoObjectConverter : JsonConverter<ExpandoObject>
+public class ExpandoObjectJsonConverter : JsonConverter<ExpandoObject>
 {
     public override ExpandoObject? Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
     {

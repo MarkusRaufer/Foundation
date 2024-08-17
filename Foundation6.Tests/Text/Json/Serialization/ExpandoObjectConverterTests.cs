@@ -26,7 +26,7 @@ public class ExpandoObjectConverterTests
 
         var options = new JsonSerializerOptions
         {
-            Converters = { new ExpandoObjectConverter() }
+            Converters = { new ExpandoObjectJsonConverter() }
         };
 
         var json = JsonSerializer.Serialize<ExpandoObject>(obj, options) as string;

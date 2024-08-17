@@ -19,7 +19,7 @@ public class EnumerableConverterTests
         {
             Converters =
             {
-                new EnumerableConverter<int, HashSetValue<int>>(items => items.ToHashSetValue())
+                new EnumerableJsonConverter<int, HashSetValue<int>>(items => items.ToHashSetValue())
             }
         };
 
@@ -39,7 +39,7 @@ public class EnumerableConverterTests
         {
             Converters =
             {
-                new EnumerableConverter<int, NonEmptySetValue<int>>(items => items.ToNonEmptySetValue())
+                new EnumerableJsonConverter<int, NonEmptySetValue<int>>(items => items.ToNonEmptySetValue())
             }
         };
 
@@ -59,7 +59,7 @@ public class EnumerableConverterTests
         {
             Converters =
             {
-                new EnumerableConverter<int, NonEmptySetValue<int>>(items => items.ToNonEmptySetValue())
+                new EnumerableJsonConverter<int, NonEmptySetValue<int>>(items => items.ToNonEmptySetValue())
             }
         };
 

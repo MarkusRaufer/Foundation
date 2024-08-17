@@ -29,7 +29,7 @@ public class ObjectConverterTests
         {
             Converters =
             {
-                new ObjectConverter()
+                new ObjectJsonConverter()
             }
         };
 

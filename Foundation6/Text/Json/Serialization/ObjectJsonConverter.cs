@@ -6,7 +6,7 @@ using System.Text.RegularExpressions;
 
 namespace Foundation.Text.Json.Serialization;
 
-public class ObjectConverter : JsonConverter<object?>
+public class ObjectJsonConverter : JsonConverter<object?>
 {
     private readonly TypeCode _integerFormat;
     private readonly TypeCode _floatFormat;
@@ -17,7 +17,7 @@ public class ObjectConverter : JsonConverter<object?>
     private readonly Regex? _dateTimeRegex;
     private readonly Regex? _timeSpanRegex;
 
-    public ObjectConverter(
+    public ObjectJsonConverter(
         TypeCode integerFormat = TypeCode.Int32,
         TypeCode floatFormat = TypeCode.Double,
         bool supportDateOnly = true,
