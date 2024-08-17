@@ -21,8 +21,8 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
+using Foundation;
 using Foundation.Collections.Generic;
-using System.Drawing;
 using System.Globalization;
 using System.Text;
 
@@ -68,19 +68,20 @@ public static class Json
             else return "null";
         }
 
-        return scalarType switch
+        if (type.IsEnum) return EnumHelper.ToString(Month.Jul, nameAsValue: enumAsName).OrDefault(() => "null");
+        if (type.IsPrimitive) return $"{value}";
+
+        return value switch
         {
-            { IsEnum: true } => EnumHelper.ToString(Month.Jul, nameAsValue: enumAsName).OrDefault(() => "null"),
-            { IsPrimitive: true } => $"{value}",
-            Type _ when scalarType == typeof(DateTime) => $"{value:yyyy-MM-ddTHH:mm:ss}",
+            DateTime dateTime => $"{value:yyyy-MM-ddTHH:mm:ss}",
+            decimal dec => string.Format(CultureInfo.InvariantCulture, "{0}", value),
+            Guid guid => $"\"{value}\"",
+            string str => $"\"{value}\"",
+            TimeSpan timeSpan => $"\"{timeSpan.ToIso8601Period()}\"",
 #if NET6_0_OR_GREATER
-            Type _ when scalarType == typeof(DateOnly) => $"{value:yyyy-MM-dd}",
-            Type _ when scalarType == typeof(TimeOnly) => $"\"{value:HH:mm:ss}\"",
+            DateOnly dateOnly => $"\"{dateOnly:yyyy-MM-dd}\"",
+            TimeOnly timeOnly => $"\"{timeOnly:HH:mm:ss}\"",
 #endif
-            Type _ when scalarType == typeof(decimal) => string.Format(CultureInfo.InvariantCulture, "{0}", value),
-            Type _ when scalarType == typeof(Guid) => $"\"{value}\"",
-            Type _ when scalarType == typeof(string) => $"\"{value}\"",
-            Type _ when scalarType == typeof(TimeSpan) => $"\"{value}\"",
             _ => "null"
         };
     }
