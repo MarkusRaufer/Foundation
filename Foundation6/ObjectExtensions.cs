@@ -351,7 +351,7 @@ public static class ObjectExtensions
     /// <exception cref="ArgumentNullException"></exception>
     [return: NotNull]
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static T ThrowIfNull<T>(this T? obj, Func<Exception> exeption, [CallerArgumentExpression(nameof(obj))] string paramName = "")
+    public static T ThrowIfNull<T>(this T? obj, Func<Exception> exeption)
     {
         return obj ?? throw exeption();
     }
