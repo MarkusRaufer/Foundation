@@ -11,6 +11,16 @@ namespace Foundation.Collections;
 public class EnumerableExtensionsTests
 {
     [Test]
+    public void AggregateAsOption_Should_ReturnNone_When_ListIsEmpty()
+    {
+        var numbers = Enumerable.Empty<int>();
+
+        var result = numbers.AggregateAsOption(x => x, (l, r) => l > r ? l : r);
+
+        result.IsNone.Should().BeTrue();
+    }
+
+    [Test]
     public void AllOfSameType_Should_ReturnFalse_When_AllItemsAreObjectAndNotOfSameType()
     {
         var numbers = new object[] { 1, "2", 3, "4" };
@@ -40,6 +50,27 @@ public class EnumerableExtensionsTests
         var allSame = dts.AllOfSameType(x => x.Year);
 
         allSame.Should().BeTrue();
+    }
+
+    [Test]
+    public void MinAsOption_Should_ReturnNone_When_ListIsEmpty()
+    {
+        var numbers = Enumerable.Empty<int>();
+
+        var result = numbers.MinAsOption();
+
+        result.IsNone.Should().BeTrue();
+    }
+
+    [Test]
+    public void MinAsOption_Should_ReturnSome_5_When_5_IsMinimum()
+    {
+        var numbers = Enumerable.Range(5, 15);
+
+        var result = numbers.MinAsOption();
+
+        result.TryGet(out int value).Should().BeTrue();
+        value.Should().Be(5);
     }
 
     [Test]

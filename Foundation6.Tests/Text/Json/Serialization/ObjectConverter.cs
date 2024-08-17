@@ -55,10 +55,11 @@ public class ObjectConverter : JsonConverter<object?>
             JsonTokenType.False => false,
             JsonTokenType.Number when TryGetInteger(reader, _integerFormat, out var intValue) => intValue,
             JsonTokenType.Number when TryGetFloat(reader, _floatFormat, out var floatValue) => floatValue,
+            JsonTokenType.String when _supportTimeSpan && TryGetTimeSpan(reader, out var timeSpan) => timeSpan,
             JsonTokenType.String when TryGetDateTime(reader, _dateTimeRegex, out var dateTime) => dateTime,
             JsonTokenType.String when _supportDateOnly && TryGetDateOnly(reader, out var dateOnly) => dateOnly,
             JsonTokenType.String when _supportTimeOnly && TryGetTimeOnly(reader, out var timeOnly) => timeOnly,
-            JsonTokenType.String => GetTimeSpan(reader, _timeSpanRegex).Either(x => (object)x, x => x),
+            JsonTokenType.String => reader.GetString(),
             _ => JsonDocument.ParseValue(ref reader).RootElement.Clone()
         };
     }
@@ -190,8 +191,31 @@ public class ObjectConverter : JsonConverter<object?>
         return false;
     }
 
+    private static bool TryGetTimeSpan(Utf8JsonReader reader, out TimeSpan? timeSpan)
+    {
+        var str = reader.GetString();
+        if (string.IsNullOrWhiteSpace(str))
+        {
+            timeSpan = default;
+            return false;
+        }
+
+        if (Iso8601Period.TryParse(str, out var value))
+        {
+            timeSpan = value;
+            return true;
+        }
+        timeSpan = null;
+        return false;
+    }
+
     public override void Write(Utf8JsonWriter writer, object? value, JsonSerializerOptions options)
     {
+        if (value is TimeSpan timeSpan)
+        {
+            writer.WriteValue(timeSpan.ToIso8601Period());
+            return;
+        }
         writer.WriteValue(value);
     }
 }

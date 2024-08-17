@@ -32,25 +32,38 @@ using System.Linq;
 [MemoryDiagnoser]
 public class ReadOnlySpanAndMemoryExtensionsBenchmarks
 {
+    public static char[] _separators = ['_', '.', '-'];
+
+    public static string _strWithSeparators = "123_45.678-9";
+
+    private static string _str = "the \"very\" \"important\" case";
+
     [Benchmark]
     public IReadOnlyCollection<int> ReadOnlySpan_IndexesFromEnd()
     {
-        var span = "the \"very\" \"important\" case".AsSpan();
+        var span = _str.AsSpan();
         return span.IndicesFromEnd("\"".AsSpan());
     }
 
     [Benchmark]
     public int[] ReadOnlyMemory_IndexesFromEnd()
     {
-        var memory = "the \"very\" \"important\" case".AsMemory();
+        var memory = _str.AsMemory();
         return memory.IndicesFromEnd("\"".AsMemory()).ToArray();
     }
 
     [Benchmark]
     public int[] ReadOnlyMemory_IndexesFromEnd_2Elements()
     {
-        var memory = "the \"very\" \"important\" case".AsMemory();
+        var memory = _str.AsMemory();
         return memory.IndicesFromEnd("\"".AsMemory()).Take(2).ToArray();
+    }
+
+    [Benchmark]
+    public IReadOnlyCollection<int> ReadOnlySpan_IndicesOfSingleCharacters()
+    {
+        var span = _strWithSeparators.AsSpan();
+        return span.IndicesOfSingleCharacters(_separators);
     }
 }
 
