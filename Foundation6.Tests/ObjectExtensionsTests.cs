@@ -80,6 +80,28 @@ public class ObjectExtensionsTests
     }
 
     [Test]
+    public void ToKeyValue_Should_ReturnVariableNameWithPropertyNameWithValue_When_PropertyNameOnlyIsFalse()
+    {
+        var str = "123";
+
+        var kv = str.Length.ToKeyValue();
+
+        kv.Key.Should().Be("str.Length");
+        kv.Value.Should().Be(str.Length);
+    }
+
+    [Test]
+    public void ToKeyValue_Should_ReturnPropertyNameWithValue_When_PropertyNameOnlyIsTrue()
+    {
+        var str = "123";
+
+        var kv = str.Length.ToKeyValue();
+
+        kv.Key.Should().Be(nameof(str.Length));
+        kv.Value.Should().Be(str.Length);
+    }
+
+    [Test]
     public void ToResult_Should_ReturnAnErrorResult_When_ValueIsNull()
     {
         string? str = null;
@@ -110,6 +132,8 @@ public class ObjectExtensionsTests
     public void ToType_Should_ReturnStringDefaultValue_When_IntValueNotNull()
     {
         var str = "123";
+
+        var kv = str.Length.ToKeyValue();
 
         var result = str.ToType(Int32.Parse);
 

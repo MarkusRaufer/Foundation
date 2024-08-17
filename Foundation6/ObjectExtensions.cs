@@ -539,6 +539,23 @@ public static class ObjectExtensions
     }
 
     /// <summary>
+    /// Creates a <see cref="KeyValuePair{string, Object?}"/> from a caller.
+    /// </summary>
+    /// <param name="value"></param>
+    /// <param name="propertyNameOnly">If true it create a <see cref="KeyValuePair{string, Object?}"/> like [Length, 3]
+    /// otherwise it creates a <see cref="KeyValuePair{string, Object?}"/> like [str.Lenght, 3].</param>
+    /// <param name="paramName">The parameter name which is automatically set.</param>
+    /// <returns></returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static KeyValuePair<string, object?> ToKeyValue(this object? value, bool propertyNameOnly = true, [CallerArgumentExpression(nameof(value))] string paramName = "")
+    {
+        var index = paramName.LastIndexOf('.');
+        if (index == -1) return new KeyValuePair<string, object?>(paramName, value);
+        
+        return new KeyValuePair<string, object?>(paramName[(index + 1)..], value);
+    }
+
+    /// <summary>
     /// Returns Some(T) if <paramref name="obj"/> <typeparamref name="T"/> otherwise None.
     /// </summary>
     /// <typeparam name="T"></typeparam>
