@@ -145,17 +145,6 @@ public static class TypeHelper
     }
 
     /// <summary>
-    /// returns a type if it matches with a scalar or primitive type.
-    /// </summary>
-    /// <param name="type">Type to check if it is scalar or primitive.</param>
-    /// <param name="whithoutPrimitives">If true primitive types are not considered.</param>
-    /// <returns></returns>
-    public static Type? GetScalarType(Type type, bool whithoutPrimitives = false)
-    {
-        return ScalarTypes(whithoutPrimitives).FirstOrDefault(x => x == type);
-    }
-
-    /// <summary>
     /// returns the type from the short name. e.g. int, string.
     /// </summary>
     /// <param name="shortTypeName">The name of the type.</param>
@@ -192,8 +181,20 @@ public static class TypeHelper
             "decimal"  => typeof(Decimal).FullName,
             nameof(Guid) => typeof(Guid).FullName,
             "string" => typeof(String).FullName,
+            nameof(TimeSpan) => typeof(TimeSpan).FullName,
             _ => null,
         };
+    }
+
+    /// <summary>
+    /// returns true if type is a scalar or primitive type.
+    /// </summary>
+    /// <param name="type">Type to check if it is scalar or primitive.</param>
+    /// <param name="whithoutPrimitives">If true primitive types are not considered.</param>
+    /// <returns></returns>
+    public static bool IsScalarType(Type type, bool whithoutPrimitives = false)
+    {
+        return ScalarTypes(whithoutPrimitives).Any(x => x == type);
     }
 
     public static IEnumerable<Type> NullablePrimitiveTypes()
@@ -340,6 +341,7 @@ public static class TypeHelper
         yield return typeof(decimal[]);
         yield return typeof(Guid[]);
         yield return typeof(string[]);
+        yield return typeof(TimeSpan[]);
     }
 
     public static IEnumerable<Type> ScalarEnumerableTypes(bool whithoutPrimitives = false)

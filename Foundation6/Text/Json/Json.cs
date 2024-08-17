@@ -25,6 +25,7 @@ using Foundation;
 using Foundation.Collections.Generic;
 using System.Globalization;
 using System.Text;
+using System.Xml.Schema;
 
 namespace Foundation.Text.Json;
 
@@ -61,28 +62,33 @@ public static class Json
 
         var type = value is Id id ? id.Type : value.GetType();
 
-        var scalarType = TypeHelper.GetScalarType(type);
-        if (scalarType is null)
-        {
-            if (type.IsEnum) scalarType = type;
-            else return "null";
-        }
-
-        if (type.IsEnum) return EnumHelper.ToString(Month.Jul, nameAsValue: enumAsName).OrDefault(() => "null");
         if (type.IsPrimitive) return $"{value}";
 
-        return value switch
+        if (!TypeHelper.IsScalarType(type))
         {
-            DateTime dateTime => $"{value:yyyy-MM-ddTHH:mm:ss}",
-            decimal dec => string.Format(CultureInfo.InvariantCulture, "{0}", value),
-            Guid guid => $"\"{value}\"",
-            string str => $"\"{value}\"",
-            TimeSpan timeSpan => $"\"{timeSpan.ToIso8601Period()}\"",
+            if (type.IsEnum) return EnumHelper.ToString(Month.Jul, nameAsValue: enumAsName).OrDefault(() => "null");
+
+            return "null";
+        }
+
+        return toString(value);
+
+        static string toString<TIn>(TIn val)
+        {
+            return val switch
+            {
+                DateTime dateTime => $"{dateTime:yyyy-MM-ddTHH:mm:ss}",
+                decimal dec => string.Format(CultureInfo.InvariantCulture, "{0}", dec),
+                Guid guid => $"\"{guid}\"",
+                Id identifier => toString(identifier.Value),
+                string str => $"\"{str}\"",
+                TimeSpan timeSpan => $"\"{timeSpan.ToIso8601Period()}\"",
 #if NET6_0_OR_GREATER
             DateOnly dateOnly => $"\"{dateOnly:yyyy-MM-dd}\"",
             TimeOnly timeOnly => $"\"{timeOnly:HH:mm:ss}\"",
 #endif
-            _ => "null"
-        };
+                _ => "null"
+            };
+        }
     }
 }
