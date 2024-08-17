@@ -25,30 +25,43 @@ namespace Foundation;
 
 public static class Iso8601Period
 {
-    public static bool TryParse(string str, out TimeSpan? timeSpan)
+    /// <summary>
+    /// Creates a <see cref="TimeSpan"/> from a ISO 8601 period string.
+    /// It does not support years and months. They must be transformed to days.
+    /// </summary>
+    /// <param name="str"></param>
+    /// <param name="timeSpan"></param>
+    /// <returns></returns>
+    public static bool TryParse(ReadOnlySpan<char> span, out TimeSpan? timeSpan)
     {
-        if (string.IsNullOrWhiteSpace(str) || str.Length < 4)
+        if (span.IsEmpty || span.Length < 4)
         {
             timeSpan = null;
             return false;
         }
 
-        var isNegative = str[0] is '-';
+        var isNegative = span[0] is '-';
 
-        if (isNegative ? str[1] is not 'P' : str[0] is not 'P')
+        if (isNegative ? span[1] is not 'P' : span[0] is not 'P')
         {
             timeSpan = null;
             return false;
         }
 
-        timeSpan = ToTimeSpanParts(str.AsSpan()).Aggregate(TimeSpan.Zero, (acc, span) 
-            => isNegative 
+        timeSpan = ToTimeSpanParts(span).Aggregate(TimeSpan.Zero, (acc, span)
+            => isNegative
             ? acc.Subtract(span)
             : acc.Add(span));
 
         return timeSpan.HasValue;
     }
-    
+
+    /// <summary>
+    /// Creates <see cref="TimeSpan"/> parts of a ISO 8601 period. Does not support years and months.
+    /// They must be transformed to days.
+    /// </summary>
+    /// <param name="span">The span containing the ISO 8106 period.</param>
+    /// <returns></returns>
     public static IReadOnlyCollection<TimeSpan> ToTimeSpanParts(ReadOnlySpan<char> span)
     {
         var start = span[0] == '-' ? 2 : 1;
