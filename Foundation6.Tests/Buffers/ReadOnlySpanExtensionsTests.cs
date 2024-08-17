@@ -84,10 +84,11 @@ public class ReadOnlySpanExtensionsTests
     }
 
     [Test]
-    public void IndicesOf_Should_Return_Indices_When_Using_MultipleSeparators()
+    public void IIndicesOfSingleCharacters_Should_Return_Indices_When_Using_MultipleSeparators()
     {
         var sut = "123_4567.89".AsSpan();
-        var indices = sut.IndicesOf(['.', '_']).ToArray();
+
+        var indices = sut.IndicesOfSingleCharacters(['.', '_']).ToArray();
 
         Assert.AreEqual(2, indices.Length);
 

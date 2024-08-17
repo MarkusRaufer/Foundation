@@ -540,6 +540,44 @@ public static class EnumerableConditionals
     }
 
     /// <summary>
+    /// Stops iteration when predication returns true.
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <param name="items"></param>
+    /// <param name="predicate"></param>
+    /// <returns></returns>
+    public static IEnumerable<T> StopWhen<T>(this IEnumerable<T> items, Func<T, bool> predicate)
+    {
+        foreach (var item in items)
+        {
+            if (predicate(item)) break;
+
+            yield return item;
+        }
+    }
+
+    /// <summary>
+    /// Stops iteration when predication returns true.
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <param name="items"></param>
+    /// <param name="predicate"></param>
+    /// <param name="action">can be used to detect specific values or types.</param>
+    /// <returns></returns>
+    public static IEnumerable<T> StopWhen<T>(this IEnumerable<T> items, Func<T, bool> predicate, Action<T> action)
+    {
+        foreach (var item in items)
+        {
+            if (predicate(item))
+            {
+                action(item);
+                break;
+            }
+            yield return item;
+        }
+    }
+
+    /// <summary>
     /// Throws an ArgumentNullException if an element of the enumerable is null.
     /// Use this method only for value objects with small collections because the check is done in an eager way.
     /// Don't use <see cref="ThrowIfElementNull"/> for general collections because of performance reasons and also to keep the collection lazy. 

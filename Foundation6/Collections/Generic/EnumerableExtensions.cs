@@ -40,7 +40,7 @@ public static class EnumerableExtensions
     /// <param name="seed">A functor transforms the first element in the list.</param>
     /// <param name="func">The aggregation function.</param>
     /// <returns></returns>
-    public static Option<TAccumulate> Aggregate<T, TAccumulate>(
+    public static Option<TAccumulate> AggregateAsOption<T, TAccumulate>(
         this IEnumerable<T> items,
         Func<T, TAccumulate> seed,
         Func<TAccumulate, T, TAccumulate> func)
@@ -49,14 +49,16 @@ public static class EnumerableExtensions
         func.ThrowIfNull();
 
         TAccumulate? acc = default;
+        bool empty = false;
 
-        foreach (var item in items.OnFirst(x => acc = seed(x))
+        foreach (var item in items.OnEmpty(() => empty = true)
+                                  .OnFirst(x => acc = seed(x))
                                   .Skip(1))
         {
             acc = func(acc!, item);
         }
-
-        return Option.Maybe(acc);
+        
+        return empty ? Option.None<TAccumulate>() : Option.Maybe(acc);
     }
 
     /// <summary>
@@ -1626,6 +1628,36 @@ public static class EnumerableExtensions
         comparer.ThrowIfNull();
         
         return items.Aggregate((a, b) => comparer(a, b) == 1 ? a : b);
+    }
+
+    /// <summary>
+    /// Returns the minimum value of items. If items is emtpy None is returned.
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <param name="items"></param>
+    /// <returns></returns>
+    /// <exception cref="ArgumentException">Throws exception when items are not comparable.</exception>
+    public static Option<T> MinAsOption<T>(this IEnumerable<T> items)
+    {
+        var first = items.FirstOrDefault();
+        if (first is not IComparable<T> or not IComparable) return Option.None<T>();
+
+
+        return items.AggregateAsOption(x => x, (l, r) =>
+        {
+            if (l is IComparable<T> leftComparable)
+            {
+                if (leftComparable.CompareTo(r) is 0 or -1) return l;
+
+                return r;
+            }
+            if(l is IComparable leftComparableObject)
+            {
+                if (leftComparableObject.CompareTo(r) is 0 or -1) return l;
+            }
+
+            return r;
+        });
     }
 
     /// <summary>

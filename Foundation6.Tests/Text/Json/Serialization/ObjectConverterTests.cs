@@ -21,17 +21,15 @@ public class ObjectConverterTests
         var intValue = 12345;
         var strValue = "12345";
         var timeOnlyValue = dateTimeValue.ToTimeOnly();
-        var timeSpan = TimeSpan.FromMilliseconds(1);
+        var timeSpan = TimeSpan.FromSeconds(1.234);
         
-        var xxx = timeSpan.ToIso8601Period();
-
         List<object?> values = [dateTimeValue, dateOnlyValue, doubleValue, intValue, strValue, timeOnlyValue, timeSpan];
 
         var serializeOptions = new JsonSerializerOptions
         {
             Converters =
             {
-                new Foundation.Text.Json.Serialization.Tests.ObjectConverter()
+                new ObjectConverter()
             }
         };
 

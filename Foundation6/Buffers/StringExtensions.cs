@@ -27,7 +27,7 @@ public static class StringExtensions
 {
     public static CharSplitEnumerator SplitToSpans(this string str, char separator)
     {
-        return new CharSplitEnumerator(str.AsSpan(), separator);
+        return new CharSplitEnumerator(str.AsSpan(), true, separator);
     }
 
     public static LineSplitEnumerator SplitLines(this string str)
