@@ -549,6 +549,8 @@ public static class ObjectExtensions
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static KeyValuePair<string, object?> ToKeyValue(this object? value, bool propertyNameOnly = true, [CallerArgumentExpression(nameof(value))] string paramName = "")
     {
+        if (!propertyNameOnly) return new KeyValuePair<string, object?>(paramName, value);
+
         var index = paramName.LastIndexOf('.');
         if (index == -1) return new KeyValuePair<string, object?>(paramName, value);
         

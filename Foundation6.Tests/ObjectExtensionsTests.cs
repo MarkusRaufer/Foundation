@@ -84,7 +84,7 @@ public class ObjectExtensionsTests
     {
         var str = "123";
 
-        var kv = str.Length.ToKeyValue();
+        var kv = str.Length.ToKeyValue(propertyNameOnly: false);
 
         kv.Key.Should().Be("str.Length");
         kv.Value.Should().Be(str.Length);
