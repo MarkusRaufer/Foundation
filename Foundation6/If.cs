@@ -21,6 +21,7 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
+using System.Diagnostics.CodeAnalysis;
 using System.Runtime.InteropServices;
 
 namespace Foundation;
@@ -37,6 +38,7 @@ public static class If
         return new IfElse<T>(predicate(), selector);
     }
 
+#if NETSTANDARD2_0
     public static IIfType<T> Type<T>(object obj)
     {
         if(obj is T t)
@@ -47,14 +49,34 @@ public static class If
         
         return new IfType<T>(false, null);
     }
+#else
+    public static IIfType<T> Type<T>([AllowNull] object obj)
+    {
+        if (obj is T t)
+        {
+            T selector() => t;
+            return new IfType<T>(true, selector);
+        }
 
+        return new IfType<T>(false, null);
+    }
+#endif
 
+#if NETSTANDARD2_0
     public static IIfType<T, TResult> Type<T, TResult>(object obj, Func<T, TResult> selector)
     {
         (bool isOfType, T? value) = obj is T t ? (true, t) : (false, default);
 
         return new IfType<T, TResult>(isOfType, value, selector);
     }
+#else
+    public static IIfType<T, TResult> Type<T, TResult>([AllowNull] object obj, Func<T, TResult> selector)
+    {
+        (bool isOfType, T? value) = obj is T t ? (true, t) : (false, default);
+
+        return new IfType<T, TResult>(isOfType, value, selector);
+    }
+#endif
 
     public static IIfValue<T> Value<T>(T? value)
     {
@@ -110,6 +132,8 @@ internal record IfElse<T, TResult>(bool IsPredicateTrue, T? Value, Func<T, TResu
 
 internal record IfType<T>(bool IsOfType, Func<T>? Selector) : IIfType<T>
 {
+#if NETSTANDARD2_0
+
     public IIfElse<T> ElseIfType(object obj)
     {
         if (IsOfType && null != Selector) return new IfElse<T>(true, Selector);
@@ -122,10 +146,25 @@ internal record IfType<T>(bool IsOfType, Func<T>? Selector) : IIfType<T>
 
         return new IfElse<T>(false, null);
     }
+#else
+    public IIfElse<T> ElseIfType([AllowNull] object obj)
+    {
+        if (IsOfType && null != Selector) return new IfElse<T>(true, Selector);
+
+        if (obj is T t)
+        {
+            T selector() => t;
+            return new IfElse<T>(true, selector);
+        }
+
+        return new IfElse<T>(false, null);
+    }
+#endif
 }
 
 internal record IfType<T, TResult>(bool IsOfType, T? Value, Func<T, TResult> Selector) : IIfType<T, TResult>
 {
+#if NETSTANDARD2_0
     public IIfElse<T, TResult> ElseIfType(object obj, Func<T, TResult> selector)
     {
         if (IsOfType) return new IfElse<T, TResult>(true, Value, Selector);
@@ -133,6 +172,15 @@ internal record IfType<T, TResult>(bool IsOfType, T? Value, Func<T, TResult> Sel
         (bool isTrue, T? value) = obj is T t ? (true, t) : (false, default);
         return new IfElse<T, TResult>(isTrue, value, selector);
     }
+#else
+    public IIfElse<T, TResult> ElseIfType([AllowNull] object obj, Func<T, TResult> selector)
+    {
+        if (IsOfType) return new IfElse<T, TResult>(true, Value, Selector);
+
+        (bool isTrue, T? value) = obj is T t ? (true, t) : (false, default);
+        return new IfElse<T, TResult>(isTrue, value, selector);
+    }
+#endif
 }
 
 internal record IfValue<T>(T? Value) : IIfValue<T>
@@ -180,12 +228,20 @@ public interface IIfElse<T, TResult>
 //}
 public interface IIfType<T>
 {
+#if NETSTANDARD2_0
     IIfElse<T> ElseIfType(object value);
+#else
+    IIfElse<T> ElseIfType([AllowNull] object value);
+#endif
 }
 
 public interface IIfType<T, TResult>
 {
+#if NETSTANDARD2_0
     IIfElse<T, TResult> ElseIfType(object value, Func<T, TResult> selector);
+#else
+    IIfElse<T, TResult> ElseIfType([AllowNull] object value, Func<T, TResult> selector);
+#endif
 }
 
 public interface IIfValue<T>
