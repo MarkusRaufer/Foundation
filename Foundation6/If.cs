@@ -21,6 +21,8 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
+using System.Runtime.InteropServices;
+
 namespace Foundation;
 
 /// <summary>
@@ -33,6 +35,25 @@ public static class If
         predicate.ThrowIfNull();
         selector.ThrowIfNull();
         return new IfElse<T>(predicate(), selector);
+    }
+
+    public static IIfType<T> Type<T>(object obj)
+    {
+        if(obj is T t)
+        {
+            T selector() => t;
+            return new IfType<T>(true, selector);
+        }
+        
+        return new IfType<T>(false, null);
+    }
+
+
+    public static IIfType<T, TResult> Type<T, TResult>(object obj, Func<T, TResult> selector)
+    {
+        (bool isOfType, T? value) = obj is T t ? (true, t) : (false, default);
+
+        return new IfType<T, TResult>(isOfType, value, selector);
     }
 
     public static IIfValue<T> Value<T>(T? value)
@@ -87,6 +108,33 @@ internal record IfElse<T, TResult>(bool IsPredicateTrue, T? Value, Func<T, TResu
     }
 }
 
+internal record IfType<T>(bool IsOfType, Func<T>? Selector) : IIfType<T>
+{
+    public IIfElse<T> ElseIfType(object obj)
+    {
+        if (IsOfType && null != Selector) return new IfElse<T>(true, Selector);
+
+        if (obj is T t)
+        {
+            T selector() => t;
+            return new IfElse<T>(true, selector);
+        }
+
+        return new IfElse<T>(false, null);
+    }
+}
+
+internal record IfType<T, TResult>(bool IsOfType, T? Value, Func<T, TResult> Selector) : IIfType<T, TResult>
+{
+    public IIfElse<T, TResult> ElseIfType(object obj, Func<T, TResult> selector)
+    {
+        if (IsOfType) return new IfElse<T, TResult>(true, Value, Selector);
+
+        (bool isTrue, T? value) = obj is T t ? (true, t) : (false, default);
+        return new IfElse<T, TResult>(isTrue, value, selector);
+    }
+}
+
 internal record IfValue<T>(T? Value) : IIfValue<T>
 {
     public IIfElse<T, TResult> Is<TResult>(Func<T, bool> predicate, Func<T, TResult> selector)
@@ -109,85 +157,6 @@ internal record IfValue<T>(T? Value) : IIfValue<T>
     }
 }
 
-//internal record IfThen(bool IsPredicateTrue) : IIfThen
-//{
-//    public IIfElse<T> Then<T>(Func<T> selector)
-//    {
-//        selector.ThrowIfNull();
-
-//        var value = IsPredicateTrue ? selector() : default;
-
-//        return new IfElse<T>(value, IsPredicateTrue);
-//    }
-//}
-
-//internal record IfThen<T>(T? Value, bool IsPredicateTrue) : IIfTrue<T>
-//{
-//    public IIfElse<T, TResult> Then<TResult>(Func<T, TResult?> selector)
-//    {
-//        selector.ThrowIfNull();
-
-//        var result = IsPredicateTrue && Value is not null
-//            ? selector(Value)
-//            : default;
-
-//        return new IfElse<T, TResult>(Value, result, IsPredicateTrue);
-//    }
-//}
-
-//internal record IfTrue<T>(bool IsPredicateTrue, Func<T> Selector) : IIfTrue<T>
-//{
-//    public T Else<TResult>(Func<T> selector)
-//    {
-//        selector.ThrowIfNull();
-
-//        return IsPredicateTrue ? Selector() :selector();
-//    }
-
-//    public IIfTrue<T> ElseIf(Func<bool> predicate, Func<T> selector)
-//    {
-//        return new IfTrue<T>(predicate(), selector);
-//    }
-//}
-
-//internal record IfNotNullThen<T>(T? Value, bool IsPredicateTrue) : IIfNotNullThen<T>
-//{
-//    public IIfNotNullElse<TResult> Then<TResult>(Func<T, TResult?> selector)
-//    {
-//        selector.ThrowIfNull();
-
-//        return new IfNotNullElse<T, TResult>(Value, selector, IsPredicateTrue);
-//    }
-//}
-
-//internal record IfNotNullElse<T, TResult>(T? Value, Func<T, TResult?> Selector, bool IsPredicateTrue) : IIfNotNullElse<TResult>
-//{
-//    public TResult? Else(Func<TResult?> selector)
-//    {
-//        selector.ThrowIfNull();
-
-//        if (IsPredicateTrue && Value is not null) return Selector(Value);
-        
-//        return selector();
-//    }
-//}
-
-//public interface IIfThen
-//{
-//    IIfElse<T> Then<T>(Func<T> selector);
-//}
-
-//public interface IIfTrue<T>
-//{
-//    T Else<TResult>(Func<T> selector);
-//    IIfElse<T> ElseIf(Func<bool> predicate, Func<T> selector);
-//}
-
-//public interface IIfTrue<T, TResult>
-//{
-//    IIfElse<T, TResult> Else(Func<T, TResult?> selector);
-//}
-
 public interface IIfElse<T>
 {
     T Else(Func<T> selector);
@@ -209,6 +178,15 @@ public interface IIfElse<T, TResult>
 //{
 //    TResult? Else(Func<TResult?> selector);
 //}
+public interface IIfType<T>
+{
+    IIfElse<T> ElseIfType(object value);
+}
+
+public interface IIfType<T, TResult>
+{
+    IIfElse<T, TResult> ElseIfType(object value, Func<T, TResult> selector);
+}
 
 public interface IIfValue<T>
 {

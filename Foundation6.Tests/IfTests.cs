@@ -1,5 +1,6 @@
 ﻿using FluentAssertions;
 using NUnit.Framework;
+using System;
 
 namespace Foundation;
 
@@ -66,7 +67,6 @@ public class IfTests
         result.Should().Be(100);
     }
 
-
     [Test]
     public void EagerValue_NotNull_Should_ReturnElseValue_When_ValueIsNull()
     {
@@ -76,6 +76,78 @@ public class IfTests
         var result = If.Value(value).NotNull(x => x).Else(() => elseValue);
 
         result.Should().Be(elseValue);
+    }
+
+    [Test]
+    public void If_Type_Should_Return5_When_ValueIsInt()
+    {
+        int? result = If.Type<int>(5)
+                       .ElseIfType(6)
+                       .Else(() => default);
+
+        result.Should().Be(5);
+    }
+
+    [Test]
+    public void If_Type_Should_Return5AsString_When_ValueIsInt()
+    {
+        var result = If.Type<int, string?>(5, x => x.ToString())
+                       .ElseIfType(6, x => x.ToString())
+                       .Else(x => null);
+
+        result.Should().Be("5");
+    }
+
+    [Test]
+    public void If_Type_Should_Return6_When_ValueIsStringButAlternativeIsInt()
+    {
+        var result = If.Type<int>("5")
+                       .ElseIfType(6)
+                       .Else(() => default);
+
+        result.Should().Be(6);
+
+    }
+    [Test]
+    public void If_Type_Should_Return6AsString_When_ValueIsStringButAlternativeIsInt()
+    {
+        var result = If.Type<int, string?>("5", x => x.ToString())
+                       .ElseIfType(6, x => x.ToString())
+                       .Else(x => null);
+
+        result.Should().Be("6");
+    }
+
+    [Test]
+    public void If_Type_Should_Return6AsString_When_ValueIsDateTimeButAlternativeIsInt()
+    {
+        var dt = new DateTime(2020, 1, 2, 3, 4, 5);
+
+        var result = If.Type<int, string?>(dt, x => x.ToString())
+                       .ElseIfType(6, x => x.ToString())
+                       .Else(x => null);
+
+        result.Should().Be("6");
+    }
+
+    [Test]
+    public void If_Type_Should_ReturnNull_When_NoTypeIsCompatible()
+    {
+        int result = If.Type<int>(DateTime.Now)
+                       .ElseIfType("6")
+                       .Else(() => 0);
+
+        result.Should().Be(0);
+    }
+
+    [Test]
+    public void If_Type_Should_ReturnNull_When_NoTypeIsOfResultType()
+    {
+        var result = If.Type<int, string?>("5", x => x.ToString())
+                       .ElseIfType("6", x => x.ToString())
+                       .Else(x => null);
+
+        result.Should().BeNull();
     }
 
     [Test]
