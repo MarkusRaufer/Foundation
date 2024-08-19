@@ -81,7 +81,7 @@ public class IfTests
     [Test]
     public void If_Type_Should_Return5_When_ValueIsInt()
     {
-        int? result = If.Type<int>(5)
+        int result = If.Type<int>(5)
                        .ElseIfType(6)
                        .Else(() => default);
 
@@ -93,7 +93,7 @@ public class IfTests
     {
         var result = If.Type<int, string?>(5, x => x.ToString())
                        .ElseIfType(6, x => x.ToString())
-                       .Else(x => null);
+                       .Else(() => null);
 
         result.Should().Be("5");
     }
@@ -113,7 +113,7 @@ public class IfTests
     {
         var result = If.Type<int, string?>("5", x => x.ToString())
                        .ElseIfType(6, x => x.ToString())
-                       .Else(x => null);
+                       .Else(() => null);
 
         result.Should().Be("6");
     }
@@ -125,7 +125,7 @@ public class IfTests
 
         var result = If.Type<int, string?>(dt, x => x.ToString())
                        .ElseIfType(6, x => x.ToString())
-                       .Else(x => null);
+                       .Else(() => null);
 
         result.Should().Be("6");
     }
@@ -144,8 +144,9 @@ public class IfTests
     public void If_Type_Should_ReturnNull_When_NoTypeIsOfResultType()
     {
         var result = If.Type<int, string?>("5", x => x.ToString())
-                       .ElseIfType("6", x => x.ToString())
-                       .Else(x => null);
+                       .ElseIfType(DateTime.Now.ToDateOnly(), x => x.ToString())
+                       .ElseIfType(DateTime.Now, x => x.ToString())
+                       .Else(() => null);
 
         result.Should().BeNull();
     }
