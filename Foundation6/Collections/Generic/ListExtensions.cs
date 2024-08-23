@@ -34,9 +34,7 @@ public static class ListExtensions
     /// <param name="rhsIndex"></param>
     public static void Swap<T>(this IList<T> items, int lhsIndex, int rhsIndex)
     {
-        var temp = items[lhsIndex];
-        items[lhsIndex] = items[rhsIndex];
-        items[rhsIndex] = temp;
+        (items[rhsIndex], items[lhsIndex]) = (items[lhsIndex], items[rhsIndex]);
     }
 
     /// <summary>
