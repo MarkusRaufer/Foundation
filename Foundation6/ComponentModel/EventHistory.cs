@@ -6,7 +6,7 @@ namespace Foundation.ComponentModel;
 /// Provides an events list.
 /// </summary>
 /// <typeparam name="TEvent">Type of event.</typeparam>
-public class EventProvider<TEvent> : IEventProvider<TEvent>
+public class EventHistory<TEvent> : IEventHistory<TEvent>
 {
     private readonly List<TEvent> _events = [];
 

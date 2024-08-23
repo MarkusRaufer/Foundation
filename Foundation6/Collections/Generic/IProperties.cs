@@ -31,7 +31,7 @@ namespace Foundation.Collections.Generic
     public interface IProperties<TEvent>
         : IDictionary<string, object>
         , IEventHandler<TEvent>
-        , IEventProvider<TEvent>
+        , IEventHistory<TEvent>
     {
     }
 

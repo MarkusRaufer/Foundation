@@ -24,19 +24,19 @@
 ﻿namespace Foundation.ComponentModel;
 
 /// <summary>
-/// Contract of an event provider.
+/// Contract of an event history provider.
 /// </summary>
 /// <typeparam name="TEvent"></typeparam>
-public interface IEventProvider<TEvent> : IEventProvider<TEvent, IEnumerable<TEvent>>
+public interface IEventHistory<TEvent> : IEventHistory<TEvent, IEnumerable<TEvent>>
 {
 }
 
 /// <summary>
-/// Contract of an event provider.
+/// Contract of a event history provider.
 /// </summary>
 /// <typeparam name="TEvent">Type of the events.</typeparam>
 /// <typeparam name="TEventCollection">Type of the event collection.</typeparam>
-public interface IEventProvider<TEvent, TEventCollection>
+public interface IEventHistory<TEvent, TEventCollection>
 {
     /// <summary>
     /// Removes all events.
