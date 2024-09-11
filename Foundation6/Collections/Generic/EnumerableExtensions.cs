@@ -796,7 +796,7 @@ public static class EnumerableExtensions
     }
 
     /// <summary>
-    /// Filters and transform items. It returns only Option.Some values.
+    /// Filters and transform items. Returns elements when predicate is true.
     /// </summary>
     /// <typeparam name="T"></typeparam>
     /// <typeparam name="TResult"></typeparam>
@@ -1173,11 +1173,11 @@ public static class EnumerableExtensions
     }
 
     /// <summary>
-    /// The ignored left does not appear in the result.
+    /// If the list of items contains ignoredItem then the item does not appear in the result.
     /// </summary>
     /// <typeparam name="T"></typeparam>
     /// <param name="items"></param>
-    /// <param name="ignoredItem">The left which is filtered.</param>
+    /// <param name="ignoredItem">The item, if exists, will be filtered.</param>
     /// <returns></returns>
     public static IEnumerable<T> Ignore<T>(this IEnumerable<T> items, T ignoredItem)
     {
@@ -1189,9 +1189,31 @@ public static class EnumerableExtensions
         }
     }
 
+    /// <summary>
+    /// If the list of items contains ignoredItems then the items do not appear in the result.
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <param name="items"></param>
+    /// <param name="ignoredItems">The items, if exist, will be filtered.</param>
+    /// <returns></returns>
+    public static IEnumerable<T> Ignore<T>(this IEnumerable<T> items, IEnumerable<T> ignoredItems)
+    {
+#if NET6_0_OR_GREATER
+        var ignored = ignoredItems.ToHashSet();
+#else
+        var ignored = ignoredItems.ToArray();
+#endif
+        foreach (var item in items.ThrowIfEnumerableIsNull())
+        {
+            if (ignored.Contains(item)) continue;
+
+            yield return item;
+        }
+    }
+
 #if NET6_0_OR_GREATER
     /// <summary>
-    /// Only items withing the range are returned. If the position is greater than the range end it stops.
+    /// Only items within the range are returned. If the position is greater than the range end it stops.
     /// </summary>
     /// <typeparam name="T"></typeparam>
     /// <param name="items"></param>

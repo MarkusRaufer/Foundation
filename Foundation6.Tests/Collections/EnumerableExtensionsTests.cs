@@ -53,6 +53,33 @@ public class EnumerableExtensionsTests
     }
 
     [Test]
+    public void Ignore_Should_Return_9Elements_When_ListHas10ElementsAndOneIsIgnored()
+    {
+        var ids = Enumerable.Range(1, 10).Select(x => Id.New(x.ToString()));
+        var toBeIgnored = Id.New("2");
+
+        var filtered = ids.Ignore(toBeIgnored).ToArray();
+
+        filtered.Length.Should().Be(9);
+        filtered.Should().NotContain(toBeIgnored);
+    }
+
+    [Test]
+    public void Ignore_Should_Return_9Elements_When_ListHas10ElementsAndAllDuplicatesAreIgnored()
+    {
+        var ids = Enumerable.Range(1, 10).Select(x => Id.New(x.ToString()));
+        ids = ids.Concat(Enumerable.Repeat(2, 5).Select(x => Id.New(x.ToString())))
+                 .Shuffle();
+
+        var toBeIgnored = Id.New("2");
+
+        var filtered = ids.Ignore(toBeIgnored).ToArray();
+
+        filtered.Length.Should().Be(9);
+        filtered.Should().NotContain(toBeIgnored);
+    }
+
+    [Test]
     public void MinAsOption_Should_ReturnNone_When_ListIsEmpty()
     {
         var numbers = Enumerable.Empty<int>();

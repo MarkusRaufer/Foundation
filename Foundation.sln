@@ -17,7 +17,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Foundation.DI", "Foundation
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Foundation.DesignPatterns.Tests", "Foundation.DesignPatterns.Tests\Foundation.DesignPatterns.Tests.csproj", "{1B6D929A-E5B9-4C94-BA7A-421CDBA2A99A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Foundation.Benchmarks", "Foundation.Benchmarks\Foundation.Benchmarks.csproj", "{67B6A25F-DE78-4DC8-ABC7-5D47A798611A}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Foundation.Benchmarks", "Foundation.Benchmarks\Foundation.Benchmarks.csproj", "{67B6A25F-DE78-4DC8-ABC7-5D47A798611A}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
