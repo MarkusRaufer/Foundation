@@ -947,7 +947,7 @@ public static class EnumerableExtensions
     /// <typeparam name="T">Type of element.</typeparam>
     /// <param name="items">List of elements.</param>
     /// <returns>Returns an Option. If found the Option.IsSome is true.</returns>
-    public static Option<T> FirstOfTypeAsOption<T>(this IEnumerable<T> items) => items.OfType().FirstAsOption();
+    public static Option<T> FirstOfTypeAsOption<T>(this IEnumerable<T> items) => items.OfType<T>().FirstAsOption();
 
     /// <summary>
     /// Executes action for every left.
@@ -1940,7 +1940,7 @@ public static class EnumerableExtensions
     /// <param name="items"></param>
     /// <param name="types"></param>
     /// <returns></returns>
-    public static IEnumerable<T> OfType<T>(this IEnumerable<T> items, params Type[] types)
+    public static IEnumerable<T> OfTypes<T>(this IEnumerable<T> items, params Type[] types)
     {
         foreach (var item in items.ThrowIfEnumerableIsNull())
         {
@@ -1961,12 +1961,12 @@ public static class EnumerableExtensions
     /// <param name="selector"></param>
     /// <param name="types"></param>
     /// <returns></returns>
-    public static IEnumerable<TResult> OfType<T, TResult>(
+    public static IEnumerable<TResult> OfTypes<T, TResult>(
         this IEnumerable<T> items,
         Func<T, TResult> selector, 
         params Type[] types)
     {
-        return items.OfType(types).Select(selector);
+        return items.OfTypes(types).Select(selector);
     }
 
     /// <summary>
