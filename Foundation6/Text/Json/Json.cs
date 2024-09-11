@@ -62,7 +62,7 @@ public static class Json
 
         var type = value is Id id ? id.Type : value.GetType();
 
-        if (type.IsPrimitive) return $"{value}";
+        if (type.IsPrimitive) return string.Format(CultureInfo.InvariantCulture, "{0}", value);
 
         if (!TypeHelper.IsScalarType(type))
         {
@@ -90,5 +90,10 @@ public static class Json
                 _ => "null"
             };
         }
+    }
+
+    public static IEnumerable<KeyValuePair<string, string>> ToJsonProperties(this IEnumerable<KeyValuePair<string, object?>> properties)
+    {
+        return properties.Select(x => new KeyValuePair<string, string>(x.Key, x.Value.ToJson()));
     }
 }
