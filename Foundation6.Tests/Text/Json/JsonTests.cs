@@ -59,18 +59,19 @@ public class JsonTests
     [Test]
     public void ToJsonProperties_Should_ReturnValidString_WhenUsingIdInt()
     {
+        var birthday = new DateTime(2020, 9, 15, 19, 16, 9);
         var properties = new Dictionary<string, object?>()
         {
             { "Name", "Peter" },
             { "Age", 14 },
-            { "BirthDay", DateTime.Now.Subtract(TimeSpan.FromDays(365 * 14)) },
+            { "BirthDay", birthday },
             { "Height", 167.8 },
         };
         
         var json = Json.ToJsonProperties(properties).ToDictionary(x => x.Key, x => x.Value);
-        json["Name"].Should().Be("Peter");
+        json["Name"].Should().Be("\"Peter\"");
         json["Age"].Should().Be("14");
-        json["BirthDay"].Should().Be("Peter");
+        json["BirthDay"].Should().Be("\"2020-09-15T19:16:09\"");
         json["Height"].Should().Be("167.8");
     }
 }

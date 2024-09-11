@@ -77,7 +77,7 @@ public static class Json
         {
             return val switch
             {
-                DateTime dateTime => $"{dateTime:yyyy-MM-ddTHH:mm:ss}",
+                DateTime dateTime => $"\"{dateTime:yyyy-MM-ddTHH:mm:ss}\"",
                 decimal dec => string.Format(CultureInfo.InvariantCulture, "{0}", dec),
                 Guid guid => $"\"{guid}\"",
                 Id identifier => toString(identifier.Value),
