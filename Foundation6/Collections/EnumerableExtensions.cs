@@ -200,7 +200,7 @@ public static class EnumerableExtensions
     /// <typeparam name="T"></typeparam>
     /// <param name="items"></param>
     /// <returns></returns>
-    public static IEnumerable<T> OfType<T>(this IEnumerable items)
+    public static IEnumerable<T> ObjectOfType<T>(this IEnumerable items)
     {
         foreach (var item in items.ThrowIfNull())
         {

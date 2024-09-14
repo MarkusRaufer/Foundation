@@ -1,4 +1,5 @@
-﻿using Foundation.Collections.Generic;
+﻿using FluentAssertions;
+using Foundation.Collections.Generic;
 using NUnit.Framework;
 using System;
 using System.Collections.Generic;
@@ -28,7 +29,7 @@ namespace Foundation
         }
 
         [Test]
-        public void GetEnumerator()
+        public void GetEnumerator_Should_ReturnEnumerator_When_CalledGetEnumerator()
         {
             var sut = new[] { 1, 2, 3 };
             var enumerator = sut.GetEnumerator();
@@ -45,6 +46,15 @@ namespace Foundation
             Assert.IsFalse(enumerator.MoveNext());
         }
 
+        [Test]
+        public void OfTypes_Should_()
+        {
+            var sut = new object[] { DateTime.Now, 2, "3", 4.5D };
+            
+            var comparables = sut.OfTypes(typeof(int), typeof(double));
+            comparables.Should().Contain(2);
+            comparables.Should().Contain(4.5);
+        }
 
         [Test]
         [TestCase(new int [0])]

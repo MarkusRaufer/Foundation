@@ -167,22 +167,22 @@ public static class EnumerableTransformations
 
         return typeCode switch
         {
-            TypeCode.Boolean => items.OfType<bool>().SelectMany(BitConverter.GetBytes),
-            TypeCode.Byte => items.OfType<byte>(),
-            TypeCode.Char => items.OfType<char>().SelectMany(BitConverter.GetBytes),
-            TypeCode.DateTime => items.OfType<DateTime>().SelectMany(x => BitConverter.GetBytes(x.Ticks)),
-            TypeCode.Decimal => items.OfType<decimal>().SelectMany(BitConverterExt.GetBytes),
-            TypeCode.Double => items.OfType<double>().SelectMany(BitConverter.GetBytes),
-            TypeCode.Int16 => items.OfType<Int16>().SelectMany(BitConverter.GetBytes),
-            TypeCode.Int32 => items.OfType<Int32>().SelectMany(BitConverter.GetBytes),
-            TypeCode.Int64 => items.OfType<Int64>().SelectMany(BitConverter.GetBytes),
-            TypeCode.UInt16 => items.OfType<UInt16>().SelectMany(BitConverter.GetBytes),
-            TypeCode.UInt32 => items.OfType<UInt32>().SelectMany(BitConverter.GetBytes),
-            TypeCode.UInt64 => items.OfType<UInt64>().SelectMany(BitConverter.GetBytes),
-            TypeCode.SByte => items.OfType<SByte>().Select(x => (byte)x),           
-            TypeCode.Single => items.OfType<float>().SelectMany(BitConverter.GetBytes),
-            TypeCode.String => encoding is null ? items.OfType<string>().SelectMany(Encoding.UTF8.GetBytes)
-                                                : items.OfType<string>().SelectMany(encoding.GetBytes),
+            TypeCode.Boolean => items.ObjectOfType<bool>().SelectMany(BitConverter.GetBytes),
+            TypeCode.Byte => items.ObjectOfType<byte>(),
+            TypeCode.Char => items.ObjectOfType<char>().SelectMany(BitConverter.GetBytes),
+            TypeCode.DateTime => items.ObjectOfType<DateTime>().SelectMany(x => BitConverter.GetBytes(x.Ticks)),
+            TypeCode.Decimal => items.ObjectOfType<decimal>().SelectMany(BitConverterExt.GetBytes),
+            TypeCode.Double => items.ObjectOfType<double>().SelectMany(BitConverter.GetBytes),
+            TypeCode.Int16 => items.ObjectOfType<Int16>().SelectMany(BitConverter.GetBytes),
+            TypeCode.Int32 => items.ObjectOfType<Int32>().SelectMany(BitConverter.GetBytes),
+            TypeCode.Int64 => items.ObjectOfType<Int64>().SelectMany(BitConverter.GetBytes),
+            TypeCode.UInt16 => items.ObjectOfType<UInt16>().SelectMany(BitConverter.GetBytes),
+            TypeCode.UInt32 => items.ObjectOfType<UInt32>().SelectMany(BitConverter.GetBytes),
+            TypeCode.UInt64 => items.ObjectOfType<UInt64>().SelectMany(BitConverter.GetBytes),
+            TypeCode.SByte => items.ObjectOfType<SByte>().Select(x => (byte)x),           
+            TypeCode.Single => items.ObjectOfType<float>().SelectMany(BitConverter.GetBytes),
+            TypeCode.String => encoding is null ? items.ObjectOfType<string>().SelectMany(Encoding.UTF8.GetBytes)
+                                                : items.ObjectOfType<string>().SelectMany(encoding.GetBytes),
             _ => []
         };
     }

@@ -2,6 +2,7 @@
 using Foundation.ComponentModel;
 using NUnit.Framework;
 using System;
+using System.Collections;
 using System.Linq;
 using System.Text.RegularExpressions;
 
@@ -10,6 +11,10 @@ namespace Foundation.Collections.Generic;
 [TestFixture]
 public class EnumerableTransformationsTests
 {
+    private record Entity(Id Id, string Type);
+    private record Entities(Entity[] Objects);
+    private record EntityIds(Id[] Ids);
+
     [Test]
     public void SplitInto_Should_Return4StreamsWithSameNumbers_When_4PredicatesAreUsed()
     {
@@ -19,12 +24,12 @@ public class EnumerableTransformationsTests
 
         streams.Length.Should().Be(2);
         {
-            var stream = streams[0].OfType<string>();
+            var stream = streams[0].ObjectOfType<string>();
             var expected = Enumerable.Range(1, 10).Select(x => $"{x}");
             stream.Should().ContainInOrder(expected);
         }
         {
-            var stream = streams[1].OfType<int>();
+            var stream = streams[1].ObjectOfType<int>();
             stream.Should().ContainInOrder(Enumerable.Range(1, 10));
         }
     }
@@ -225,7 +230,7 @@ public class EnumerableTransformationsTests
 
         var re = new Regex("([0-9]+)");
 
-        var all = numbers.ToDualStreams(n => 0 == n % 2, n => n, true)
+        var all = numbers.ToDualStreams(n => 0 == n % 2, n => n)
                          .SelectLeft(_ => true, n => $"odd({n})")
                          .SelectRight(_ => true, n => $"even({n})")
                          .MergeAndSort(x => x, x => int.Parse(re.Match(x).Value))
@@ -247,9 +252,9 @@ public class EnumerableTransformationsTests
         var fizz = "Fizz";
         var buzz = "Buzz";
 
-        var all = numbers.ToDualOrdinalStreams(n => 0 == n % 15, _ => fizzBuzz, true)
-                         .AddToRight(n => 0 == n % 3, _ => fizz, true)
-                         .AddToRight(n => 0 == n % 5, _ => buzz, true)
+        var all = numbers.ToDualOrdinalStreams(n => 0 == n % 15, _ => fizzBuzz)
+                         .AddToRight(n => 0 == n % 3, _ => fizz)
+                         .AddToRight(n => 0 == n % 5, _ => buzz)
                          .MergeStreams(n => n.ToString())
                          .ToArray();
 
@@ -276,4 +281,64 @@ public class EnumerableTransformationsTests
         }
     }
 
+    [Test]
+    public void ToDualStreams_LeftToRightMany_Should_ReturnDualStreams_Left0Right6ELems_When_LeftToRightMany_UsedWithPredicate()
+    {
+        var entity = new Entity(Id.New(1), "1");
+        var entities = Enumerable.Range(2, 3).Select(x => new Entity(Id.New(x), x.ToString())).ToArray();
+        var entityIds = Enumerable.Range(5, 2).Select(x => Id.New(x)).ToArray();
+        object[] objects = [entity, new Entities(entities), new EntityIds(entityIds)];
+
+        var streams = objects.ToDualStreams(x => x is Entity, x => ((Entity)x).Id)
+                             .LeftToRightMany(x => x is Entities, x => ((Entities)x).Objects.Select(x => x.Id))
+                             .LeftToRightMany(x => x is EntityIds, x => ((EntityIds)x).Ids);
+
+        var left  = streams.Left.ToArray();
+        left.Length.Should().Be(0);
+
+        var right = streams.Right.ToArray();
+        var expected = Enumerable.Range(1, 6).Select(Id.New);
+        right.Should().BeEquivalentTo(expected);
+    }
+
+    [Test]
+    public void ToDualStreams_LeftToRightMany_Should_ReturnDualStreams_Left0Right6ELems_When_LeftToRightMany_UsedWithGenericTypeArgument()
+    {
+        var entity = new Entity(Id.New(1), "1");
+        var entities = Enumerable.Range(2, 3).Select(x => new Entity(Id.New(x), x.ToString())).ToArray();
+        var entityIds = Enumerable.Range(5, 2).Select(x => Id.New(x)).ToArray();
+        object[] objects = [entity, new Entities(entities), new EntityIds(entityIds)];
+
+        var streams = objects.ToDualStreams<object, Entity, Id>(x => x.Id)
+                             .LeftToRightMany<object, Entities, Id>(x => x.Objects.Select(x => x.Id))
+                             .LeftToRightMany<object, EntityIds, Id>(x => x.Ids);
+
+        var left = streams.Left.ToArray();
+        left.Length.Should().Be(0);
+
+        var right = streams.Right.ToArray();
+        var expected = Enumerable.Range(1, 6).Select(Id.New);
+        right.Should().BeEquivalentTo(expected);
+    }
+
+    [Test]
+    public void ToDualStreams_LeftToRightMany_Should_ReturnDualStreams_Left0Right6ELems_When_ToDualStreams_CopiesAllElementsToLeft()
+    {
+        var entity = new Entity(Id.New(1), "1");
+        var entities = Enumerable.Range(2, 3).Select(x => new Entity(Id.New(x), x.ToString())).ToArray();
+        var entityIds = Enumerable.Range(5, 2).Select(x => Id.New(x)).ToArray();
+        object[] objects = [entity, new Entities(entities), new EntityIds(entityIds)];
+
+        var streams = objects.ToDualStreams<object, Id>()
+                             .LeftToRight<object, Entity, Id>(x => x.Id)
+                             .LeftToRightMany<object, Entities, Id>(x => x.Objects.Select(x => x.Id))
+                             .LeftToRightMany<object, EntityIds, Id>(x => x.Ids);
+
+        var left = streams.Left.ToArray();
+        left.Length.Should().Be(0);
+
+        var right = streams.Right.ToArray();
+        var expected = Enumerable.Range(1, 6).Select(Id.New);
+        right.Should().BeEquivalentTo(expected);
+    }
 }

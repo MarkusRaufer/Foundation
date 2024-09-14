@@ -909,7 +909,7 @@ public static class EnumerableExtensions
     [return: NotNull]
     public static TResult FirstOfType<T, TResult>(this IEnumerable<T> items)
     {
-        var first = items.ThrowIfNull().OfType<TResult>().First();
+        var first = items.ThrowIfNull().ObjectOfType<TResult>().First();
         return first ?? throw new ArgumentNullException($"sequence does not contain an element of type {typeof(TResult).Name}");
     }
 
@@ -930,7 +930,7 @@ public static class EnumerableExtensions
     /// <param name="items">List of elements.</param>
     /// <returns></returns>
     public static TResult? FirstOrDefaultOfType<T, TResult>(this IEnumerable<T> items)
-        => items.ThrowIfNull().OfType<TResult>().FirstOrDefault();
+        => items.ThrowIfNull().ObjectOfType<TResult>().FirstOrDefault();
 
     /// <summary>
     /// Returns the first occurrence of type T otherwise null.
@@ -939,7 +939,7 @@ public static class EnumerableExtensions
     /// <param name="items">List of elements.</param>
     /// <returns></returns>
     public static T? FirstOrDefaultOfType<T>(this IEnumerable<object> items)
-        => items.ThrowIfNull().OfType<T>().FirstOrDefault();
+        => items.ThrowIfNull().ObjectOfType<T>().FirstOrDefault();
 
     /// <summary>
     /// Returns the first element of a specific type if exists.
@@ -947,7 +947,7 @@ public static class EnumerableExtensions
     /// <typeparam name="T">Type of element.</typeparam>
     /// <param name="items">List of elements.</param>
     /// <returns>Returns an Option. If found the Option.IsSome is true.</returns>
-    public static Option<T> FirstOfTypeAsOption<T>(this IEnumerable<T> items) => items.OfType<T>().FirstAsOption();
+    public static Option<T> FirstOfTypeAsOption<T>(this IEnumerable<T> items) => items.ObjectOfType<T>().FirstAsOption();
 
     /// <summary>
     /// Executes action for every left.
