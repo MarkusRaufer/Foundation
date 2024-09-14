@@ -421,4 +421,17 @@ public static class EnumerableEvents
             counter++;
         }
     }
+
+    public static IEnumerable<TResult> OnTypeSelect<TSource, TTarget, TResult>(this IEnumerable<TSource> items, Func<TTarget, TResult> projection)
+    {
+        projection.ThrowIfNull();
+
+        foreach (var item in items)
+        {
+            if(item is TTarget target)
+            {
+                yield return projection(target);
+            }
+        }
+    }
 }

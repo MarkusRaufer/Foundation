@@ -33,13 +33,13 @@ public static class DualOrdinalStreamsExtensions
     /// <param name="dualStreams"></param>
     /// <param name="predicate">Filter of left stream.</param>
     /// <param name="project">Projection from left to right stream.</param>
-    /// <param name="isExhaustive">If isExhaustive is true then matching items are not added to the left stream.</param>
+    /// <param name="isExhaustive">If isExhaustive is true then matching items are not added to the new left stream.</param>
     /// <returns></returns>
     public static DualOrdinalStreams<TLeft, TRight> AddToRight<TLeft, TRight>(
         this DualOrdinalStreams<TLeft, TRight> dualStreams,
         Func<TLeft, bool> predicate,
         Func<TLeft, TRight> project,
-        bool isExhaustive)
+        bool isExhaustive = true)
     {
         predicate.ThrowIfNull();
         project.ThrowIfNull();

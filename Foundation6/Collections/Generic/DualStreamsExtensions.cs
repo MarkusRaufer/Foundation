@@ -22,6 +22,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 ﻿using System;
+using System.Linq;
 
 namespace Foundation.Collections.Generic;
 
@@ -31,20 +32,20 @@ public static class DualStreamsExtensions
     /// Returns a new DualStreams object. Right of <paramref name="dualStreams"/> is set to the new right stream.
     /// Left of <paramref name="dualStreams"/> is filtered by <paramref name="predicate"/>.
     /// Matching items are added to the new right stream.
-    /// If <paramref name="isExhaustive"/> is true, matching items are not added to the new left stream.
+    /// If <paramref name="isExhaustive"/> is true, matching items are not added to the new selected stream.
     /// </summary>
-    /// <typeparam name="TLeft">type of left stream items.</typeparam>
+    /// <typeparam name="TLeft">type of selected stream items.</typeparam>
     /// <typeparam name="TRight">type of right stream items.</typeparam>
-    /// <param name="dualStreams"></param>
-    /// <param name="predicate">filter of left stream items.</param>
-    /// <param name="project"></param>
-    /// <param name="isExhaustive">If true matching items are not added to the new left stream.</param>
+    /// <param name="dualStreams">A dual <see cref="DualStreams{TLeft, TRight}"/> object.</param>
+    /// <param name="predicate">filter of selected stream items.</param>
+    /// <param name="project">Transforms a selected item to a right item type.</param>
+    /// <param name="isExhaustive">If true matching items are not added to the new selected stream.</param>
     /// <returns></returns>
     public static DualStreams<TLeft, TRight> LeftToRight<TLeft, TRight>(
         this DualStreams<TLeft, TRight> dualStreams,
         Func<TLeft, bool> predicate,
         Func<TLeft, TRight> project,
-        bool isExhaustive)
+        bool isExhaustive = true)
     {
         var streams = new DualStreams<TLeft, TRight>
         {
@@ -60,6 +61,97 @@ public static class DualStreamsExtensions
                 if (isExhaustive) continue;
             }
 
+            streams.Left = streams.Left.Append(item);
+        }
+
+        return streams;
+    }
+
+    public static DualStreams<TLeft, TRight> LeftToRight<TLeft, TSelector, TRight>(
+        this DualStreams<TLeft, TRight> dualStreams,
+        Func<TSelector, TRight> project,
+        bool isExhaustive = true)
+    {
+        var streams = new DualStreams<TLeft, TRight>
+        {
+            Right = dualStreams.Right
+        };
+
+        foreach (var item in dualStreams.Left)
+        {
+            if (item is TSelector selected)
+            {
+                streams.Right = streams.Right.Append(project(selected));
+
+                if (isExhaustive) continue;
+            }
+
+            streams.Left = streams.Left.Append(item);
+        }
+
+        return streams;
+    }
+
+    /// <summary>
+    /// Returns a new DualStreams object. Right of <paramref name="dualStreams"/> is set to the new right stream.
+    /// Left of <paramref name="dualStreams"/> is filtered by <paramref name="predicate"/>.
+    ///  Matching items are added to the new right stream.
+    /// </summary>
+    /// <typeparam name="TLeft">type of selected stream items.</typeparam>
+    /// <typeparam name="TRight">type of right stream items.</typeparam>
+    /// <param name="dualStreams">A dual <see cref="DualStreams{TLeft, TRight}"/> object.</param>
+    /// <param name="predicate">filter of selected stream items.</param>
+    /// <param name="project">Transforms a selected item to a list of right item types.</param>
+    /// <param name="isExhaustive">If true matching items are not added to the new selected stream.</param>
+    /// <returns></returns>
+    public static DualStreams<TLeft, TRight> LeftToRightMany<TLeft, TRight>(
+        this DualStreams<TLeft, TRight> dualStreams,
+        Func<TLeft, bool> predicate,
+        Func<TLeft, IEnumerable<TRight>> project,
+        bool isExhaustive = true)
+    {
+        var streams = new DualStreams<TLeft, TRight>
+        {
+            Right = dualStreams.Right
+        };
+
+        foreach (var item in dualStreams.Left)
+        {
+            if (predicate(item))
+            {
+                foreach (var result in project(item))
+                {
+                    streams.Right = streams.Right.Append(result);
+                }
+                if (isExhaustive) continue;
+            }
+            streams.Left = streams.Left.Append(item);
+
+        }
+
+        return streams;
+    }
+
+    public static DualStreams<TLeft, TRight> LeftToRightMany<TLeft, TSelector, TRight>(
+        this DualStreams<TLeft, TRight> dualStreams,
+        Func<TSelector, IEnumerable<TRight>> project,
+        bool isExhaustive = true)
+    {
+        var streams = new DualStreams<TLeft, TRight>
+        {
+            Right = dualStreams.Right
+        };
+
+        foreach (var item in dualStreams.Left)
+        {
+            if (item is TSelector selected)
+            {
+                foreach (var result in project(selected))
+                {
+                    streams.Right = streams.Right.Append(result);
+                }
+                if (isExhaustive) continue;
+            }
             streams.Left = streams.Left.Append(item);
         }
 
@@ -160,9 +252,9 @@ public static class DualStreamsExtensions
     }
 
     /// <summary>
-    /// Returns a new DualStreams object. Left of <paramref name="dualStreams"/> is set to the new left stream.
+    /// Returns a new DualStreams object. Left of <paramref name="dualStreams"/> is set to the new selected stream.
     /// Right of <paramref name="dualStreams"/> is filtered by <paramref name="predicate"/>.
-    /// Matching items are added to the new left stream.
+    /// Matching items are added to the new selected stream.
     /// If <paramref name="isExhaustive"/> is true, matching items are not added to the new right stream.
     /// </summary>
     /// <typeparam name="TLeft"></typeparam>
@@ -176,7 +268,7 @@ public static class DualStreamsExtensions
         this DualStreams<TLeft, TRight> dualStreams,
         Func<TRight, bool> predicate,
         Func<TRight, TLeft> project,
-        bool isExhaustive)
+        bool isExhaustive = true)
     {
         var streams = new DualStreams<TLeft, TRight>
         {
@@ -188,6 +280,47 @@ public static class DualStreamsExtensions
             if (predicate(item))
             {
                 streams.Left = streams.Left.Append(project(item));
+
+                if (isExhaustive) continue;
+            }
+
+            streams.Right = streams.Right.Append(item);
+        }
+
+        return streams;
+    }
+
+    /// <summary>
+    /// Returns a new DualStreams object. Left of <paramref name="dualStreams"/> is set to the new selected stream.
+    /// Right of <paramref name="dualStreams"/> is filtered by <paramref name="predicate"/>.
+    /// Matching items are added to the new selected stream.
+    /// </summary>
+    /// <typeparam name="TLeft"></typeparam>
+    /// <typeparam name="TRight"></typeparam>
+    /// <param name="dualStreams"></param>
+    /// <param name="predicate"></param>
+    /// <param name="project"></param>
+    /// <param name="isExhaustive"></param>
+    /// <returns></returns>
+    public static DualStreams<TLeft, TRight> RightToLeftMany<TLeft, TRight>(
+        this DualStreams<TLeft, TRight> dualStreams,
+        Func<TRight, bool> predicate,
+        Func<TRight, IEnumerable<TLeft>> project,
+        bool isExhaustive = true)
+    {
+        var streams = new DualStreams<TLeft, TRight>
+        {
+            Left = dualStreams.Left
+        };
+
+        foreach (var item in dualStreams.Right)
+        {
+            if (predicate(item))
+            {
+                foreach (var result in project(item))
+                {
+                    streams.Left = streams.Left.Append(result);
+                }
 
                 if (isExhaustive) continue;
             }

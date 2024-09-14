@@ -35,13 +35,13 @@ public static class DualOrdinalStreamsFactory
     /// <param name="items"></param>
     /// <param name="predicate">This is the split criteria.</param>
     /// <param name="project">A projection from TLeft to TRight.</param>
-    /// <param name="isExhaustive">If true then matching items are not added to the left stream.</param>
+    /// <param name="isExhaustive">If true then matching items are not added to the new left stream.</param>
     /// <returns></returns>
     public static DualOrdinalStreams<TLeft, TRight> ToDualOrdinalStreams<TLeft, TRight>(
         this IEnumerable<TLeft> items,
         Func<TLeft, bool> predicate,
         Func<TLeft, TRight> project,
-        bool isExhaustive)
+        bool isExhaustive = true)
     {
         items.ThrowIfEnumerableIsNull();
         predicate.ThrowIfNull();

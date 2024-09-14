@@ -36,6 +36,6 @@ public class DualStreams<TLeft, TRight> : IDualStreams<TLeft, TRight>
         right = Right;
     }
 
-    public IEnumerable<TLeft> Left { get; set; } = Enumerable.Empty<TLeft>();
-    public IEnumerable<TRight> Right { get; set; } = Enumerable.Empty<TRight>();
+    public IEnumerable<TLeft> Left { get; set; } = [];
+    public IEnumerable<TRight> Right { get; set; } = [];
 }
