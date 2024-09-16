@@ -27,7 +27,7 @@ public class JsonTests
     [Test]
     public void ToJson_Should_ReturnValidString_WhenUsingEnumType_AsString()
     {
-        var str = Json.ToJson(Month.Jul);                
+        var str = Json.ToJson(Month.Jul);
         var expected = $"{Month.Jul}";
         str.Should().Be(expected);
     }
