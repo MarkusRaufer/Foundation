@@ -533,8 +533,7 @@ public static class ObjectExtensions
             return BitConverter.ToInt32(buffer);
 #endif
         }
-            
-
+        
         return null;
     }
 
@@ -582,6 +581,11 @@ public static class ObjectExtensions
         return Result.Error<TOk, TError>(onError());
     }
 
+    /// <summary>
+    /// Returns always a string if obj is empty an empty string is returned.
+    /// </summary>
+    /// <param name="obj"></param>
+    /// <returns></returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static string ToStringOrEmpty(this object? obj)
     {
