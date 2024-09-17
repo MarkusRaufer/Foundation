@@ -28,6 +28,11 @@ using System.Runtime.CompilerServices;
 
 public static class Result
 {
+    /// <summary>
+    /// Returns an error result.
+    /// </summary>
+    /// <param name="error">The error value.</param>
+    /// <returns></returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static Result<Error> Error(Error error)
     {
@@ -35,6 +40,11 @@ public static class Result
         return new Result<Error>(error);
     }
 
+    /// <summary>
+    /// Returns an error result where the error is an exception.
+    /// </summary>
+    /// <param name="exception"></param>
+    /// <returns></returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static Result<Error> Error(Exception exception)
     {
@@ -42,6 +52,12 @@ public static class Result
         return new Result<Error>(Foundation.Error.FromException(exception));
     }
 
+    /// <summary>
+    /// Returns an error result.
+    /// </summary>
+    /// <typeparam name="TOk">Type of ok value.</typeparam>
+    /// <param name="error">The error value.</param>
+    /// <returns></returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static Result<TOk, Error> Error<TOk>(Error error)
     {
@@ -49,6 +65,12 @@ public static class Result
         return new Result<TOk, Error>(Option.None<TOk>(), Option.Some(error));
     }
 
+    /// <summary>
+    /// Returns an error result where the error is an exception.
+    /// </summary>
+    /// <typeparam name="TOk">The type of the ok value.</typeparam>
+    /// <param name="exception">The exception of the error.</param>
+    /// <returns></returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static Result<TOk, Error> Error<TOk>(Exception exception)
     {
@@ -56,6 +78,12 @@ public static class Result
         return new Result<TOk, Error>(Option.None<TOk>(), Option.Some(Foundation.Error.FromException(exception)));
     }
 
+    /// <summary>
+    ///  Returns an error result.
+    /// </summary>
+    /// <typeparam name="TError">The type of the error.</typeparam>
+    /// <param name="error">The error value.</param>
+    /// <returns></returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static Result<TError> Error<TError>(TError error)
     {
@@ -63,6 +91,13 @@ public static class Result
         return new Result<TError>(error);
     }
 
+    /// <summary>
+    ///  Returns an error result.
+    /// </summary>
+    /// <typeparam name="TOk">Type of ok value.</typeparam>
+    /// <typeparam name="TError">Type of error.</typeparam>
+    /// <param name="error">Error value.</param>
+    /// <returns></returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static Result<TOk, TError> Error<TOk, TError>(TError error)
     {
@@ -102,12 +137,27 @@ public static class Result
         return Result.Error<TOk, TError>(error());
     }
 
+    /// <summary>
+    /// Returns an ok result where ok is a boolean with value true.
+    /// </summary>
+    /// <returns></returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static Result<Error> Ok() => new ();
 
+    /// <summary>
+    /// Returns an ok result where ok is a boolean with value true.
+    /// </summary>
+    /// <typeparam name="TError">Type of error</typeparam>
+    /// <returns></returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static Result<TError> Ok<TError>() => new ();
 
+    /// <summary>
+    /// Returns an ok result with error type <see cref="Error"/>.
+    /// </summary>
+    /// <typeparam name="TOk">The type of the ok value.</typeparam>
+    /// <param name="value">the ok value.</param>
+    /// <returns></returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static Result<TOk, Error> Ok<TOk>(TOk value)
     {
