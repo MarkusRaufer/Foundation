@@ -193,7 +193,7 @@ public class EquatableDictionary<TKey, TValue>
         if (other is null) return false;
         if (_hashCode != other._hashCode) return false;
 
-        return _keyValues.IsEqualToSet(other._keyValues);
+        return _keyValues.EqualsDictionary(other._keyValues);
     }
 
     /// <inheritdoc/>

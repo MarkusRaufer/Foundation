@@ -25,7 +25,7 @@ namespace Foundation.Collections.Generic
                 { 4, "four" }
             };
 
-            Assert.IsFalse(map1.IsEqualToSet(map2));
+            Assert.IsFalse(map1.EqualsDictionary(map2));
         }
 
         [Test]
@@ -45,7 +45,7 @@ namespace Foundation.Collections.Generic
                 { 3, "four" }
             };
 
-            Assert.IsFalse(map1.IsEqualToSet(map2));
+            Assert.IsFalse(map1.EqualsDictionary(map2));
         }
 
         [Test]
@@ -65,7 +65,7 @@ namespace Foundation.Collections.Generic
                 { 4, "three" }
             };
 
-            Assert.IsFalse(map1.IsEqualToSet(map2));
+            Assert.IsFalse(map1.EqualsDictionary(map2));
         }
 
         [Test]
@@ -85,7 +85,7 @@ namespace Foundation.Collections.Generic
                 { 2, "two" },
             };
 
-            Assert.IsTrue(map1.IsEqualToSet(map2));
+            Assert.IsTrue(map1.EqualsDictionary(map2));
         }
     }
 }

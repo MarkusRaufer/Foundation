@@ -125,7 +125,7 @@ public class DictionaryValue<TKey, TValue>
     {
         return other is not null
             && GetHashCode() == other.GetHashCode()
-            && _dictionary.IsEqualToSet(other._dictionary);
+            && _dictionary.EqualsDictionary(other._dictionary);
     }
 
     /// <inheritdoc/>

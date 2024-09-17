@@ -92,7 +92,7 @@ public class ImmutablePropertyCollection<TProperty>
         if (other is null) return false;
         if (_hashCode != other._hashCode) return false;
 
-        return _properties.IsEqualToSet(other._properties);
+        return _properties.EqualsDictionary(other._properties);
     }
 
     /// <inheritdoc/>

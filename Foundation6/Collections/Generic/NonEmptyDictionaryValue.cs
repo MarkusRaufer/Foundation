@@ -92,7 +92,7 @@ public class NonEmptyDictionaryValue<TKey, TValue>
         if (other is null) return false;
         if (_hashCode != other._hashCode) return false;
 
-        return _dictionary.IsEqualToSet(other._dictionary);
+        return _dictionary.EqualsDictionary(other._dictionary);
     }
 
     /// <inheritdoc/>

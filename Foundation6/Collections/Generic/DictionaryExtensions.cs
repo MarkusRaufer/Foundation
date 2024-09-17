@@ -28,6 +28,29 @@ namespace Foundation.Collections.Generic;
 public static  class DictionaryExtensions
 {
     /// <summary>
+    /// Returns true if all keys with their values of lhs and rhs are equal.
+    /// </summary>
+    /// <typeparam name="TKey"></typeparam>
+    /// <typeparam name="TValue"></typeparam>
+    /// <param name="lhs"></param>
+    /// <param name="rhs"></param>
+    /// <returns></returns>
+    public static bool EqualsReadOnlyDictionary<TKey, TValue>(this IReadOnlyDictionary<TKey, TValue> lhs, IReadOnlyDictionary<TKey, TValue> rhs)
+        where TKey : notnull
+    {
+        if (null == lhs) return null == rhs;
+        if (null == rhs) return false;
+        if (lhs.Count != rhs.Count) return false;
+
+        foreach (var kvp in lhs)
+        {
+            if (!rhs.TryGetValue(kvp.Key, out TValue? rhsValue)) return false;
+            if (!kvp.Value.EqualsNullable(rhsValue)) return false;
+        }
+        return true;
+    }
+
+    /// <summary>
     /// Intersects the keys of lhs with the keys of rhs.
     /// </summary>
     /// <typeparam name="TKey"></typeparam>
@@ -58,7 +81,7 @@ public static  class DictionaryExtensions
     /// <param name="lhs"></param>
     /// <param name="rhs"></param>
     /// <returns></returns>
-    public static bool IsEqualToSet<TKey, TValue>(
+    public static bool EqualsKeyValues<TKey, TValue>(
         this IDictionary<TKey, TValue> lhs,
         IEnumerable<KeyValuePair<TKey, TValue>> rhs)
         where TKey : notnull
@@ -88,7 +111,7 @@ public static  class DictionaryExtensions
     /// <param name="lhs"></param>
     /// <param name="rhs"></param>
     /// <returns></returns>
-    public static bool IsEqualToSet<TKey, TValue>(this IDictionary<TKey, TValue> lhs, IDictionary<TKey, TValue> rhs)
+    public static bool EqualsDictionary<TKey, TValue>(this IDictionary<TKey, TValue> lhs, IDictionary<TKey, TValue> rhs)
         where TKey : notnull
     {
         if (null == lhs) return null == rhs;
