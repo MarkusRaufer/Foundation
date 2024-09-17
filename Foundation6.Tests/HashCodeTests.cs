@@ -1,4 +1,7 @@
 ﻿using NUnit.Framework;
+using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace Foundation
 {
@@ -97,6 +100,28 @@ namespace Foundation
             var hc2 = HashCode.CreateBuilder()
                               .AddOrderedObjects(items2)
                               .GetHashCode();
+
+            Assert.AreEqual(hc1, hc2);
+        }
+
+        [Test]
+        public void FromObjects_Should_ReturnSameHashCodes_When_SameObjectsAdded()
+        {
+            var items1 = new Dictionary<string, object?>
+            {
+                {"one", 1 },
+                {"two", "zwei" },
+                {"three", 3 },
+            };
+            var items2 = new Dictionary<string, object?>
+            {
+                {"one", 1 },
+                {"two", "zwei" },
+                {"three", 3 },
+            };
+
+            var hc1 = HashCode.FromObjects(items1);
+            var hc2 = HashCode.FromObjects(items2);
 
             Assert.AreEqual(hc1, hc2);
         }

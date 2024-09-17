@@ -275,6 +275,13 @@ public static class HashCode
         return FromObjects(objects);
     }
 
+    /// <summary>
+    /// Creates a hash code from a list of key value pairs.
+    /// </summary>
+    /// <typeparam name="TKey"></typeparam>
+    /// <typeparam name="TValue"></typeparam>
+    /// <param name="pairs"></param>
+    /// <returns></returns>
     public static int FromObject<TKey, TValue>(params KeyValuePair<TKey, TValue>[] pairs)
     {
         return FromObjects(pairs);
@@ -288,9 +295,12 @@ public static class HashCode
     }
 
     public static int FromObjects<TKey, TValue>(IEnumerable<KeyValuePair<TKey, TValue>> pairs)
+        where TKey: IComparable<TKey>
     {
         var keyValues = pairs.ToArray();
         if (0 == keyValues.Length) return 0;
+
+        Array.Sort(keyValues, (l, r) => l.Key.CompareTo(r.Key));
 
         return HashCodeBuilder.Create()
                               .AddObjects(keyValues)
