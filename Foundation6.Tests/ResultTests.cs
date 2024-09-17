@@ -1,4 +1,5 @@
-﻿using NUnit.Framework;
+﻿using FluentAssertions;
+using NUnit.Framework;
 using System;
 
 namespace Foundation;
@@ -6,6 +7,31 @@ namespace Foundation;
 [TestFixture]
 public class ResultTests
 {
+    [Test]
+    public void FromOption_Should_ReturnErrorResult_When_TypeIsInvalid()
+    {
+        object value = 5;
+
+        var error = new Error("test error", "this is a test error");
+        var sut = Result.FromOption(() => Option.MaybeOfType<string>(value), () => error);
+
+        sut.IsOk.Should().BeFalse();
+        sut.TryGetError(out var err).Should().BeTrue();
+        err.Should().Be(error);
+    }
+
+    [Test]
+    public void FromOption_Should_ReturnOkResult_When_TypeIsValid()
+    {
+        object value = 5;
+
+        var sut = Result.FromOption(() => Option.MaybeOfType<int>(value));
+
+        sut.IsOk.Should().BeTrue();
+        sut.TryGetOk(out int ok).Should().BeTrue();
+        ok.Should().Be((int)value);
+    }
+
     [Test]
     public void IsOk_Should_ReturnFalse_When_ResultContainsAnError()
     {

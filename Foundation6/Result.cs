@@ -24,49 +24,91 @@
 ﻿namespace Foundation;
 
 using System.Diagnostics.CodeAnalysis;
+using System.Runtime.CompilerServices;
 
 public static class Result
 {
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static Result<Error> Error(Error error)
     {
         error.ThrowIfNull();
         return new Result<Error>(error);
     }
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static Result<Error> Error(Exception exception)
     {
         exception.ThrowIfNull();
         return new Result<Error>(Foundation.Error.FromException(exception));
     }
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static Result<TOk, Error> Error<TOk>(Error error)
     {
         error.ThrowIfNull();
         return new Result<TOk, Error>(Option.None<TOk>(), Option.Some(error));
     }
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static Result<TOk, Error> Error<TOk>(Exception exception)
     {
         exception.ThrowIfNull();
         return new Result<TOk, Error>(Option.None<TOk>(), Option.Some(Foundation.Error.FromException(exception)));
     }
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static Result<TError> Error<TError>(TError error)
     {
         error.ThrowIfNull();
         return new Result<TError>(error);
     }
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static Result<TOk, TError> Error<TOk, TError>(TError error)
     {
         error.ThrowIfNull();
         return new Result<TOk, TError>(Option.None<TOk>(), Option.Some(error));
     }
 
+    /// <summary>
+    /// Creates a <see cref="Result{TOk, Error}"/> from an <see cref="Option{TOk}"/>.
+    /// </summary>
+    /// <typeparam name="TOk">The type of ok.</typeparam>
+    /// <param name="func">Returns an <see cref="Option{TOk}"/></param>
+    /// <returns></returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static Result<TOk, Error> FromOption<TOk>(Func<Option<TOk>> func)
+    {
+        return FromOption(func, () => new Error("incompatible result", $"the result is not of type {typeof(TOk)}"));
+    }
+
+    /// <summary>
+    /// Creates a <see cref="Result{TOk, TError}"/> from an <see cref="Option{TOk}"/>.
+    /// </summary>
+    /// <typeparam name="TOk">The type of ok.</typeparam>
+    /// <typeparam name="TError">The error type.</typeparam>
+    /// <param name="func">Returns an <see cref="Option{TOk}"/></param>
+    /// <param name="error">Returns an error.</param>
+    /// <returns></returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static Result<TOk, TError> FromOption<TOk, TError>(Func<Option<TOk>> func, Func<TError> error)
+    {
+        func.ThrowIfNull();
+        error.ThrowIfNull();
+
+        var option = func();
+        if (option.TryGet(out var ok)) return Result.Ok<TOk, TError>(ok);
+
+        return Result.Error<TOk, TError>(error());
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static Result<Error> Ok() => new ();
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static Result<TError> Ok<TError>() => new ();
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static Result<TOk, Error> Ok<TOk>(TOk value)
     {
         value.ThrowIfNull();
@@ -74,6 +116,7 @@ public static class Result
         return new Result<TOk, Error>(Option.Some(value), Option.None<Error>());
     }
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static Result<TOk, TError> Ok<TOk, TError>(TOk value)
     {
         value.ThrowIfNull();

@@ -23,20 +23,38 @@
 // SOFTWARE.
 ﻿using System;
 using System.Diagnostics.CodeAnalysis;
+using System.Runtime.CompilerServices;
 using System.Runtime.Serialization;
 
 namespace Foundation;
 
 public static class Option
 {
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static Option<T> Maybe<T>(T? value) => new(value);
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static Option<T> MaybeOfType<T>(object? value) => value is T t ? new Option<T>(t) : Option.None<T>();
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static Option<T> MaybeOfType<T>(object? value, Func<T, bool> predicate)
+        => value is T t && predicate(t) ? new Option<T>(t) : Option.None<T>();
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static Option<TResult> MaybeOfType<T, TResult>(T? value) => value is TResult result ? Option.Some(result) : Option.None<TResult>();
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static Option<TResult> MaybeOfType<T, TResult>(T? value, Func<T, bool> predicate)
+        => value is not null && predicate(value) && value is TResult result ? Option.Some(result) : Option.None<TResult>();
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static Option<TResult> MaybeOfType<T, TResult>(T? value, Func<TResult, bool> predicate)
+        => value is TResult result && predicate(result) ? Option.Some(result) : Option.None<TResult>();
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static Option<T> None<T>() => Option<T>.None;
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static Option<T> Some<T>(T value) => null != value ? new(value) : throw new ArgumentNullException(nameof(value));
 }
 
