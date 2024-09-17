@@ -32,6 +32,7 @@ namespace Foundation;
 /// <param name="Unit">The unit of the quantity.</param>
 /// <param name="Value">The value of the quantity.</param>
 public readonly record struct Quantity(string Unit, decimal Value)
+    : IQuantity<string, decimal>
 {
     public readonly bool IsEmpty => 0 == GetHashCode();
 
@@ -166,6 +167,7 @@ public readonly record struct Quantity(string Unit, decimal Value)
 /// <param name="Unit">The unit of the quantity.</param>
 /// <param name="Value">The value of the quantity.</param>
 public readonly record struct Quantity<TValue>(string Unit, TValue Value)
+    : IQuantity<string, TValue>
 {
     public readonly bool IsEmpty => 0 == GetHashCode();
 
@@ -183,7 +185,8 @@ public readonly record struct Quantity<TValue>(string Unit, TValue Value)
 /// <typeparam name="TValue">Type of the value of the quantity.</typeparam>
 /// <param name="Unit">The unit of the quantity.</param>
 /// <param name="Value">The value of the quantity.</param>
-public readonly record struct Quantity<TUnit, TValue>(TUnit Unit, TValue Value)
+public readonly record struct Quantity<TUnit, TValue>(TUnit Unit, TValue Value) 
+    : IQuantity<TUnit, TValue>
 {
     public readonly bool IsEmpty => 0 == GetHashCode();
 
