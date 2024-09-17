@@ -49,6 +49,28 @@ public class ResultTests
     }
 
     [Test]
+    public void Maybe_Should_ReturnErrorResult_When_TypeIsNotOfTypeInt()
+    {
+        object value = 5;
+
+        var sut = Result.Maybe<string>(value);
+
+        sut.IsOk.Should().BeFalse();
+    }
+
+    [Test]
+    public void Maybe_Should_ReturnOkResult_When_TypeIsOfTypeInt()
+    {
+        object value = 5;
+
+        var sut = Result.Maybe<int>(value);
+
+        sut.IsOk.Should().BeTrue();
+        sut.TryGetOk(out int ok).Should().BeTrue();
+        ok.Should().Be((int)value);
+    }
+
+    [Test]
     public void OkOrThrow_Should_ThrowAnException_When_IsOKIsFalse()
     {
         var sut = Result.Error<int, Exception>(new ArgumentOutOfRangeException());

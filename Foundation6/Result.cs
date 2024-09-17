@@ -25,6 +25,7 @@
 
 using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
+using System.Xml.Schema;
 
 public static class Result
 {
@@ -114,7 +115,35 @@ public static class Result
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static Result<TOk, Error> FromOption<TOk>(Func<Option<TOk>> func)
     {
-        return FromOption(func, () => new Error("incompatible result", $"the result is not of type {typeof(TOk)}"));
+        return FromOption(func, () => new Error("incompatible value", $"the value is not of type {typeof(TOk)}"));
+    }
+
+    /// <summary>
+    /// Returns an ok error if value is of type TOk otherwise it returns an error result.
+    /// </summary>
+    /// <typeparam name="TOk">Typeof of ok value.</typeparam>
+    /// <param name="value">The value to be checked.</param>
+    /// <returns></returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static Result<TOk, Error> Maybe<TOk>(object? value)
+    {
+        return Maybe<TOk, Error>(value, () => new Error("incompatible value", $"the value is not of type {typeof(TOk)}"));
+    }
+
+    /// <summary>
+    /// Returns an ok error if value is of type TOk otherwise it returns an error result.
+    /// </summary>
+    /// <typeparam name="TOk">Typeof of ok value.</typeparam>
+    /// <typeparam name="TError">Type of error.</typeparam>
+    /// <param name="value">The value to be checked.</param>
+    /// <param name="error">The error value.</param>
+    /// <returns></returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static Result<TOk, TError> Maybe<TOk, TError>(object? value, Func<TError> error)
+    {
+        if (value is TOk ok) return Result.Ok<TOk, TError>(ok);
+
+        return Result.Error<TOk, TError>(error());
     }
 
     /// <summary>
