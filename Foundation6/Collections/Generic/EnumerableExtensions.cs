@@ -786,12 +786,38 @@ public static class EnumerableExtensions
 
         foreach (var item in items)
         {
-            var optional = selector(item);
-#if NETSTANDARD2_0
-            if (optional.TryGet(out TResult? value)) yield return value;
-#else
-            if (optional.TryGet(out TResult? value)) yield return value;
-#endif
+            if (selector(item).TryGet(out TResult? value)) yield return value;
+        }
+    }
+
+    /// <summary>
+    ///  Filters and transform items. It returns only Option.Some values.
+    ///  It returns a value if source is empty.
+    /// </summary>
+    /// <typeparam name="T">Type of element.</typeparam>
+    /// <typeparam name="TResult">The transformed type of each element.</typeparam>
+    /// <param name="items">List of elements.</param>
+    /// <param name="selector">If it returns Option.IsNone the item is ignored and does not appear in the result.</param>
+    /// <param name="onEmpty">Is called if items is empty.</param>
+    /// <returns>A list of filtered and transformed items.</returns>
+    public static IEnumerable<TResult> FilterMap<T, TResult>(
+        this IEnumerable<T> items,
+        Func<T, Option<TResult>> selector,
+        Func<TResult> onEmpty)
+    {
+        selector.ThrowIfNull();
+        var it = items.GetEnumerator();
+        if (!it.MoveNext())
+        {
+            yield return onEmpty();
+            yield break;
+        }
+
+        if (selector(it.Current).TryGet(out var first)) yield return first;
+        
+        while(it.MoveNext())
+        {
+            if (selector(it.Current).TryGet(out var value)) yield return value;
         }
     }
 
@@ -813,6 +839,40 @@ public static class EnumerableExtensions
         foreach (var item in items)
         {
             if (predicate(item)) yield return selector(item);
+        }
+    }
+
+    /// <summary>
+    /// Filters and transform items. Returns elements when predicate is true.
+    /// It returns a value if items is empty.
+    /// It return
+    /// </summary>
+    /// <typeparam name="T">Type of earch element.</typeparam>
+    /// <typeparam name="TResult">The transformed type of an element.</typeparam>
+    /// <param name="items">List of elements.</param>
+    /// <param name="predicate">If false, the element is ignored and does not appear in the result.</param>
+    /// <param name="selector">The transformation of the element.</param>
+    /// <param name="onEmpty">Is called if items is empty.</param>
+    /// <returns></returns>
+    public static IEnumerable<TResult> FilterMap<T, TResult>(
+        this IEnumerable<T> items,
+        Func<T, bool> predicate,
+        Func<T, TResult> selector,
+        Func<TResult> onEmpty)
+    {
+        selector.ThrowIfNull();
+        var it = items.GetEnumerator();
+        if (!it.MoveNext())
+        {
+            yield return onEmpty();
+            yield break;
+        }
+
+        if (predicate(it.Current)) yield return selector(it.Current);
+
+        while (it.MoveNext())
+        {
+            if (predicate(it.Current)) yield return selector(it.Current);
         }
     }
 
@@ -950,13 +1010,14 @@ public static class EnumerableExtensions
     public static Option<T> FirstOfTypeAsOption<T>(this IEnumerable<T> items) => items.ObjectOfType<T>().FirstAsOption();
 
     /// <summary>
-    /// Executes action for every left.
+    /// Executes action for each element.
     /// </summary>
-    /// <typeparam name="T"></typeparam>
-    /// <param name="source"></param>
-    /// <param name="action"></param>
-    /// <returns>The number of executed actions.</returns>
-    public static void ForEach<T>(this IEnumerable<T> source, Action<T> action)
+    /// <typeparam name="T">The type of the elements.</typeparam>
+    /// <param name="source">The list of elements.</param>
+    /// <param name="action">Will be called with each element.</param>
+    public static void ForEach<T>(
+        this IEnumerable<T> source,
+        Action<T> action)
     {
         action.ThrowIfNull();
 
@@ -967,35 +1028,32 @@ public static class EnumerableExtensions
     }
 
     /// <summary>
-    /// Calls <paramref name="action"/> for every left. If the list is empty <paramref name="emptyAction"/> is called.
+    /// Calls <paramref name="action"/> for every left. If the list is empty <paramref name="onEmpty"/> is called.
     /// </summary>
     /// <typeparam name="T">Type of the left.</typeparam>
     /// <param name="source"></param>
-    /// <param name="action">Will be executed for every left.</param>
-    /// <param name="emptyAction">Will be executed if source is empty.</param>
-    /// <returns>The number of executed actions.</returns>
+    /// <param name="action">Will be called with each element.</param>
+    /// <param name="onEmpty">Will be called if source is empty.</param>
     public static void ForEach<T>(
-        this IEnumerable<T> source,
+       this IEnumerable<T> source,
         Action<T> action,
-        Action emptyAction)
+        Action onEmpty)
     {
         action.ThrowIfNull();
-        emptyAction.ThrowIfNull();
+        onEmpty.ThrowIfNull();
 
         var it = source.GetEnumerator();
         if(!it.MoveNext())
         {
-            emptyAction();
+            onEmpty();
             return;
         }
 
-        var item = it.Current;
-        action(item);
+        action(it.Current);
         
         while(it.MoveNext())
         {
-            item = it.Current;
-            action(item);
+            action(it.Current);
         }
     }
 
@@ -2071,8 +2129,8 @@ public static class EnumerableExtensions
     /// <typeparam name="TResult">Type of the result.</typeparam>
     /// <param name="items">List of items.</param>
     /// <param name="predicate">Predicate to partition.</param>
-    /// <param name="match">projection to TResult.</param>
-    /// <param name="noMatch">projection to TResult.</param>
+    /// <param name="match">action to TResult.</param>
+    /// <param name="noMatch">action to TResult.</param>
     /// <returns></returns>
     /// 
     public static (TMatch matching, TNoMatch notMatching) Partition<T, TMatch, TNoMatch>(

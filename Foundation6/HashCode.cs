@@ -290,11 +290,22 @@ public static class HashCode
     public static int FromObjects<T>(IEnumerable<T> objects)
     {
         return HashCodeBuilder.Create()
-                              .AddObjects(objects)
+                              .AddOrderedObjects(objects)
                               .GetHashCode();
     }
 
     public static int FromObjects<TKey, TValue>(IEnumerable<KeyValuePair<TKey, TValue>> pairs)
+    {
+        var keyValues = pairs.ToArray();
+        if (0 == keyValues.Length) return 0;
+        Array.Sort(keyValues, (l, r) => Comparer<TKey>.Default.Compare(l.Key, r.Key));
+
+        return HashCodeBuilder.Create()
+                              .AddObjects(keyValues)
+                              .GetHashCode();
+    }
+
+    public static int FromKeyValues<TKey, TValue>(IEnumerable<KeyValuePair<TKey, TValue>> pairs)
         where TKey: IComparable<TKey>
     {
         var keyValues = pairs.ToArray();

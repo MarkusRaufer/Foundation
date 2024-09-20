@@ -863,7 +863,7 @@ public class EnumerableExtensionsTests
         var items = Enumerable.Empty<int>();
         var sum = 0;
 
-        items.ForEach(action: x => sum += x, emptyAction: () => sum = 1);
+        items.ForEach(action: x => sum += x, onEmpty: () => sum = 1);
 
         sum.Should().Be(1);
     }
