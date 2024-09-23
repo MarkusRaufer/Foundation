@@ -21,8 +21,6 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
-﻿#if NET6_0_OR_GREATER
-using System;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using System.Text.RegularExpressions;
@@ -33,12 +31,17 @@ public class ObjectJsonConverter : JsonConverter<object?>
 {
     private readonly TypeCode _integerFormat;
     private readonly TypeCode _floatFormat;
+    private static readonly QuantityConverter _quantityConverter = new();
+    private static readonly JsonSerializerOptions _jsonSerializerOptions = new() { Converters = { _quantityConverter } };
+
+#if NET6_0_OR_GREATER
+#endif
+
+    private readonly Regex? _dateTimeRegex = null;
+    private readonly Regex? _timeSpanRegex = null;
     private readonly bool _supportDateOnly;
     private readonly bool _supportTimeOnly;
     private readonly bool _supportTimeSpan;
-
-    private readonly Regex? _dateTimeRegex;
-    private readonly Regex? _timeSpanRegex;
 
     public ObjectJsonConverter(
         TypeCode integerFormat = TypeCode.Int32,
@@ -49,6 +52,7 @@ public class ObjectJsonConverter : JsonConverter<object?>
     {
         _integerFormat = integerFormat;
         _floatFormat = floatFormat;
+
         _supportDateOnly = supportDateOnly;
         _supportTimeOnly = supportTimeOnly;
         _supportTimeSpan = supportTimeSpan;
@@ -57,7 +61,7 @@ public class ObjectJsonConverter : JsonConverter<object?>
         if (_supportTimeSpan) _timeSpanRegex = new Regex(RegularExpressions.TimeSpanExpression);
     }
 
-    private static Result<TimeSpan, string?> GetTimeSpan(Utf8JsonReader reader, Regex? regex)
+    private static Result<TimeSpan, string?> GetTimeSpan(ref Utf8JsonReader reader, Regex? regex)
     {
         var str = reader.GetString();
         if (null == regex) return Result.Error<TimeSpan, string?>(str);
@@ -76,18 +80,22 @@ public class ObjectJsonConverter : JsonConverter<object?>
         {
             JsonTokenType.True => true,
             JsonTokenType.False => false,
-            JsonTokenType.Number when TryGetInteger(reader, _integerFormat, out var intValue) => intValue,
-            JsonTokenType.Number when TryGetFloat(reader, _floatFormat, out var floatValue) => floatValue,
-            JsonTokenType.String when _supportTimeSpan && TryGetTimeSpan(reader, out var timeSpan) => timeSpan,
-            JsonTokenType.String when TryGetDateTime(reader, _dateTimeRegex, out var dateTime) => dateTime,
-            JsonTokenType.String when _supportDateOnly && TryGetDateOnly(reader, out var dateOnly) => dateOnly,
-            JsonTokenType.String when _supportTimeOnly && TryGetTimeOnly(reader, out var timeOnly) => timeOnly,
+            JsonTokenType.Number when TryGetInteger(ref reader, _integerFormat, out var intValue) => intValue,
+            JsonTokenType.Number when TryGetFloat(ref reader, _floatFormat, out var floatValue) => floatValue,
+            JsonTokenType.StartObject when TryGetQuantity(ref reader, out var quantity) => quantity,
+            JsonTokenType.String when _supportTimeSpan && TryGetTimeSpan(ref reader, out var timeSpan) => timeSpan,
+            JsonTokenType.String when TryGetDateTime(ref reader, _dateTimeRegex, out var dateTime) => dateTime,
+#if NET6_0_OR_GREATER
+            JsonTokenType.String when _supportDateOnly && TryGetDateOnly(ref reader, out var dateOnly) => dateOnly,
+            JsonTokenType.String when _supportTimeOnly && TryGetTimeOnly(ref reader, out var timeOnly) => timeOnly,
+#endif
             JsonTokenType.String => reader.GetString(),
             _ => JsonDocument.ParseValue(ref reader).RootElement.Clone()
         };
     }
 
-    private static bool TryGetDateOnly(Utf8JsonReader reader, out DateOnly? dateOnly)
+#if NET6_0_OR_GREATER
+    private static bool TryGetDateOnly(ref Utf8JsonReader reader, out DateOnly? dateOnly)
     {
         var str = reader.GetString();
         if (DateOnly.TryParse(str, out var value))
@@ -98,8 +106,9 @@ public class ObjectJsonConverter : JsonConverter<object?>
         dateOnly = null;
         return false;
     }
+#endif
 
-    private static bool TryGetDateTime(Utf8JsonReader reader, Regex? dateTimeRegex, out DateTime? dateTime)
+    private static bool TryGetDateTime(ref Utf8JsonReader reader, Regex? dateTimeRegex, out DateTime? dateTime)
     {
         if (null == dateTimeRegex)
         {
@@ -128,7 +137,7 @@ public class ObjectJsonConverter : JsonConverter<object?>
         return false;
     }
 
-    private static bool TryGetFloat(Utf8JsonReader reader, TypeCode typeCode, out object? number)
+    private static bool TryGetFloat(ref Utf8JsonReader reader, TypeCode typeCode, out object? number)
     {
         switch (typeCode)
         {
@@ -151,7 +160,7 @@ public class ObjectJsonConverter : JsonConverter<object?>
         return false;
     }
 
-    private static bool TryGetInteger(Utf8JsonReader reader, TypeCode typeCode, out object? number)
+    private static bool TryGetInteger(ref Utf8JsonReader reader, TypeCode typeCode, out object? number)
     {
         switch (typeCode)
         {
@@ -202,7 +211,14 @@ public class ObjectJsonConverter : JsonConverter<object?>
         return false;
     }
 
-    private static bool TryGetTimeOnly(Utf8JsonReader reader, out TimeOnly? timeOnly)
+    private static bool TryGetQuantity(ref Utf8JsonReader reader, out Quantity? quantity)
+    {
+        quantity = _quantityConverter.Read(ref reader, typeof(Quantity?), _jsonSerializerOptions);
+        return quantity is not null;
+    }
+
+#if NET6_0_OR_GREATER
+    private static bool TryGetTimeOnly(ref Utf8JsonReader reader, out TimeOnly? timeOnly)
     {
         var str = reader.GetString();
         if (TimeOnly.TryParse(str, out var value))
@@ -213,8 +229,9 @@ public class ObjectJsonConverter : JsonConverter<object?>
         timeOnly = null;
         return false;
     }
+#endif
 
-    private static bool TryGetTimeSpan(Utf8JsonReader reader, out TimeSpan? timeSpan)
+    private static bool TryGetTimeSpan(ref Utf8JsonReader reader, out TimeSpan? timeSpan)
     {
         var str = reader.GetString();
         if (string.IsNullOrWhiteSpace(str))
@@ -223,7 +240,7 @@ public class ObjectJsonConverter : JsonConverter<object?>
             return false;
         }
 
-        if (Iso8601Period.TryParse(str, out var value))
+        if (Iso8601Period.TryParse(str.AsSpan(), out var value))
         {
             timeSpan = value;
             return true;
@@ -234,12 +251,11 @@ public class ObjectJsonConverter : JsonConverter<object?>
 
     public override void Write(Utf8JsonWriter writer, object? value, JsonSerializerOptions options)
     {
-        if (value is TimeSpan timeSpan)
+        switch(value)
         {
-            writer.WriteValue(timeSpan.ToIso8601Period());
-            return;
+            case TimeSpan timeSpan: writer.WriteValue(timeSpan.ToIso8601Period()); break;
+            case Quantity quantity: _quantityConverter.Write(writer, quantity, options); break;
+            default: writer.WriteValue(value); break;
         }
-        writer.WriteValue(value);
     }
 }
-#endif

@@ -13,17 +13,19 @@ namespace Foundation.TestUtil.Text.Json.Serialization;
 public class ObjectConverterTests
 {
     [Test]
-    public void Read_Should_Transform_ToRightType_When_ListOfObjectsIsUsed()
+    public void Deserialize_Should_Transform_ToRightType_When_ListOfObjectsIsUsed()
     {
+        //Arrange
         var dateTimeValue = new DateTime(2020, 1, 2, 3, 4, 5);
         var dateOnlyValue = dateTimeValue.ToDateOnly();
         var doubleValue = 12.345;
         var intValue = 12345;
+        var quantity = new Quantity("kg", 12.34M);
         var strValue = "12345";
         var timeOnlyValue = dateTimeValue.ToTimeOnly();
         var timeSpan = TimeSpan.FromSeconds(1.234);
-        
-        List<object?> values = [dateTimeValue, dateOnlyValue, doubleValue, intValue, strValue, timeOnlyValue, timeSpan];
+
+        List<object?> values = [dateTimeValue, dateOnlyValue, doubleValue, intValue, quantity, strValue, timeOnlyValue, timeSpan];
 
         var serializeOptions = new JsonSerializerOptions
         {
@@ -34,13 +36,13 @@ public class ObjectConverterTests
         };
 
         var json = JsonSerializer.Serialize(values, serializeOptions);
-        
+
         var desirialized = JsonSerializer.Deserialize<List<object?>>(json, serializeOptions);
         desirialized.Should().NotBeNull();
 
         if (null != desirialized)
         {
-            desirialized.Count.Should().Be(7);
+            desirialized.Count.Should().Be(8);
             {
                 var value = desirialized[0];
                 value.Should().NotBeNull();
@@ -50,6 +52,7 @@ public class ObjectConverterTests
                     else Assert.Fail($"{nameof(value)} is not of type {nameof(DateTime)}.");
                 }
             }
+#if NET6_0_OR_GREATER
             {
                 var value = desirialized[1];
                 value.Should().NotBeNull();
@@ -59,6 +62,7 @@ public class ObjectConverterTests
                     else Assert.Fail($"{nameof(value)} is not of type {nameof(DateOnly)}.");
                 }
             }
+#endif
             {
                 var value = desirialized[2];
                 value.Should().NotBeNull();
@@ -75,7 +79,6 @@ public class ObjectConverterTests
                 {
                     if (value is int i) i.Should().Be(intValue);
                     else Assert.Fail($"{nameof(value)} is not of type {nameof(Int32)}.");
-
                 }
             }
             {
@@ -83,8 +86,8 @@ public class ObjectConverterTests
                 value.Should().NotBeNull();
                 if (value != null)
                 {
-                    if (value is string str) str.Should().Be(strValue);
-                    else Assert.Fail($"{nameof(value)} is not of type {nameof(String)}.");
+                    if (value is Quantity q) q.Should().Be(quantity);
+                    else Assert.Fail($"{nameof(value)} is not of type {nameof(Quantity)}.");
                 }
             }
             {
@@ -92,22 +95,61 @@ public class ObjectConverterTests
                 value.Should().NotBeNull();
                 if (value != null)
                 {
-                    if (value is TimeOnly timeOnly) timeOnly.Should().Be(timeOnlyValue);
-                    else Assert.Fail($"{nameof(value)} is not of type {nameof(TimeOnly)}.");
-
+                    if (value is string str) str.Should().Be(strValue);
+                    else Assert.Fail($"{nameof(value)} is not of type {nameof(String)}.");
                 }
             }
+#if NET6_0_OR_GREATER
             {
                 var value = desirialized[6];
                 value.Should().NotBeNull();
                 if (value != null)
                 {
+                    if (value is TimeOnly timeOnly) timeOnly.Should().Be(timeOnlyValue);
+                    else Assert.Fail($"{nameof(value)} is not of type {nameof(TimeOnly)}.");
+                }
+            }
+#endif
+            {
+                var value = desirialized[7];
+                value.Should().NotBeNull();
+                if (value != null)
+                {
                     if (value is TimeSpan ts) ts.Should().Be(timeSpan);
                     else Assert.Fail($"{nameof(value)} is not of type {nameof(TimeSpan)}.");
-
                 }
             }
         }
+    }
+
+    [Test]
+    public void Serialize_Should_Transform_ToRightType_When_ListOfObjectsIsUsed()
+    {
+        //Arrange
+        var dateTimeValue = new DateTime(2020, 1, 2, 3, 4, 5);
+        var dateOnlyValue = dateTimeValue.ToDateOnly();
+        var doubleValue = 12.345;
+        var intValue = 12345;
+        var quantity = new Quantity("kg", 12.34M);
+        var strValue = "12345";
+        var timeOnlyValue = dateTimeValue.ToTimeOnly();
+        var timeSpan = TimeSpan.FromSeconds(1.234);
+        
+        List<object?> values = [dateTimeValue, dateOnlyValue, doubleValue, intValue, quantity, strValue, timeOnlyValue, timeSpan];
+
+        var serializeOptions = new JsonSerializerOptions
+        {
+            Converters =
+            {
+                new ObjectJsonConverter()
+            }
+        };
+
+        //Act
+        var json = JsonSerializer.Serialize(values, serializeOptions);
+        
+        var expected = """["2020-01-02T03:04:05","2020-01-02",12.345,12345,{"Unit":"kg","Value":12.34},"12345","03:04:05","PT1S234F"]""";
+        json.Should().Be(expected);
     }
 }
 #endif

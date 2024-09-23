@@ -21,7 +21,10 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
-﻿namespace Foundation;
+using System;
+using System.Globalization;
+
+namespace Foundation;
 
 public static class DoubleExtensions
 {
@@ -68,4 +71,7 @@ public static class DoubleExtensions
     {
         return Equal(left, right, deviation) || LessThan(left, right, deviation);
     }
+
+    public static string ToInvariantString(this double value)
+        => value.ToString(CultureInfo.InvariantCulture);
 }

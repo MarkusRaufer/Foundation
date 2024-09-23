@@ -21,10 +21,8 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
-#if NET6_0_OR_GREATER
+//#if NET6_0_OR_GREATER
 
-using System;
-using System.Collections.Generic;
 using System.Text.Json;
 
 namespace Foundation.Text.Json;
@@ -33,6 +31,8 @@ public static class Utf8JsonReaderExtensions
 {
     public static Result<KeyValuePair<string, object?>, Error> GetProperty(this ref Utf8JsonReader reader)
     {
+        if (reader.TokenType != JsonTokenType.PropertyName) reader.Read();
+
         if (reader.TokenType != JsonTokenType.PropertyName)
         {
             var error = new Error($"{nameof(JsonTokenType)}", $"expected {nameof(JsonTokenType.PropertyName)}");
@@ -51,6 +51,7 @@ public static class Utf8JsonReaderExtensions
         }
 
         var value = reader.GetValue(reader.TokenType);
+
         return Result.Ok(new KeyValuePair<string, object?>(name, value));
     }
 
@@ -161,6 +162,7 @@ public static class Utf8JsonReaderExtensions
 
         switch(type)
         {
+#if NET6_0_OR_GREATER
             case Type _ when type == typeof(DateOnly):
                 {
                     var str = reader.GetString();
@@ -169,11 +171,13 @@ public static class Utf8JsonReaderExtensions
                     if (DateTime.TryParse(str, out var dt)) return dt.ToDateOnly();
                     return null;
                 }
+#endif
             case Type _ when type == typeof(Guid):
                 {
                     var guid = reader.GetGuid();
                     return guid;
                 }
+#if NET6_0_OR_GREATER
             case Type _ when type == typeof(TimeOnly):
                 {
                     var str = reader.GetString();
@@ -182,6 +186,7 @@ public static class Utf8JsonReaderExtensions
                     if (DateTime.TryParse(str, out var dt)) return dt.ToTimeOnly();
                     return null;
                 }
+#endif
         };
 
         return reader.GetString();
@@ -194,6 +199,7 @@ public static class Utf8JsonReaderExtensions
             case "System.Boolean": return reader.GetBoolean();
             case "System.Byte": return reader.GetByte();
             case "System.Char": return reader.GetString();
+#if NET6_0_OR_GREATER
             case "System.DateOnly":
                 {
                     var str = reader.GetString();
@@ -202,6 +208,7 @@ public static class Utf8JsonReaderExtensions
                     if (DateTime.TryParse(str, out var dt)) return dt.ToDateOnly();
                     return null;
                 }
+#endif
             case "System.DateTime": return reader.GetDateTime();
             case "System.Decimal": return reader.GetDecimal();
             case "System.Double": return reader.GetDouble();
@@ -215,6 +222,7 @@ public static class Utf8JsonReaderExtensions
             case "System.SByte": return reader.GetSByte();
             case "System.Single": return reader.GetSingle();
             case "System.String": return reader.GetString();
+#if NET6_0_OR_GREATER
             case "System.TimeOnly":
                 {
                     var str = reader.GetString();
@@ -223,9 +231,9 @@ public static class Utf8JsonReaderExtensions
                     if (DateTime.TryParse(str, out var dt)) return dt.ToTimeOnly();
                     return null;
                 }
+#endif
         }
 
         return reader.GetString();
     }
 }
-#endif

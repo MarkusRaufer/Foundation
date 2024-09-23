@@ -22,7 +22,9 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 using Foundation.Buffers;
+using System.Diagnostics;
 using System.Globalization;
+using System.Text.Json.Serialization;
 
 namespace Foundation;
 
@@ -34,6 +36,9 @@ namespace Foundation;
 public readonly record struct Quantity(string Unit, decimal Value)
     : IQuantity<string, decimal>
 {
+    public static Quantity Empty => new();
+
+    [JsonIgnore]
     public readonly bool IsEmpty => 0 == GetHashCode();
 
     public static Quantity New(string unit, decimal value) => new(unit, value);
@@ -98,11 +103,17 @@ public readonly record struct Quantity(string Unit, decimal Value)
     /// In older .NET versions the string represents the string format when you call <see cref="ToString"/>.</param>
     /// <param name="quantity">The converted <see cref="Quantity"/>.</param>
     /// <returns></returns>
-    public static bool TryParse(string str, out Quantity quantity)
+    public static bool TryParse(string? str, out Quantity? quantity)
     {
+        if (string.IsNullOrWhiteSpace(str))
+        {
+            quantity = null;
+            return false;
+        }
+
         try
         {
-            quantity = Parse(str);
+            quantity = Parse(str!);
             return true;
         }
         catch (Exception)
