@@ -28,6 +28,23 @@ namespace Foundation.Reflection;
 public static class AssemblyEx
 {
     /// <summary>
+    /// Searches vor assembly files (*.dll) at location.
+    /// </summary>
+    /// <param name="location">The location of the assembly files.</param>
+    /// <returns></returns>
+    public static IEnumerable<Assembly> GetAssembliesFromLocation(string location)
+    {
+        var dir = Path.GetDirectoryName(location);
+        if (dir is null) yield break;
+
+        var dlls = Directory.GetFiles(dir, "*.dll");
+        foreach (var dll in dlls)
+        {
+            yield return Assembly.LoadFile(dll);
+        }
+    }
+
+    /// <summary>
     /// Returns the directory with the executing assembly.
     /// </summary>
     /// <returns></returns>

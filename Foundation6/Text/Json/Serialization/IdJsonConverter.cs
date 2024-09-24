@@ -21,58 +21,59 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
-using Foundation.Collections.Generic;
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using Foundation.Reflection;
 
 namespace Foundation.Text.Json.Serialization;
 
 public class IdJsonConverter : JsonConverter<Id>
 {
-    private readonly TypeJsonConverter _typeJsonConverter;
+    private readonly ObjectJsonConverter _objectJsonConverter;
+    private readonly Dictionary<string, IObjectTypeValueConverter> _objectTypeConverters = [];
+    private readonly ITypeNameValueConverter _primitiveTypeConverter;
 
-    public IdJsonConverter() : this(new TypeJsonConverter())
+    public IdJsonConverter() : this([])
     {
     }
 
-    public IdJsonConverter(TypeJsonConverter typeJsonConverter)
+    public IdJsonConverter(IEnumerable<IObjectTypeValueConverter> converters)
     {
-        _typeJsonConverter = typeJsonConverter.ThrowIfNull();
+        foreach (var converter in converters)
+        {
+            if (converter is PrimitiveObjectTypeConverter primitiveTypeConverter)
+            {
+                _primitiveTypeConverter = primitiveTypeConverter;
+            }
+            _objectTypeConverters.Add(converter.ObjectType, converter);
+        }
+
+        _objectJsonConverter = new ObjectJsonConverter();
+        if (_primitiveTypeConverter is null) _primitiveTypeConverter = new PrimitiveObjectTypeConverter();
     }
 
     public override Id Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
     {
         if (reader.TokenType != JsonTokenType.StartObject) return Id.Empty;
 
-        ReadTypeProperty(ref reader);
+        if (!reader.GetProperty().TryGetOk(out var typeProperty) || typeProperty.Value is not string typeString) return Id.Empty;
 
-        var type = _typeJsonConverter.Read(ref reader, typeToConvert, options);
-        if (null == type) throw new JsonException(nameof(Id));
-
-        if (!reader.Read() || reader.TokenType != JsonTokenType.PropertyName) throw new JsonException(nameof(Id));
-        
-        // Value result
-        var result = reader.GetProperty(type);
-        if(!result.TryGetOk(out var property)) throw new JsonException(nameof(Id));
-
-        if (property.Value is null) throw new JsonException(nameof(Id));
+        if (!reader.GetProperty().TryGetOk(out var valueProperty) || valueProperty.Value is null) return Id.Empty;
 
         reader.Read();
+        if (reader.TokenType != JsonTokenType.EndObject) return Id.Empty;
 
-        return Id.New(property.Value);
-    }
+        // check primitive type
+        {
+            var result = _primitiveTypeConverter.Convert(typeString, valueProperty.Value);
+            if (result.TryGetOk(out var ok)) return Id.New(ok);
+        }
 
-    private void ReadTypeProperty(ref Utf8JsonReader reader)
-    {
-        if (!reader.Read()) throw new JsonException(nameof(Id));
+        if (!_objectTypeConverters.TryGetValue(typeString, out var objectTypeConverter) || objectTypeConverter is null) return Id.Empty;
 
-        // Type property
-        if (reader.TokenType != JsonTokenType.PropertyName) throw new JsonException(nameof(Id));
-
-        var propertyName = reader.GetString();
-        if (propertyName != nameof(Id.Type)) throw new JsonException(nameof(Id));
-
-        if (!reader.Read() || reader.TokenType != JsonTokenType.StartObject) throw new JsonException(nameof(Id));
+        return objectTypeConverter.Convert(typeString, valueProperty.Value).TryGetOk(out var value)
+            ? Id.New(value)
+            : Id.Empty;
     }
 
     public override void Write(Utf8JsonWriter writer, Id id, JsonSerializerOptions options)
@@ -83,13 +84,11 @@ public class IdJsonConverter : JsonConverter<Id>
         
         // Type property
         writer.WritePropertyName(nameof(Id.Type));
+        writer.WriteStringValue(id.Type.FullName);
 
-        // Type property value
-        _typeJsonConverter.Write(writer, id.Type, options);
-
-        // Value result
+        // Value property
         writer.WritePropertyName(nameof(Id.Value));
-        writer.WriteValue(id.Value);
+        _objectJsonConverter.Write(writer, id.Value, options);
 
         writer.WriteEndObject();
     }

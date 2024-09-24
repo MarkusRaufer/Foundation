@@ -144,7 +144,7 @@ public class IdJsonConverterTests
         var json = JsonSerializer.Serialize(id, options);
 
         //Assert
-        var expected = $$"""{"Type":{"FullName":"System.Decimal"},"Value":{{number.ToInvariantString()}}}""";
+        var expected = $$"""{"Type":"System.Decimal","Value":{{number.ToInvariantString()}}}""";
         json.Should().Be(expected);
     }
 
@@ -164,7 +164,7 @@ public class IdJsonConverterTests
         var json = JsonSerializer.Serialize(id, options);
 
         //Assert
-        var expected = $$"""{"Type":{"FullName":"System.Double"},"Value":{{number.ToInvariantString()}}}""";
+        var expected = $$"""{"Type":"System.Double","Value":{{number.ToInvariantString()}}}""";
         json.Should().Be(expected);
     }
 
@@ -184,7 +184,7 @@ public class IdJsonConverterTests
         var json = JsonSerializer.Serialize(expectedId, options);
 
         //Assert
-        var expected = $$"""{"Type":{"FullName":"System.Guid"},"Value":"{{guid}}"}""";
+        var expected = $$"""{"Type":"System.Guid","Value":"{{guid}}"}""";
         json.Should().Be(expected);
     }
 
@@ -204,7 +204,7 @@ public class IdJsonConverterTests
         var json = JsonSerializer.Serialize(id, options);
 
         //Assert
-        var expected = $$"""{"Type":{"FullName":"System.Int32"},"Value":{{number}}}""";
+        var expected = $$"""{"Type":"System.Int32","Value":{{number}}}""";
         json.Should().Be(expected);
     }
 
@@ -224,7 +224,7 @@ public class IdJsonConverterTests
         var json = JsonSerializer.Serialize(expectedId, options);
 
         //Assert
-        var expected = $$"""{"Type":{"FullName":"System.Int64"},"Value":{{number}}}""";
+        var expected = $$"""{"Type":"System.Int64","Value":{{number}}}""";
         json.Should().Be(expected);
     }
 
@@ -244,7 +244,7 @@ public class IdJsonConverterTests
         var json = JsonSerializer.Serialize(expectedId, options);
 
         //Assert
-        var expected = $$"""{"Type":{"FullName":"System.String"},"Value":"{{str}}"}""";
+        var expected = $$"""{"Type":"System.String","Value":"{{str}}"}""";
         json.Should().Be(expected);
     }
 }

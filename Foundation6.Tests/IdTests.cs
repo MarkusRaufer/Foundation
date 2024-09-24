@@ -16,7 +16,7 @@ public class IdTests
         var value = new DateTime(2001, 2, 3, 4, 5, 6);
         var sut1 = Id.New(value);
 
-        var json = $@"{{""Type"":{{""FullName"":""System.DateTime""}},""Value"":""{value:yyyy-MM-ddTHH:mm:ss}""}}";
+        var json = $@"{{""Type"":""System.DateTime"",""Value"":""{value:yyyy-MM-ddTHH:mm:ss}""}}";
 
         var sut2 = JsonSerializer.Deserialize<Id>(json, new JsonSerializerOptions
         {
@@ -32,7 +32,7 @@ public class IdTests
         var value = new DateOnly(2001, 2, 3);
         var sut1 = Id.New(value);
 
-        var json = $@"{{""Type"":{{""FullName"":""System.DateOnly""}},""Value"":""{value:yyyy-MM-dd}""}}";
+        var json = $@"{{""Type"":""System.DateOnly"",""Value"":""{value:yyyy-MM-dd}""}}";
 
         var sut2 = JsonSerializer.Deserialize<Id>(json, new JsonSerializerOptions
         {
@@ -48,7 +48,7 @@ public class IdTests
         var value = 12.34M;
         var sut1 = Id.New(value);
 
-        var json = string.Create(CultureInfo.InvariantCulture, $@"{{""Type"":{{""FullName"":""System.Decimal""}},""Value"":{value}}}");
+        var json = string.Create(CultureInfo.InvariantCulture, $@"{{""Type"":""System.Decimal"",""Value"":{value}}}");
 
         var sut2 = JsonSerializer.Deserialize<Id>(json, new JsonSerializerOptions
         {
@@ -64,7 +64,7 @@ public class IdTests
         var value = Guid.NewGuid();
         var sut1 = Id.New(value);
 
-        var json = $@"{{""Type"":{{""FullName"":""System.Guid""}},""Value"":""{value}""}}";
+        var json = $@"{{""Type"":""System.Guid"",""Value"":""{value}""}}";
 
         var sut2 = JsonSerializer.Deserialize<Id>(json, new JsonSerializerOptions
         {
@@ -80,7 +80,7 @@ public class IdTests
         var value = 12;
         var sut1 = Id.New(value);
 
-        var json = $@"{{""Type"":{{""FullName"":""System.Int32""}},""Value"":{value}}}";
+        var json = $@"{{""Type"":""System.Int32"",""Value"":{value}}}";
 
         var sut2 = JsonSerializer.Deserialize<Id>(json, new JsonSerializerOptions
         {
@@ -181,7 +181,7 @@ public class IdTests
             Converters = { new IdJsonConverter() }
         });
 
-        var expected = $@"{{""Type"":{{""FullName"":""System.DateTime""}},""Value"":""{value:yyyy-MM-ddTHH:mm:ss}""}}";
+        var expected = $@"{{""Type"":""System.DateTime"",""Value"":""{value:yyyy-MM-ddTHH:mm:ss}""}}";
         json.Should().Be(expected);
     }
 
@@ -196,7 +196,7 @@ public class IdTests
             Converters = { new IdJsonConverter() }
         });
 
-        var expected = $@"{{""Type"":{{""FullName"":""System.DateOnly""}},""Value"":""{value:yyyy-MM-dd}""}}";
+        var expected = $@"{{""Type"":""System.DateOnly"",""Value"":""{value:yyyy-MM-dd}""}}";
         json.Should().Be(expected);
     }
 
@@ -211,7 +211,7 @@ public class IdTests
             Converters = { new IdJsonConverter() }
         });
 
-        var expected = string.Create(CultureInfo.InvariantCulture, $@"{{""Type"":{{""FullName"":""System.Decimal""}},""Value"":{value}}}");
+        var expected = string.Create(CultureInfo.InvariantCulture, $@"{{""Type"":""System.Decimal"",""Value"":{value}}}");
         json.Should().Be(expected);
     }
 
@@ -226,7 +226,7 @@ public class IdTests
             Converters = {new IdJsonConverter() }
         });
         
-        var expected = $@"{{""Type"":{{""FullName"":""System.Int32""}},""Value"":{value}}}";
+        var expected = $@"{{""Type"":""System.Int32"",""Value"":{value}}}";
         json.Should().Be(expected);
     }
 
@@ -241,7 +241,7 @@ public class IdTests
             Converters = { new IdJsonConverter() }
         });
 
-        var expected = $@"{{""Type"":{{""FullName"":""System.String""}},""Value"":""{value}""}}";
+        var expected = $@"{{""Type"":""System.String"",""Value"":""{value}""}}";
         json.Should().Be(expected);
     }
 
@@ -256,7 +256,7 @@ public class IdTests
             Converters = { new IdJsonConverter() }
         });
 
-        var expected = $@"{{""Type"":{{""FullName"":""System.TimeOnly""}},""Value"":""{value:HH:mm:ss}""}}";
+        var expected = $@"{{""Type"":""System.TimeOnly"",""Value"":""{value:HH:mm:ss}""}}";
         json.Should().Be(expected);
     }
 }

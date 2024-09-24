@@ -58,8 +58,24 @@ public class TypeJsonConverter : JsonConverter<Type>
         }
     }
 
+    public Type? GetType(string name)
+    {
+        var type = Type.GetType(name);
+        if (type is null)
+        {
+            var span = name.AsSpan();
+            var index = span.IndexOf('+');
+            var typeName = span[(index + 1)..].ToString();
+
+            type = _assemblies.SelectMany(x => x.GetTypes()).Where(x => x.Name == typeName).FirstOrDefault();
+        }
+        return type;
+    }
+
     public override Type? Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
     {
+        var typeString = reader.GetString();
+
         if (reader.TokenType != JsonTokenType.StartObject) return null;
 
         var typeInstance = typeToConvert.GetType();
@@ -79,25 +95,11 @@ public class TypeJsonConverter : JsonConverter<Type>
                 var typeName = reader.GetString();
                 if (null == typeName) continue;
 
-                type = getType(typeName);
+                type = GetType(typeName);
             }
         }
 
         return type;
-
-        Type? getType(string name)
-        {
-            var type = Type.GetType(name);
-            if (type is null)
-            {
-                var span = name.AsSpan();
-                var index = span.IndexOf('+');
-                var typeName = span[(index + 1)..].ToString();
-
-                type = _assemblies.SelectMany(x => x.GetTypes()).Where(x => x.Name == typeName).FirstOrDefault();
-            }
-            return type;
-        }
     }
 
     public override void Write(Utf8JsonWriter writer, Type type, JsonSerializerOptions options)
