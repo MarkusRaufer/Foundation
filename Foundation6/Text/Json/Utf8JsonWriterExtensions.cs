@@ -55,13 +55,9 @@ public static class Utf8JsonWriterExtensions
 
         switch(value)
         {
-#if NET6_0_OR_GREATER
             case DateOnly x: writer.WriteStringValue($"{x:yyyy-MM-dd}"); return;
-#endif
             case Guid x: writer.WriteStringValue(x); return;
-#if NET6_0_OR_GREATER
             case TimeOnly x: writer.WriteStringValue($"{x:HH:mm:ss}"); return;
-#endif
         };
         writer.WriteStringValue($"{value}");
     }

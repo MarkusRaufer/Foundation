@@ -29,13 +29,12 @@ namespace Foundation.IO
 {
     public static class BinaryReaderExtensions
     {
-#if NET6_0_OR_GREATER
         public static DateOnly ReadDateOnly(this BinaryReader reader)
         {
             var dateTime = reader.ReadDateTime();
             return DateOnly.FromDateTime(dateTime);
         }
-#endif
+
         public static DateTime ReadDateTime(this BinaryReader reader)
         {
             var ticks = reader.ReadInt64();

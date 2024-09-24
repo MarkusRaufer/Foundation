@@ -73,7 +73,6 @@ public class PeriodGenerator2
 {
     public IEnumerable<Period> GeneratePeriods<T>(SpanTimeDef<T> span, Period? limit = null)
     {
-#if NET6_0_OR_GREATER
         if(span is SpanTimeDef<DateOnly> dateSpan)
         {
             var period = Period.New(dateSpan.From, dateSpan.To);
@@ -94,7 +93,7 @@ public class PeriodGenerator2
 
             return PeriodHelper.Chop(limit.Value, smallest);
         }
-#endif
+
         if (span is SpanTimeDef<DateTime> dateTimeSpan)
         {
             var period = Period.New(dateTimeSpan.From, dateTimeSpan.To);

@@ -490,10 +490,8 @@ public static class ObjectExtensions
     {
         return value switch
         {
-#if NET6_0_OR_GREATER
             DateOnly d => d.ToDateTime(),
             TimeOnly to => to.ToDateTime(),
-#endif
             DateTime dt => dt,
             int i => new DateTime(i),
             long l => new DateTime(l),

@@ -83,10 +83,8 @@ public static class Json
                 Id identifier => toString(identifier.Value),
                 string str => $"\"{str}\"",
                 TimeSpan timeSpan => $"\"{timeSpan.ToIso8601Period()}\"",
-#if NET6_0_OR_GREATER
-            DateOnly dateOnly => $"\"{dateOnly:yyyy-MM-dd}\"",
-            TimeOnly timeOnly => $"\"{timeOnly:HH:mm:ss}\"",
-#endif
+                DateOnly dateOnly => $"\"{dateOnly:yyyy-MM-dd}\"",
+                TimeOnly timeOnly => $"\"{timeOnly:HH:mm:ss}\"",
                 _ => "null"
             };
         }

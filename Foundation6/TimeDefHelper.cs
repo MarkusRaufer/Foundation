@@ -152,30 +152,30 @@ public static class TimeDefHelper
             _ => 10,
         };
 
-#if NETSTANDARD2_0
-        int valueOfDateSpan(DateTime from, DateTime to)
-        {
-            if (from.Year != to.Year) return 1;
-            if (from.Month != to.Month) return 2;
-            return 4;
-        }
+//#if NETSTANDARD2_0
+//        int valueOfDateSpan(DateTime from, DateTime to)
+//        {
+//            if (from.Year != to.Year) return 1;
+//            if (from.Month != to.Month) return 2;
+//            return 4;
+//        }
 
-         int valueOfDateTimeSpan(DateTime from, DateTime to)
-        {
-            var weight = valueOfDateSpan(from, to);
-            if (weight > 2) return weight;
+//         int valueOfDateTimeSpan(DateTime from, DateTime to)
+//        {
+//            var weight = valueOfDateSpan(from, to);
+//            if (weight > 2) return weight;
 
-            return valueOfTimespan(from, to);
-        }
+//            return valueOfTimespan(from, to);
+//        }
 
-        int valueOfTimespan(DateTime from, DateTime to)
-        {
-            if (from.Hour != to.Hour) return 6;
-            if (from.Minute != to.Minute) return 5;
+//        int valueOfTimespan(DateTime from, DateTime to)
+//        {
+//            if (from.Hour != to.Hour) return 6;
+//            if (from.Minute != to.Minute) return 5;
 
-            return 7;
-        }
-#else
+//            return 7;
+//        }
+//#else
         int valueOfDateSpan(DateOnly from, DateOnly to)
         {
             if (from.Year != to.Year) return 1;
@@ -198,6 +198,6 @@ public static class TimeDefHelper
 
             return 7;
         }
-#endif
+//#endif
     }
 }

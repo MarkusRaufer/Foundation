@@ -162,7 +162,6 @@ public static class Utf8JsonReaderExtensions
 
         switch(type)
         {
-#if NET6_0_OR_GREATER
             case Type _ when type == typeof(DateOnly):
                 {
                     var str = reader.GetString();
@@ -171,13 +170,11 @@ public static class Utf8JsonReaderExtensions
                     if (DateTime.TryParse(str, out var dt)) return dt.ToDateOnly();
                     return null;
                 }
-#endif
             case Type _ when type == typeof(Guid):
                 {
                     var guid = reader.GetGuid();
                     return guid;
                 }
-#if NET6_0_OR_GREATER
             case Type _ when type == typeof(TimeOnly):
                 {
                     var str = reader.GetString();
@@ -186,7 +183,6 @@ public static class Utf8JsonReaderExtensions
                     if (DateTime.TryParse(str, out var dt)) return dt.ToTimeOnly();
                     return null;
                 }
-#endif
         };
 
         return reader.GetString();
@@ -199,7 +195,6 @@ public static class Utf8JsonReaderExtensions
             case "System.Boolean": return reader.GetBoolean();
             case "System.Byte": return reader.GetByte();
             case "System.Char": return reader.GetString();
-#if NET6_0_OR_GREATER
             case "System.DateOnly":
                 {
                     var str = reader.GetString();
@@ -208,7 +203,6 @@ public static class Utf8JsonReaderExtensions
                     if (DateTime.TryParse(str, out var dt)) return dt.ToDateOnly();
                     return null;
                 }
-#endif
             case "System.DateTime": return reader.GetDateTime();
             case "System.Decimal": return reader.GetDecimal();
             case "System.Double": return reader.GetDouble();

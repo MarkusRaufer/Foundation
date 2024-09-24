@@ -22,10 +22,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 ﻿using System.Diagnostics.CodeAnalysis;
-
-#if NET6_0_OR_GREATER
 using System.Text.Json.Serialization;
-#endif
 
 namespace Foundation;
 
@@ -71,9 +68,7 @@ public readonly struct Id
 
     public override int GetHashCode() => _value.GetNullableHashCode();
 
-#if NET6_0_OR_GREATER
     [JsonIgnore]
-#endif
     public readonly bool IsEmpty => _comparable is null;
 
     public static Id New() => New(Guid.NewGuid());

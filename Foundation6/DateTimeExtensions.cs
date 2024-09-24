@@ -127,7 +127,6 @@ public static class DateTimeExtensions
         return dt.ToString("o");
     }
 
-#if NET6_0_OR_GREATER
     public static DateTime SetDate(this DateTime dt, DateOnly date)
     {
         return new DateTime(date.Year, date.Month, date.Day, dt.Hour, dt.Minute, dt.Second, dt.Millisecond, dt.Kind);
@@ -141,7 +140,6 @@ public static class DateTimeExtensions
     public static DateOnly ToDateOnly(this DateTime dt) => DateOnly.FromDateTime(dt);
 
     public static TimeOnly ToTimeOnly(this DateTime dt) => TimeOnly.FromDateTime(dt);
-#endif
 
     public static long ToUnixTimestamp(this DateTime dt)
     {

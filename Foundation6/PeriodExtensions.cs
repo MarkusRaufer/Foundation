@@ -197,7 +197,6 @@ public static class PeriodExtensions
     /// <param name="start"></param>
     /// <param name="end"></param>
     /// <returns></returns>
- #if NET6_0_OR_GREATER
     public static bool IsBetween(this Period period, DateOnly start, DateOnly end)
     {
         return period.Start.ToDateOnly() >= start && period.End.ToDateOnly() <= end;
@@ -214,7 +213,6 @@ public static class PeriodExtensions
     {
         return period.Start.ToTimeOnly() >= start && period.End.ToTimeOnly() <= end;
     }
-#endif
 
     /// <summary>
     /// Checks if the period is between the date start and the duration.

@@ -65,13 +65,11 @@ public static class Generator
     /// <param name="max">The end value.</param>
     /// <param name="increment">The TimeSpan of the increment.</param>
     /// <returns></returns>
-#if NET6_0_OR_GREATER
     public static IEnumerable<DateOnly> Range(DateOnly min, DateOnly max, TimeSpan increment)
     {
         DateOnly inc(DateOnly date) => date.Add(increment);
         return Range(min, max, inc);
     }
-#endif
 
     /// <summary>
     /// Generates a sequence of DateTime values between a minimum and maximum increased by increment.

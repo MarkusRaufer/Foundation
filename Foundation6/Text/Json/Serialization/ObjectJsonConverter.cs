@@ -85,16 +85,13 @@ public class ObjectJsonConverter : JsonConverter<object?>
             JsonTokenType.StartObject when TryGetQuantity(ref reader, out var quantity) => quantity,
             JsonTokenType.String when _supportTimeSpan && TryGetTimeSpan(ref reader, out var timeSpan) => timeSpan,
             JsonTokenType.String when TryGetDateTime(ref reader, _dateTimeRegex, out var dateTime) => dateTime,
-#if NET6_0_OR_GREATER
             JsonTokenType.String when _supportDateOnly && TryGetDateOnly(ref reader, out var dateOnly) => dateOnly,
             JsonTokenType.String when _supportTimeOnly && TryGetTimeOnly(ref reader, out var timeOnly) => timeOnly,
-#endif
             JsonTokenType.String => reader.GetString(),
             _ => JsonDocument.ParseValue(ref reader).RootElement.Clone()
         };
     }
 
-#if NET6_0_OR_GREATER
     private static bool TryGetDateOnly(ref Utf8JsonReader reader, out DateOnly? dateOnly)
     {
         var str = reader.GetString();
@@ -106,7 +103,6 @@ public class ObjectJsonConverter : JsonConverter<object?>
         dateOnly = null;
         return false;
     }
-#endif
 
     private static bool TryGetDateTime(ref Utf8JsonReader reader, Regex? dateTimeRegex, out DateTime? dateTime)
     {
@@ -217,7 +213,6 @@ public class ObjectJsonConverter : JsonConverter<object?>
         return quantity is not null;
     }
 
-#if NET6_0_OR_GREATER
     private static bool TryGetTimeOnly(ref Utf8JsonReader reader, out TimeOnly? timeOnly)
     {
         var str = reader.GetString();
@@ -229,7 +224,6 @@ public class ObjectJsonConverter : JsonConverter<object?>
         timeOnly = null;
         return false;
     }
-#endif
 
     private static bool TryGetTimeSpan(ref Utf8JsonReader reader, out TimeSpan? timeSpan)
     {

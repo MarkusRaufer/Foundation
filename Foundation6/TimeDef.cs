@@ -35,10 +35,8 @@ public abstract record TimeDef
 
     #region time definitions
     public sealed record And(TimeDef Lhs, TimeDef Rhs) : BinaryTimeDef(Lhs, Rhs);
-#if NET6_0_OR_GREATER
     public sealed record DateSpan(DateOnly From, DateOnly To) : SpanTimeDef<DateOnly>(From, To);
     public sealed record Timespan(TimeOnly From, TimeOnly To) : SpanTimeDef<TimeOnly>(From, To);
-#endif
     public sealed record DateTimeSpan(DateTime From, DateTime To) : SpanTimeDef<DateTime>(From, To);
     public sealed record Day(NonEmptySetValue<int> DaysOfMonth) : TimeDef;
     public sealed record Days(int Quantity) : QuantityTimeDef(Quantity);
@@ -114,7 +112,6 @@ public abstract record TimeDef
         return new Hour(hour);
     }
 
-#if NET6_0_OR_GREATER
     public static TimeDef FromDateOnly(DateOnly date)
     {
         return FromDate(date.Year, date.Month, date.Day);
@@ -151,7 +148,6 @@ public abstract record TimeDef
         var years = range.ToEnumerable();
         return new Year(years.ToArray());
     }
-#endif
 
     public static TimeDef FromMinute(params int[] minute)
     {

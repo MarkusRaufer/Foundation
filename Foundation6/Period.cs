@@ -121,7 +121,6 @@ public readonly struct Period : IComparable<Period>
         return new Period(start, end);
     }
 
-#if NET6_0_OR_GREATER
     public static Period New(DateOnly start, DateOnly end, DateTimeKind kind = DateTimeKind.Utc)
     {
         if (start > end)
@@ -137,7 +136,6 @@ public readonly struct Period : IComparable<Period>
 
         return new Period(start.ToDateTime(kind), end.ToDateTime(kind));
     }
-#endif
 
     /// <summary>
     /// Creates a new Period-Object.
