@@ -32,11 +32,17 @@ public static class RandomExtensions
 
     private static char[] AlphaChars { get; } = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz".ToCharArray();
 
-    public static T GetItem<T>(this Random random, T[] items)
+    /// <summary>
+    /// Selects an item randomly from an array.
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <param name="random"></param>
+    /// <param name="items">List of items.</param>
+    /// <returns></returns>
+    public static T GetItem<T>(this Random random, ReadOnlySpan<T> items)
     {
         random.ThrowIfNull();
-        items.ThrowIfNull();
-        items.ThrowIfOutOfRange(() => 0 == items.Length, () => $"{nameof(items)} must contain at least one element");
+        if (items.Length == 0) throw new ArgumentOutOfRangeException(nameof(items), $"{nameof(items)} must contain at least one element");
 
         var min = 0;
         var max = items.Length - 1;
@@ -45,11 +51,19 @@ public static class RandomExtensions
         return items[index];
     }
 
-    public static IEnumerable<T> GetItems<T>(this Random random, T[] items, int length)
+    /// <summary>
+    /// Selects <paramref name="length"/> items randomly from an array.
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <param name="random"></param>
+    /// <param name="items"></param>
+    /// <param name="length"></param>
+    /// <returns></returns>
+    /// <exception cref="ArgumentOutOfRangeException"></exception>
+    public static IEnumerable<T> GetItemsLazy<T>(this Random random, T[] items, int length)
     {
         random.ThrowIfNull();
-        items.ThrowIfNull();
-        length.ThrowIfOutOfRange(() => 0 > length, $"length must be a positive number");
+        if (items.Length < 0) throw new ArgumentOutOfRangeException(nameof(length), $"{nameof(length)} must be a positive number");
 
         var min = 0;
         var max = items.Length - 1;
@@ -95,6 +109,13 @@ public static class RandomExtensions
         return values.Take(foundMax + 1);
     }
 
+    /// <summary>
+    /// Returns a list of integers from <paramref name="min"/> to <paramref name="max"/> in a random order.
+    /// </summary>
+    /// <param name="random"></param>
+    /// <param name="min"></param>
+    /// <param name="max"></param>
+    /// <returns></returns>
     public static IEnumerable<int> IntegersWithoutDuplicates(this Random random, int min, int max)
     {
         random.ThrowIfNull();
@@ -103,6 +124,11 @@ public static class RandomExtensions
         return numbers.Shuffle(random);
     }
 
+    /// <summary>
+    /// Returns a random boolean.
+    /// </summary>
+    /// <param name="random"></param>
+    /// <returns></returns>
     public static bool NextBoolean(this Random random)
     {
         return 0 != random.Next(0, 1);
@@ -134,7 +160,7 @@ public static class RandomExtensions
 
         max++;
 
-        return random.GetItem(AlphaChars);
+        return random.GetItem<char>(AlphaChars);
     }
 
     /// <summary>

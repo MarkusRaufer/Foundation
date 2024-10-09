@@ -12,10 +12,10 @@ public class RandomTests
     [Test]
     public void GetItem_Should_ReturnOneValue_When_ArrayHasValues()
     {
-        var rnd = new Random(1);
+        var rnd = new Random(123);
         var numbers = Enumerable.Range(1, 5).ToArray();
 
-        var randomSelected = rnd.GetItem(numbers);
+        var randomSelected = rnd.GetItem<int>(numbers);
 
         numbers.Should().Contain(randomSelected);
     }
@@ -23,34 +23,34 @@ public class RandomTests
     [Test]
     public void GetItem_Should_ThrowException_When_ArrayIsEmpty()
     {
-        var rnd = new Random(1);
+        var rnd = new Random(123);
 
-        Action act = () => rnd.GetItem(new int[0]);
+        Action act = () => rnd.GetItem<int>(new int[0]);
 
         act.Should().Throw<ArgumentOutOfRangeException>();
     }
 
     [Test]
-    public void GetItems_Should_Return10Values_When_LengthIs10AndArrayHasSizeOf5()
+    public void GetItemsLazy_Should_Return10Values_When_LengthIs10AndArrayHasSizeOf5()
     {
         var rnd = new Random(123);
         var max = 10;
         var numbers = Enumerable.Range(1, max).ToArray();
 
-        var randomSelected = rnd.GetItems(numbers, max).ToArray();
+        var randomSelected = rnd.GetItemsLazy(numbers, max).ToArray();
 
         randomSelected.Length.Should().Be(max);
     }
 
     [Test]
-    public void GetItems_Should_Return5Values_When_LengthIs5AndArrayHasSizeOf10()
+    public void GetItemsLazy_Should_Return5Values_When_LengthIs5AndArrayHasSizeOf10()
     {
-        var rnd = new Random(1);
+        var rnd = new Random(123);
         var count = 10;
 
         var numbers = Enumerable.Range(1, count).ToArray();
 
-        var randomSelected = rnd.GetItems(numbers, count / 2).ToArray();
+        var randomSelected = rnd.GetItemsLazy(numbers, count / 2).ToArray();
 
         randomSelected.Length.Should().Be(count / 2);
     }
@@ -97,7 +97,7 @@ public class RandomTests
     [Test]
     public void NextAlphaChar_Should_ReturnACharBetweenAandz_When_CalledOnce()
     {
-        var random = new Random(1);
+        var random = new Random(123);
 
         for (var i = 0; i<100; i++)
         {
