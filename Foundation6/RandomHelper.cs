@@ -33,11 +33,11 @@ public static class RandomHelper
     /// <param name="index"></param>
     /// <returns></returns>
     /// <exception cref="ArgumentOutOfRangeException"></exception>
-    public static Guid GetRandomOrdinalGuid(int index)
+    public static Guid GetRandomOrdinalGuid(int index, int seed = 0)
     {
         if (index < 0) throw new ArgumentOutOfRangeException(nameof(index), "negative indices are not allowed");
 
-        return GetRandomOrdinalGuids(new int[] { index }).FirstOrDefault();
+        return GetRandomOrdinalGuids([index], seed).FirstOrDefault();
     }
 
     /// <summary>
@@ -45,14 +45,14 @@ public static class RandomHelper
     /// </summary>
     /// <param name="indices">Indices from which the values are returned.</param>
     /// <returns></returns>
-    public static IEnumerable<Guid> GetRandomOrdinalGuids(int[] indices)
+    public static IEnumerable<Guid> GetRandomOrdinalGuids(int[] indices, int seed = 0)
     {
         indices.ThrowIfNull();
         indices.ThrowIf(() => indices.Any(index => index < 0), "negative indices are not allowed");
 
         if (0 == indices.Length) yield break;
 
-        var random = new Random(0);
+        var random = new Random(seed);
 
         Array.Sort(indices);
 
@@ -72,14 +72,14 @@ public static class RandomHelper
     /// <param name="indices">Indices from which the values are returned.</param>
     /// <param name="seed">Seed for the random generator. null returns always different values.</param>
     /// <returns>Contains only values from valueSet.</returns>
-    public static IEnumerable<DateTime> GetRandomOrdinalValues(int[] indices, DateTime min, DateTime max)
+    public static IEnumerable<DateTime> GetRandomOrdinalDateTimes(int[] indices, DateTime min, DateTime max, int seed = 0)
     {
         indices.ThrowIfNull();
         indices.ThrowIf(() => indices.Any(index => index < 0), "negative indices are not allowed");
 
         if (0 == indices.Length) yield break;
 
-        var random = new Random(0);
+        var random = new Random(seed);
 
         Array.Sort(indices);
 
@@ -98,14 +98,14 @@ public static class RandomHelper
     /// <param name="indices">Indices from which the values are returned.</param>
     /// <param name="seed">Seed for the random generator. null returns always different values.</param>
     /// <returns>Contains only values from valueSet.</returns>
-    public static IEnumerable<double> GetRandomOrdinalValues(int[] indices, double min, double max)
+    public static IEnumerable<double> GetRandomOrdinalDoubles(int[] indices, double min, double max, int seed = 0)
     {
         indices.ThrowIfNull();
         indices.ThrowIf(() => indices.Any(index => index < 0), "negative indices are not allowed");
 
         if (0 == indices.Length) yield break;
 
-        var random = new Random(0);
+        var random = new Random(seed);
 
         Array.Sort(indices);
 
@@ -124,14 +124,14 @@ public static class RandomHelper
     /// <param name="indices">Indices from which the values are returned.</param>
     /// <param name="seed">Seed for the random generator. null returns always different values.</param>
     /// <returns>Contains only values from valueSet.</returns>
-    public static IEnumerable<int> GetRandomOrdinalValues(int[] indices, int min, int max)
+    public static IEnumerable<int> GetRandomOrdinalInts(int[] indices, int min, int max, int seed = 0)
     {
         indices.ThrowIfNull();
         indices.ThrowIf(() => indices.Any(index => index < 0), "negative indices are not allowed");
 
         if (0 == indices.Length) yield break;
 
-        var random = new Random(0);
+        var random = new Random(seed);
 
         Array.Sort(indices);
 
@@ -150,14 +150,14 @@ public static class RandomHelper
     /// <param name="indices">Indices from which the values are returned.</param>
     /// <param name="seed">Seed for the random generator. null returns always different values.</param>
     /// <returns>Contains only values from valueSet.</returns>
-    public static IEnumerable<long> GetRandomOrdinalValues(int[] indices, long min, long max)
+    public static IEnumerable<long> GetRandomOrdinalLongs(int[] indices, long min, long max, int seed = 0)
     {
         indices.ThrowIfNull();
         indices.ThrowIf(() => indices.Any(index => index < 0), "negative indices are not allowed");
 
         if (0 == indices.Length) yield break;
 
-        var random = new Random(0);
+        var random = new Random(seed);
 
         Array.Sort(indices);
 
@@ -177,7 +177,7 @@ public static class RandomHelper
     /// <param name="deviation">The deviation of the result values.</param>
     /// <param name="seed">Seed for the random generator. null returns always different values.</param>
     /// <returns>Contains only values from valueSet.</returns>
-    public static IEnumerable<double> GetRandomValues(double[] valueSet, double deviation = double.Epsilon, int? seed = null)
+    public static IEnumerable<double> GetRandomDoubles(double[] valueSet, double deviation = double.Epsilon, int? seed = null)
     {
         valueSet.ThrowIfNull();
 
@@ -213,7 +213,7 @@ public static class RandomHelper
     /// <param name="valueSet">set of values.</param>
     /// <param name="seed">Seed for the random generator. null returns always different values.</param>
     /// <returns>Contains only values from valueSet.</returns>
-    public static IEnumerable<int> GetRandomValues(int[] valueSet, int? seed = null)
+    public static IEnumerable<int> GetRandomInts(int[] valueSet, int? seed = null)
     {
         valueSet.ThrowIfNull();
         valueSet.ThrowIf(() => valueSet.Any(index => index < 0), "negative indices are not allowed");
@@ -242,7 +242,7 @@ public static class RandomHelper
     /// <param name="valueSet">set of values.</param>
     /// <param name="seed">Seed for the random generator. null returns always different values.</param>
     /// <returns>Contains only values from valueSet.</returns>
-    public static IEnumerable<long> GetRandomValues(long[] valueSet, int? seed = null)
+    public static IEnumerable<long> GetRandomLong(long[] valueSet, int? seed = null)
     {
         valueSet.ThrowIfNull();
         valueSet.ThrowIf(() => valueSet.Any(index => index < 0), "negative indices are not allowed");
@@ -264,6 +264,4 @@ public static class RandomHelper
             if (valueSet.Contains(value)) yield return value;
         }
     }
-
-    
 }

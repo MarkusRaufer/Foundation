@@ -159,6 +159,27 @@ public class MoneyTests
     }
 
     [Test]
+    public void Equals_Should_ReturnTrue_When_BothRegionsAreEqual()
+    {
+        var name1 = "US";
+        var name2 = "en-US";
+        var amount = 123.45M;
+
+        var sut1 = Money.New(name1, amount);
+        var sut2 = Money.New(name2, amount);
+
+        sut1.Equals(sut2).Should().BeTrue();
+        {
+            var eq = sut1 == sut2;
+            eq.Should().BeTrue();
+        }
+        {
+            var eq = sut1 != sut2;
+            eq.Should().BeFalse();
+        }
+    }
+
+    [Test]
     public void New_Should_ReturnMoney_When_NameIsUsed()
     {
         var name = "US";

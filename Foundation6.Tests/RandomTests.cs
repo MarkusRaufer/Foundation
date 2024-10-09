@@ -33,14 +33,13 @@ public class RandomTests
     [Test]
     public void GetItems_Should_Return10Values_When_LengthIs10AndArrayHasSizeOf5()
     {
-        var rnd = new Random(1);
-        var count = 5;
+        var rnd = new Random(123);
+        var max = 10;
+        var numbers = Enumerable.Range(1, max).ToArray();
 
-        var numbers = Enumerable.Range(1, count).ToArray();
+        var randomSelected = rnd.GetItems(numbers, max).ToArray();
 
-        var randomSelected = rnd.GetItems(numbers, count * 2).ToArray();
-
-        randomSelected.Length.Should().Be(count * 2);
+        randomSelected.Length.Should().Be(max);
     }
 
     [Test]
@@ -56,6 +55,45 @@ public class RandomTests
         randomSelected.Length.Should().Be(count / 2);
     }
 
+
+    [Test]
+    public void GetItemsLazy_Should_Return6Values_When_LeftIndexRandomlySelected6OutOf20()
+    {
+        // Arrange
+        var sut = new Random(123);
+        var left = 5;
+        var right = 10;
+        var max = 20;
+        var numbers = Enumerable.Range(1, max).ToArray();
+
+        // Act
+        var randomSelected = sut.GetItemsLazy(numbers, left, right).ToArray();
+
+        // Assert
+        var length = right - left + 1;
+        randomSelected.Length.Should().Be(length);
+        randomSelected.All(numbers.Contains).Should().BeTrue();
+    }
+
+    [Test]
+    public void IntegersWithoutDuplicates()
+    {
+        // Arrange
+        var random = new Random();
+        var min = 5;
+        var max = 10;
+
+        // Act
+        var numbers = random.IntegersWithoutDuplicates(min, max).ToArray();
+
+        // Assert
+        var length = max - min + 1;
+        numbers.Length.Should().Be(length);
+
+        var expectedOrderedNumbers = Enumerable.Range(min, numbers.Length).ToArray(); // same numbers but ordered.
+        expectedOrderedNumbers.All(x => numbers.Contains(x)).Should().BeTrue();
+    }
+
     [Test]
     public void NextAlphaChar_Should_ReturnACharBetweenAandz_When_CalledOnce()
     {
@@ -69,6 +107,18 @@ public class RandomTests
         }
     }
 
+    [Test]
+    public void NextDateOnly_Should_ReturnDateOnlyWithinMinAndMax_When_Called()
+    {
+        var seed = 1;
+        var random = new Random(seed);
+        var min = new DateOnly(2020, 6, 15);
+        var max = new DateOnly(2020, 7, 15);
+
+        var dates = For.Collect(() => random.NextDateOnly(min, max)).Take(10).ToArray();
+
+        dates.Should().OnlyContain(x => x >= min && x <= max);
+    }
 
     [Test]
     public void NextDateTime_Should_ReturnTheSameDateTime_When_CalledOnce()
@@ -143,5 +193,18 @@ public class RandomTests
 
             guids1.Should().BeEquivalentTo(guids2);
         }
+    }
+
+    [Test]
+    public void NextDateOnly_Should_ReturnTimeOnlyWithinMinAndMax_When_Called()
+    {
+        var seed = 1;
+        var random = new Random(seed);
+        var min = new TimeOnly(8, 0, 0);
+        var max = new TimeOnly(10, 0, 0);
+
+        var dates = For.Collect(() => random.NextTimeOnly(min, max)).Take(10).ToArray();
+
+        dates.Should().OnlyContain(x => x >= min && x <= max);
     }
 }

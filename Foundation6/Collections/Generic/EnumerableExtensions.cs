@@ -393,14 +393,6 @@ public static class EnumerableExtensions
     /// <param name="seed"></param>
     /// <param name="increment">If true, the counter is incremented otherwise it is decremented.</param>
     /// <returns>Returns tuples (left, index).</returns>
-    //public static IEnumerable<(int counter, T item)> Enumerate<T>(this IEnumerable<T> items, int seed = 0, bool increment = true)
-    //{
-    //    var i = seed;
-    //    Func<int> nextCounter = increment ? () => i++ : () => i--;
-
-    //    return Enumerate(items, (item) => nextCounter());
-    //}
-
     public static IEnumerable<(int counter, T item)> Enumerate<T>(this IEnumerable<T> items, int seed = 0, int increment = 1)
     {
         var i = seed;

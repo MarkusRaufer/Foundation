@@ -61,9 +61,44 @@ public static class RandomExtensions
         }
     }
 
+    /// <summary>
+    /// Selects items from a list between <paramref name="leftIndex"/> and <paramref name="rightIndex"/> and returns them in a random order.
+    /// </summary>
+    /// <typeparam name="T">Type of the items.</typeparam>
+    /// <param name="random"></param>
+    /// <param name="items"></param>
+    /// <param name="leftIndex">left index where to start the selection.</param>
+    /// <param name="rightIndex">right index where to stop the selection.</param>
+    /// <returns></returns>
+    public static IEnumerable<T> GetItemsLazy<T>(this Random random, IEnumerable<T> items, int leftIndex, int rightIndex)
+    {
+        random.ThrowIfNull();
+        items.ThrowIfNull();
+        leftIndex.ThrowIfOutOfRange(() => 0 > leftIndex, $"{nameof(leftIndex)} must be a positive number");
+        rightIndex.ThrowIfOutOfRange(() => rightIndex < leftIndex, $"{nameof(rightIndex)} must be equal or greater than {nameof(leftIndex)}");
+
+        var indices = random.IntegersWithoutDuplicates(leftIndex, rightIndex).ToArray();
+        var values = new T[rightIndex];
+        var foundMax = 0;
+
+        foreach (var (index, item) in items.Enumerate())
+        {
+            var idx = Array.IndexOf(indices, index);
+            if (-1 == idx) continue;
+
+            foundMax = foundMax < idx ? idx : foundMax;
+            values[idx] = item;
+
+            if (index >= rightIndex) break;
+        }
+
+        return values.Take(foundMax + 1);
+    }
+
     public static IEnumerable<int> IntegersWithoutDuplicates(this Random random, int min, int max)
     {
-        if (null == random) throw new ArgumentNullException(nameof(random));
+        random.ThrowIfNull();
+
         var numbers = Enumerable.Range(min, 1 + max - min).ToArray();
         return numbers.Shuffle(random);
     }
@@ -102,19 +137,46 @@ public static class RandomExtensions
         return random.GetItem(AlphaChars);
     }
 
+    /// <summary>
+    /// Returns a random DateOnly between leftIndex and rightIndex.
+    /// </summary>
+    /// <param name="random"></param>
+    /// <param name="min"></param>
+    /// <param name="max"></param>
+    /// <returns></returns>
+    public static DateOnly NextDateOnly(this Random random, DateOnly min, DateOnly max)
+    {
+        var diff = max.Subtract(min);
+        var ticks = random.NextInt64(0L, diff.Ticks);
+        return min.Add(TimeSpan.FromTicks(ticks));
+    }
+
+    /// <summary>
+    /// Returns a random DateTime between leftIndex and rightIndex.
+    /// </summary>
+    /// <param name="random"></param>
+    /// <param name="min"></param>
+    /// <param name="max"></param>
+    /// <returns></returns>
     public static DateTime NextDateTime(this Random random, DateTime min, DateTime max)
     {
         var ticks = random.NextInt64(min.Ticks, max.Ticks);
         return new DateTime(ticks);
     }
 
+    /// <summary>
+    /// Returns a random double that is less than rightIndex.
+    /// </summary>
+    /// <param name="random"></param>
+    /// <param name="max"></param>
+    /// <returns></returns>
     public static double NextDouble(this Random random, double max)
     {
         return random.NextDouble() * max;
     }
 
     /// <summary>
-    /// Returns a random floating-point number that is greate than or equal to min, and less than max
+    /// Returns a random double that is greater than or equal to leftIndex, and less than rightIndex
     /// </summary>
     /// <param name="random"></param>
     /// <param name="min"></param>
@@ -151,13 +213,25 @@ public static class RandomExtensions
         return new Guid(guidBuffer);
     }
 
-#if NETSTANDARD2_0
     public static long NextInt64(this Random random, long minValue, long maxValue)
     {
         var bytes = new byte[sizeof(long)];
         random.NextBytes(bytes);
         return BitConverter.ToInt64(bytes, 0);
     }
-#endif
+
+    /// <summary>
+    /// Returns a random TimeOnly between leftIndex and rightIndex.
+    /// </summary>
+    /// <param name="random"></param>
+    /// <param name="min"></param>
+    /// <param name="max"></param>
+    /// <returns></returns>
+    public static TimeOnly NextTimeOnly(this Random random, TimeOnly min, TimeOnly max)
+    {
+        var diff = max.Subtract(min);
+        var ticks = random.NextInt64(0L, diff.Ticks);
+        return min.Add(TimeSpan.FromTicks(ticks));
+    }
 }
 

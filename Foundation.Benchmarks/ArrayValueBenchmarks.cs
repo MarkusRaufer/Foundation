@@ -31,7 +31,7 @@ namespace Foundation.Benchmark;
 [MemoryDiagnoser(false)]
 public class ArrayValueBenchmarks
 {
-    private readonly Random _random = new(1);
+    private readonly Random _random = new(123);
 
 #pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
     private ArrayValue<int> _intArrayValue;

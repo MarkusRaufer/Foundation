@@ -52,6 +52,29 @@ public static class OptionExtensions
     /// Calls <paramref name="some"/> if IsSome is true. Calls <paramref name="none"/> if IsSome is false.
     /// </summary>
     /// <typeparam name="T"></typeparam>
+    /// <typeparam name="TResult"></typeparam>
+    /// <param name="option"></param>
+    /// <param name="some"></param>
+    /// <param name="none"></param>
+    /// <returns></returns>
+    [return: NotNull]
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static TResult Either<T, TResult>(
+        this Option<T> option,
+        Func<T, TResult> some,
+        Func<TResult> none)
+        where TResult : notnull
+    {
+        some.ThrowIfNull();
+        none.ThrowIfNull();
+
+        return option.TryGet(out T? value) ? some(value!) : none();
+    }
+
+    /// <summary>
+    /// Calls <paramref name="some"/> if IsSome is true. Calls <paramref name="none"/> if IsSome is false.
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
     /// <param name="option"></param>
     /// <param name="some"></param>
     /// <param name="none"></param>
@@ -88,29 +111,6 @@ public static class OptionExtensions
     public static bool IsSomeAndAlso<T>(this Option<T> option, Func<T, bool> predicate)
     {
         return option.TryGet(out var value) && predicate(value);
-    }
-
-    /// <summary>
-    /// Calls <paramref name="some"/> if IsSome is true. Calls <paramref name="none"/> if IsSome is false.
-    /// </summary>
-    /// <typeparam name="T"></typeparam>
-    /// <typeparam name="TResult"></typeparam>
-    /// <param name="option"></param>
-    /// <param name="some"></param>
-    /// <param name="none"></param>
-    /// <returns></returns>
-    [return: NotNull]
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static TResult Either<T, TResult>(
-        this Option<T> option, 
-        Func<T, TResult> some, 
-        Func<TResult> none)
-        where TResult : notnull
-    {
-        some.ThrowIfNull();
-        none.ThrowIfNull();
-
-        return option.TryGet(out T? value) ? some(value!) : none();
     }
 
     /// <summary>

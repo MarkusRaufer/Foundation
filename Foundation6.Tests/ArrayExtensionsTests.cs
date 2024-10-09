@@ -47,13 +47,27 @@ namespace Foundation
         }
 
         [Test]
-        public void OfTypes_Should_()
+        public void OfTypes_Should_ReturnOnlyIntAndDoubleValue_When_TypeIsIntAndDouble()
         {
             var sut = new object[] { DateTime.Now, 2, "3", 4.5D };
             
             var comparables = sut.OfTypes(typeof(int), typeof(double));
             comparables.Should().Contain(2);
             comparables.Should().Contain(4.5);
+        }
+
+        [Test]
+        public void Shuffle_Should_ReturnOnlyIntAndDoubleValue_When_TypeIsIntAndDouble()
+        {
+            // Arrange
+            var sut = Enumerable.Range(5, 3).ToArray();
+            var expected = new int[sut.Length];
+            Array.Copy(sut, expected, sut.Length);
+
+            var random = new Random();
+
+            var shuffled = sut.Shuffle(random);
+            shuffled.All(x => expected.Contains(x)).Should().BeTrue();
         }
 
         [Test]
