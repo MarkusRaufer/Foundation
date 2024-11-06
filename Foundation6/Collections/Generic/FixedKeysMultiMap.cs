@@ -32,7 +32,7 @@ using System.Diagnostics.CodeAnalysis;
 /// </summary>
 /// <typeparam name="TKey"></typeparam>
 /// <typeparam name="TValue"></typeparam>
-public class FixedKeysMultiMap<TKey, TValue> : IReadOnlyMultiValueMap<TKey, TValue>
+public class FixedKeysMultiMap<TKey, TValue> : IReadOnlyMultiMap<TKey, TValue>
     where TKey : notnull
 {
     private readonly IDictionary<TKey, ICollection<TValue>> _dictionary;

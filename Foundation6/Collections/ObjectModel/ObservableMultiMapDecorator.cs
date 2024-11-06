@@ -30,7 +30,7 @@ using System.Diagnostics.CodeAnalysis;
 namespace Foundation.Collections.ObjectModel;
 
 public class ObservableMultiMapDecorator<TKey, TValue>
-    : IMultiValueMap<TKey, TValue>
+    : IMultiMap<TKey, TValue>
     , IMutable
     , INotifyCollectionChanged
 
@@ -38,9 +38,9 @@ public class ObservableMultiMapDecorator<TKey, TValue>
 {
     public event NotifyCollectionChangedEventHandler? CollectionChanged;
 
-    private readonly IMultiValueMap<TKey, TValue> _map;
+    private readonly IMultiMap<TKey, TValue> _map;
 
-    public ObservableMultiMapDecorator(IMultiValueMap<TKey, TValue> map)
+    public ObservableMultiMapDecorator(IMultiMap<TKey, TValue> map)
     {
         _map = map.ThrowIfNull();
     }

@@ -23,15 +23,15 @@
 // SOFTWARE.
 namespace Foundation.Collections.Generic;
 
-public interface IMultiValueMap<TKey, TValue>
-    : IMultiValueMap<TKey, TValue, ICollection<TValue>>
-    , IReadOnlyMultiValueMap<TKey, TValue>
+public interface IMultiMap<TKey, TValue>
+    : IMultiMap<TKey, TValue, ICollection<TValue>>
+    , IReadOnlyMultiMap<TKey, TValue>
 {
 }
 
-public interface IMultiValueMap<TKey, TValue, TValueCollection>
+public interface IMultiMap<TKey, TValue, TValueCollection>
     : IDictionary<TKey, TValue>
-    , IReadOnlyMultiValueMap<TKey, TValue, TValueCollection>
+    , IReadOnlyMultiMap<TKey, TValue, TValueCollection>
     where TValueCollection : IEnumerable<TValue>
 {
     /// <summary>

@@ -231,24 +231,24 @@ public static class EnumerableTransformations
     }
 
     /// <summary>
-    /// Creates a <see cref="IMultiValueMap{TKey, TValue}"/> from an enumerable.
+    /// Creates a <see cref="IMultiMap{TKey, TValue}"/> from an enumerable.
     /// </summary>
     /// <typeparam name="T"></typeparam>
     /// <typeparam name="TKey"></typeparam>
     /// <param name="items"></param>
     /// <param name="keySelector"></param>
     /// <returns></returns>
-    public static IMultiValueMap<TKey, T> ToMultiValueMap<T, TKey>(this IEnumerable<T> items, Func<T, TKey> keySelector)
+    public static IMultiMap<TKey, T> ToMultiMap<T, TKey>(this IEnumerable<T> items, Func<T, TKey> keySelector)
         where TKey : notnull
     {
         items.ThrowIfEnumerableIsNull();
         keySelector.ThrowIfNull();
 
-        return ToMultiValueMap(items, keySelector, x => x);
+        return ToMultiMap(items, keySelector, x => x);
     }
 
     /// <summary>
-    /// Creates a <see cref="IMultiValueMap{TKey, TValue}"/> from an enumerable.
+    /// Creates a <see cref="IMultiMap{TKey, TValue}"/> from an enumerable.
     /// </summary>
     /// <typeparam name="T"></typeparam>
     /// <typeparam name="TKey"></typeparam>
@@ -257,7 +257,7 @@ public static class EnumerableTransformations
     /// <param name="keySelector"></param>
     /// <param name="valueSelector"></param>
     /// <returns></returns>
-    public static IMultiValueMap<TKey, TValue> ToMultiValueMap<T, TKey, TValue>(
+    public static IMultiMap<TKey, TValue> ToMultiMap<T, TKey, TValue>(
         this IEnumerable<T> items,
         Func<T, TKey> keySelector,
         Func<T, TValue> valueSelector)
@@ -266,7 +266,7 @@ public static class EnumerableTransformations
         items.ThrowIfEnumerableIsNull();
         keySelector.ThrowIfNull();
 
-        var dictionary = new MultiValueMap<TKey, TValue>();
+        var dictionary = new MultiMap<TKey, TValue>();
         foreach (var item in items)
             dictionary.Add(keySelector(item), valueSelector(item));
 
@@ -317,7 +317,7 @@ public static class EnumerableTransformations
         lhsSelector.ThrowIfNull();
         rhsSelector.ThrowIfNull();
 
-        var one2Many = new MultiValueMap<TLhs, TRhs>();
+        var one2Many = new MultiMap<TLhs, TRhs>();
         foreach (var sourceElem in source)
         {
             var lhsElem = lhsSelector(sourceElem);

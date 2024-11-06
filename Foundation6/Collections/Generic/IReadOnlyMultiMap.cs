@@ -25,11 +25,11 @@ using System.Diagnostics.CodeAnalysis;
 
 namespace Foundation.Collections.Generic;
 
-public interface IReadOnlyMultiValueMap<TKey, TValue> : IReadOnlyMultiValueMap<TKey, TValue, ICollection<TValue>>
+public interface IReadOnlyMultiMap<TKey, TValue> : IReadOnlyMultiMap<TKey, TValue, ICollection<TValue>>
 {
 }
 
-public interface IReadOnlyMultiValueMap<TKey, TValue, TValueCollection> 
+public interface IReadOnlyMultiMap<TKey, TValue, TValueCollection> 
     : IEnumerable<KeyValuePair<TKey, TValue>>
     where TValueCollection : IEnumerable<TValue>
 {

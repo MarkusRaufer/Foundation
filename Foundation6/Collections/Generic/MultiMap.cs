@@ -27,61 +27,62 @@ using System.Collections;
 using System.Diagnostics.CodeAnalysis;
 
 /// <summary>
-/// Dictionary that supports multiple values per key.
+/// Dictionary that allows multiple values associated with a single key.
+/// Means a single key can hold more than one value.
 /// It is used for 1 to many relations. 
 /// </summary>
 /// <typeparam name="TKey"></typeparam>
 /// <typeparam name="TValue"></typeparam>
-public class MultiValueMap<TKey, TValue>
-    : MultiValueMap<TKey, TValue, ICollection<TValue>>
-    , IMultiValueMap<TKey, TValue>
+public class MultiMap<TKey, TValue>
+    : MultiMap<TKey, TValue, ICollection<TValue>>
+    , IMultiMap<TKey, TValue>
     where TKey : notnull
 {
-    public MultiValueMap() : this(new Dictionary<TKey, ICollection<TValue>>(), () => new List<TValue>())
+    public MultiMap() : this(new Dictionary<TKey, ICollection<TValue>>(), () => new List<TValue>())
     {
     }
 
-    public MultiValueMap(int capacity) : this(capacity, () => new List<TValue>())
+    public MultiMap(int capacity) : this(capacity, () => new List<TValue>())
     {
     }
 
-    public MultiValueMap(int capacity, Func<ICollection<TValue>> valueCollectionFactory)
+    public MultiMap(int capacity, Func<ICollection<TValue>> valueCollectionFactory)
         : this(new Dictionary<TKey, ICollection<TValue>>(capacity), valueCollectionFactory)
     {
     }
 
-    public MultiValueMap(IEqualityComparer<TKey> comparer) : this(comparer, () => new List<TValue>())
+    public MultiMap(IEqualityComparer<TKey> comparer) : this(comparer, () => new List<TValue>())
     {
     }
 
-    public MultiValueMap(IEqualityComparer<TKey> comparer, Func<ICollection<TValue>> valueCollectionFactory)
+    public MultiMap(IEqualityComparer<TKey> comparer, Func<ICollection<TValue>> valueCollectionFactory)
         : this(new Dictionary<TKey, ICollection<TValue>>(comparer), valueCollectionFactory)
     {
     }
 
-    public MultiValueMap(int capasity, IEqualityComparer<TKey> comparer, Func<ICollection<TValue>> valueCollectionFactory)
+    public MultiMap(int capasity, IEqualityComparer<TKey> comparer, Func<ICollection<TValue>> valueCollectionFactory)
         : this(new Dictionary<TKey, ICollection<TValue>>(capasity, comparer), valueCollectionFactory)
     {
     }
 
-    public MultiValueMap(IDictionary<TKey, ICollection<TValue>> dictionary)
+    public MultiMap(IDictionary<TKey, ICollection<TValue>> dictionary)
         : this(dictionary, () => new List<TValue>())
     {
     }
 
-    public MultiValueMap(Func<ICollection<TValue>> valueCollectionFactory)
+    public MultiMap(Func<ICollection<TValue>> valueCollectionFactory)
         : this(new Dictionary<TKey, ICollection<TValue>>(), valueCollectionFactory)
     {
     }
 
-    public MultiValueMap(
+    public MultiMap(
             IEnumerable<KeyValuePair<TKey, TValue>> keyValues,
             Func<ICollection<TValue>> valueCollectionFactory)
         : base(keyValues, valueCollectionFactory)
     { 
     }
 
-    public MultiValueMap(
+    public MultiMap(
         IDictionary<TKey, ICollection<TValue>> dictionary,
         Func<ICollection<TValue>> valueCollectionFactory)
         : base(dictionary, valueCollectionFactory)
@@ -89,8 +90,8 @@ public class MultiValueMap<TKey, TValue>
     }
 }
 
-public class MultiValueMap<TKey, TValue, TValueCollection>
-    : IMultiValueMap<TKey, TValue, TValueCollection>
+public class MultiMap<TKey, TValue, TValueCollection>
+    : IMultiMap<TKey, TValue, TValueCollection>
     where TKey : notnull
     where TValueCollection : ICollection<TValue>
 {
@@ -98,27 +99,27 @@ public class MultiValueMap<TKey, TValue, TValueCollection>
     private readonly Func<TValueCollection> _valueCollectionFactory;
 
 
-    public MultiValueMap(Func<TValueCollection> valueCollectionFactory)
+    public MultiMap(Func<TValueCollection> valueCollectionFactory)
         : this(new Dictionary<TKey, TValueCollection>(), valueCollectionFactory)
     {
     }
 
-    public MultiValueMap(int capacity, Func<TValueCollection> valueCollectionFactory)
+    public MultiMap(int capacity, Func<TValueCollection> valueCollectionFactory)
         : this(new Dictionary<TKey, TValueCollection>(capacity), valueCollectionFactory)
     {
     }
 
-    public MultiValueMap(IEqualityComparer<TKey> comparer, Func<TValueCollection> valueCollectionFactory)
+    public MultiMap(IEqualityComparer<TKey> comparer, Func<TValueCollection> valueCollectionFactory)
         : this(new Dictionary<TKey, TValueCollection>(comparer), valueCollectionFactory)
     {
     }
 
-    public MultiValueMap(int capasity, IEqualityComparer<TKey> comparer, Func<TValueCollection> valueCollectionFactory)
+    public MultiMap(int capasity, IEqualityComparer<TKey> comparer, Func<TValueCollection> valueCollectionFactory)
         : this(new Dictionary<TKey, TValueCollection>(capasity, comparer), valueCollectionFactory)
     {
     }
 
-    public MultiValueMap(
+    public MultiMap(
         IEnumerable<KeyValuePair<TKey, TValue>> keyValues,
         Func<TValueCollection> valueCollectionFactory)
     {
@@ -131,7 +132,7 @@ public class MultiValueMap<TKey, TValue, TValueCollection>
         }
     }
 
-    public MultiValueMap(
+    public MultiMap(
         IDictionary<TKey, TValueCollection> dictionary,
         Func<TValueCollection> valueCollectionFactory)
     {
