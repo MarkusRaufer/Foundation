@@ -1,10 +1,6 @@
 ﻿using FluentAssertions;
 using NUnit.Framework;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Foundation.Collections.Generic;
 
@@ -14,6 +10,7 @@ public class RangeExtensionsTest
     [Test]
     public void Enumerator_Should_ThrowException_When_RangeEndIsUndefined()
     {
+        
         Assert.Throws<ArgumentOutOfRangeException>(() =>
         {
             var i = 0;

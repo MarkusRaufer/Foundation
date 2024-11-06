@@ -21,14 +21,16 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
-﻿namespace Foundation.Collections.Generic;
+using System.Collections;
+
+namespace Foundation.Collections.Generic;
 
 public static class RangeExtensions
 {
-	public static RangeEnumerator GetEnumerator(this System.Range range) => new(range);
+    public static RangeEnumerator GetEnumerator(this System.Range range) => new(range);
 }
 
-public ref struct RangeEnumerator
+public ref struct RangeEnumerator : IEnumerator<int>
 {
 	private readonly System.Range _range;
 	private int _current;
@@ -39,9 +41,16 @@ public ref struct RangeEnumerator
 		_current = range.Start.IsFromEnd ? -1 : range.Start.Value - 1;
     }
 
-	public int Current => _current;
+	public readonly int Current => _current;
 
-	public bool MoveNext()
+    readonly object IEnumerator.Current => _current;
+
+    public void Dispose()
+    {
+        _current = 0;
+    }
+
+    public bool MoveNext()
 	{
         _current++;
 
@@ -51,4 +60,9 @@ public ref struct RangeEnumerator
 		
 		return true;
 	}
+
+    public void Reset()
+    {
+        _current = 0;
+    }
 }
