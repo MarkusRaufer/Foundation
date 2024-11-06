@@ -59,17 +59,6 @@ public static class CollectionExtensions
         : throw new ArgumentOutOfRangeException($"{paramName} must not be empty");
 
     /// <summary>
-    /// Throws an exception when collection is null.
-    /// </summary>
-    /// <typeparam name="T"></typeparam>
-    /// <param name="collection"></param>
-    /// <param name="paramName"></param>
-    /// <returns></returns>
-    /// <exception cref="ArgumentException"></exception>
-    public static ICollection<T> ThrowIfNull<T>(this ICollection<T> collection, [CallerArgumentExpression(nameof(collection))] string paramName = "")
-        => collection ?? throw new ArgumentException($"{paramName} must not be empty");
-
-    /// <summary>
     /// Throws an exception when collection is null or empty.
     /// </summary>
     /// <typeparam name="T"></typeparam>
@@ -77,5 +66,6 @@ public static class CollectionExtensions
     /// <param name="paramName"></param>
     /// <returns></returns>
     public static ICollection<T> ThrowIfNullOrEmpty<T>(this ICollection<T> collection, [CallerArgumentExpression(nameof(collection))] string paramName = "")
-        => ThrowIfNull(collection, paramName).ThrowIfEmpty(paramName);
+        => collection.ThrowIfNull().ThrowIfEmpty(paramName);
+
 }

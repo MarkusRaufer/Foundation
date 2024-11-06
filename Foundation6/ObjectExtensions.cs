@@ -213,8 +213,23 @@ public static class ObjectExtensions
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static int GetInstanceHashCode(this object? obj) => RuntimeHelpers.GetHashCode(obj);
 
+    /// <summary>
+    /// Returns a hashcode if <paramref name="obj"/> not null otherwise 0.
+    /// </summary>
+    /// <param name="obj"></param>
+    /// <returns></returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static int GetNullableHashCode(this object? obj) => (obj is null) ? 0 : obj.GetHashCode();
+
+    /// <summary>
+    /// Calls <paramref name="hashCode"/> if <paramref name="obj"/> is not null otherwise returns 0.
+    /// </summary>
+    /// <typeparam name="T">Type of <paramref name="obj"/>.</typeparam>
+    /// <param name="obj">Object that has a hashcode.</param>
+    /// <param name="hashCode">Function that returns a hashcode from an object.</param>
+    /// <returns></returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static int GetNullableHashCode<T>(this T? obj, Func<T, int> hashCode) => obj is null ? 0 : hashCode(obj);
 
     /// <summary>
     /// Checks if an object is of a generic type.

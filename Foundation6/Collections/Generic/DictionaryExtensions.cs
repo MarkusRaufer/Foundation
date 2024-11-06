@@ -126,17 +126,6 @@ public static  class DictionaryExtensions
         return true;
     }
 
-    public static Option<KeyValuePair<TKey, TValue>> RemovKey<TKey, TValue>(this IDictionary<TKey, TValue> dictionary, TKey key)
-        where TKey : notnull
-    {
-        dictionary.ThrowIfNull();
-
-        if (!dictionary.TryGetValue(key, out TValue? value)) return Option.None<KeyValuePair<TKey, TValue>>();
-        
-        dictionary.Remove(key);
-        return Option.Some(Pair.New(key, value));
-    }
-
     /// <summary>
     /// Replaces the values of lhs with the values of rhs if the key exists in lhs. 
     /// </summary>
@@ -159,13 +148,28 @@ public static  class DictionaryExtensions
         return lhs;
     }
 
+    /// <summary>
+    /// Throws an exception if <paramref name="dictionary"/> does not contain any element.
+    /// </summary>
+    /// <typeparam name="TKey">Type of the keys.</typeparam>
+    /// <typeparam name="TValue">Type of the values.</typeparam>
+    /// <param name="dictionary">A dictionary that will be used internally.</param>
+    /// <param name="paramName">A parameter name that can be defined.</param>
+    /// <returns></returns>
+    /// <exception cref="ArgumentOutOfRangeException"></exception>
     public static IDictionary<TKey, TValue> ThrowIfEmpty<TKey, TValue>(this IDictionary<TKey, TValue> dictionary, [CallerArgumentExpression(nameof(dictionary))] string paramName = "")
         => 0 < dictionary.Count
         ? dictionary
         : throw new ArgumentOutOfRangeException($"{paramName} must not be empty");
 
-    public static IDictionary<TKey, TValue> ThrowIfNull<TKey, TValue>(this IDictionary<TKey, TValue> dictionary, [CallerArgumentExpression(nameof(dictionary))] string paramName = "")
-        => dictionary ?? throw new ArgumentException($"{paramName} must not be empty");
+    /// <summary>
+    /// Throws an exception if <paramref name="dictionary"/> is null or does not contain any element.
+    /// </summary>
+    /// <typeparam name="TKey">Type of keys.</typeparam>
+    /// <typeparam name="TValue">Type of values.</typeparam>
+    /// <param name="dictionary">A dictionary that will be used internally.</param>
+    /// <param name="paramName">A parameter name that can be defined.</param>
+    /// <returns></returns>
     public static IDictionary<TKey, TValue> ThrowIfNullOrEmpty<TKey, TValue>(this IDictionary<TKey, TValue> dictionary, [CallerArgumentExpression(nameof(dictionary))] string paramName = "")
-        => ThrowIfNull(dictionary, paramName).ThrowIfEmpty(paramName);
+        => dictionary.ThrowIfNull().ThrowIfEmpty(paramName);
 }
