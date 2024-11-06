@@ -30,7 +30,7 @@ public static class RangeExtensions
     public static RangeEnumerator GetEnumerator(this System.Range range) => new(range);
 }
 
-public ref struct RangeEnumerator : IEnumerator<int>
+public ref struct RangeEnumerator
 {
 	private readonly System.Range _range;
 	private int _current;
@@ -41,14 +41,7 @@ public ref struct RangeEnumerator : IEnumerator<int>
 		_current = range.Start.IsFromEnd ? -1 : range.Start.Value - 1;
     }
 
-	public readonly int Current => _current;
-
-    readonly object IEnumerator.Current => _current;
-
-    public void Dispose()
-    {
-        _current = 0;
-    }
+	public int Current => _current;
 
     public bool MoveNext()
 	{
@@ -60,9 +53,4 @@ public ref struct RangeEnumerator : IEnumerator<int>
 		
 		return true;
 	}
-
-    public void Reset()
-    {
-        _current = 0;
-    }
 }
