@@ -5,6 +5,16 @@
 		<ImplicitUsings>enable</ImplicitUsings>
 		<Nullable>enable</Nullable>
 		<LangVersion>latest</LangVersion>
+		<PackageOutputPath>$(LOCAL_NUGET)\</PackageOutputPath>
+		<BaseOutputPath>bin\</BaseOutputPath>
+
+		<Copyright>Markus Raufer</Copyright>
+		<Authors>Markus Raufer</Authors>
+		<Description>test utilities.</Description>
+		<PackageId>Foundation.TesatUtil</PackageId>
+		<PackageTags>test, utilities</PackageTags>
+		<ProductName>Foundation.TestUtil</ProductName>
+		<Version>1.0.0</Version>
 	</PropertyGroup>
 
 	<ItemGroup>

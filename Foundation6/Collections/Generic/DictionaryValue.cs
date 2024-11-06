@@ -28,6 +28,11 @@ using Foundation;
 using System.Collections;
 using System.Diagnostics.CodeAnalysis;
 
+/// <summary>
+/// This is an immutable <see cref="IDictionary{TKey, TValue}"/>.
+/// Using <see cref="Equals"/> considers the equality of all keys and values.
+/// The position of the elements are ignored.
+/// </summary>
 public static class DictionaryValue
 {
     public static DictionaryValue<TKey, TValue> New<TKey, TValue>(IEnumerable<KeyValuePair<TKey, TValue>> keyValues)
