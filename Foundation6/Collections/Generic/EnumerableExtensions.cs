@@ -1578,8 +1578,8 @@ public static class EnumerableExtensions
                      join right in rhsTuples on keySelector(left.item) equals keySelector(right.item)
                      select (left, right);
 
-        var lhsMap = new MultiValueMap<TKey, (int, T)>();
-        var rhsMap = new MultiValueMap<TKey, (int, T)>();
+        var lhsMap = new MultiMap<TKey, (int, T)>();
+        var rhsMap = new MultiMap<TKey, (int, T)>();
 
         foreach (var (left, right) in tuples)
         {
@@ -1617,8 +1617,8 @@ public static class EnumerableExtensions
                      (left, right) => (left, right)).ToArray();
 
         
-        var lhsMap = new MultiValueMap<NullableKey<T>, (int, T?)>();
-        var rhsMap = new MultiValueMap<NullableKey<T>, (int, T?)>();
+        var lhsMap = new MultiMap<NullableKey<T>, (int, T?)>();
+        var rhsMap = new MultiMap<NullableKey<T>, (int, T?)>();
 
         foreach (var (left, right) in tuples)
         {
@@ -1664,8 +1664,8 @@ public static class EnumerableExtensions
                      join right in enumeratedRhs on keySelector(left.item) equals keySelector(right.item)
                      select (left, right);
 
-        var lhsMap = new MultiValueMap<TKey, (int, T)>();
-        var rhsMap = new MultiValueMap<TKey, (int, T)>();
+        var lhsMap = new MultiMap<TKey, (int, T)>();
+        var rhsMap = new MultiMap<TKey, (int, T)>();
 
         foreach (var (left, right) in tuples)
         {
