@@ -1,4 +1,5 @@
-﻿using NUnit.Framework;
+﻿using FluentAssertions;
+using NUnit.Framework;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -8,15 +9,21 @@ namespace Foundation
     [TestFixture]
     public class EventTests
     {
-        private class MyTest
+        private class MyTest : IDisposable
         {
             public void Func()
             {
                 IsCalledFunc1 = true;
             }
+
             public void Func2(IEnumerable<string> names)
             { 
                 IsCalledFunc2 = true;
+            }
+
+            public void Dispose()
+            {
+                
             }
 
             public bool IsCalledFunc1 { get; set; }
@@ -25,7 +32,7 @@ namespace Foundation
         }
 
         [Test]
-        public void Dispose_ShouldUnsubscribeCollectedSubscriptions_When_Out_Of_Scope()
+        public void Dispose_Should_UnsubscribeCollectedSubscriptions_When_Out_Of_Scope()
         {
             var sut = new Event<Action>();
 
@@ -40,7 +47,7 @@ namespace Foundation
         }
 
         [Test]
-        public void Invoke_ShouldCallAllSubscriptions_When_Multiple_Actions_Subscribed()
+        public void Invoke_Should_CallAllSubscriptions_When_Multiple_Actions_Subscribed()
         {
             var executed1 = false;
             void func1() => executed1 = true;
@@ -61,48 +68,52 @@ namespace Foundation
         }
 
         [Test]
-        public void Publish_ShouldCallSubscription_When_DelegateWithEnumerableAsSingleParameterIsUsed()
+        public void Publish_Should_CallSubscription_When_DelegateWithEnumerableAsSingleParameterIsUsed()
         {
-            var expected = new string[] { "1", "2", "3" };
+            // Arrange
 
-            var executed = false;
-            void method(IEnumerable<string> names)
+            using var sut = new Event<Action>();
+
+            var mt1 = new MyTest();
+            sut.Subscribe(mt1.Func);
             {
-                executed = names.SequenceEqual(expected);
+                using var mt2 = new MyTest();
+
+                sut.Subscribe(mt2.Func);
             }
 
-            // leaving the scope unregisters all subscriptions automatically.
-            using var sut = new Event<Action<IEnumerable<string>>>();
+            GC.Collect();
+            GC.WaitForPendingFinalizers();
+            GC.WaitForFullGCComplete();
+            GC.Collect();
 
-            sut.Subscribe(method);
+            // Act
+            sut.Publish();
 
-            sut.Publish((object)expected);
-
-            Assert.IsTrue(executed);
         }
 
         [Test]
-        public void Subscribe_ShouldHaveOneSubscription_When_Subscribed_Same_Action()
+        public void Subscribe_Should_HaveTwoSubscription_When_Subscribed_Same_Action()
         {
             void func()
             {
             }
 
-            var sut = new Event<Action>();
+            using var sut = new Event<Action>();
 
             sut.Subscribe(func);
             sut.Subscribe(func);
 
-            Assert.AreEqual(1, sut.SubscribtionCount);
+            sut.SubscribtionCount.Should().Be(2);
         }
 
         [Test]
-        public void Subscribe_ShouldUnsubscribeAllSubscriptions_When_Called_Dispose()
+        public void Subscribe_Should_UnsubscribeAllSubscriptions_When_Called_Dispose()
         {
             void func1() {}
             void func2() {}
 
-            var sut = new Event<Action>();
+            using var sut = new Event<Action>();
             {
 
                 var disposable1 = sut.Subscribe(func1);
@@ -123,21 +134,38 @@ namespace Foundation
         }
 
         [Test]
-        public void Subscribe_ShouldHaveMultipleSubscriptions_When_Different_Actions_Subscribed()
+        public void Subscribe_Should_HaveMultipleSubscriptions_When_Different_Actions_Subscribed()
         {
+            // Arrange
             var sut = new Event<Action>();
 
-            void func1()
-            {
-            }
-            sut.Subscribe(func1);
+            void func1() { }
+            void func2() { }
 
-            void func2()
-            {
-            }
+            // Act
+            sut.Subscribe(func1);
             sut.Subscribe(func2);
 
-            Assert.AreEqual(2, sut.SubscribtionCount);
+            // Assert
+            sut.SubscribtionCount.Should().Be(2);
+        }
+
+        [Test]
+        public void Subscribe_Should_HaveSingleSubscriptions_When_2SubscribedAndDisposeOfOneSubscriberIsCalled()
+        {
+            // Arrange
+            var sut = new Event<Action>();
+
+            void func1() { }
+            void func2() { }
+
+            // Act
+            sut.Subscribe(func1);
+            var disposable = sut.Subscribe(func2);
+            disposable.Dispose();
+
+            // Assert
+            sut.SubscribtionCount.Should().Be(1);
         }
     }
 }

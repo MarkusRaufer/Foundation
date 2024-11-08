@@ -30,8 +30,7 @@
 public sealed class Event<TDelegate> : IDisposable
     where TDelegate : Delegate
 {
-    private readonly Lazy<ICollection<TDelegate>> _subscribtions
-        = new(() => new List<TDelegate>());
+    private readonly Lazy<List<WeakReference<TDelegate>>> _subscribtions = new(() => []);
 
     private bool _disposing;
 
@@ -39,8 +38,6 @@ public sealed class Event<TDelegate> : IDisposable
     {
         Dispose();
     }
-
-    public bool Contains(TDelegate @delegate) => _subscribtions.Value.Contains(@delegate);
 
     public void Dispose()
     {
@@ -53,7 +50,6 @@ public sealed class Event<TDelegate> : IDisposable
     }
 
     public Action<TDelegate>? OnSubscribe { get; set; }
-    public Action<TDelegate>? OnUnsubscribe { get; set; }
 
     /// <summary>
     /// Calls the delegates of the the subscribers. 
@@ -61,19 +57,26 @@ public sealed class Event<TDelegate> : IDisposable
     /// <param name="args">Each element of args corresponds to a parameter of the delegate. If you want to use a list of values as a single parameter cast it to object.</param>
     public void Publish(params object?[]? args)
     {
-        foreach (var subscribtion in _subscribtions.Value.ToArray())
+        foreach (var weakRef in _subscribtions.Value.ToArray())
         {
-            subscribtion?.DynamicInvoke(args);
+            if (!weakRef.TryGetTarget(out var target))
+            {
+                _subscribtions.Value.Remove(weakRef);
+                continue;
+            }
+
+            target?.DynamicInvoke(args);
         }
     }
 
     public IDisposable Subscribe(TDelegate @delegate)
     {
-        var disposable = new Disposable(() => Unsubscribe(@delegate));
+        @delegate.ThrowIfNull();
 
-        if (Contains(@delegate)) return disposable;
+        var weakRef = new WeakReference<TDelegate>(@delegate);
+        var disposable = new Disposable(() => Unsubscribe(weakRef));
 
-        _subscribtions.Value.Add(@delegate);
+        _subscribtions.Value.Add(weakRef);
 
         OnSubscribe?.Invoke(@delegate);
 
@@ -82,14 +85,7 @@ public sealed class Event<TDelegate> : IDisposable
 
     public int SubscribtionCount => _subscribtions.Value.Count;
 
-    public bool Unsubscribe(TDelegate @delegate)
-    {
-        var removed = _subscribtions.Value.Remove(@delegate);
-
-        OnUnsubscribe?.Invoke(@delegate);
-
-        return removed;
-    }
+    private bool Unsubscribe(WeakReference<TDelegate> weakRef)  => _subscribtions.Value.Remove(weakRef);
 
     public void UnsubscribeAll() => _subscribtions.Value.Clear();
 }
