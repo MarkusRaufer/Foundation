@@ -162,7 +162,9 @@ namespace Foundation
             // Act
             sut.Subscribe(func1);
             var disposable = sut.Subscribe(func2);
-            disposable.Dispose();
+
+            //this unsubscribes the delegate
+            disposable.Dispose(); 
 
             // Assert
             sut.SubscribtionCount.Should().Be(1);
