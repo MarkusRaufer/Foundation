@@ -63,11 +63,9 @@ public class HashMap<TKey, TValue> : IDictionary<TKey, TValue>
     {
     }
 
-    public HashMap(IEnumerable<KeyValuePair<TKey, TValue>> keyValues)
+    public HashMap(IEnumerable<KeyValuePair<TKey, TValue>> keyValues) 
+        : this(EqualityComparer<TValue>.Default)
     {
-        var comparer = CreateEqualityComparer();
-        _values = new HashSet<ValueTuple>(comparer);
-
         foreach (var kvp in keyValues)
         {
             var valueTuple = ValueTuple.New(kvp);
@@ -75,19 +73,25 @@ public class HashMap<TKey, TValue> : IDictionary<TKey, TValue>
         }
     }
 
-    private static IEqualityComparer<ValueTuple> CreateEqualityComparer()
+    public HashMap(IEqualityComparer<TValue> valueComparer)
+    {
+        var comparer = CreateEqualityComparer(valueComparer);
+        _values = new HashSet<ValueTuple>(comparer);
+    }
+
+    private static IEqualityComparer<ValueTuple> CreateEqualityComparer(IEqualityComparer<TValue> valueComparer)
     {
 #if NET7_0_OR_GREATER
     return EqualityComparer<ValueTuple>.Create(equals, x => x.Value.GetHashCode());
 #else
         return LambdaEqualityComparer.New<ValueTuple>(equals, x => x.GetNullableHashCode(x => x.Value.GetHashCode()));
 #endif
-        static bool equals(ValueTuple? lhs, ValueTuple? rhs)
+        bool equals(ValueTuple? lhs, ValueTuple? rhs)
         {
             if (lhs is null) return rhs is null;
             if (rhs is null) return false;
 
-            return lhs.Value.Equals(rhs.Value);
+            return valueComparer.Equals(lhs.Value, rhs.Value);
         }
     }
 
