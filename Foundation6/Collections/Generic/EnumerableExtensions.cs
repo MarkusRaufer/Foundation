@@ -2298,10 +2298,10 @@ public static class EnumerableExtensions
     }
 
     /// <summary>
-    /// Replaces left item with item at a specified index.
+    /// Replaces an item in the list with item at a specified index.
     /// </summary>
-    /// <typeparam name="T"></typeparam>
-    /// <param name="items"></param>
+    /// <typeparam name="T">Type of item.</typeparam>
+    /// <param name="items">List of items.</param>
     /// <param name="index">The position in the list.</param>
     /// <param name="item">Item that replaces the existing left at a specific index.</param>
     /// <returns></returns>

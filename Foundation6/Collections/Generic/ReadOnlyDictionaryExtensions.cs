@@ -78,26 +78,22 @@ public static class ReadOnlyDictionaryExtensions
         bool addNonExistingReplacements = false)
         where TKey : notnull
     {
-        var rhs = replacements.ToDictionary(x => x.Key, x => x.Value);
-
-        foreach (var lhs in dictionary)
+        var replacedKeys = new List<TKey>();
+        foreach (var replacement in replacements)
         {
-            if (rhs.TryGetValue(lhs.Key, out TValue? rhsValue))
+            if (!dictionary.TryGetValue(replacement.Key, out TValue? existingValue))
             {
-                yield return new KeyValuePair<TKey, TValue>(lhs.Key, rhsValue);
-                rhs.Remove(lhs.Key);
-
+                if (addNonExistingReplacements) yield return replacement;
                 continue;
             }
 
-            yield return lhs;
+            replacedKeys.Add(replacement.Key);
+            yield return new KeyValuePair<TKey, TValue>(replacement.Key, replacement.Value);
         }
 
-        if (!addNonExistingReplacements) yield break;
-
-        foreach(var r in rhs)
+        foreach (var existingKey in dictionary.Keys.Except(replacedKeys))
         {
-            if (!dictionary.ContainsKey(r.Key)) yield return r;
+            yield return new KeyValuePair<TKey, TValue>(existingKey, dictionary[existingKey]);
         }
     }
 
