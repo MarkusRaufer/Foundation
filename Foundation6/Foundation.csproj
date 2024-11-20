@@ -14,7 +14,7 @@
 		<PackageId>Foundation</PackageId>
 		<PackageTags>LINQ, additional standard types, .NET extension</PackageTags>
 		<ProductName>Foundation</ProductName>
-		<Version>1.6.4</Version>
+		<Version>1.6.5</Version>
 		<UserSecretsId>4a3dcddf-c97c-408a-aad6-93090d4c1c18</UserSecretsId>
 	</PropertyGroup>
 

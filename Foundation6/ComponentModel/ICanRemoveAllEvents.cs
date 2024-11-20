@@ -1,4 +1,4 @@
-// The MIT License (MIT)
+﻿// The MIT License (MIT)
 //
 // Copyright (c) 2020 Markus Raufer
 //
@@ -21,30 +21,15 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
-﻿namespace Foundation.ComponentModel;
+namespace Foundation.ComponentModel;
 
 /// <summary>
-/// Contract of an event history provider.
+/// Contract that allows to remove all events.
 /// </summary>
-/// <typeparam name="TEvent"></typeparam>
-public interface IEventHistory<TEvent> : IEventHistory<TEvent, IEnumerable<TEvent>>
-{
-}
-
-/// <summary>
-/// Contract of a event history provider.
-/// </summary>
-/// <typeparam name="TEvent">Type of the events.</typeparam>
-/// <typeparam name="TEventCollection">Type of the event collection.</typeparam>
-public interface IEventHistory<TEvent, TEventCollection>
+public interface ICanRemoveAllEvents
 {
     /// <summary>
-    /// List of events.
+    /// Removes all events.
     /// </summary>
-    TEventCollection Events { get; }
-
-    /// <summary>
-    /// True if <see cref="Events"/> contains at least one event.
-    /// </summary>
-    bool HasEvents { get; }
+    void ClearEvents();
 }
