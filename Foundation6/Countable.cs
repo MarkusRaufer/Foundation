@@ -26,7 +26,7 @@
 public static class Countable
 {
     /// <summary>
-    /// Creates a new Countable object. The counter of the value starts with 1. By default hashCodeIncludesCount is false.
+    /// Creates a new Countable object. The counter of the value starts with 1. By default equalsIncludesCount is false.
     /// </summary>
     /// <typeparam name="T">The type of the value.</typeparam>
     /// <param name="value">The value which should be counted.</param>
@@ -34,7 +34,7 @@ public static class Countable
     public static Countable<T> New<T>(T value) => new(value, 1, false);
 
     /// <summary>
-    /// Creates a new Countable object. By default hashCodeIncludesCount is false.
+    /// Creates a new Countable object. By default equalsIncludesCount is false.
     /// </summary>
     /// <typeparam name="T">The type of the value.</typeparam>
     /// <param name="value">The value which should be counted.</param>
@@ -47,9 +47,9 @@ public static class Countable
     /// </summary>
     /// <typeparam name="T">The type of the value.</typeparam>
     /// <param name="value">The value which should be counted.</param>
-    /// <param name="hashCodeIncludesCount">If true, then the counter is included in the hash value and the comparison <see cref="Equals(Countable{T}?)"/></param>
+    /// <param name="equalsIncludesCount">If true, then the counter is included in the hash value and the comparison <see cref="Equals(Countable{T}?)"/></param>
     /// <returns></returns>
-    public static Countable<T> New<T>(T value, bool hashCodeIncludesCount) => new(value, 1, hashCodeIncludesCount);
+    public static Countable<T> New<T>(T value, bool equalsIncludesCount) => new(value, 1, equalsIncludesCount);
 
     /// <summary>
     /// Creates a new Countable object.
@@ -57,9 +57,20 @@ public static class Countable
     /// <typeparam name="T">The type of the value.</typeparam>
     /// <param name="value">The value which should be counted.</param>
     /// <param name="count">The seed of the counter.</param>
-    /// <param name="hashCodeIncludesCount">If true, then the counter is included in the hash value and the comparison <see cref="Equals(Countable{T}?)"/></param>
+    /// <param name="equalsIncludesCount">If true, then the counter is included in <see cref="Countable{T}.Equals(Countable{T}?)"/> and in the hash code.</param>
     /// <returns></returns>
-    public static Countable<T> New<T>(T value, int count, bool hashCodeIncludesCount) => new(value, count, hashCodeIncludesCount);
+    public static Countable<T> New<T>(T value, int count, bool equalsIncludesCount) => new(value, count, equalsIncludesCount);
+
+    /// <summary>
+    /// Creates a new Countable object.
+    /// </summary>
+    /// <typeparam name="T">The type of the value.</typeparam>
+    /// <param name="value">The value which should be counted.</param>
+    /// <param name="count">The seed of the counter.</param>
+    /// <param name="equalsIncludesCount">If true, then the counter is included in <see cref="Countable{T}.Equals(Countable{T}?)"/> and in the hash code.</param>
+    /// <param name="allowNegativeCounter">If true then <see cref="Countable{T}.Count"/> can have negative values.</param>
+    /// <returns></returns>
+    public static Countable<T> New<T>(T value, int count, bool equalsIncludesCount, bool allowNegativeCounter) => new(value, count, equalsIncludesCount, allowNegativeCounter);
 }
 
 /// <summary>
@@ -73,12 +84,13 @@ public sealed class Countable<T> : IEquatable<Countable<T>>
     /// </summary>
     /// <param name="value">The countable value.</param>
     /// <param name="count">The seed of the counter.</param>
-    /// <param name="hashCodeIncludesCount">If true, then the counter is included in the hash value and the comparison <see cref="Equals(Countable{T}?)"/></param>
-	public Countable(T? value, int count, bool hashCodeIncludesCount)
+    /// <param name="equalsIncludesCount">If true, then the counter is included on Equals as well as in the hash code.<see cref="Equals(Countable{T}?)"/></param>
+	public Countable(T? value, int count, bool equalsIncludesCount = false, bool allowNegativeCounter = false)
 	{
 		Value = value;
 		Count = count;
-		HashCodeIncludesCount = hashCodeIncludesCount;
+        AllowNegativeCounter = allowNegativeCounter;
+		EqualsIncludesCount = equalsIncludesCount;
 	}
 
     public static implicit operator T?(Countable<T> countable)
@@ -87,7 +99,7 @@ public sealed class Countable<T> : IEquatable<Countable<T>>
     }
 
     /// <summary>
-    /// If HashCodeIncludesCount is true, then the counter is included in the hash value and the comparison <see cref="Equals(Countable{T}?)"/>.
+    /// If EqualsIncludesCount is true, then the counter is included in the hash value and the comparison <see cref="Equals(Countable{T}?)"/>.
     /// </summary>
     /// <param name="lhs"></param>
     /// <param name="rhs"></param>
@@ -108,7 +120,7 @@ public sealed class Countable<T> : IEquatable<Countable<T>>
     }
 
     /// <summary>
-    /// If HashCodeIncludesCount is true, then the counter is included in the hash value and the comparison <see cref="Equals(Countable{T}?)"/>
+    /// If EqualsIncludesCount is true, then the counter is included in the hash value and the comparison <see cref="Equals(Countable{T}?)"/>
     /// </summary>
     /// <param name="lhs"></param>
     /// <param name="rhs"></param>
@@ -129,6 +141,11 @@ public sealed class Countable<T> : IEquatable<Countable<T>>
     }
 
     /// <summary>
+    /// If true the <see cref="Count"/> can have a negative number.
+    /// </summary>
+    public bool AllowNegativeCounter { get; }
+
+    /// <summary>
     /// The counter of the value.
     /// </summary>
     public int Count { get; private set; }
@@ -138,20 +155,20 @@ public sealed class Countable<T> : IEquatable<Countable<T>>
     /// </summary>
     public void Dec()
     {
-        if (0 == Count) return;
+        if (!AllowNegativeCounter && 0 == Count) return;
         
         Count--;
     }
 
     /// <summary>
-    /// If HashCodeIncludesCount is true, then the counter is included in the hash value as well in the comparison.
+    /// If EqualsIncludesCount is true, then the counter is included in the hash value as well in the comparison.
     /// </summary>
     /// <param name="obj"></param>
     /// <returns></returns>
 	public override bool Equals(object? obj) => Equals(obj as Countable<T>);
 
     /// <summary>
-    /// If HashCodeIncludesCount is true, then the counter is included in the hash value as well in the comparison.
+    /// If EqualsIncludesCount is true, then the counter is included in the hash value as well in the comparison.
     /// </summary>
     /// <param name="other"></param>
     /// <returns></returns>
@@ -159,19 +176,20 @@ public sealed class Countable<T> : IEquatable<Countable<T>>
 	{
 		if (other is null) return false;
 		if (!Value.EqualsNullable(other.Value)) return false;
-		return HashCodeIncludesCount ? Count == other.Count : true;
+
+		return !EqualsIncludesCount || Count == other.Count;
 	}
 
     /// <summary>
-    /// If HashCodeIncludesCount is true, then the counter is included in the hash value as well in the comparison.
+    /// If EqualsIncludesCount is true, then the counter is included in the hash value as well in the comparison.
     /// </summary>
     /// <returns></returns>
 	public override int GetHashCode()
 	{
 #if NETSTANDARD2_0
-        if(HashCodeIncludesCount) return Value is null ? Foundation.HashCode.FromObject(0, Count) : Foundation.HashCode.FromObject(Value, Count);
+        if(EqualsIncludesCount) return Value is null ? Count.GetHashCode() : Foundation.HashCode.FromObject(Value, Count);
 #else
-        if (HashCodeIncludesCount) return Value is null ? System.HashCode.Combine(0, Count) : System.HashCode.Combine(Value, Count);
+        if (EqualsIncludesCount) return Value is null ? Count.GetHashCode() : System.HashCode.Combine(Value, Count);
 #endif
         return Value.GetNullableHashCode();
 	}
@@ -183,14 +201,16 @@ public sealed class Countable<T> : IEquatable<Countable<T>>
     public int GetValueHashCode() => Value.GetNullableHashCode();
 
     /// <summary>
-    /// If HashCodeIncludesCount is true, then the counter is included in the hash value as well in the comparison.
+    /// If EqualsIncludesCount is true, then the counter is included in the hash value as well in the comparison.
     /// </summary>
-	public bool HashCodeIncludesCount { get; }
+	public bool EqualsIncludesCount { get; }
 
     /// <summary>
     /// Increases Count by 1.
     /// </summary>
     public void Inc() => Count++;
+
+    public override string ToString() => $"Value: {Value}, Count: {Count}";
 
     public T? Value { get; }
 

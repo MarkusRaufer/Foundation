@@ -54,7 +54,7 @@ public sealed class Event<TDelegate> : IDisposable
     /// <summary>
     /// Calls the delegates of the the subscribers. 
     /// </summary>
-    /// <param name="args">Each element of args corresponds to a parameter of the delegate. If you want to use a list of values as a single parameter cast it to object.</param>
+    /// <param name="args">Each element of args corresponds to a parameter of the weakReference. If you want to use a list of values as a single parameter cast it to object.</param>
     public void Publish(params object?[]? args)
     {
         foreach (var weakRef in _subscribtions.Value.ToArray())
@@ -74,11 +74,24 @@ public sealed class Event<TDelegate> : IDisposable
         @delegate.ThrowIfNull();
 
         var weakRef = new WeakReference<TDelegate>(@delegate);
-        var disposable = new Disposable(() => Unsubscribe(weakRef));
+        //var disposable = new Disposable(() => Unsubscribe(weakRef));
 
-        _subscribtions.Value.Add(weakRef);
+        //_subscribtions.Value.Add(weakRef);
 
-        OnSubscribe?.Invoke(@delegate);
+        //OnSubscribe?.Invoke(@delegate);
+
+        return Subscribe(weakRef);
+    }
+
+    public IDisposable Subscribe(WeakReference<TDelegate> weakReference)
+    {
+        weakReference.ThrowIfNull();
+
+        var disposable = new Disposable(() => Unsubscribe(weakReference));
+
+        _subscribtions.Value.Add(weakReference);
+
+        if (weakReference.TryGetTarget(out var target)) OnSubscribe?.Invoke(target);
 
         return disposable;
     }

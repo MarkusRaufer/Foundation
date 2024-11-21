@@ -11,8 +11,19 @@ namespace Foundation
     {
         private class MyTest : IDisposable
         {
+            public MyTest() : this(Countable.New("Func", 0))
+            {
+            }
+            public MyTest(Countable<string> countable)
+            {
+                FuncCount = countable;
+            }
+
+            public Countable<string> FuncCount { get; }
+
             public void Func()
             {
+                FuncCount.Inc();
                 IsCalledFunc1 = true;
             }
 
@@ -74,22 +85,22 @@ namespace Foundation
 
             using var sut = new Event<Action>();
 
-            var mt1 = new MyTest();
+            var countable = Countable.New("Func", 0);
+
+            var mt1 = new MyTest(countable);
             sut.Subscribe(mt1.Func);
             {
-                using var mt2 = new MyTest();
-
-                sut.Subscribe(mt2.Func);
+                using var mt2 = new MyTest(countable);
+                using var subscription = sut.Subscribe(mt2.Func);
             }
 
-            GC.Collect();
-            GC.WaitForPendingFinalizers();
-            GC.WaitForFullGCComplete();
             GC.Collect();
 
             // Act
             sut.Publish();
 
+            // Assert
+            countable.Count.Should().Be(1);
         }
 
         [Test]
