@@ -32,4 +32,10 @@ public static class BoolExtensions
         if (value) return value;
         throw new ArgumentOutOfRangeException(name);
     }
+
+    public static Option<T> ToOption<T>(this bool isTrue, T? value)
+    {
+        if (isTrue) return Option.Maybe(value);
+        return Option.None<T>();
+    }
 }
