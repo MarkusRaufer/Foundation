@@ -71,7 +71,7 @@ public class HashMapTests
     }
 
     [Test]
-    public void Add_Should_ReplaceAnElement_When_KeyExistButValueIsDifferent()
+    public void Add_Should_NotAddAnElement_When_KeyExist()
     {
         // Arrange
         var sut = new HashMap<int, string>();
@@ -84,7 +84,7 @@ public class HashMapTests
         sut.Count.Should().Be(1);
 
         var value = sut[1];
-        value.Should().Be(10.ToString());
+        value.Should().Be(1.ToString());
     }
 
 
@@ -123,7 +123,7 @@ public class HashMapTests
     }
 
     [Test]
-    public void Indexer_Should_AddAnElements_When_KeyAndValue_DoNotExist()
+    public void Indexer_Should_AddAnElement_When_KeyAndValue_DoNotExist()
     {
         // Arrange
         var sut = new HashMap<int, string>();
@@ -180,19 +180,20 @@ public class HashMapTests
     }
 
     [Test]
-    public void Indexer_Should_ReplaceAnElement_When_KeyExistButValueIsDifferent()
+    public void Indexer_Should_ReplaceAnElement_When_KeyExistButValueNot()
     {
         // Arrange
         var sut = new HashMap<int, string>()
         {
             [1] = 1.ToString(),
+            [2] = 2.ToString(),
         };
 
         // Act
         sut[1] = 10.ToString();
 
         // Assert
-        sut.Count.Should().Be(1);
+        sut.Count.Should().Be(2);
 
         var value = sut[1];
         value.Should().Be(10.ToString());

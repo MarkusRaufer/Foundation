@@ -98,7 +98,20 @@ public class HashMap<TKey, TValue> : IDictionary<TKey, TValue>
     public TValue this[TKey key] 
     {
         get => _dictionary[key];
-        set => Add(key, value);
+        set
+        {
+            var valueTuple = new ValueTuple(key, value);
+
+            if (_values.Contains(valueTuple)) return;
+
+            if (_dictionary.TryGetValue(key, out var existingValue))
+            {
+                _values.Remove(new ValueTuple(key, existingValue));
+            }
+            _values.Add(valueTuple);
+
+            _dictionary[key] = value;
+        }
     }
 
     public ICollection<TKey> Keys => _dictionary.Keys;
@@ -111,6 +124,8 @@ public class HashMap<TKey, TValue> : IDictionary<TKey, TValue>
 
     public void Add(TKey key, TValue value)
     {
+        if (_dictionary.ContainsKey(key)) return;
+
         var valueTuple = new ValueTuple(key, value);
 
         if (_values.Contains(valueTuple)) return;
