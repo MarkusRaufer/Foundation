@@ -21,7 +21,10 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
-﻿namespace Foundation
+using System.Diagnostics.CodeAnalysis;
+using System.Runtime.CompilerServices;
+
+namespace Foundation
 {
     public static class ResultExtensions
     {
@@ -35,6 +38,8 @@
         /// <param name="ok"></param>
         /// <param name="error"></param>
         /// <returns></returns>
+        [return: NotNull]
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static TResult Either<TOk, TError, TResult>(
             this Result<TOk, TError> result,
             Func<TOk, TResult> ok,
@@ -54,6 +59,8 @@
         /// <param name="ok"></param>
         /// <param name="error"></param>
         /// <returns></returns>
+        [return: NotNull]
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Unit Invoke<TOk, TError>(
             this Result<TOk, TError> result,
             Action<TOk> ok,
@@ -70,6 +77,8 @@
         /// <param name="result"></param>
         /// <param name="predicate"></param>
         /// <returns></returns>
+        [return: NotNull]
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool IsErrorAndAlso<TOk, TError>(this Result<TOk, TError> result, Func<TError, bool> predicate)
         {
             predicate.ThrowIfNull();
@@ -87,6 +96,8 @@
         /// <param name="result"></param>
         /// <param name="predicate"></param>
         /// <returns></returns>
+        [return: NotNull]
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool IsOkAndAlso<TOk, TError>(this Result<TOk, TError> result, Func<TOk, bool> predicate)
         {
             predicate.ThrowIfNull();
@@ -106,6 +117,8 @@
         /// <param name="result"></param>
         /// <param name="predicate"></param>
         /// <returns></returns>
+        [return: NotNull]
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Unit OnError<TOk, TError>(this Result<TOk, TError> result, Action<TError> error)
         {
             error.ThrowIfNull();
@@ -125,6 +138,8 @@
         /// <param name="result"></param>
         /// <param name="predicate"></param>
         /// <returns></returns>
+        [return: NotNull]
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Unit OnOk<TOk, TError>(this Result<TOk, TError> result, Action<TOk> ok)
         {
             ok.ThrowIfNull();
@@ -142,6 +157,8 @@
         /// <param name="result"></param>
         /// <returns></returns>
         /// <exception cref="ArgumentException"></exception>
+        [return: NotNull]
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static TOk OkOrThrow<TOk>(this Result<TOk, Exception> result)
         {
             if (result.TryGetOk(out TOk? ok)) return ok;
@@ -159,6 +176,8 @@
         /// <param name="result"></param>
         /// <param name="error"></param>
         /// <returns></returns>
+        [return: NotNull]
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static TOk OkOrThrow<TOk>(this Result<TOk, Exception> result, Func<Exception> error)
         {
             error.ThrowIfNull();
@@ -176,6 +195,8 @@
         /// <param name="result"></param>
         /// <returns></returns>
         /// <exception cref="ArgumentException">Is thrown if result does not contain an predicate.</exception>
+        [return: NotNull]
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static TError ToError<TError>(this Result<TError> result)
         {
             if (result.TryGetError(out TError? error)) return error!;
@@ -191,6 +212,8 @@
         /// <param name="result"></param>
         /// <returns></returns>
         /// <exception cref="ArgumentException">Is thrown if result does not contain an predicate.</exception>
+        [return: NotNull]
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static TError ToError<TOk, TError>(this Result<TOk, TError> result)
         {
             if (result.TryGetError(out TError? error)) return error!;
@@ -206,6 +229,8 @@
         /// <param name="result"></param>
         /// <returns></returns>
         /// <exception cref="ArgumentException">Is thrown if result does contain an predicate.</exception>
+        [return: NotNull]
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static TOk ToOk<TOk, TError>(this Result<TOk, TError> result)
         {
             if (result.TryGetOk(out TOk? ok)) return ok!;
@@ -220,7 +245,9 @@
         /// <typeparam name="TError"></typeparam>
         /// <param name="result"></param>
         /// <returns></returns>
+        [return: NotNull]
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Option<TOk> ToOption<TOk, TError>(this Result<TOk, TError> result)
-            => result.IsOk && result.TryGetOk(out TOk? ok) ? Option.Some(ok!) : Option.None<TOk>();
+            => result.TryGetOk(out TOk? ok) ? Option.Some(ok!) : Option.None<TOk>();
     }
 }

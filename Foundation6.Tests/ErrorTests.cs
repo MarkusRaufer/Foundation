@@ -1,5 +1,6 @@
 ﻿using FluentAssertions;
 using NUnit.Framework;
+using System;
 using System.Linq;
 
 namespace Foundation;
@@ -8,7 +9,7 @@ namespace Foundation;
 public class ErrorTests
 {
     [Test]
-    public void Flatten()
+    public void Flatten_Should_ReturnListOfErrors_When_Error_IncludesOtherErrors()
     {
         var err1 = new Error("1", "msg 1");
         var err2 = new Error("2", "msg 1");
@@ -17,5 +18,44 @@ public class ErrorTests
 
         var errors = err4.Flatten().ToArray();
         errors.Length.Should().Be(4);
+    }
+
+    [Test]
+    public void FromException_Should_ReturnError_When_Error_IncludesOtherErrors()
+    {
+        var id1 = "id1";
+        var message1 = "id1 message";
+
+        var id2 = "id2";
+
+        var id3 = "id3";
+        var message3 = "id3 message";
+
+        var exeption1 = new ArgumentNullException(id1, message1);
+        var exception2 = new ArgumentOutOfRangeException(id2, exeption1);
+        var exception3 = new ArgumentException(message3, id3, exception2);
+
+        var error = Error.FromException(exception3);
+        error.Should().NotBeNull();
+        {
+            error.Id.Should().Be(nameof(ArgumentException));
+            error.Message.StartsWith(message3).Should().BeTrue();
+        }
+        {
+            error.InnerErrors.Should().NotBeNull();
+            error.InnerErrors!.Length.Should().Be(1);
+
+            error = error.InnerErrors[0];
+            error.Id.Should().Be(nameof(ArgumentOutOfRangeException));
+            error.Message.StartsWith(id2).Should().BeTrue();
+        }
+        {
+            error.InnerErrors.Should().NotBeNull();
+            error.InnerErrors!.Length.Should().Be(1);
+
+            error = error.InnerErrors[0];
+            error.Id.Should().Be(nameof(ArgumentNullException));
+            error.Message.StartsWith(id1).Should().BeTrue();
+        }
     }
 }

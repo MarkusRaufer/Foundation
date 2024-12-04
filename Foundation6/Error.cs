@@ -39,13 +39,23 @@ public sealed record Error(string Id, string Message, Error[]? InnerErrors = nul
     public static Error FromException(Exception exception, params Error[] errors)
     {
         var id = exception.GetType().Name;
+        
+        if (null == exception.InnerException) return new Error(id, exception.Message);
 
-        var innerErrors = exception.Flatten()
-                                   .Select(x => FromException(x))
-                                   .Concat(errors)
-                                   .ToArray();
+        var innerError = FromException(exception.InnerException);
+        return new Error(id, exception.Message, [innerError]);
+        //var innerErrors = exception.InnerException.Flatten()
+        //                           .Select(x => fromException(x))
+        //                           .Concat(errors)
+        //                           .ToArray();
 
-        return new Error(id, exception.Message, innerErrors);
+        //return new Error(id, exception.Message, innerErrors);
+
+        //Error fromException(Exception exception)
+        //{
+        //    var id = exception.GetType().Name;
+        //    return new Error(id, exception.Message);
+        //}
     }
 
     /// <summary>

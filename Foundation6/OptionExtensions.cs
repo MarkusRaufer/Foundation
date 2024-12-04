@@ -152,6 +152,8 @@ public static class OptionExtensions
     /// <param name="lhs">The left option containing a possible value.</param>
     /// <param name="rhs">The right option containing a possible value.</param>
     /// <returns></returns>
+    [return: NotNull]
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static Option<T> Or<T>(this Option<T> lhs, Option<T> rhs)
     {
         return lhs.IsSome ? lhs : rhs;
@@ -230,6 +232,13 @@ public static class OptionExtensions
         var result = projection(value!);
 
         return Option.Maybe(result);
+    }
+
+    [return: NotNull]
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static Result<T, Error> ToResult<T>(this Option<T> option, Func<Error> error)
+    {
+        return option.TryGet(out T? value) ? Result.Ok(value) : Result.Error<T>(error());
     }
 }
 
