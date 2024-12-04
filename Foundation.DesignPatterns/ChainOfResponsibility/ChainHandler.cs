@@ -21,10 +21,16 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
-﻿namespace Foundation.DesignPatterns.ChainOfResponsibility;
+namespace Foundation.DesignPatterns.ChainOfResponsibility;
 
 public static class ChainHandler
 {
+    public static ChainHandler<T, T> New<T>(Func<T, Option<T>> TryHandle)
+        => new(TryHandle, null);
+
+    public static ChainHandler<T, T> New<T>(Func<T, Option<T>> TryHandle, ChainHandler<T, T> Successor)
+        => new(TryHandle, Successor);
+
     public static ChainHandler<TIn, TOut> New<TIn, TOut>(Func<TIn, Option<TOut>> TryHandle)
         => new(TryHandle, null);
 
@@ -37,8 +43,8 @@ public record ChainHandler<TIn, TOut>(Func<TIn, Option<TOut>> TryHandle, ChainHa
     public Option<TOut> Handle(TIn @in)
     {
         var result = TryHandle(@in);
-        if(result.IsSome) return result;
-        
+        if (result.IsSome) return result;
+
         return Successor is null ? Option.None<TOut>() : Successor.Handle(@in);
     }
 }

@@ -21,32 +21,44 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
-using Foundation.Collections.Generic;
+using System;
+using System.Collections.Generic;
 
 namespace Foundation.DesignPatterns.ChainOfResponsibility;
 
-public class Chain
+public static class Chain
 {
-    public static IEnumerable<ChainHandler<TIn, TOut>> Handlers<TIn, TOut>(IEnumerable<Func<TIn, Option<TOut>>> handlers)
+    public static ChainHandler<T, T>? Create<T>(params Func<T, Option<T>>[] handlers)
     {
-        var prevHandler = handlers.FirstOrDefault();
-        if (prevHandler is null) yield break;
-
-        var prevChainHandler = ChainHandler.New(prevHandler);
-        yield return prevChainHandler;
-
-        foreach (var handler in handlers.Skip(1))
-        {
-            prevChainHandler = ChainHandler.New(handler, prevChainHandler);
-            yield return prevChainHandler;
-        }
+        return Create<T, T>(handlers);
     }
 
-    public static IEnumerable<ChainHandler<TIn, TOut>> Handlers<TIn, TOut>(IEnumerable<ChainHandler<TIn, TOut>> handlers)
+    public static ChainHandler<T, T>? Create<T>(IEnumerable<Func<T, Option<T>>> handlers)
     {
-        return handlers.Pairs((lhs, rhs) =>
+        return Create<T, T>(handlers);
+    }
+
+    public static ChainHandler<TIn, TOut>? Create<TIn, TOut>(params Func<TIn, Option<TOut>>[] handlers)
+    {
+        return Create((IEnumerable<Func<TIn, Option<TOut>>>)handlers);
+    }
+
+    public static ChainHandler<TIn, TOut>? Create<TIn, TOut>(IEnumerable<Func<TIn, Option<TOut>>> handlers)
+    {
+        ChainHandler<TIn, TOut>? next = null;
+
+        foreach (var handler in handlers.Reverse())
         {
-            return (lhs, new ChainHandler<TIn, TOut>(rhs.TryHandle, lhs));
-        });
+            if (null == next)
+            {
+                next = ChainHandler.New(handler);
+                continue;
+            }
+
+            var chainHandler = ChainHandler.New(handler, next);
+            next = chainHandler;
+        }
+
+        return next;
     }
 }
