@@ -2273,6 +2273,59 @@ public class EnumerableExtensionsTests
     }
 
     [Test]
+    public void Shingles_Should_Return1ShingleWith2Elements_When_ListHas2Elements_And_Kis5()
+    {
+        // Arrange
+        var numbers = Enumerable.Range(1, 2);
+
+        // Act
+        var shingles = numbers.Shingles(5).ToArray();
+
+        // Assert
+        shingles.Length.Should().Be(1);
+        
+        var shingle = shingles[0];
+        Enumerable.Range(1, 2).SequenceEqual(shingle);
+    }
+
+    [Test]
+    public void Shingles_Should_Return6Shingles_When_ListHas10Elements_And_Kis5()
+    {
+        // Arrange
+        var numbers = Enumerable.Range(1, 10);
+
+        // Act
+        var shingles = numbers.Shingles(5).ToArray();
+
+        // Assert
+        shingles.Length.Should().Be(6);
+        {
+            var shingle = shingles[0];
+            Enumerable.Range(1, 5).SequenceEqual(shingle);
+        }
+        {
+            var shingle = shingles[1];
+            Enumerable.Range(2, 5).SequenceEqual(shingle);
+        }
+        {
+            var shingle = shingles[2];
+            Enumerable.Range(3, 5).SequenceEqual(shingle);
+        }
+        {
+            var shingle = shingles[3];
+            Enumerable.Range(4, 5).SequenceEqual(shingle);
+        }
+        {
+            var shingle = shingles[4];
+            Enumerable.Range(5, 5).SequenceEqual(shingle);
+        }
+        {
+            var shingle = shingles[5];
+            Enumerable.Range(6, 5).SequenceEqual(shingle);
+        }
+    }
+
+    [Test]
     public void Shuffle()
     {
         var items = new List<string> { "0", "1", "2", "3", "4", "5", "6", "7", "8", "9" };

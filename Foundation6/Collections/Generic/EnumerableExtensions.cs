@@ -25,6 +25,7 @@ namespace Foundation.Collections.Generic;
 
 using Foundation;
 using System;
+using System.Collections.Generic;
 using System.Data;
 using System.Diagnostics.CodeAnalysis;
 
@@ -2044,43 +2045,6 @@ public static class EnumerableExtensions
     }
 
     /// <summary>
-    /// Calls action on all adjacent elements.
-    /// </summary>
-    /// <typeparam name="T"></typeparam>
-    /// <param name="items"></param>
-    /// <param name="action">Contains the previous and the current left.</param>
-    /// <returns></returns>
-    public static IEnumerable<(T lhs, T rhs)> Pairs<T>(this IEnumerable<T> items, Action<T, T> action)
-    {
-        action.ThrowIfNull();
-
-        foreach (var tuple in items.Pairs())
-        {
-            action(tuple.lhs, tuple.rhs);
-            yield return tuple;
-        }
-    }
-
-    /// <summary>
-    /// Calls predicate on all adjacent elements and returns all elements of the tuple.
-    /// </summary>
-    /// <typeparam name="T"></typeparam>
-    /// <param name="items"></param>
-    /// <param name="selector"></param>
-    /// <returns></returns>
-    public static IEnumerable<T> Pairs<T>(this IEnumerable<T> items, Func<T, T, (T, T)> selector)
-    {
-        selector.ThrowIfNull();
-
-        foreach (var (lhs, rhs) in items.Pairs())
-        {
-            var (l, r) = selector(lhs, rhs);
-            yield return l;
-            yield return r;
-        }
-    }
-
-    /// <summary>
     /// Calls predicate on all adjacent elements and transforms each element into TResult.
     /// </summary>
     /// <typeparam name="T"></typeparam>
@@ -2614,6 +2578,39 @@ public static class EnumerableExtensions
         }
 
         return !itRhs.MoveNext();
+    }
+
+    /// <summary>
+    /// Creates subsets from <paramref name="items"/> of size <paramref name="k"/>.
+    /// The subsets consist only of neighbors.
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <param name="items"></param>
+    /// <param name="k"></param>
+    /// <returns></returns>
+    public static IEnumerable<IEnumerable<T>> Shingles<T>(this IEnumerable<T> items, int k)
+    {
+        var it = items.ThrowIfNull().GetEnumerator();
+        List<T> shingles = [];
+        var greaterThanK = false;
+
+        while(it.MoveNext())
+        {
+            shingles.Add(it.Current);
+            if (shingles.Count >= k)
+            {
+                greaterThanK = true;
+                yield return shingles;
+
+#if NET8_0_OR_GREATER
+                shingles = shingles[1..];
+#else
+                shingles = shingles.GetRange(1, shingles.Count - 1);
+#endif
+            }
+        }
+
+        if (!greaterThanK && shingles.Count != 0) yield return shingles;
     }
 
     /// <summary>
