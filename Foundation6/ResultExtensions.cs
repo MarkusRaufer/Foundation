@@ -44,6 +44,9 @@ namespace Foundation
             this Result<TOk, TError> result,
             Func<TOk, TResult> ok,
             Func<TError, TResult> error)
+            where TOk : notnull
+            where TError : notnull
+            where TResult : notnull
         {
             if (result.TryGetOk(out TOk? okValue)) return ok(okValue!);
 
@@ -59,12 +62,13 @@ namespace Foundation
         /// <param name="ok"></param>
         /// <param name="error"></param>
         /// <returns></returns>
-        [return: NotNull]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Unit Invoke<TOk, TError>(
             this Result<TOk, TError> result,
             Action<TOk> ok,
             Action<TError> error)
+            where TOk : notnull
+            where TError : notnull
         {
             return result.Either(_ => result.OnOk(ok), _ => result.OnError(error));
         }
@@ -77,7 +81,6 @@ namespace Foundation
         /// <param name="result"></param>
         /// <param name="predicate"></param>
         /// <returns></returns>
-        [return: NotNull]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool IsErrorAndAlso<TOk, TError>(this Result<TOk, TError> result, Func<TError, bool> predicate)
         {
@@ -96,7 +99,6 @@ namespace Foundation
         /// <param name="result"></param>
         /// <param name="predicate"></param>
         /// <returns></returns>
-        [return: NotNull]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool IsOkAndAlso<TOk, TError>(this Result<TOk, TError> result, Func<TOk, bool> predicate)
         {
@@ -117,7 +119,6 @@ namespace Foundation
         /// <param name="result"></param>
         /// <param name="predicate"></param>
         /// <returns></returns>
-        [return: NotNull]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Unit OnError<TOk, TError>(this Result<TOk, TError> result, Action<TError> error)
         {
@@ -138,7 +139,6 @@ namespace Foundation
         /// <param name="result"></param>
         /// <param name="predicate"></param>
         /// <returns></returns>
-        [return: NotNull]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Unit OnOk<TOk, TError>(this Result<TOk, TError> result, Action<TOk> ok)
         {
@@ -160,6 +160,7 @@ namespace Foundation
         [return: NotNull]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static TOk OkOrThrow<TOk>(this Result<TOk, Exception> result)
+            where TOk : notnull
         {
             if (result.TryGetOk(out TOk? ok)) return ok;
 
@@ -179,6 +180,7 @@ namespace Foundation
         [return: NotNull]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static TOk OkOrThrow<TOk>(this Result<TOk, Exception> result, Func<Exception> error)
+            where TOk : notnull
         {
             error.ThrowIfNull();
 
@@ -198,6 +200,7 @@ namespace Foundation
         [return: NotNull]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static TError ToError<TError>(this Result<TError> result)
+            where TError : notnull
         {
             if (result.TryGetError(out TError? error)) return error!;
 
@@ -215,6 +218,7 @@ namespace Foundation
         [return: NotNull]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static TError ToError<TOk, TError>(this Result<TOk, TError> result)
+            where TError : notnull
         {
             if (result.TryGetError(out TError? error)) return error!;
 
@@ -232,6 +236,7 @@ namespace Foundation
         [return: NotNull]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static TOk ToOk<TOk, TError>(this Result<TOk, TError> result)
+            where TOk : notnull
         {
             if (result.TryGetOk(out TOk? ok)) return ok!;
 

@@ -945,6 +945,7 @@ public static class EnumerableExtensions
     public static Option<TOk> FirstOk<TOk, TError>(
         this IEnumerable<Result<TOk, TError>> items, 
         Func<TOk, bool> predicate)
+        where TOk : notnull
     {
         predicate.ThrowIfNull();
 
@@ -2504,6 +2505,7 @@ public static class EnumerableExtensions
     /// <param name="items"></param>
     /// <returns></returns>
     public static IEnumerable<TError> SelectError<TOk, TError>(this IEnumerable<Result<TOk, TError>> items)
+        where TError : notnull
     {
         return items.ThrowIfEnumerableIsNull()
                     .Where(item => !item.IsOk)
@@ -2534,6 +2536,7 @@ public static class EnumerableExtensions
     /// <param name="items"></param>
     /// <returns></returns>
     public static IEnumerable<TOk> SelectOk<TOk, TError>(this IEnumerable<Result<TOk, TError>> items)
+        where TOk : notnull
     {
         return items.ThrowIfEnumerableIsNull()
                     .Where(item => item.IsOk)
