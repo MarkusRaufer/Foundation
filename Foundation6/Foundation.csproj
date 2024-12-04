@@ -14,7 +14,7 @@
 		<PackageId>Foundation</PackageId>
 		<PackageTags>LINQ, additional standard types, .NET extension</PackageTags>
 		<ProductName>Foundation</ProductName>
-		<Version>1.6.5-rc.3</Version>
+		<Version>1.6.6</Version>
 		<UserSecretsId>4a3dcddf-c97c-408a-aad6-93090d4c1c18</UserSecretsId>
 	</PropertyGroup>
 
@@ -23,8 +23,8 @@
 	</ItemGroup>
 
 	<ItemGroup Condition="'$(TargetFrameWork)' == 'netstandard2.0'">
-		<PackageReference Include="Portable.System.DateTimeOnly" Version="8.0.1" />
-		<PackageReference Include="System.Memory" Version="4.5.5" />
-		<PackageReference Include="System.Text.Json" Version="8.0.5" />
+		<PackageReference Include="Portable.System.DateTimeOnly" />
+		<PackageReference Include="System.Memory" />
+		<PackageReference Include="System.Text.Json" />
 	</ItemGroup>
 </Project>
