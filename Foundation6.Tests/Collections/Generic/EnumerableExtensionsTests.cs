@@ -2178,7 +2178,7 @@ public class EnumerableExtensionsTests
         // 1 + 2 + 3 + 4     = 10
         // 1 + 2 + 3 + 4 + 5 = 15
 
-        scanned.Should().BeEquivalentTo(new int[] { 1, 3, 6, 10, 15 });
+        scanned.Should().BeEquivalentTo([1, 3, 6, 10, 15]);
 
     }
 
@@ -2196,7 +2196,7 @@ public class EnumerableExtensionsTests
         // zA  + B   = zAB
         // zAB + C   = zABC
 
-        scanned.Should().BeEquivalentTo(new [] { "zA", "zAB", "zABC" });
+        scanned.Should().BeEquivalentTo(["zA", "zAB", "zABC"]);
 
     }
 
@@ -2215,7 +2215,7 @@ public class EnumerableExtensionsTests
         //5 + 0             =  5
         //0                 =  0
 
-        scanned.Should().BeEquivalentTo(new int[] { 15, 14, 12, 9, 5, 0 });
+        scanned.Should().BeEquivalentTo([15, 14, 12, 9, 5, 0]);
     }
 
     [Test]
@@ -2233,7 +2233,7 @@ public class EnumerableExtensionsTests
         // C + z         = Cz
         // z             = z
 
-        scanned.Should().BeEquivalentTo(new [] { "ABCz", "BCz", "Cz", "z" });
+        scanned.Should().BeEquivalentTo(["ABCz", "BCz", "Cz", "z"]);
     }
 
     [Test]

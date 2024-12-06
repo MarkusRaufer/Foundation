@@ -44,18 +44,6 @@ public sealed record Error(string Id, string Message, Error[]? InnerErrors = nul
 
         var innerError = FromException(exception.InnerException);
         return new Error(id, exception.Message, [innerError]);
-        //var innerErrors = exception.InnerException.Flatten()
-        //                           .Select(x => fromException(x))
-        //                           .Concat(errors)
-        //                           .ToArray();
-
-        //return new Error(id, exception.Message, innerErrors);
-
-        //Error fromException(Exception exception)
-        //{
-        //    var id = exception.GetType().Name;
-        //    return new Error(id, exception.Message);
-        //}
     }
 
     /// <summary>

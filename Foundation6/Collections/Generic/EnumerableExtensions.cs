@@ -2302,10 +2302,11 @@ public static class EnumerableExtensions
     }
     /// <summary>
     /// Replaces the items at specified indexes with the specified values of replaceTuples.
+    /// E.g. Replace([(5, "value")]) replaces the item at position 5 with "value".
     /// </summary>
     /// <typeparam name="T">Type of the elements of the list.</typeparam>
     /// <param name="items">List of items.</param>
-    /// <param name="replaceTuples">The tuples which should repace the items at specific indices.</param>
+    /// <param name="replaceTuples">The tuples which should repace the items at specific indices. E.g. (5, "value") replaces the item at position 5 with "value".</param>
     /// <returns></returns>
     public static IEnumerable<T> Replace<T>(this IEnumerable<T> items, IEnumerable<(int index, T item)> replaceTuples)
     {
@@ -2414,7 +2415,7 @@ public static class EnumerableExtensions
     }
 
     /// <summary>
-    /// Enables you to do folds like <see cref="=Aggregate"/>, while collecting the intermediate results.
+    /// Enables you to do folds like <see cref="Aggregate"/>, while collecting the intermediate results.
     /// This is equivalent to the Scala scanLeft function.
     /// </summary>
     /// <typeparam name="T">Type of an left</typeparam>
@@ -2584,12 +2585,11 @@ public static class EnumerableExtensions
     }
 
     /// <summary>
-    /// Creates subsets from <paramref name="items"/> of size <paramref name="k"/>.
-    /// The subsets consist only of neighbors.
+    /// Creates subsets of size <paramref name="k"/> from neighboring <paramref name="items"/>.
     /// </summary>
-    /// <typeparam name="T"></typeparam>
-    /// <param name="items"></param>
-    /// <param name="k"></param>
+    /// <typeparam name="T">Type of items.</typeparam>
+    /// <param name="items">List of items, that should be splitted to subsets.</param>
+    /// <param name="k">Size of subsets.</param>
     /// <returns></returns>
     public static IEnumerable<IEnumerable<T>> Shingles<T>(this IEnumerable<T> items, int k)
     {
