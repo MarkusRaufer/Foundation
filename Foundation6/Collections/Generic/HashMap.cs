@@ -148,6 +148,8 @@ public class HashMap<TKey, TValue>
 
     public bool ContainsKey(TKey key) => _dictionary.ContainsKey(key);
 
+    public bool ContainsValue(TValue value) => _values.Contains(new ValueTuple(default, value));
+
     public void CopyTo(KeyValuePair<TKey, TValue>[] array, int arrayIndex)
     {
         var enumerator = _dictionary.GetEnumerator();
