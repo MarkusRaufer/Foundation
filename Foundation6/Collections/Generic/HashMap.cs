@@ -32,7 +32,9 @@ namespace Foundation.Collections.Generic;
 /// </summary>
 /// <typeparam name="TKey">The type of the keys. A key can not be nullable.</typeparam>
 /// <typeparam name="TValue">The type of the values. A value can not be nullable.</typeparam>
-public class HashMap<TKey, TValue> : IDictionary<TKey, TValue>
+public class HashMap<TKey, TValue>
+    : IDictionary<TKey, TValue>
+    , IReadOnlyDictionary<TKey, TValue>
     where TKey : notnull
     where TValue : notnull
 {
@@ -114,10 +116,6 @@ public class HashMap<TKey, TValue> : IDictionary<TKey, TValue>
         }
     }
 
-    public ICollection<TKey> Keys => _dictionary.Keys;
-
-    public ICollection<TValue> Values => _dictionary.Values;
-
     public int Count => _dictionary.Count;
 
     public bool IsReadOnly => false;
@@ -164,6 +162,13 @@ public class HashMap<TKey, TValue> : IDictionary<TKey, TValue>
     public IEnumerator<KeyValuePair<TKey, TValue>> GetEnumerator() => _dictionary.GetEnumerator();
 
     IEnumerator IEnumerable.GetEnumerator() => _dictionary.GetEnumerator();
+    public ICollection<TKey> Keys => _dictionary.Keys;
+
+    IEnumerable<TKey> IReadOnlyDictionary<TKey, TValue>.Keys => _dictionary.Keys;
+
+    public ICollection<TValue> Values => _dictionary.Values;
+
+    IEnumerable<TValue> IReadOnlyDictionary<TKey, TValue>.Values => _dictionary.Values;
 
     public bool Remove(TKey key)
     {
