@@ -34,7 +34,7 @@ public static class InvasiveVerification
 /// <typeparam name="T"></typeparam>
 public class InvasiveVerification<T>
 {
-    private readonly IList<Func<T, bool>> _predicates;
+    private readonly List<Func<T, bool>> _predicates;
 
     public InvasiveVerification(IEnumerable<Func<T, bool>> predicates)
     {

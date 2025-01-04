@@ -245,7 +245,7 @@ public static class EnumerableExtensions
     }
 
     /// <summary>
-    /// Correlates to lists by a predicate.
+    /// Correlates to lists by a predicate. All elements which match from both lists will be returned.
     /// </summary>
     /// <typeparam name="T">Type of the items</typeparam>
     /// <typeparam name="TKey">Type of the predicate value.</typeparam>
@@ -263,7 +263,7 @@ public static class EnumerableExtensions
     }
 
     /// <summary>
-    /// Creates an endless list of items.
+    /// Creates an endless list of items. Always limit the iteration. Means don't use e.g. ToList() directly.
     /// </summary>
     /// <typeparam name="T"></typeparam>
     /// <param name="items"></param>
@@ -968,7 +968,7 @@ public static class EnumerableExtensions
     }
 
     /// <summary>
-    /// Returns the first occurrence of T. If the sequence does not contain the type T it throws an exception.
+    /// Returns the first occurrence of type T. If the sequence does not contain the type T it throws an exception.
     /// </summary>
     /// <typeparam name="T">Type of element searched for.</typeparam>
     /// <param name="items">List of elements.</param>
@@ -1061,12 +1061,11 @@ public static class EnumerableExtensions
     }
 
     /// <summary>
-    /// Returns items if the list has at least numberOfElements.
+    /// Returns items if the list has at least <paramref name="numberOfElements"/>.
     /// </summary>
     /// <typeparam name="T">Type of list elements.</typeparam>
     /// <param name="items">List of items.</param>
-    /// <param name="numberOfElements">The number of elements</param>
-    /// <param name="action">action which is called if numberOfElements is reached.</param>
+    /// <param name="numberOfElements">The minimum number of elements</param>
     /// <returns></returns>
     public static bool HasAtLeast<T>(this IEnumerable<T> items, int numberOfElements)
     {
@@ -1734,6 +1733,37 @@ public static class EnumerableExtensions
         });
     }
 
+#if NETSTANDARD2_0
+    /// <summary>
+    /// Returns the object with the smallest predicate value.
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <param name="items"></param>
+    /// <param name="selector">Returns the value to compare.</param>
+    /// <returns></returns>
+    //public static T MinBy<T>(this IEnumerable<T> items, Func<T, IComparable> selector)
+    //{
+    //    selector.ThrowIfNull();
+
+    //    return items.Aggregate((a, b) => selector(a).CompareTo(selector(b)) == -1 ? a : b);
+    //}
+
+    /// <summary>
+    /// Returns the object with the smallest predicate value.
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <typeparam name="TKey"></typeparam>
+    /// <param name="items"></param>
+    /// <param name="selector">Returns the value to compare.</param>
+    /// <returns></returns>
+    public static T MinBy<T, TKey>(this IEnumerable<T> items, Func<T, TKey> selector)
+        where TKey : IComparable<TKey>
+    {
+        selector.ThrowIfNull();
+
+        return items.Aggregate((a, b) => selector(a).CompareTo(selector(b)) == -1 ? a : b);
+    }
+#endif
     /// <summary>
     /// Returns the seed left selected by the predicate.
     /// </summary>
@@ -1785,17 +1815,17 @@ public static class EnumerableExtensions
     }
 
     /// <summary>
-    /// Returns the seed and max selected by the predicate.
+    /// Returns the minimum and maximum selected by the predicate.
     /// </summary>
-    /// <typeparam name="T"></typeparam>
-    /// <typeparam name="TSelector"></typeparam>
-    /// <param name="items"></param>
-    /// <param name="selector"></param>
+    /// <typeparam name="T">Type of the elements.</typeparam>
+    /// <typeparam name="TKey">The selected key to compare the elements.</typeparam>
+    /// <param name="items">List of elements.</param>
+    /// <param name="selector">The selector of the key of each element.</param>
     /// <returns></returns>
-    public static Option<(T min, T max)> MinMax<T, TSelector>(
+    public static Option<(T min, T max)> MinMax<T, TKey>(
         this IEnumerable<T> items,
-        Func<T, TSelector> selector)
-        where TSelector : IComparable
+        Func<T, TKey> selector)
+        where TKey : IComparable
     {
         T? min = default;
         T? max = default;
@@ -1865,8 +1895,7 @@ public static class EnumerableExtensions
     }
 
     /// <summary>
-    /// Returns the left on a specific index.
-    /// </summary>
+    /// Returns the element at a specific index. If there is no element at the index <see cref="Option.None{T}"/> is returned.
     /// <typeparam name="T"></typeparam>
     /// <param name="items"></param>
     /// <param name="index"></param>
@@ -2222,7 +2251,7 @@ public static class EnumerableExtensions
     {
         elems.ThrowIfEnumerableIsNull();
 
-        if (0 >= numberOfSubSetElements) return Enumerable.Empty<T>();
+        if (0 >= numberOfSubSetElements) return [];
 
         if (null == random) random = new Random();
 
@@ -2590,7 +2619,7 @@ public static class EnumerableExtensions
     /// <typeparam name="T">Type of items.</typeparam>
     /// <param name="items">List of items, that should be splitted to subsets.</param>
     /// <param name="k">Size of subsets.</param>
-    /// <returns></returns>
+    /// <returns>List of subsets.</returns>
     public static IEnumerable<IEnumerable<T>> Shingles<T>(this IEnumerable<T> items, int k)
     {
         var it = items.ThrowIfNull().GetEnumerator();
@@ -2666,7 +2695,7 @@ public static class EnumerableExtensions
     /// </summary>
     /// <typeparam name="T"></typeparam>
     /// <param name="items"></param>
-    /// <param name="predicates"></param>
+    /// <param name="predicates">if a predicate has matched it is no longer used.</param>
     /// <returns></returns>
     public static IEnumerable<T> SkipUntilSatisfied<T>(this IEnumerable<T> items, params Func<T, bool>[] predicates)
     {
@@ -2674,7 +2703,6 @@ public static class EnumerableExtensions
 
         var invasivePredicates = new InvasiveVerification<T>(predicates);
         var isNone = new TriState();
-        var isTrue = new TriState(true);
 
         foreach (var item in items)
         {
@@ -2707,7 +2735,7 @@ public static class EnumerableExtensions
                 itemCounter = 0;
                 yield return sliced;
 
-                sliced = Enumerable.Empty<T>();
+                sliced = [];
             }
         }
 
@@ -2741,36 +2769,6 @@ public static class EnumerableExtensions
         }
 
         return splittedItems.Select(x => x.Value);
-    }
-
-    /// <summary>
-    /// Returns the object with the smallest predicate value.
-    /// </summary>
-    /// <typeparam name="T"></typeparam>
-    /// <param name="items"></param>
-    /// <param name="selector">Returns the value to compare.</param>
-    /// <returns></returns>
-    public static T Smallest<T>(this IEnumerable<T> items, Func<T, IComparable> selector)
-    {
-        selector.ThrowIfNull();
-
-        return items.Aggregate((a, b) => selector(a).CompareTo(selector(b)) == -1 ? a : b);
-    }
-
-    /// <summary>
-    /// Returns the object with the smallest predicate value.
-    /// </summary>
-    /// <typeparam name="T"></typeparam>
-    /// <typeparam name="TSelector"></typeparam>
-    /// <param name="items"></param>
-    /// <param name="selector">Returns the value to compare.</param>
-    /// <returns></returns>
-    public static T Smallest<T, TSelector>(this IEnumerable<T> items, Func<T, TSelector> selector)
-        where TSelector : IComparable<TSelector>
-    {
-        selector.ThrowIfNull();
-
-        return items.Aggregate((a, b) => selector(a).CompareTo(selector(b)) == -1 ? a : b);
     }
 
     /// <summary>

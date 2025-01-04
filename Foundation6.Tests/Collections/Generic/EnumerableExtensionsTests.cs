@@ -1,15 +1,11 @@
 ﻿using FluentAssertions;
-using Foundation.ComponentModel;
 using Foundation.TestUtil.Collections.Generic;
 using NUnit.Framework;
-using NUnit.Framework.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Text;
-using System.Text.RegularExpressions;
-using static Foundation.TimeDef;
 
 namespace Foundation.Collections.Generic;
 
@@ -70,7 +66,7 @@ public class EnumerableExtensionsTests
     [Test]
     public void AfterEach()
     {
-        var items = new List<string> { "1", "2", "3" };
+        List<string> items = ["1", "2", "3"];
         var sb = new StringBuilder();
 
         foreach (var item in items.AfterEach(() => sb.Append(',')))
@@ -186,8 +182,8 @@ public class EnumerableExtensionsTests
     [Test]
     public void CartesianProduct()
     {
-        var items1 = new List<string> {"1", "2", "3"};
-        var items2 = new List<string> {"a", "b", "c"};
+        List<string> items1 = ["1", "2", "3"];
+        List<string> items2 = ["a", "b", "c"];
 
         var erg = items1.CartesianProduct(items2, (l, r) => (l, r)).ToArray();
         erg[0].Should().Be(("1", "a"));
@@ -227,18 +223,18 @@ public class EnumerableExtensionsTests
     {
         var lhs = new DateOnly[]
         {
-            new DateOnly(2023, 1, 1),
-            new DateOnly(2023, 2, 2),
-            new DateOnly(2023, 3, 3),
-            new DateOnly(2023, 4, 4),
+            new(2023, 1, 1),
+            new(2023, 2, 2),
+            new(2023, 3, 3),
+            new(2023, 4, 4),
         };
 
         var rhs = new DateOnly[]
         {
-            new DateOnly(2023, 5, 3),
-            new DateOnly(2023, 6, 4),
-            new DateOnly(2023, 7, 5),
-            new DateOnly(2023, 8, 6),
+            new(2023, 5, 3),
+            new(2023, 6, 4),
+            new(2023, 7, 5),
+            new(2023, 8, 6),
         };
 
         var intersected = lhs.Correlate(rhs, x => x.Day).ToArray();
@@ -253,11 +249,11 @@ public class EnumerableExtensionsTests
     [Test]
     public void Cycle_ShouldReturn7CycledElements_When_Take7()
     {
-        var items = new List<string> { "A", "B", "C" };
+        List<string> items = ["A", "B", "C"];
 
         var elements = items.Cycle().Take(7).ToArray();
 
-        var expected = new[] { "A", "B", "C", "A", "B", "C", "A" };
+        string[] expected = ["A", "B", "C", "A", "B", "C", "A"];
 
         elements.Should().BeEquivalentTo(expected);
     }
@@ -265,7 +261,7 @@ public class EnumerableExtensionsTests
     [Test]
     public void Enumerate_Should_Return5TuplesWithIncrementedCounter_When_Using_Default()
     {
-        var items = new List<string> { "A", "B", "C", "D", "E" };
+        List<string> items = ["A", "B", "C", "D", "E"];
 
         var enumerated = items.Enumerate().ToArray();
         enumerated[0].Should().Be((0, "A"));
@@ -278,7 +274,7 @@ public class EnumerableExtensionsTests
     [Test]
     public void Enumerate_Should_Return5TuplesWithIncrementedCounter_When_Using_Min()
     {
-        var items = new List<string> { "A", "B", "C", "D", "E" };
+        List<string> items = ["A", "B", "C", "D", "E"];
 
         var enumerated = items.Enumerate(2).ToArray();
         enumerated[0].Should().Be((2, "A"));
@@ -291,7 +287,7 @@ public class EnumerableExtensionsTests
     [Test]
     public void Enumerate_Should_Return5TuplesWithIncrementedCounter_When_Used_MinMaxAndIncrement()
     {
-        var items = new List<string> { "A", "B", "C", "D", "E" };
+        List<string> items = ["A", "B", "C", "D", "E"];
 
         var enumerated = items.EnumerateRange(1, 2).ToArray();
         enumerated[0].Should().Be((1, "A"));
@@ -304,7 +300,7 @@ public class EnumerableExtensionsTests
     [Test]
     public void Enumerate_Should_Return5TuplesWithIncrementedCounter_When_Used_MinMaxAndNextCounterValueDecrementingCounterValue()
     {
-        var items = new List<string> { "A", "B", "C", "D", "E" };
+        List<string> items = ["A", "B", "C", "D", "E"];
 
         var enumerated = items.Enumerate(1, -1, x => --x).ToArray();
         enumerated[0].Should().Be(( 1, "A"));
@@ -317,7 +313,7 @@ public class EnumerableExtensionsTests
     [Test]
     public void Enumerate_Should_Return5TuplesWithIncrementedCounter_When_Used_MinMaxAndNextCounterValueIncrementingCounterValue()
     {
-        var items = new List<string> { "A", "B", "C", "D", "E" };
+        List<string> items = ["A", "B", "C", "D", "E"];
 
         var enumerated = items.Enumerate(2, 6, x => x + 2).ToArray();
         enumerated[0].Should().Be((2, "A"));
@@ -356,8 +352,8 @@ public class EnumerableExtensionsTests
     [Test]
     public void SymmetricDifference_Should_ReturnDifferentItemsFromBothLists_When_BothListsHaveDifferentItems()
     {
-        var items1 = new List<int> { 1, 2, 3, 4, 5 };
-        var items2 = new List<int> { 2, 4, 6 };
+        List<int> items1 = [1, 2, 3, 4, 5];
+        List<int> items2 = [2, 4, 6];
 
         // return items of both lists that don't match
         var diff = items1.SymmetricDifference(items2).ToArray();
@@ -372,8 +368,8 @@ public class EnumerableExtensionsTests
     [Test]
     public void SymmetricDifference_Should_Return3Items_When_ConsiderDuplicatesFalse()
     {
-        var items1 = new int[] { 1, 1, 1, 1 };
-        var items2 = new int[] { 1, 1, 2, 2, 3 };
+        int[] items1 = [1, 1, 1, 1];
+        int[] items2 = [1, 1, 2, 2, 3];
 
         var diff = items1.SymmetricDifference(items2, preserveDuplicates: false).ToArray();
 
@@ -384,8 +380,8 @@ public class EnumerableExtensionsTests
     [Test]
     public void SymmetricDifference_Should_Return5Items_When_ConsiderDuplicatesTrue()
     {
-        var items1 = new int[] { 1, 1, 1, 1 };
-        var items2 = new int[] { 1, 1, 2, 2, 3 };
+        int[] items1 = [1, 1, 1, 1];
+        int[] items2 = [1, 1, 2, 2, 3];
 
         var diff = items1.SymmetricDifference(items2, preserveDuplicates: true).ToArray();
 
@@ -397,10 +393,10 @@ public class EnumerableExtensionsTests
     [Test]
     public void SymmetricDifference_Should_Return3DateTimes1Doublet_When_Using_Selector_And_RetainDuplicates()
     {
-        DateTime date(int day) => new DateTime(2020, 5, day);
+        DateTime date(int day) => new (2020, 5, day);
 
-        var dates1 = new DateTime[] { date(1), date(2), date(1), date(3), date(4) };
-        var dates2 = new DateTime[] { date(1), date(2), date(3), date(5) };
+        DateTime[] dates1 = [date(1), date(2), date(1), date(3), date(4)];
+        DateTime[] dates2 = [date(1), date(2), date(3), date(5)];
 
         var result = dates1.SymmetricDifference(dates2, x => x.Day, true).ToArray();
 
@@ -413,8 +409,8 @@ public class EnumerableExtensionsTests
     [Test]
     public void SymmetricDifferenceWithSideIndication_Should_ReturnDifferentItemsFromBothLists_When_UsingPreserveDuplicatesFalse()
     {
-        var items1 = new List<int> { 1, 2, 3, 4, 5 };
-        var items2 = new List<int> { 2, 4, 6 };
+        List<int> items1 = [1, 2, 3, 4, 5];
+        List<int> items2 = [2, 4, 6];
 
         // return items of both lists that don't match
         var (lhs, rhs) = items1.SymmetricDifferenceWithSideIndication(items2);
@@ -433,10 +429,10 @@ public class EnumerableExtensionsTests
     public void SymmetricDifferenceWithSideIndication_Should_ReturnDifferentItemsFromBothLists_When_UsingSelector()
     {
 
-        DateTime date(int day) => new DateTime(2020, 5, day);
+        DateTime date(int day) => new (2020, 5, day);
 
-        var dates1 = new DateTime[] { date(1), date(2), date(1), date(3), date(4), date(6) };
-        var dates2 = new DateTime[] { date(1), date(2), date(3), date(5), date(7) };
+        DateTime[] dates1 = [date(1), date(2), date(1), date(3), date(4), date(6)];
+        DateTime[] dates2 = [date(1), date(2), date(3), date(5), date(7)];
 
         var (lhs, rhs) = dates1.SymmetricDifferenceWithSideIndication(dates2, x => x.Day);
 
@@ -455,8 +451,8 @@ public class EnumerableExtensionsTests
     {
         static DateTime date(int day) => new (2020, 5, day);
 
-        var dates1 = new DateTime[] { date(1), date(2), date(1), date(3), date(4) };
-        var dates2 = new DateTime[] { date(2), date(3), date(5), date(6) };
+        DateTime[] dates1 = [date(1), date(2), date(1), date(3), date(4)];
+        DateTime[] dates2 = [date(2), date(3), date(5), date(6)];
 
         var (lhs, rhs) = dates1.SymmetricDifferenceWithSideIndication(dates2, x => x.Day, true);
 
@@ -474,7 +470,7 @@ public class EnumerableExtensionsTests
     [Test]
     public void Duplicates_DistinctIsFalse_WithMultipleDuplicateValues()
     {
-        var items = new List<int> { 1, 2, 3, 4, 5, 2, 4, 2 };
+        int[] items = [1, 2, 3, 4, 5, 2, 4, 2];
 
         var result = items.Duplicates().ToArray();
 
@@ -487,7 +483,7 @@ public class EnumerableExtensionsTests
     [Test]
     public void Duplicates_ShouldReturnDouplets_When_HasDuplicates()
     {
-        var items = new List<int> { 1, 2, 3, 4, 5, 2, 4, 2 };
+        int[] items = [1, 2, 3, 4, 5, 2, 4, 2];
 
         var result = items.Duplicates().ToArray();
 
@@ -529,7 +525,7 @@ public class EnumerableExtensionsTests
     [Test]
     public void Duplicates_DistinctIsFalse_WithoutDuplicateValues()
     {
-        var items = new List<int> { 1, 2, 3, 4, 5 };
+        int[] items = [1, 2, 3, 4, 5];
 
         var result = items.Duplicates().ToArray();
 
@@ -754,7 +750,7 @@ public class EnumerableExtensionsTests
     [Test]
     public void ExceptWithDuplicates_Should_Return2Strings1Doublet_When_Using_Selector_LhsHasDuplicates()
     {
-        DateTime date(int day) => new DateTime(2020, 5, day);
+        DateTime date(int day) => new (2020, 5, day);
 
         var dates1 = new string?[] 
         { 
@@ -1363,7 +1359,7 @@ public class EnumerableExtensionsTests
     [Test]
     public void MaxBy()
     {
-        var items = new string[] { "A", "ABC", "AB", "ABCD" };
+        string[] items = ["A", "ABC", "AB", "ABCD"];
 
         var max = items.MaxBy((a, b) => a.Length > b.Length ? 1 : -1);
 
@@ -1373,7 +1369,7 @@ public class EnumerableExtensionsTests
     [Test]
     public void MinBy()
     {
-        var items = new string[] { "A", "ABC", "AB", "ABCD" };
+        string[] items = ["A", "ABC", "AB", "ABCD"];
 
         var min = items.MinBy((a, b) => a.Length > b.Length ? 1 : -1);
 
@@ -2352,7 +2348,6 @@ public class EnumerableExtensionsTests
         foundNumbers[2].Should().Be(6);
         foundNumbers[3].Should().Be(7);
     }
-
 
     [Test]
     public void Slice_ShouldReturn2Lists_When_2_PredicatesAreUsed()
