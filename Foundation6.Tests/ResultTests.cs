@@ -59,7 +59,34 @@ public class ResultTests
     }
 
     [Test]
-    public void Maybe_Should_ReturnOkResult_When_TypeIsOfTypeInt()
+    public void Maybe_Should_ReturnErrorResult_When_ResultHasOneGenericParameterAndOneMethodArgument()
+    {
+        // Arrange
+        object value = null!;
+
+        // Act
+        var sut = Result.Maybe<string>(value);
+
+        // Assert
+        sut.IsOk.Should().BeFalse();
+    }
+
+    [Test]
+    public void Maybe_Should_ReturnErrorResult_When_ResultHasOneGenericParameterAndTwoMethodArgument()
+    {
+        // Arrange
+        object value = null!;
+        var exceptionMessage = "test";
+
+        // Act
+        var sut = Result.Maybe<string>(value, () => new ArgumentException(exceptionMessage));
+
+        // Assert
+        sut.IsOk.Should().BeFalse();
+    }
+
+    [Test]
+    public void Maybe_Should_ReturnOkResult_When_ResultHasOneGenericParameterAndTypeIsInt()
     {
         object value = 5;
 

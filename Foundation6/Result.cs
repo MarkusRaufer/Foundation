@@ -119,7 +119,7 @@ public static class Result
     }
 
     /// <summary>
-    /// Returns an ok error if value is of type TOk otherwise it returns an error result.
+    /// Returns an Ok result if it is of type <typeparamref name="TOk"/> otherwise it returns an Error result.
     /// </summary>
     /// <typeparam name="TOk">Typeof of ok value.</typeparam>
     /// <param name="value">The value to be checked.</param>
@@ -130,8 +130,31 @@ public static class Result
         return Maybe<TOk, Error>(value, () => new Error("incompatible value", $"the value is not of type {typeof(TOk)}"));
     }
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static Result<TOk, Error> Maybe<TOk>(object? value, Func<Error> error)
+    {
+        if (value is TOk ok) return Result.Ok<TOk, Error>(ok);
+
+        return Result.Error<TOk, Error>(error());
+    }
+
     /// <summary>
-    /// Returns an ok error if value is of type TOk otherwise it returns an error result.
+    /// Returns an Ok result if it is of type <typeparamref name="TOk"/> otherwise it returns an Error result.
+    /// </summary>
+    /// <typeparam name="TOk"></typeparam>
+    /// <param name="value">The value to be checked and returned if it is of type <typeparamref name="TOk"/>"/>.</param>
+    /// <param name="error"></param>
+    /// <returns></returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static Result<TOk, Error> Maybe<TOk>(object? value, Func<Exception> error)
+    {
+        if (value is TOk ok) return Result.Ok<TOk, Error>(ok);
+        
+        return Result.Error<TOk>(error());
+    }
+
+    /// <summary>
+    /// Returns an Ok result if it is of type <typeparamref name="TOk"/> otherwise it returns a result of type TError.
     /// </summary>
     /// <typeparam name="TOk">Typeof of ok value.</typeparam>
     /// <typeparam name="TError">Type of error.</typeparam>
