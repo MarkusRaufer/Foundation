@@ -13,7 +13,7 @@ public class EnumerableConverterTests
     [Test]
     public void DeserialzeToJson_Should_ReturnJsonString_When_Called_JsonSerializer_Deserialize_With_HashSetValue()
     {
-        var sut = HashSetValue.New(1, 2, 3);
+        var sut = HashSetValue.New([1, 2, 3]);
 
         var options = new JsonSerializerOptions
         {
@@ -33,13 +33,13 @@ public class EnumerableConverterTests
     [Test]
     public void DeserialzeToJson_Should_ReturnJsonString_When_Called_JsonSerializer_Deserialize_With_NonEmptySetValue()
     {
-        var sut = NonEmptySetValue.New(1, 2, 3);
+        var sut = NonEmptyHashSetValue.New([1, 2, 3]);
 
         var options = new JsonSerializerOptions
         {
             Converters =
             {
-                new EnumerableJsonConverter<int, NonEmptySetValue<int>>(items => items.ToNonEmptySetValue())
+                new EnumerableJsonConverter<int, NonEmptySetValue<int>>(items => items.ToNonEmptyHashSetValue())
             }
         };
 
@@ -53,13 +53,13 @@ public class EnumerableConverterTests
     [Test]
     public void SerialzeToJson_Should_ReturnJsonString_When_Called_JsonSerializer_Serialize()
     {
-        var numbers = NonEmptySetValue.New(1, 2, 3);
+        var numbers = NonEmptyHashSetValue.New([1, 2, 3]);
 
         var options = new JsonSerializerOptions
         {
             Converters =
             {
-                new EnumerableJsonConverter<int, NonEmptySetValue<int>>(items => items.ToNonEmptySetValue())
+                new EnumerableJsonConverter<int, NonEmptySetValue<int>>(items => items.ToNonEmptyHashSetValue())
             }
         };
 

@@ -30,9 +30,6 @@ public static class NonEmptyArrayValue
 {
     public static NonEmptyArrayValue<T> New<T>(params T[] values) =>
         new (values);
-
-    public static NonEmptyArrayValue<T> New<T>(string separator, params T[] values)
-        => new (values, separator);
 }
 
 /// <summary>
@@ -47,21 +44,19 @@ public readonly struct NonEmptyArrayValue<T>
     , IEquatable<T[]>
 {
     private readonly int _hashCode;
-    private readonly string _separator;
-    private readonly T[] _values;
+    private readonly ArrayValue<T> _arrayValue;
 
-    public NonEmptyArrayValue(T[] values, string separator = ", ")
+    public NonEmptyArrayValue(ArrayValue<T> arrayValue)
     {
-        _values = values.ThrowIfNullOrEmpty();
-        if(_values.Length == 0) throw new ArgumentOutOfRangeException(nameof(values), $"{nameof(values)} must have at least one element");
+        _arrayValue = arrayValue.ThrowIfNull();
+        if(_arrayValue.Length == 0) throw new ArgumentOutOfRangeException(nameof(arrayValue), $"{nameof(arrayValue)} must have at least one element");
         
-        _separator = separator ?? throw new ArgumentNullException(nameof(separator));
-        _hashCode = HashCode.FromObjects(_values);
+        _hashCode = HashCode.FromObjects(_arrayValue);
     }
 
     public static implicit operator NonEmptyArrayValue<T>(T[] array) => NonEmptyArrayValue.New(array);
 
-    public static implicit operator T[](NonEmptyArrayValue<T> array) => array._values;
+    public static implicit operator T[](NonEmptyArrayValue<T> array) => array._arrayValue;
 
     public static bool operator ==(NonEmptyArrayValue<T> left, NonEmptyArrayValue<T> right)
     {
@@ -73,45 +68,26 @@ public readonly struct NonEmptyArrayValue<T>
         return !(left == right);
     }
 
-    public T this[int index] => _values[index];
+    public T this[int index] => _arrayValue[index];
 
-    public object Clone()
-    {
-        return IsEmpty ? new ArrayValue<T>([]) : new ArrayValue<T>((T[])_values.Clone());
-    }
+    public object Clone() => _arrayValue.Clone();
 
     public override bool Equals([NotNullWhen(true)] object? obj)
         => obj is NonEmptyArrayValue<T> other && Equals(other);
 
-    public bool Equals(T[]? other)
-    {
-        if (IsEmpty) return null == other || 0 == other.Length;
+    public bool Equals(T[]? other) => _arrayValue.Equals(other);
 
-        return null != other && _values.SequenceEqual(other);
-    }
+    public bool Equals(NonEmptyArrayValue<T> other) => _arrayValue.Equals(other._arrayValue);
 
-    public bool Equals(NonEmptyArrayValue<T> other)
-    {
-        if (IsEmpty) return other.IsEmpty;
-        if (other.IsEmpty) return false;
+    public IEnumerator<T> GetEnumerator() => _arrayValue.GetEnumerator();
 
-        if (GetHashCode() != other.GetHashCode()) return false;
-
-        return _values.SequenceEqual(other._values);
-    }
-
-    public IEnumerator<T> GetEnumerator() => _values.GetEnumerator<T>();
-
-    IEnumerator IEnumerable.GetEnumerator() => _values.GetEnumerator();
+    IEnumerator IEnumerable.GetEnumerator() => _arrayValue.GetEnumerator();
 
     public override int GetHashCode() => _hashCode;
 
-    public bool IsEmpty => null == _values || 0 == _values.Length;
+    public bool IsEmpty => _arrayValue.IsEmpty;
 
-    public int Length => IsEmpty ? 0 : _values.Length;
+    public int Length => _arrayValue.Length;
     
-    public override string? ToString()
-    {
-        return IsEmpty ? "" : string.Join(_separator, _values);
-    }
+    public override string? ToString() => _arrayValue.ToString();
 }

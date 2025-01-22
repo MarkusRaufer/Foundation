@@ -12,7 +12,7 @@ public class HashSetValueConverterTests
     [Test]
     public void DeserialzeToJson_Should_ReturnJsonString_When_Called_JsonSerializer_Serialize()
     {
-        var sut = HashSetValue.New(1, 2, 3);
+        var sut = HashSetValue.New([1, 2, 3]);
 
         var jsonOptions = new JsonSerializerOptions
         {
@@ -29,7 +29,7 @@ public class HashSetValueConverterTests
     [Test]
     public void SerialzeToJson_Should_ReturnJsonString_When_Called_JsonSerializer_Serialize()
     {
-        var sut = HashSetValue.New(1, 2, 3);
+        var sut = HashSetValue.New([1, 2, 3]);
 
         var json = JsonSerializer.Serialize(sut);
 

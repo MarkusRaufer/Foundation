@@ -120,4 +120,6 @@ public readonly struct SortedSetValue<T>
     /// Returns true if not initialized.
     /// </summary>
     public bool IsEmpty => _values is null;
+
+    public override string ToString() => IsEmpty ? "" : string.Join(", ", _values);
 }

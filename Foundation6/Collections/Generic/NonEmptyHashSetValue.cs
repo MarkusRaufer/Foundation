@@ -30,27 +30,17 @@ namespace Foundation.Collections.Generic;
 /// This immutable collection of values includes only unique values and considers the equality and number of all elements <see cref="Equals"/>. 
 /// The position of the elements are ignored. The set must not be empty.
 /// </summary>
-public static class NonEmptySetValue
+public static class NonEmptyHashSetValue
 {
     /// <summary>
-    /// Creates a new <see cref="=NonEmptyUniqueValues<typeparamref name="T"/>"/> from values.
+    /// Creates a new <see cref="NonEmptySetValue{T}"/> from values.
     /// </summary>
     /// <typeparam name="T">The type of the values.</typeparam>
     /// <param name="values"></param>
     /// <returns></returns>
     /// <exception cref="ArgumentOutOfRangeException">Is thrown if values is empty.</exception>
     public static NonEmptySetValue<T> New<T>(IEnumerable<T> values)
-       => new(values);
-
-    /// <summary>
-    /// Creates a new <see cref="=NonEmptyUniqueValues<typeparamref name="T"/>"/> from values.
-    /// </summary>
-    /// <typeparam name="T">The type of the values.</typeparam>
-    /// <param name="values"></param>
-    /// <returns></returns>
-    /// <exception cref="ArgumentOutOfRangeException">Is thrown if values is empty.</exception>
-    public static NonEmptySetValue<T> New<T>(params T[] values)
-        => new(values);
+       => new (HashSetValue.New(values));
 }
 
 /// <summary>
@@ -63,35 +53,17 @@ public readonly struct NonEmptySetValue<T>
     : IReadOnlyCollection<T>
     , IEquatable<NonEmptySetValue<T>>
 {
-    private readonly int _hashCode = 0;
-    private readonly HashSet<T> _values;
-
-    /// <inheritdoc/>
-    public NonEmptySetValue(IEnumerable<T> values) : this(new HashSet<T>(values))
-    {
-    }
+    private readonly HashSetValue<T> _values;
 
     /// <summary>
     /// Constructor
     /// </summary>
     /// <param name="values">The unique values. Duplicates are ignored.</param>
     /// <exception cref="ArgumentOutOfRangeException">Is thrown if values is empty.</exception>
-    private NonEmptySetValue(HashSet<T> values)
+    public NonEmptySetValue(HashSetValue<T> values)
     {
-        _values = values.ThrowIfNullOrEmpty();
+        _values = values.ThrowIfNull();
         if(_values.Count == 0) throw new ArgumentOutOfRangeException(nameof(values), $"{nameof(values)} must have at least one element");
-
-        _hashCode = HashCode.FromOrderedObjects(_values);
-    }
-
-    /// <summary>
-    /// Constructor
-    /// </summary>
-    /// <param name="values">The unique values. Duplicates are ignored.</param>
-    /// <param name="comparer">Comparer to change the default comparison of the values.</param>
-    public NonEmptySetValue(IEnumerable<T> values, IEqualityComparer<T>? comparer)
-        : this(new HashSet<T>(values, comparer))
-    {
     }
 
     /// <summary>
@@ -134,15 +106,10 @@ public readonly struct NonEmptySetValue<T>
     /// </summary>
     /// <param name="other"></param>
     /// <returns></returns>
-    public bool Equals(NonEmptySetValue<T> other)
-    {
-        if (GetHashCode() != other.GetHashCode()) return false;
-
-        return _values.SetEquals(other._values);
-    }
+    public bool Equals(NonEmptySetValue<T> other) => _values.Equals(other._values);
 
     /// Hash code considers all elements.
-    public override int GetHashCode() => _hashCode;
+    public override int GetHashCode() => _values.GetHashCode();
 
     /// <inheritdoc/>
     public IEnumerator<T> GetEnumerator() => _values.GetEnumerator();
@@ -153,8 +120,8 @@ public readonly struct NonEmptySetValue<T>
     /// <summary>
     /// Returns true if not initialized.
     /// </summary>
-    public bool IsEmpty => _values is null;
+    public bool IsEmpty => _values.IsEmpty;
 
     /// <inheritdoc/>
-    public override string ToString() => string.Join(", ", _values);
+    public override string ToString() => $"{_values}";
 }

@@ -28,10 +28,7 @@ using System.Diagnostics.CodeAnalysis;
 
 public static class NonEmptyCollectionValue
 {
-    public static NonEmptyCollectionValue<T> New<T>(params T[] values)
-    {
-        return new NonEmptyCollectionValue<T>(values);
-    }
+    public static NonEmptyCollectionValue<T> New<T>(params T[] values) => new(values);
 }
 
 /// <summary>
@@ -44,20 +41,12 @@ public readonly struct NonEmptyCollectionValue<T>
     , IEquatable<NonEmptyCollectionValue<T>>
     , IEquatable<T[]>
 {
-    private readonly int _hashCode;
-    private readonly T[] _values;
+    private readonly CollectionValue<T> _values;
 
-    public NonEmptyCollectionValue(IEnumerable<T> values)
-        : this(values.ToArray())
+    public NonEmptyCollectionValue(CollectionValue<T> values)
     {
-
-    }
-    public NonEmptyCollectionValue(T[] values)
-    {
-        _values = values.ThrowIfNullOrEmpty();
-        if(_values.Length == 0) throw new ArgumentOutOfRangeException(nameof(values), $"{nameof(values)} must have at least one element");
-
-        _hashCode = HashCode.FromOrderedObjects(_values);
+        _values = values.ThrowIfNull();
+        if(_values.Count == 0) throw new ArgumentOutOfRangeException(nameof(values), $"{nameof(values)} must have at least one element");
     }
 
     public static implicit operator NonEmptyCollectionValue<T>(T[] array) => NonEmptyCollectionValue.New(array);
@@ -74,45 +63,23 @@ public readonly struct NonEmptyCollectionValue<T>
         return !(left == right);
     }
 
-    public T this[int index] => _values[index];
+    public int Count => _values.Count;
 
-    public int Count => _values.Length;
-
-    public object Clone()
-    {
-        return IsEmpty
-            ? new ArrayValue<T>(Array.Empty<T>())
-            : new ArrayValue<T>((T[])_values.Clone());
-    }
+    public object Clone() => _values.Clone();
 
     public override bool Equals([NotNullWhen(true)] object? obj) => obj is NonEmptyCollectionValue<T> other && Equals(other);
 
-    public bool Equals(T[]? other)
-    {
-        if (IsEmpty) return null == other || 0 == other.Length;
+    public bool Equals(T[]? other) => _values.Equals(other);
 
-        return null != other && _values.EqualsCollection(other);
-    }
+    public bool Equals(NonEmptyCollectionValue<T> other) => _values.Equals(other._values);
 
-    public bool Equals(NonEmptyCollectionValue<T> other)
-    {
-        if (IsEmpty) return other.IsEmpty;
-        if (other.IsEmpty) return false;
-
-        if (GetHashCode() != other.GetHashCode()) return false;
-
-        return _values.EqualsCollection(other._values);
-    }
-
-    public IEnumerator<T> GetEnumerator() => _values.GetEnumerator<T>();
+    public IEnumerator<T> GetEnumerator() => _values.GetEnumerator();
 
     IEnumerator IEnumerable.GetEnumerator() => _values.GetEnumerator();
 
-    public override int GetHashCode() => _hashCode;
+    public override int GetHashCode() => _values.GetHashCode();
 
-    public bool IsEmpty => null == _values || 0 == _values.Length;
-
-    public int Length => IsEmpty ? 0 : _values.Length;
+    public bool IsEmpty => _values.IsEmpty;
 
     public override string ToString() => string.Join(", ", _values);
 }

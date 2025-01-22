@@ -132,4 +132,6 @@ public readonly struct CollectionValue<T>
     /// Returns true if not initialzed.
     /// </summary>
     public bool IsEmpty => _values is null;
+
+    public override string ToString() => IsEmpty ? "" : string.Join(", ", _values);
 }

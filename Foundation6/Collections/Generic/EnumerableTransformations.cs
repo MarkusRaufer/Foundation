@@ -287,7 +287,7 @@ public static class EnumerableTransformations
     /// <typeparam name="T"></typeparam>
     /// <param name="items"></param>
     /// <returns></returns>
-    public static NonEmptySetValue<T> ToNonEmptySetValue<T>(this IEnumerable<T> items) => new (items);
+    public static NonEmptySetValue<T> ToNonEmptyHashSetValue<T>(this IEnumerable<T> items) => new (HashSetValue.New(items));
 
     /// <summary>
     /// Transforms an <see cref="IEnumerable{T}"/> into <see cref="IEnumerable{object}"/>

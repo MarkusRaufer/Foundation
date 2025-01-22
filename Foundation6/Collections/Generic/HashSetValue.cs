@@ -33,12 +33,12 @@ namespace Foundation.Collections.Generic;
 public static class HashSetValue
 {
     /// <summary>
-    /// Creates a new <see cref="=SetValue<typeparamref name="T"/>"/> from values.
+    /// Creates a new <see cref="HashSetValue{T}"/> from values.
     /// </summary>
-    /// <typeparam name="T">The type of the values.</typeparam>
-    /// <param name="values">The values in the <see cref="=SetValue<typeparamref name="T"/>.</param>
-    /// <returns>a <see cref="=SetValue<typeparamref name="T"/> object.</returns>
-    public static HashSetValue<T> New<T>(params T[] values) => new(values);
+    /// <typeparam name="T"><>The type of the values./typeparam>
+    /// <param name="values"></param>
+    /// <returns>a collection of type <see cref="HashSetValue{T}"/></returns>
+    public static HashSetValue<T> New<T>(IEnumerable<T> values) => new(values);
 }
 
 /// <summary>

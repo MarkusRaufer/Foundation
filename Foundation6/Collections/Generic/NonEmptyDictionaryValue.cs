@@ -32,7 +32,7 @@ public static class NonEmptyDictionaryValue
 {
     public static NonEmptyDictionaryValue<TKey, TValue> New<TKey, TValue>(IEnumerable<KeyValuePair<TKey, TValue>> keyValues)
         where TKey : notnull
-        => new(keyValues);
+        => new (DictionaryValue.New(keyValues));
 }
 
 /// <summary>
@@ -46,31 +46,12 @@ public class NonEmptyDictionaryValue<TKey, TValue>
     , IEquatable<NonEmptyDictionaryValue<TKey, TValue>>
     where TKey : notnull
 {
-    private readonly IDictionary<TKey, TValue> _dictionary;
-    private readonly int _hashCode;
+    private readonly DictionaryValue<TKey, TValue> _dictionary;
 
-    public NonEmptyDictionaryValue(IEnumerable<KeyValuePair<TKey, TValue>> keyValues)
-        : this(keyValues.ToDictionary(kvp => kvp.Key, kvp => kvp.Value))
+    public NonEmptyDictionaryValue(DictionaryValue<TKey, TValue> dictionary)
     {
-    }
-
-#if NETSTANDARD2_0
-    public NonEmptyDictionaryValue(IEnumerable<KeyValuePair<TKey, TValue>> keyValues, IEqualityComparer<TKey> comparer)
-        : this(keyValues.ToDictionary(x => x.Key, x => x.Value, comparer))
-    {
-    }
-#else
-    public NonEmptyDictionaryValue(IEnumerable<KeyValuePair<TKey, TValue>> keyValues, IEqualityComparer<TKey> comparer)
-        : this(new Dictionary<TKey, TValue>(keyValues, comparer))
-    {
-    }
-#endif
-    private NonEmptyDictionaryValue(IDictionary<TKey, TValue> dictionary)
-    {
-        _dictionary = dictionary.ThrowIfNullOrEmpty();
+        _dictionary = dictionary.ThrowIfNull();
         if (_dictionary.Count == 0) throw new ArgumentOutOfRangeException(nameof(dictionary), $"{nameof(dictionary)} must have at least one element");
-        
-        _hashCode = HashCode.FromObjects(_dictionary);
     }
 
     /// <inheritdoc/>
@@ -87,13 +68,7 @@ public class NonEmptyDictionaryValue<TKey, TValue>
     
     public override bool Equals(object? obj) => Equals(obj as NonEmptyDictionaryValue<TKey, TValue>);
 
-    public bool Equals(NonEmptyDictionaryValue<TKey, TValue>? other)
-    {
-        if (other is null) return false;
-        if (_hashCode != other._hashCode) return false;
-
-        return _dictionary.EqualsDictionary(other._dictionary);
-    }
+    public bool Equals(NonEmptyDictionaryValue<TKey, TValue>? other) => null != other && _dictionary.Equals(other._dictionary);
 
     /// <inheritdoc/>
     public IEnumerator<KeyValuePair<TKey, TValue>> GetEnumerator() => _dictionary.GetEnumerator();
@@ -101,7 +76,7 @@ public class NonEmptyDictionaryValue<TKey, TValue>
     /// <inheritdoc/>
     IEnumerator IEnumerable.GetEnumerator() => _dictionary.GetEnumerator();
 
-    public override int GetHashCode() => _hashCode;
+    public override int GetHashCode() => _dictionary.GetHashCode();
 
     /// <inheritdoc/>
     public IEnumerable<TKey> Keys => _dictionary.Keys;
@@ -117,7 +92,7 @@ public class NonEmptyDictionaryValue<TKey, TValue>
     }
 
     /// <inheritdoc/>
-    public override string ToString() => string.Join(", ", _dictionary);
+    public override string ToString() => _dictionary.ToString();
 
     /// <inheritdoc/>
     public IEnumerable<TValue> Values => _dictionary.Values;
