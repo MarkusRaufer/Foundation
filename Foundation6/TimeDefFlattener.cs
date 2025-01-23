@@ -54,15 +54,12 @@ public class TimeDefFlattener : TimeDefVisitor
 
         return base.VisitAnd(td);
     }
-
-#if NET6_0_OR_GREATER
     protected override bool VisitDateSpan(TimeDef.DateSpan td)
     {
         _timeDefs.Add(td);
 
         return base.VisitDateSpan(td);
     }
-#endif
 
     protected override bool VisitDateTimeSpan(TimeDef.DateTimeSpan td)
     {
@@ -147,15 +144,12 @@ public class TimeDefFlattener : TimeDefVisitor
 
         return base.VisitOr(td);
     }
-
-#if NET6_0_OR_GREATER
     protected override bool VisitTimespan(TimeDef.Timespan td)
     {
         _timeDefs.Add(td);
 
         return base.VisitTimespan(td);
     }
-#endif
 
     protected override bool VisitUnion(TimeDef.Union td)
     {

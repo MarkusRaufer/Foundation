@@ -27,6 +27,7 @@ using Foundation;
 
 using System.Collections;
 using System.Diagnostics.CodeAnalysis;
+using System.Linq;
 
 /// <summary>
 /// This is an immutable <see cref="IDictionary{TKey, TValue}"/>.
@@ -84,7 +85,12 @@ public class DictionaryValue<TKey, TValue>
     {
     }
 
-#if NET6_0_OR_GREATER
+#if NETSTANDARD2_0
+    public DictionaryValue(IEnumerable<KeyValuePair<TKey, TValue>> keyValues, IEqualityComparer<TKey> comparer)
+        : this(new Dictionary<TKey, TValue>(keyValues.ToDictionary(x => x.Key, x => x.Value), comparer))
+    {
+    }
+#else
     public DictionaryValue(IEnumerable<KeyValuePair<TKey, TValue>> keyValues, IEqualityComparer<TKey> comparer)
         : this(new Dictionary<TKey, TValue>(keyValues, comparer))
     {

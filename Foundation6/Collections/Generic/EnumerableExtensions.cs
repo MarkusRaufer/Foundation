@@ -1738,20 +1738,6 @@ public static class EnumerableExtensions
     /// Returns the object with the smallest predicate value.
     /// </summary>
     /// <typeparam name="T"></typeparam>
-    /// <param name="items"></param>
-    /// <param name="selector">Returns the value to compare.</param>
-    /// <returns></returns>
-    //public static T MinBy<T>(this IEnumerable<T> items, Func<T, IComparable> selector)
-    //{
-    //    selector.ThrowIfNull();
-
-    //    return items.Aggregate((a, b) => selector(a).CompareTo(selector(b)) == -1 ? a : b);
-    //}
-
-    /// <summary>
-    /// Returns the object with the smallest predicate value.
-    /// </summary>
-    /// <typeparam name="T"></typeparam>
     /// <typeparam name="TKey"></typeparam>
     /// <param name="items"></param>
     /// <param name="selector">Returns the value to compare.</param>

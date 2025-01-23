@@ -33,10 +33,6 @@ public class ObjectJsonConverter : JsonConverter<object?>
     private readonly TypeCode _floatFormat;
     private static readonly QuantityConverter _quantityConverter = new();
     private static readonly JsonSerializerOptions _jsonSerializerOptions = new() { Converters = { _quantityConverter } };
-
-#if NET6_0_OR_GREATER
-#endif
-
     private readonly Regex? _dateTimeRegex = null;
     private readonly Regex? _timeSpanRegex = null;
     private readonly bool _supportDateOnly;

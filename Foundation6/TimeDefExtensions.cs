@@ -100,9 +100,7 @@ public static class TimeDefExtensions
         return lhs switch
         {
             TimeDef.And l => rhs is TimeDef.And r && Equals(l.Lhs, r.Lhs) && Equals(l.Rhs, r.Rhs),
-#if NET6_0_OR_GREATER
             TimeDef.DateSpan l => rhs is TimeDef.DateSpan r && l.Equals(r),
-#endif
             TimeDef.DateTimeSpan l => rhs is TimeDef.DateTimeSpan r && l.Equals(r),
             TimeDef.Day l => rhs is TimeDef.Day r && l.Equals(r),
             TimeDef.Days l => rhs is TimeDef.Days r && l.Equals(r),
@@ -115,9 +113,7 @@ public static class TimeDefExtensions
             TimeDef.Months l => rhs is TimeDef.Months r && l.Equals(r),
             TimeDef.Not l => rhs is TimeDef.Not r && Equals(l.TimeDef, r.TimeDef),
             TimeDef.Or l => rhs is TimeDef.Or r && Equals(l.Lhs, r.Lhs) && Equals(l.Rhs, r.Rhs),
-#if NET6_0_OR_GREATER
             TimeDef.Timespan l => rhs is TimeDef.Timespan r && l.Equals(r),
-#endif
             TimeDef.Union l => rhs is TimeDef.Union r && Equals(l.Lhs, r.Lhs) && Equals(l.Rhs, r.Rhs),
             TimeDef.Weekday l => rhs is TimeDef.Weekday r && l.Equals(r),
             TimeDef.WeekOfMonth l => rhs is TimeDef.WeekOfMonth r && l.Equals(r),
@@ -158,10 +154,8 @@ public static class TimeDefExtensions
     {
         return timedef switch
         {
-#if NET6_0_OR_GREATER
             TimeDef.DateSpan or
             TimeDef.Timespan => true,
-#endif
             TimeDef.DateTimeSpan or
             _ => false
         };
@@ -200,10 +194,7 @@ public static class TimeDefExtensions
     public static TimeSpan ToTimeSpan(this TimeDef.Hours hours) => TimeSpan.FromHours(hours.Quantity);
     public static TimeSpan ToTimeSpan(this TimeDef.Days days) => TimeSpan.FromDays(days.Quantity);
     public static TimeSpan ToTimeSpan(this TimeDef.Weeks weeks) => TimeSpan.FromDays(weeks.Quantity);
-
-#if NET6_0_OR_GREATER
     public static TimeSpan ToTimeSpan(this TimeDef.DateSpan dateSpan) => dateSpan.To.Subtract(dateSpan.From);
     public static TimeSpan ToTimeSpan(this TimeDef.Timespan dateSpan) => dateSpan.To.Subtract(dateSpan.From);
-#endif
 }
 

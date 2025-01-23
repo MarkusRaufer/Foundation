@@ -26,8 +26,6 @@
 using System.Diagnostics;
 using System.Runtime.Serialization;
 
-#if NET6_0_OR_GREATER
-
 //TODO: implement IComparable and refactore the rest.
 [DebuggerDisplay("{Start}-{End}, Duration={Duration}")]
 [Serializable]
@@ -157,5 +155,3 @@ public struct PeriodOfHours : ISerializable
 
     public override string ToString() => $"{Start}-{End}";
 }
-
-#endif

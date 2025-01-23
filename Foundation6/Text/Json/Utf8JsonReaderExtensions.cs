@@ -21,8 +21,6 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
-//#if NET6_0_OR_GREATER
-
 using System.Text.Json;
 
 namespace Foundation.Text.Json;
@@ -216,7 +214,6 @@ public static class Utf8JsonReaderExtensions
             case "System.SByte": return reader.GetSByte();
             case "System.Single": return reader.GetSingle();
             case "System.String": return reader.GetString();
-#if NET6_0_OR_GREATER
             case "System.TimeOnly":
                 {
                     var str = reader.GetString();
@@ -225,7 +222,6 @@ public static class Utf8JsonReaderExtensions
                     if (DateTime.TryParse(str, out var dt)) return dt.ToTimeOnly();
                     return null;
                 }
-#endif
         }
 
         return reader.GetString();

@@ -136,8 +136,6 @@ public static class TimeDefCompareExtensions
         var rightWeight = TimeDefHelper.ChronologicalOrderWeight(rhs);
         return leftWeight.CompareTo(rightWeight);
     }
-
-#if NET6_0_OR_GREATER
     public static int CompareTo(this TimeDef.Timespan lhs, TimeDef.Timespan rhs)
     {
         var cmp = lhs.From.CompareTo(rhs.From);
@@ -145,7 +143,6 @@ public static class TimeDefCompareExtensions
 
         return lhs.To.CompareTo(rhs.To);
     }
-#endif
 
     public static int CompareTo(this TimeDef.Weekday lhs, TimeDef.Weekday rhs)
     {

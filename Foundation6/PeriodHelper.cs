@@ -32,10 +32,8 @@ public class PeriodHelper
     {
         return td switch
         {
-#if NET6_0_OR_GREATER
             DateSpan _ => period.Days(),
             Timespan _ => period.Minutes(),
-#endif
             Day _ => period.Days(),
             Days _ => period.Days(),
             Hour _ => period.Hours(),
@@ -70,9 +68,6 @@ public class PeriodHelper
 
     public static IEnumerable<Period> Intersect(IEnumerable<Period> lhs, IEnumerable<Period> rhs)
     {
-        //var lhsPeriods = Merge(lhs.ToArray()).ToList();
-        //var rhsPeriods = Merge(rhs.ToArray()).ToList();
-        //return lhsPeriods.SelectMany(p => p.Intersect(rhsPeriods));
         return IntersectGroup(lhs, rhs);
     }
 

@@ -1,5 +1,4 @@
-﻿#if NET6_0_OR_GREATER
-using FluentAssertions;
+﻿using FluentAssertions;
 using Foundation.Collections.Generic;
 using NUnit.Framework;
 using System.Text.Json;
@@ -36,4 +35,3 @@ public class HashSetValueConverterTests
         json.Should().Be("[1,2,3]");
     }
 }
-#endif

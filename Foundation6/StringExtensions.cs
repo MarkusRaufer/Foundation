@@ -80,18 +80,16 @@ public static class StringExtensions
     /// <param name="str"></param>
     /// <param name="value"></param>
     /// <returns></returns>
-    #if NET6_0_OR_GREATER
     public static IEnumerable<int> IndicesFromEnd(this string str, string value)
     {
-        if (string.IsNullOrEmpty(str)) return Enumerable.Empty<int>();
-        if (string.IsNullOrEmpty(value)) return Enumerable.Empty<int>();
+        if (string.IsNullOrEmpty(str)) return [];
+        if (string.IsNullOrEmpty(value)) return [];
 
         var strSpan = str.AsSpan();
         var valueSpan = value.AsSpan();
 
         return strSpan.IndicesFromEnd(valueSpan);
     }
-#endif
 
     /// <summary>
     /// Returns the indices of a substring.
@@ -315,7 +313,6 @@ public static class StringExtensions
     /// <param name="str"></param>
     /// <param name="repeat"></param>
     /// <returns></returns>
- #if NET6_0_OR_GREATER
     public static string Repeat(this string text, uint n)
     {
         var textAsSpan = text.AsSpan();
@@ -327,7 +324,6 @@ public static class StringExtensions
 
         return span.ToString();
     }
-#endif
 
     /// <summary>
     /// Splits a string at the indexes.

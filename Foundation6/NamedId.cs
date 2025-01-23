@@ -24,10 +24,7 @@
 ﻿namespace Foundation;
 
 using System.Diagnostics.CodeAnalysis;
-
-#if NET6_0_OR_GREATER
 using System.Text.Json.Serialization;
-#endif
 
 /// <summary>
 /// This is a named identifier. The name and value are used for equality and comparison.
@@ -64,9 +61,7 @@ public readonly struct NamedId
         return _comparable.CompareToNullable(other._value);
     }
 
-#if NET6_0_OR_GREATER
     [JsonIgnore]
-#endif
     public static readonly NamedId Empty;
 
     public override bool Equals([NotNullWhen(true)] object? obj) => obj is NamedId other && Equals(other);
@@ -86,9 +81,7 @@ public readonly struct NamedId
     public override int GetHashCode() => System.HashCode.Combine(Name, Value);
 #endif
 
-#if NET6_0_OR_GREATER
     [JsonIgnore]
-#endif
     public bool IsEmpty => _name is null;
 
     public string Name
@@ -171,9 +164,7 @@ public readonly struct NamedId<T>
     public override int GetHashCode() => System.HashCode.Combine(Name, Value);
 #endif
 
-#if NET6_0_OR_GREATER
     [JsonIgnore]
-#endif
     public readonly bool IsEmpty => string.IsNullOrEmpty(Name);
 
     public string Name

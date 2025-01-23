@@ -28,10 +28,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Runtime.Serialization;
 using System.Text;
-
-#if NET6_0_OR_GREATER
 using System.Text.Json.Serialization;
-#endif
 
 [Serializable]
 public sealed class ByteString
@@ -46,9 +43,7 @@ public sealed class ByteString
     private readonly IComparer<ByteString> _comparer;
     private readonly int _hashCode;
 
-#if NET6_0_OR_GREATER
     [JsonConstructor]
-#endif
     public ByteString(byte[] bytes) : this (bytes, ByteStringComparer.Default)
     {
     }
@@ -128,40 +123,29 @@ public sealed class ByteString
     /// </summary>
     /// <param name="other">The other ByteString which should be compared.</param>
     /// <returns></returns>
-#if NETSTANDARD2_0
-    public int CompareTo(ByteString other) => _comparer.Compare(this, other);
-    public int CompareTo(object obj) => obj is ByteString other ? CompareTo(other) : 0;
-#else
-    public int CompareTo(ByteString? other) => _comparer.Compare(this, other);
+    public int CompareTo(ByteString? other) => other is null ? 1 : _comparer.Compare(this, other);
+
+    /// <summary>
+    /// Determines the relative order of the sequences being compared by comparing the elements using IComparable.CompareTo(obj).
+    /// </summary>
+    /// <param name="other">If other is a ByteString it will be compared otherwise it returns 1.</param>
+    /// <returns></returns>
     public int CompareTo(object? obj) => CompareTo(obj as ByteString);
-#endif
 
     public static ByteString CopyFrom(params byte[] bytes) => new ByteString((byte[])bytes.Clone());
 
-#if NET6_0_OR_GREATER
-    public static ByteString CopyFrom(ReadOnlySpan<byte> bytes) => new ByteString(bytes.ToArray());
-#endif
+    public static ByteString CopyFrom(ReadOnlySpan<byte> bytes) => new(bytes.ToArray());
 
-#if NET6_0_OR_GREATER
     [JsonIgnore]
-#endif
     public static ByteString Empty { get; } = new ByteString(Array.Empty<byte>());
 
-#if NETSTANDARD2_0
-    public override bool Equals(object obj) => obj is ByteString other && Equals(other);
-
-    public bool Equals(ByteString other)
-    {
-        return GetHashCode() == other.GetNullableHashCode() && CompareTo(other) == 0;
-    }
-#else
     public override bool Equals(object? obj) => Equals(obj as ByteString);
 
     public bool Equals(ByteString? other)
     {
         return GetHashCode() == other.GetNullableHashCode() && CompareTo(other) == 0;
     }
-#endif
+
     public static ByteString FromBase64String(string base64)
     {
         return string.IsNullOrEmpty(base64) ? Empty : new (Convert.FromBase64String(base64));
@@ -184,14 +168,10 @@ public sealed class ByteString
         info.AddValue(nameof(_bytes), _bytes);
     }
 
-#if NET6_0_OR_GREATER
     [JsonIgnore]
-#endif
     public bool IsEmpty => 0 == Length;
 
-#if NET6_0_OR_GREATER
     [JsonIgnore]
-#endif
     public int Length => _bytes.Length;
 
     public int ToBase64CharArray(int offsetIn, int length, char[] outArray, int offsetOut)

@@ -74,12 +74,10 @@ namespace Foundation.IO
             writer.Write(guid.ToByteArray());
         }
 
-#if NET6_0_OR_GREATER
         public static void Write(this BinaryWriter writer, TimeOnly time)
         {
             writer.Write(time.Ticks);
         }
-#endif
 
         public static void WriteObject(this BinaryWriter writer, object obj)
         {

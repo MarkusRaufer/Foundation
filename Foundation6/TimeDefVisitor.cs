@@ -34,9 +34,7 @@ public abstract class TimeDefVisitor
         var result = timedef switch
         {
             TimeDef.And td => VisitAnd(td),
-#if NET6_0_OR_GREATER
             TimeDef.DateSpan td => VisitDateSpan(td),
-#endif
             TimeDef.DateTimeSpan td => VisitDateTimeSpan(td),
             TimeDef.Day td => VisitDay(td),
             TimeDef.Days td => VisitDays(td),
@@ -49,9 +47,7 @@ public abstract class TimeDefVisitor
             TimeDef.Months td => VisitMonths(td),
             TimeDef.Not td => VisitNot(td),
             TimeDef.Or td => VisitOr(td),
-#if NET6_0_OR_GREATER
             TimeDef.Timespan td => VisitTimespan(td),
-#endif
             TimeDef.Union td => VisitUnion(td),
             TimeDef.Weekday td => VisitWeekday(td),
             TimeDef.WeekOfMonth td => VisitWeekOfMonth(td),
@@ -71,12 +67,10 @@ public abstract class TimeDefVisitor
         return Visit(td.Lhs) && Visit(td.Rhs);
     }
 
-#if NET6_0_OR_GREATER
     protected virtual bool VisitDateSpan(TimeDef.DateSpan td)
     {
         return true;
     }
-#endif
 
     protected virtual bool VisitDateTimeSpan(TimeDef.DateTimeSpan td)
     {
@@ -141,13 +135,10 @@ public abstract class TimeDefVisitor
         return Visit(td.Lhs) || Visit(td.Rhs);
     }
 
-
-#if NET6_0_OR_GREATER
     protected virtual bool VisitTimespan(TimeDef.Timespan td)
     {
         return true;
     }
-#endif
 
     protected virtual bool VisitUnion(TimeDef.Union td)
     {

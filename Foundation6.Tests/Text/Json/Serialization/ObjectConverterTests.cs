@@ -1,5 +1,4 @@
-﻿#if NET6_0_OR_GREATER
-using FluentAssertions;
+﻿using FluentAssertions;
 using Foundation.Text.Json.Serialization;
 using NUnit.Framework;
 using NUnit.Framework.Constraints;
@@ -52,7 +51,6 @@ public class ObjectConverterTests
                     else Assert.Fail($"{nameof(value)} is not of type {nameof(DateTime)}.");
                 }
             }
-#if NET6_0_OR_GREATER
             {
                 var value = desirialized[1];
                 value.Should().NotBeNull();
@@ -62,7 +60,6 @@ public class ObjectConverterTests
                     else Assert.Fail($"{nameof(value)} is not of type {nameof(DateOnly)}.");
                 }
             }
-#endif
             {
                 var value = desirialized[2];
                 value.Should().NotBeNull();
@@ -99,7 +96,6 @@ public class ObjectConverterTests
                     else Assert.Fail($"{nameof(value)} is not of type {nameof(String)}.");
                 }
             }
-#if NET6_0_OR_GREATER
             {
                 var value = desirialized[6];
                 value.Should().NotBeNull();
@@ -109,7 +105,6 @@ public class ObjectConverterTests
                     else Assert.Fail($"{nameof(value)} is not of type {nameof(TimeOnly)}.");
                 }
             }
-#endif
             {
                 var value = desirialized[7];
                 value.Should().NotBeNull();
@@ -152,4 +147,3 @@ public class ObjectConverterTests
         json.Should().Be(expected);
     }
 }
-#endif

@@ -56,9 +56,7 @@ public class PeriodGenerator : IPeriodGenerator
             Minutes _ => period.Minutes(),
             TimeDef.Month _ => period.Months(),
             Months _ => period.Months(),
-#if NET5_0_OR_GREATER
             Timespan _ => period.Minutes(),
-#endif
             Weekday _ => period.Days(),
             WeekOfMonth _ => period.Weeks(),
             Weeks _ => period.Weeks(),
@@ -100,6 +98,6 @@ public class PeriodGenerator2
             return period.Days();
         }
 
-        return Enumerable.Empty<Period>();
+        return [];
     }
 }

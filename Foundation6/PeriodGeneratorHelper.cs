@@ -58,9 +58,7 @@ public class PeriodGeneratorHelper
             TimeDef.Months months => Months(months),
             TimeDef.Not @not => Not(@not),
             TimeDef.Or @or => Or(@or),
-#if NET6_0_OR_GREATER
             TimeDef.Timespan timespan => Timespan(timespan),
-#endif
             TimeDef.Weekday weekday => Weekday(weekday),
             TimeDef.WeekOfMonth weekOfMonth => Week(weekOfMonth),
             TimeDef.Weeks weeks => Weeks(weeks),
@@ -237,8 +235,6 @@ public class PeriodGeneratorHelper
         }));
     }
 
-
-#if NET6_0_OR_GREATER
     public static IPeriodGenerator Timespan(TimeDef.Timespan time)
     {
         var from = time.From.ToTimeSpan();
@@ -249,7 +245,6 @@ public class PeriodGeneratorHelper
             return from >= p.Start.TimeOfDay && to < p.End.TimeOfDay;
         }));
     }
-#endif
 
     public static IPeriodGenerator Week(DayOfWeek start, params int[] week)
     {
