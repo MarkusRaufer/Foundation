@@ -36,14 +36,14 @@ public sealed record Error(string Id, string Message, Error[]? InnerErrors = nul
     /// </summary>
     /// <param name="exception">The exception and all inner exceptions are fetched and created as a list of Errors.</param>
     /// <returns>An Error where the Id is the exception type.</returns>
-    public static Error FromException(Exception exception, params Error[] errors)
+    public static Error FromException(Exception exception)
     {
-        var id = exception.GetType().Name;
+        var id = exception.ThrowIfNull().GetType().FullName;
         
-        if (null == exception.InnerException) return new Error(id, exception.Message);
+        if (null == exception.InnerException) return new Error(id!, exception.Message);
 
         var innerError = FromException(exception.InnerException);
-        return new Error(id, exception.Message, [innerError]);
+        return new Error(id!, exception.Message, [innerError]);
     }
 
     /// <summary>
@@ -55,7 +55,7 @@ public sealed record Error(string Id, string Message, Error[]? InnerErrors = nul
     /// <returns>An Error where the Id is the exception type.</returns>
     public static Error FromExceptions(string id, string message, IEnumerable<Exception> exceptions)
     {
-        var errors = exceptions.Select(x => FromException(x)).ToArray();
+        var errors = exceptions.Select(FromException).ToArray();
         return new Error(id, message, errors);
     }
 

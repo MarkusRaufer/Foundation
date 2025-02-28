@@ -25,7 +25,6 @@
 
 using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
-using System.Xml.Schema;
 
 public static class Result
 {
@@ -47,10 +46,10 @@ public static class Result
     /// <param name="exception"></param>
     /// <returns></returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static Result<Error> Error(Exception exception)
+    public static Result<Exception> Error(Exception exception)
     {
         exception.ThrowIfNull();
-        return new Result<Error>(Foundation.Error.FromException(exception));
+        return new Result<Exception>(exception);
     }
 
     /// <summary>
@@ -63,7 +62,7 @@ public static class Result
     public static Result<TOk, Error> Error<TOk>(Error error)
     {
         error.ThrowIfNull();
-        return new Result<TOk, Error>(Option.None<TOk>(), Option.Some(error));
+        return new Result<TOk, Error>(Option.None<TOk>(), error);
     }
 
     /// <summary>
@@ -73,10 +72,10 @@ public static class Result
     /// <param name="exception">The exception of the error.</param>
     /// <returns></returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static Result<TOk, Error> Error<TOk>(Exception exception)
+    public static Result<TOk, Exception> Error<TOk>(Exception exception)
     {
         exception.ThrowIfNull();
-        return new Result<TOk, Error>(Option.None<TOk>(), Option.Some(Foundation.Error.FromException(exception)));
+        return new Result<TOk, Exception>(Option.None<TOk>(), exception);
     }
 
     /// <summary>
@@ -103,7 +102,7 @@ public static class Result
     public static Result<TOk, TError> Error<TOk, TError>(TError error)
     {
         error.ThrowIfNull();
-        return new Result<TOk, TError>(Option.None<TOk>(), Option.Some(error));
+        return new Result<TOk, TError>(Option.None<TOk>(), error);
     }
 
     /// <summary>
@@ -116,6 +115,29 @@ public static class Result
     public static Result<TOk, Error> FromOption<TOk>(Func<Option<TOk>> func)
     {
         return FromOption(func, () => new Error("incompatible value", $"the value is not of type {typeof(TOk)}"));
+    }
+
+    /// <summary>
+    /// Creates a <see cref="Result{TOk, TError}"/> from an <see cref="Option{TOk}"/>.
+    /// </summary>
+    /// <typeparam name="TOk">The type of ok.</typeparam>
+    /// <typeparam name="TError">The error type.</typeparam>
+    /// <param name="func">Returns an <see cref="Option{TOk}"/></param>
+    /// <param name="error">Returns an error.</param>
+    /// <returns></returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static Result<TOk, TError> FromOption<TOk, TError>(Func<Option<TOk>> func, Func<TError> error)
+    {
+        func.ThrowIfNull();
+        error.ThrowIfNull();
+
+        var option = func();
+        if (option.TryGet(out var ok)) return Result.Ok<TOk, TError>(ok);
+
+        var errorArgument = nameof(error);
+        if (error() is not TError err) throw new ArgumentException($"{errorArgument} is not of type {typeof(TError).FullName}");
+
+        return Result.Error<TOk, TError>(err);
     }
 
     /// <summary>
@@ -146,11 +168,14 @@ public static class Result
     /// <param name="error"></param>
     /// <returns></returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static Result<TOk, Error> Maybe<TOk>(object? value, Func<Exception> error)
+    public static Result<TOk, Exception> Maybe<TOk>(object? value, Func<Exception> error)
     {
-        if (value is TOk ok) return Result.Ok<TOk, Error>(ok);
-        
-        return Result.Error<TOk>(error());
+        if (value is TOk ok) return Result.Ok<TOk, Exception>(ok);
+
+        var errorArgument = nameof(error);
+        if (error() is not Exception err) throw new ArgumentException($"{errorArgument} is not of type {typeof(Exception).FullName}");
+
+        return Result.Error<TOk>(err);
     }
 
     /// <summary>
@@ -166,27 +191,10 @@ public static class Result
     {
         if (value is TOk ok) return Result.Ok<TOk, TError>(ok);
 
-        return Result.Error<TOk, TError>(error());
-    }
+        var errorArgument = nameof(error);
+        if (error() is not TError err) throw new ArgumentException($"{errorArgument} is not of type {typeof(TError).FullName}");
 
-    /// <summary>
-    /// Creates a <see cref="Result{TOk, TError}"/> from an <see cref="Option{TOk}"/>.
-    /// </summary>
-    /// <typeparam name="TOk">The type of ok.</typeparam>
-    /// <typeparam name="TError">The error type.</typeparam>
-    /// <param name="func">Returns an <see cref="Option{TOk}"/></param>
-    /// <param name="error">Returns an error.</param>
-    /// <returns></returns>
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static Result<TOk, TError> FromOption<TOk, TError>(Func<Option<TOk>> func, Func<TError> error)
-    {
-        func.ThrowIfNull();
-        error.ThrowIfNull();
-
-        var option = func();
-        if (option.TryGet(out var ok)) return Result.Ok<TOk, TError>(ok);
-
-        return Result.Error<TOk, TError>(error());
+        return Result.Error<TOk, TError>(err);
     }
 
     /// <summary>
@@ -205,24 +213,54 @@ public static class Result
     public static Result<TError> Ok<TError>() => new ();
 
     /// <summary>
-    /// Returns an ok result with error type <see cref="Error"/>.
+    /// Returns an ok result where ok is of type <typeparamref name="TOk"/> and IsOk is true./>.
     /// </summary>
     /// <typeparam name="TOk">The type of the ok value.</typeparam>
     /// <param name="value">the ok value.</param>
-    /// <returns></returns>
+    /// <returns>A valid result.</returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static Result<TOk, Error> Ok<TOk>(TOk value)
     {
         value.ThrowIfNull();
 
-        return new Result<TOk, Error>(Option.Some(value), Option.None<Error>());
+        return new Result<TOk, Error>(Option.Some(value), null);
     }
 
+    /// <summary>
+    /// Returns an ok result where ok is of type <typeparamref name="TOk"/>, error is of type <typeparamref name="TError"/> and IsOk is true./>.
+    /// </summary>
+    /// <typeparam name="TOk">The type of the ok value.</typeparam>
+    /// <param name="value">the ok value.</param>
+    /// <returns>A valid result.</returns>
+    /// 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static Result<TOk, TError> Ok<TOk, TError>(TOk value)
     {
         value.ThrowIfNull();
-        return new Result<TOk, TError>(Option.Some(value), Option.None<TError>());
+        return new Result<TOk, TError>(Option.Some(value), default);
+    }
+
+    /// <summary>
+    /// Returns an ok result where <typeparamref name="TOk"/> is optional. IsOk is always true and OK is <see cref="Option.None{TOk}"/>
+    /// </summary>
+    /// <typeparam name="TOk">The type of the ok value.</typeparam>
+    /// <returns>A valid result that has no value.</returns>
+    public static Result<Option<TOk>, TError> OkNone<TOk, TError>()
+    {
+        return new Result<Option<TOk>, TError>(Option.None<TOk>(), default);
+    }
+
+    /// <summary>
+    /// Returns an ok result where <paramref name="value"/> is optional. IsOk is always true. If <paramref name="value"/> is null OK is <see cref="Option.None{TOk}"/>
+    /// </summary>
+    /// <typeparam name="TOk">The type of the ok value.</typeparam>
+    /// <param name="value">the ok value.</param>
+    /// <returns>A valid result that can have a value.</returns>
+    public static Result<Option<TOk>, TError> OkOrNone<TOk, TError>(TOk? value)
+    {
+        return value is not null
+            ? new Result<Option<TOk>, TError>(Option.Some(value), default)
+            : new Result<Option<TOk>, TError>(Option.None<TOk>(), default);
     }
 }
 
@@ -243,16 +281,29 @@ public readonly struct Result<TError>
         _isError = true;
     }
 
+    /// <summary>
+    /// Checks equality of two results.
+    /// </summary>
+    /// <param name="left">A result.</param>
+    /// <param name="right">A result.</param>
+    /// <returns>True if both results are equal.</returns>
     public static bool operator ==(Result<TError> left, Result<TError> right)
     {
         return left.Equals(right);
     }
 
+    /// <summary>
+    /// Checks unequality of two results.
+    /// </summary>
+    /// <param name="left">A result.</param>
+    /// <param name="right">A result.</param>
+    /// <returns>True if both results are not equal.</returns>
     public static bool operator !=(Result<TError> left, Result<TError> right)
     {
         return !(left == right);
     }
 
+    /// <inheritdoc/>
     public override bool Equals(object? obj) => obj is Result<TError> other && Equals(other);
 
     public bool Equals(Result<TError> other)
@@ -263,6 +314,7 @@ public readonly struct Result<TError>
             && EqualityComparer<TError>.Default.Equals(_error, other._error);
     }
 
+    /// <inheritdoc/>
 #if NETSTANDARD2_0
     public override int GetHashCode() => IsOk 
                                          ? typeof(Result<TError>).GetHashCode()
@@ -305,12 +357,11 @@ public readonly struct Result<TOk, TError>
 {
     private readonly int _hashCode;
     private readonly Option<TOk> _ok;
-    private readonly Option<TError> _error;
+    private readonly TError? _error;
 
-    internal Result(Option<TOk> ok, Option<TError> error)
+    internal Result(Option<TOk> ok, TError? error)
     {
-        if (ok.IsSome ^ error.IsNone)
-            throw new ArgumentException($"{nameof(ok)} and {nameof(error)} are disjoint.");
+        if (ok.IsNone && error is null) throw new ArgumentNullException(nameof(error));
 
         _ok = ok;
         _error = error;
@@ -318,11 +369,11 @@ public readonly struct Result<TOk, TError>
 #if NETSTANDARD2_0
         _hashCode = ok.IsSome
             ? Foundation.HashCode.FromObject(typeof(Result<TOk, TError>), ok.OrThrow())
-            : Foundation.HashCode.FromObject(typeof(Result<TOk, TError>), error.OrThrow());
+            : Foundation.HashCode.FromObject(typeof(Result<TOk, TError>), error);
 #else
         _hashCode = ok.IsSome
             ? System.HashCode.Combine(typeof(Result<TOk, TError>), ok.OrThrow())
-            : System.HashCode.Combine(typeof(Result<TOk, TError>), error.OrThrow());
+            : System.HashCode.Combine(typeof(Result<TOk, TError>), error);
 #endif
     }
 
@@ -341,14 +392,15 @@ public readonly struct Result<TOk, TError>
 
     public bool Equals(Result<TOk, TError> other)
     {
-        if (!IsOk)
+        if (IsOk)
         {
-            if(other.IsOk) return false;
-            return _error.Equals(other._error);
+            if (!other.IsOk) return false;
+            return _ok.Equals(other._ok);
         }
-        if (!other.IsOk) return false;
+        
+        if(other.IsOk) return false;
 
-        return _ok.Equals(other._ok);
+        return _error.EqualsNullable(other._error);
     }
 
     public override int GetHashCode() => _hashCode;
@@ -359,7 +411,7 @@ public readonly struct Result<TOk, TError>
     {
         return IsOk
             ? $"IsOk: {IsOk}, Ok: {_ok.OrThrow()}"
-            : $"IsOk: {IsOk}, Error: {_error.OrThrow()}";
+            : $"IsOk: {IsOk}, Error: {_error}";
     }
 
     /// <summary>
@@ -371,9 +423,9 @@ public readonly struct Result<TOk, TError>
     {
         if(!IsOk)
         {
-            if(_error.IsSome)
+            if(_error is not null)
             {
-                error = _error.OrThrow();
+                error = _error;
                 return true;
             }
         }

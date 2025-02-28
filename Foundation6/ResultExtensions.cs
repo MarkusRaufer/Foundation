@@ -109,44 +109,16 @@ namespace Foundation
             return false;
         }
 
-        /// <summary>
-        /// Calls <paramref name="error"/> if result IsOk is false.
-        /// </summary>
-        /// <paramref name="error"/> is only called when IsOk is false.
-        /// </summary>
-        /// <typeparam name="TOk"></typeparam>
-        /// <typeparam name="TError"></typeparam>
-        /// <param name="result"></param>
-        /// <param name="predicate"></param>
-        /// <returns></returns>
+        [return: NotNull]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static Unit OnError<TOk, TError>(this Result<TOk, TError> result, Action<TError> error)
+        public static TOk OkOrNone<TOk>(this Result<TOk, Exception> result)
+            where TOk : notnull
         {
-            error.ThrowIfNull();
+            if (result.TryGetOk(out TOk? ok)) return ok;
 
-            if (result.TryGetError(out TError? errorValue)) error(errorValue!);
+            if (result.TryGetError(out Exception? error)) throw error;
 
-            return new Unit();
-        }
-
-        /// <summary>
-        /// Calls <paramref name="ok"/> if result IsOk is true.
-        /// </summary>
-        /// <paramref name="ok"/> is only called when IsOk is true.
-        /// </summary>
-        /// <typeparam name="TOk"></typeparam>
-        /// <typeparam name="TError"></typeparam>
-        /// <param name="result"></param>
-        /// <param name="predicate"></param>
-        /// <returns></returns>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static Unit OnOk<TOk, TError>(this Result<TOk, TError> result, Action<TOk> ok)
-        {
-            ok.ThrowIfNull();
-
-            if (result.TryGetOk(out TOk? okValue)) ok(okValue!);
-
-            return new Unit();
+            throw new ArgumentException($"invalid {result}");
         }
 
         /// <summary>
@@ -187,6 +159,46 @@ namespace Foundation
             if (result.TryGetOk(out TOk? ok)) return ok;
 
             throw error();
+        }
+
+        /// <summary>
+        /// Calls <paramref name="error"/> if result IsOk is false.
+        /// </summary>
+        /// <paramref name="error"/> is only called when IsOk is false.
+        /// </summary>
+        /// <typeparam name="TOk"></typeparam>
+        /// <typeparam name="TError"></typeparam>
+        /// <param name="result"></param>
+        /// <param name="predicate"></param>
+        /// <returns></returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static Unit OnError<TOk, TError>(this Result<TOk, TError> result, Action<TError> error)
+        {
+            error.ThrowIfNull();
+
+            if (result.TryGetError(out TError? errorValue)) error(errorValue!);
+
+            return new Unit();
+        }
+
+        /// <summary>
+        /// Calls <paramref name="ok"/> if result IsOk is true.
+        /// </summary>
+        /// <paramref name="ok"/> is only called when IsOk is true.
+        /// </summary>
+        /// <typeparam name="TOk"></typeparam>
+        /// <typeparam name="TError"></typeparam>
+        /// <param name="result"></param>
+        /// <param name="predicate"></param>
+        /// <returns></returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static Unit OnOk<TOk, TError>(this Result<TOk, TError> result, Action<TOk> ok)
+        {
+            ok.ThrowIfNull();
+
+            if (result.TryGetOk(out TOk? okValue)) ok(okValue!);
+
+            return new Unit();
         }
 
         /// <summary>
