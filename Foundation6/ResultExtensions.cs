@@ -109,18 +109,6 @@ namespace Foundation
             return false;
         }
 
-        [return: NotNull]
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static TOk OkOrNone<TOk>(this Result<TOk, Exception> result)
-            where TOk : notnull
-        {
-            if (result.TryGetOk(out TOk? ok)) return ok;
-
-            if (result.TryGetError(out Exception? error)) throw error;
-
-            throw new ArgumentException($"invalid {result}");
-        }
-
         /// <summary>
         /// If IsOk is true it returns the Ok value otherwise it throws an exception.
         /// </summary>
