@@ -26,6 +26,19 @@
 public static class ListExtensions
 {
     /// <summary>
+    /// Returns the last element in the list without iterating the list.
+    /// </summary>
+    /// <typeparam name="T">Type of the elements.</typeparam>
+    /// <param name="items">List of items.</param>
+    /// <returns><see cref="Option.Some{T}"/> if not empty or <see cref="Option.None{T}"/>.</returns>
+    public static Option<T> LastAsOption<T>(this IList<T> items)
+    {
+        if (0 == items.Count) return Option.None<T>();
+
+        return Option.Maybe(items[^1]);
+    }
+
+    /// <summary>
     /// Swap values at indices.
     /// </summary>
     /// <typeparam name="T"></typeparam>

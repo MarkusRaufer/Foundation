@@ -216,6 +216,18 @@ public static class ArrayExtensions
     }
 
     /// <summary>
+    /// Returns the last element in the array without iterating the array.
+    /// </summary>
+    /// <typeparam name="T">Type of the elements.</typeparam>
+    /// <param name="items">Array of items.</param>
+    public static Option<T> LastAsOption<T>(this T[] items)
+    {
+        if (0 == items.Length) return Option.None<T>();
+
+        return Option.Maybe(items[^1]);
+    }
+
+    /// <summary>
     /// Creates a new array and prepends <paramref name="elem"/> to the new array.
     /// </summary>
     /// <typeparam name="T"></typeparam>

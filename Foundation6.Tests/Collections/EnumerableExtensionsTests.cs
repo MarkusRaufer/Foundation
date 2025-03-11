@@ -4,6 +4,7 @@ using NUnit.Framework;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Cryptography.X509Certificates;
 
 namespace Foundation.Collections;
 
@@ -77,6 +78,42 @@ public class EnumerableExtensionsTests
 
         filtered.Length.Should().Be(9);
         filtered.Should().NotContain(toBeIgnored);
+    }
+
+    [Test]
+    public void LastAsOption_Should_Return_SomeGuid_When_HashSetIsNotEmpty()
+    {
+        var lastGuid = Guid.Empty;
+        var guids = Enumerable.Range(1, 20).Select<int, Guid>(_ =>
+        {
+            var guid = Guid.NewGuid();
+            lastGuid = guid;
+
+            return guid;
+        }).ToHashSet();
+
+        var tail = guids.LastAsOption();
+
+        tail.TryGet(out var last).Should().BeTrue();
+        last.Should().Be(lastGuid);
+    }
+
+    [Test]
+    public void LastAsOption_Should_Return_SomeGuid_When_ListIsNotEmpty()
+    {
+        var lastGuid = Guid.Empty;
+        var guids = Enumerable.Range(1, 20).Select<int, Guid>(_ =>
+        {
+            var guid = Guid.NewGuid();
+            lastGuid = guid;
+
+            return guid;
+        }).ToList();
+
+        var tail = guids.LastAsOption();
+
+        tail.TryGet(out var last).Should().BeTrue();
+        last.Should().Be(lastGuid);
     }
 
     [Test]

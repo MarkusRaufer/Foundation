@@ -28,6 +28,7 @@ using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Diagnostics.CodeAnalysis;
+using System.Runtime.InteropServices;
 
 public static class EnumerableExtensions
 {
@@ -1535,11 +1536,15 @@ public static class EnumerableExtensions
     /// <summary>
     /// Returns the last left of items if not empty.
     /// </summary>
-    /// <typeparam name="T"></typeparam>
-    /// <param name="items"></param>
-    /// <returns></returns>
+    /// <typeparam name="T">Type of elements.</typeparam>
+    /// <param name="items">List ot elements.</param>
+    /// <returns><see cref="Option.Some{T}"/> if not empty or <see cref="Option.None{T}"/>.</returns>
     public static Option<T> LastAsOption<T>(this IEnumerable<T> items)
     {
+        if (items is T[] array) return array.LastAsOption();
+
+        if (items is IList<T> list) return list.LastAsOption();
+        
         var it = items.ThrowIfEnumerableIsNull().GetEnumerator();
 
         var last = Option.None<T>();
