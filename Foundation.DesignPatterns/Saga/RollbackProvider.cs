@@ -21,7 +21,10 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
-﻿namespace Foundation.DesignPatterns.Saga;
+
+using Foundation;
+
+namespace Foundation.DesignPatterns.Saga;
 
 public class RollbackProvider<TId, TTransactionState, TTransactionResponse, TRollbackResponse> 
     : RollbackProvider<TId, IIdentifiableTransactionRollback<TId, TTransactionState, TTransactionResponse, TRollbackResponse>>
