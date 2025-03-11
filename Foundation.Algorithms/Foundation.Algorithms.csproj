@@ -5,7 +5,8 @@
 		<ImplicitUsings>enable</ImplicitUsings>
 		<Nullable>enable</Nullable>
 		<LangVersion>latest</LangVersion>
-		<Verion>1.0.1</Verion>
+		<PackageOutputPath>$(LOCAL_NUGET)\</PackageOutputPath>
+		<!--<Verion>1.0.1</Verion>-->
 	</PropertyGroup>
 
 </Project>

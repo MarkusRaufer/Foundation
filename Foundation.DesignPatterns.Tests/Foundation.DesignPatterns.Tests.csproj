@@ -24,8 +24,4 @@
 		</PackageReference>
 	</ItemGroup>
 
-	<ItemGroup>
-		<ProjectReference Include="..\Foundation.DesignPatterns\Foundation.DesignPatterns.csproj" />
-	</ItemGroup>
-
 </Project>

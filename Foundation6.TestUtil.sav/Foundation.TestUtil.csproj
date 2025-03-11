@@ -14,11 +14,11 @@
 		<PackageId>Foundation.TesatUtil</PackageId>
 		<PackageTags>test, utilities</PackageTags>
 		<ProductName>Foundation.TestUtil</ProductName>
-		<Version>1.0.0</Version>
+		<!--<Version>1.0.0</Version>-->
 	</PropertyGroup>
 
 	<ItemGroup>
-		<PackageReference Include="Foundation" />
+	  <ProjectReference Include="..\Foundation6\Foundation.csproj" />
 	</ItemGroup>
 
 </Project>
