@@ -54,7 +54,7 @@ namespace Foundation
                 }
             }
 
-            Assert.AreEqual(0, sut.SubscribtionCount);
+            Assert.AreEqual(0, sut.SubscriptionCount);
         }
 
         [Test]
@@ -115,7 +115,7 @@ namespace Foundation
             sut.Subscribe(func);
             sut.Subscribe(func);
 
-            sut.SubscribtionCount.Should().Be(2);
+            sut.SubscriptionCount.Should().Be(2);
         }
 
         [Test]
@@ -133,7 +133,7 @@ namespace Foundation
                 disposable1.Dispose();
                 disposable2.Dispose();
 
-                Assert.AreEqual(0, sut.SubscribtionCount);
+                Assert.AreEqual(0, sut.SubscriptionCount);
             }
             {
                 using (var disposable1 = sut.Subscribe(func1))
@@ -141,7 +141,7 @@ namespace Foundation
                 {
                 }
             }
-            Assert.AreEqual(0, sut.SubscribtionCount);
+            Assert.AreEqual(0, sut.SubscriptionCount);
         }
 
         [Test]
@@ -158,7 +158,7 @@ namespace Foundation
             sut.Subscribe(func2);
 
             // Assert
-            sut.SubscribtionCount.Should().Be(2);
+            sut.SubscriptionCount.Should().Be(2);
         }
 
         [Test]
@@ -178,7 +178,7 @@ namespace Foundation
             disposable.Dispose(); 
 
             // Assert
-            sut.SubscribtionCount.Should().Be(1);
+            sut.SubscriptionCount.Should().Be(1);
         }
     }
 }
