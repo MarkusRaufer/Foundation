@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
 	<PropertyGroup>
 		<TargetFrameworks>net6.0;net8.0</TargetFrameworks>
@@ -11,15 +11,13 @@
 
 	<ItemGroup>
 		<PackageReference Include="FluentAssertions" />
+		<PackageReference Include="Foundation" />
+		<PackageReference Include="Foundation.TestUtil" />
 		<PackageReference Include="Microsoft.NET.Test.Sdk" />
 		<PackageReference Include="NUnit" />
 		<PackageReference Include="NUnit3TestAdapter" />
 		<PackageReference Include="coverlet.collector" />
-	</ItemGroup>
-
-	<ItemGroup>
-		<ProjectReference Include="..\Foundation.Algorithms\Foundation.Algorithms.csproj" />
-		<ProjectReference Include="..\Foundation6\Foundation.csproj" />
+		<PackageReference Include="System.Text.RegularExpressions" />
 	</ItemGroup>
 
 </Project>

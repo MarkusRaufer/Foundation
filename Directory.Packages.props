@@ -7,13 +7,13 @@
     <PackageVersion Include="BenchmarkDotNet.Annotations" Version="0.13.12" />
     <PackageVersion Include="FluentAssertions" Version="7.0.0" />
     <PackageVersion Include="Foundation" Version="1.6.9-rc.3" />
-	<PackageVersion Include="Foundation.DesignPatterns" Version="1.6.9-rc.3" />
-    <PackageVersion Include="Foundation6.TestUtil" Version="1.6.9-rc.3" />
+    <PackageVersion Include="Foundation.DesignPatterns" Version="1.6.9-rc.3" />
+    <PackageVersion Include="Foundation.TestUtil" Version="1.6.9-rc.3" />
     <PackageVersion Include="Microsoft.NET.Test.Sdk" Version="17.12.0" />
     <PackageVersion Include="NUnit" Version="3.14.0" />
     <PackageVersion Include="NUnit3TestAdapter" Version="3.14.0" />
     <PackageVersion Include="System.Net.Http" Version="4.3.4" />
-    <PackageVersion Include="System.Text.RegularExpressions" Version="4.3.1" />
+    <PackageVersion Include="System.Text.RegularExpressions" Version="4.3.0" />
     <PackageVersion Include="xunit" Version="2.9.2" />
     <PackageVersion Include="xunit.runner.visualstudio" Version="2.8.2">
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>

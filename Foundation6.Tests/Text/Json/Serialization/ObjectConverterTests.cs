@@ -6,7 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Text.Json;
 
-namespace Foundation.TestUtil.Text.Json.Serialization;
+namespace Foundation.Text.Json.Serialization;
 
 [TestFixture]
 public class ObjectConverterTests

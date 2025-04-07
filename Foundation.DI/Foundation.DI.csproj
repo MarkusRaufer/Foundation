@@ -6,7 +6,14 @@
 		<Nullable>enable</Nullable>
 		<LangVersion>latest</LangVersion>
 		<PackageOutputPath>$(LOCAL_NUGET)\</PackageOutputPath>
-		<!--<Version>1.0.1</Version>-->
+
+		<Copyright>Markus Raufer</Copyright>
+		<Authors>Markus Raufer</Authors>
+		<Description>An extension to Foundation for dependency injection.</Description>
+		<PackageId>Foundation.DI</PackageId>
+		<PackageTags>Foundation, dependency injection, di</PackageTags>
+		<ProductName>Foundation.DI</ProductName>
+		<Version>1.6.9-rc.3</Version>
 	</PropertyGroup>
 
 </Project>

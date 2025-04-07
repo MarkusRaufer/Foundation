@@ -54,7 +54,10 @@ public class TestEnumerator<T> : IEnumerator<T>
         }
     }
 
+#if NET6_0_OR_GREATER
     [MaybeNull]
+#endif
+#pragma warning disable CS8603
     object IEnumerator.Current
     {
         get
@@ -67,6 +70,7 @@ public class TestEnumerator<T> : IEnumerator<T>
             return item;
         }
     }
+#pragma warning restore CS8603
 
     public void Dispose() => Dispose(true);
 

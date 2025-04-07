@@ -6,7 +6,14 @@
 		<Nullable>enable</Nullable>
 		<LangVersion>latest</LangVersion>
 		<PackageOutputPath>$(LOCAL_NUGET)\</PackageOutputPath>
-		<!--<Verion>1.0.1</Verion>-->
+
+		<Copyright>Markus Raufer</Copyright>
+		<Authors>Markus Raufer</Authors>
+		<Description>An extension to Foundation about algorithms.</Description>
+		<PackageId>Foundation.Algorithms</PackageId>
+		<PackageTags>Foundation, algorithm</PackageTags>
+		<ProductName>Foundation.Algorithms</ProductName>
+		<Version>1.6.9-rc.3</Version>
 	</PropertyGroup>
 
 </Project>
