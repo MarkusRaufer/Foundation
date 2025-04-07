@@ -24,13 +24,14 @@
 ﻿namespace Foundation;
 
 /// <summary>
-/// This event automatically removes all subscribers on Dispose().
+/// This event automatically removes all subscribers on Dispose(). 
+/// Subscriber can subscribe with a delegate by calling <see cref="Event.Subscribe(TDelegate)"/>. By calling <see cref="Event.Publish(object?[]?)"/> all subscribed delegates will be called.
 /// </summary>
 /// <typeparam name="TDelegate"></typeparam>
 public sealed class Event<TDelegate> : IDisposable
     where TDelegate : Delegate
 {
-    private readonly Lazy<List<WeakReference<TDelegate>>> _subscribtions = new(() => []);
+    private readonly Lazy<List<WeakReference<TDelegate>>> _subscriptions = new(() => []);
 
     private bool _disposing;
 
@@ -39,6 +40,9 @@ public sealed class Event<TDelegate> : IDisposable
         Dispose();
     }
 
+    /// <summary>
+    /// When called all subscribers will be unsubscribed.
+    /// </summary>
     public void Dispose()
     {
         if (!_disposing)
@@ -49,19 +53,27 @@ public sealed class Event<TDelegate> : IDisposable
         GC.SuppressFinalize(this);
     }
 
+    /// <summary>
+    /// True if at least one subscription exists.
+    /// </summary>
+    public bool HasSubscriptions => SubscriptionCount > 0;
+
+    /// <summary>
+    /// Is called on every Subscribe call.
+    /// </summary>
     public Action<TDelegate>? OnSubscribe { get; set; }
 
     /// <summary>
-    /// Calls the delegates of the the subscribers. 
+    /// Calls the delegates of the subscribers. 
     /// </summary>
     /// <param name="args">Each element of args corresponds to a parameter of the weakReference. If you want to use a list of values as a single parameter cast it to object.</param>
     public void Publish(params object?[]? args)
     {
-        foreach (var weakRef in _subscribtions.Value.ToArray())
+        foreach (var weakRef in _subscriptions.Value.ToArray())
         {
             if (!weakRef.TryGetTarget(out var target))
             {
-                _subscribtions.Value.Remove(weakRef);
+                _subscriptions.Value.Remove(weakRef);
                 continue;
             }
 
@@ -69,36 +81,52 @@ public sealed class Event<TDelegate> : IDisposable
         }
     }
 
+    /// <summary>
+    /// Subscribes a delegate to the event.
+    /// </summary>
+    /// <param name="delegate"></param>
+    /// <returns></returns>
     public IDisposable Subscribe(TDelegate @delegate)
     {
         @delegate.ThrowIfNull();
 
         var weakRef = new WeakReference<TDelegate>(@delegate);
-        //var disposable = new Disposable(() => Unsubscribe(weakRef));
-
-        //_subscribtions.Value.Add(weakRef);
-
-        //OnSubscribe?.Invoke(@delegate);
 
         return Subscribe(weakRef);
     }
 
+    /// <summary>
+    /// Subscribes a <see cref="Subscribe(WeakReference{TDelegate})"/> to the event.
+    /// </summary>
+    /// <param name="weakReference"></param>
+    /// <returns></returns>
     public IDisposable Subscribe(WeakReference<TDelegate> weakReference)
     {
         weakReference.ThrowIfNull();
 
         var disposable = new Disposable(() => Unsubscribe(weakReference));
 
-        _subscribtions.Value.Add(weakReference);
+        _subscriptions.Value.Add(weakReference);
 
         if (weakReference.TryGetTarget(out var target)) OnSubscribe?.Invoke(target);
 
         return disposable;
     }
 
-    public int SubscribtionCount => _subscribtions.Value.Count;
+    /// <summary>
+    /// Number of subscriptions.
+    /// </summary>
+    public int SubscriptionCount => _subscriptions.Value.Count;
 
-    private bool Unsubscribe(WeakReference<TDelegate> weakRef)  => _subscribtions.Value.Remove(weakRef);
+    /// <summary>
+    /// Unsubscribes a subscription.
+    /// </summary>
+    /// <param name="weakRef"></param>
+    /// <returns></returns>
+    private bool Unsubscribe(WeakReference<TDelegate> weakRef)  => _subscriptions.Value.Remove(weakRef);
 
-    public void UnsubscribeAll() => _subscribtions.Value.Clear();
+    /// <summary>
+    /// Removes all subscriptions.
+    /// </summary>
+    public void UnsubscribeAll() => _subscriptions.Value.Clear();
 }
