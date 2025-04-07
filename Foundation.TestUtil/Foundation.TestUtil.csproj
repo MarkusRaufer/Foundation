@@ -1,15 +1,22 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
 	<PropertyGroup>
-		<TargetFrameworks>netstandard2.0;net6.0;net8.0</TargetFrameworks>
+		<TargetFrameworks>net8.0</TargetFrameworks>
 		<ImplicitUsings>enable</ImplicitUsings>
 		<Nullable>enable</Nullable>
 		<LangVersion>latest</LangVersion>
 		<PackageOutputPath>$(LOCAL_NUGET)\</PackageOutputPath>
+
+		<Copyright>Markus Raufer</Copyright>
+		<Authors>Markus Raufer</Authors>
+		<Description>Test ustilities for Foundation.</Description>
+		<PackageId>Foundation.TestUtil</PackageId>
+		<PackageTags>Foundation, test utility</PackageTags>
+		<ProductName>Foundation.TestUtil</ProductName>
 	</PropertyGroup>
 
 	<ItemGroup>
-	  <PackageReference Include="Foundation" />
+	  <ProjectReference Include="..\Foundation6\Foundation.csproj" />
 	</ItemGroup>
 
 </Project>
