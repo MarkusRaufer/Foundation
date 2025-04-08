@@ -29,7 +29,7 @@ public static class EquatableList
 {
     public static EquatableList<T> New<T>(params T[] values)
     {
-        return new EquatableList<T>(values);
+        return [.. values];
     }
 }
 
