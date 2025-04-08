@@ -17,7 +17,7 @@ public class QuantityTests
         //Act
         var sut = Quantity.Parse(str);
 
-        //Assert
+        //ClassicAssert
         sut.Should().Be(quantity);
     }
 
@@ -32,7 +32,7 @@ public class QuantityTests
         //Act
         var sut = Quantity.Parse<Guid>(str);
 
-        //Assert
+        //ClassicAssert
         sut.Should().Be(quantity);
     }
 
@@ -46,7 +46,7 @@ public class QuantityTests
         //Act
         var sut = Quantity.Parse<int>(str);
 
-        //Assert
+        //ClassicAssert
         sut.Should().Be(quantity);
     }
 
@@ -60,7 +60,7 @@ public class QuantityTests
         //Act
         var success = Quantity.TryParse(str, out var sut);
 
-        //Assert
+        //ClassicAssert
         success.Should().BeTrue();
         sut.Should().Be(quantity);
     }
@@ -76,7 +76,7 @@ public class QuantityTests
         //Act
         var success = Quantity.TryParse<Guid>(str, out var sut);
 
-        //Assert
+        //ClassicAssert
         success.Should().BeTrue();
         sut.Should().Be(quantity);
     }
@@ -91,7 +91,7 @@ public class QuantityTests
         //Act
         var success = Quantity.TryParse<int>(str, out var sut);
 
-        //Assert
+        //ClassicAssert
         success.Should().BeTrue();
         sut.Should().Be(quantity);
     }

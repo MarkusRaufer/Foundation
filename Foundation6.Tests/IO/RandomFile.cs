@@ -1,4 +1,5 @@
 ﻿using NUnit.Framework;
+using Shouldly;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -16,11 +17,11 @@ public class RandomFileTests
         foreach (var _ in Enumerable.Range(0, max))
         {
             var fileName = TempFile.GetRandomName();
-            Assert.NotNull(fileName);
+            fileName.ShouldNotBeNull();
 
             fileNames.Add(fileName!);
         }
 
-        Assert.AreEqual(fileNames.Count, max);
+        fileNames.Count.ShouldBeEquivalentTo(max);
     }
 }

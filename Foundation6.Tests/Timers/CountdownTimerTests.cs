@@ -1,7 +1,6 @@
 ﻿using NUnit.Framework;
 using Shouldly;
 using System;
-using System.Threading;
 using System.Threading.Tasks;
 
 namespace Foundation.Timers;
@@ -12,7 +11,7 @@ public class CountdownTimerTests
     [Test]
     public void IntervalElapsed_Should_BeCalledOnce_When_Subscribed()
     {
-        var sut = new CountdownTimer(duration: TimeSpan.FromSeconds(2), interval: TimeSpan.FromSeconds(1));
+        using var sut = new CountdownTimer(duration: TimeSpan.FromSeconds(2), interval: TimeSpan.FromSeconds(1));
 
         var onElapsedCalled = 0;
         
@@ -25,18 +24,22 @@ public class CountdownTimerTests
 
         sut.IntervalElapsed.Subscribe(onElapsed);
         sut.Start();
-        
-        while (!sut.HasReachedZero)
+       
+        var times = 0;
+        while (times < 2)
         {
-            Task.Delay(TimeSpan.FromSeconds(1));
+            Task.Delay(TimeSpan.FromSeconds(1)).Wait();
+            times++;
         }
-        onElapsedCalled.ShouldBe(1);
+        
+        
+        onElapsedCalled.ShouldBe(2);
     }
 
     [Test]
     public void ZeroReached_Should_BeCalledOnce_When_Subscribed()
     {
-        var sut = new CountdownTimer(duration: TimeSpan.FromSeconds(1), interval: TimeSpan.FromSeconds(1));
+        using var sut = new CountdownTimer(duration: TimeSpan.FromSeconds(1), interval: TimeSpan.FromSeconds(1));
 
         var onElapsedCalled = 0;
 
@@ -59,10 +62,13 @@ public class CountdownTimerTests
 
         sut.Start();
 
-        while (!sut.HasReachedZero)
+        var times = 0;
+        while (times < 2)
         {
-            Task.Delay(TimeSpan.FromSeconds(1));
+            Task.Delay(TimeSpan.FromSeconds(1)).Wait();
+            times++;
         }
+
         onElapsedCalled.ShouldBe(1);
         onZeroReachedCalled.ShouldBe(1);
     }

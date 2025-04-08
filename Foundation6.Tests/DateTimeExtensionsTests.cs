@@ -1,4 +1,5 @@
 ﻿using NUnit.Framework;
+using Shouldly;
 using System;
 
 namespace Foundation
@@ -14,7 +15,7 @@ namespace Foundation
 
             var endOfDay = dt.EndOfDay();
 
-            Assert.AreEqual(expected, endOfDay);
+            expected.ShouldBeEquivalentTo(endOfDay);
         }
 
         [Test]
@@ -25,7 +26,7 @@ namespace Foundation
 
             var endOfDay = dt.EndOfYear();
 
-            Assert.AreEqual(expected, endOfDay);
+            expected.ShouldBeEquivalentTo(endOfDay);
         }
     }
 }

@@ -13,7 +13,7 @@ public class HashMapTests
         // Act
         var sut = new HashMap<int, string>();
 
-        // Assert
+        // ClassicAssert
         sut.Count.Should().Be(0);
     }
 
@@ -26,7 +26,7 @@ public class HashMapTests
         // Act
         sut.Add(1, 1.ToString());
 
-        // Assert
+        // ClassicAssert
         sut.Count.Should().Be(1);
 
         var value = sut[1];
@@ -43,7 +43,7 @@ public class HashMapTests
         // Act
         sut.Add(1, 1.ToString());
 
-        // Assert
+        // ClassicAssert
         sut.Count.Should().Be(1);
     }
 
@@ -58,7 +58,7 @@ public class HashMapTests
         // Act
         sut.Add(3, 1.ToString());
 
-        // Assert
+        // ClassicAssert
         sut.Count.Should().Be(2);
         {
             var value = sut[1];
@@ -80,7 +80,7 @@ public class HashMapTests
         // Act
         sut.Add(1, 10.ToString());
 
-        // Assert
+        // ClassicAssert
         sut.Count.Should().Be(1);
 
         var value = sut[1];
@@ -102,7 +102,7 @@ public class HashMapTests
         // Act
         sut.Clear();
 
-        // Assert
+        // ClassicAssert
         sut.Count.Should().Be(0);
     }
 
@@ -118,7 +118,7 @@ public class HashMapTests
             { 2, 2.ToString() }
         };
 
-        // Assert
+        // ClassicAssert
         sut.Count.Should().Be(2);
     }
 
@@ -131,7 +131,7 @@ public class HashMapTests
         // Act
         sut[1] = 1.ToString();
 
-        // Assert
+        // ClassicAssert
         sut.Count.Should().Be(1);
 
         var value = sut[1];
@@ -150,7 +150,7 @@ public class HashMapTests
         // Act
         sut[1] = 1.ToString();
 
-        // Assert
+        // ClassicAssert
         sut.Count.Should().Be(1);
     }
 
@@ -167,7 +167,7 @@ public class HashMapTests
         // Act
         sut[3] = 1.ToString();
 
-        // Assert
+        // ClassicAssert
         sut.Count.Should().Be(2);
         {
             var value = sut[1];
@@ -192,7 +192,7 @@ public class HashMapTests
         // Act
         sut[1] = 10.ToString();
 
-        // Assert
+        // ClassicAssert
         sut.Count.Should().Be(2);
 
         var value = sut[1];
@@ -212,7 +212,7 @@ public class HashMapTests
         // Act
         var removed = sut.Remove(new KeyValuePair<int, string>(1, 10.ToString()));
 
-        // Assert
+        // ClassicAssert
         sut.Count.Should().Be(2);
         removed.Should().BeFalse();
     }
@@ -230,7 +230,7 @@ public class HashMapTests
         // Act
         var removed = sut.Remove(new KeyValuePair<int, string>(1, 1.ToString()));
 
-        // Assert
+        // ClassicAssert
         sut.Count.Should().Be(1);
         removed.Should().BeTrue();
 
@@ -249,7 +249,7 @@ public class HashMapTests
         // Act
         var removed = sut.Remove(1);
 
-        // Assert
+        // ClassicAssert
         sut.Count.Should().Be(1);
         removed.Should().BeTrue();
 
@@ -271,7 +271,7 @@ public class HashMapTests
         // Act
         var found = sut.TryGetKey(2.ToString(), out var key);
 
-        // Assert
+        // ClassicAssert
         found.Should().BeTrue();
         key.Should().Be(2);
     }
@@ -290,7 +290,7 @@ public class HashMapTests
         // Act
         var found = sut.TryGetValue(2, out var value);
 
-        // Assert
+        // ClassicAssert
         found.Should().BeTrue();
         value.Should().Be(2.ToString());
     }

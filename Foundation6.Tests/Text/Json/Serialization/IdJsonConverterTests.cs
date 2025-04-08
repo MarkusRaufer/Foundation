@@ -23,7 +23,7 @@ public class IdJsonConverterTests
         //Act
         var id = JsonSerializer.Deserialize<Id>(json, options);
 
-        //Assert
+        //ClassicAssert
         id.Should().Be(expectedId);
     }
 
@@ -44,7 +44,7 @@ public class IdJsonConverterTests
         //Act
         var id = JsonSerializer.Deserialize<Id>(json, options);
 
-        //Assert
+        //ClassicAssert
         id.Should().Be(expectedId);
     }
 
@@ -64,7 +64,7 @@ public class IdJsonConverterTests
         //Act
         var id = JsonSerializer.Deserialize<Id>(json, options);
 
-        //Assert
+        //ClassicAssert
         id.Should().Be(expectedId);
     }
 
@@ -84,7 +84,7 @@ public class IdJsonConverterTests
         //Act
         var number = JsonSerializer.Deserialize<Id>(json, options);
 
-        //Assert
+        //ClassicAssert
         number.Should().Be(expectedNumber);
     }
 
@@ -104,7 +104,7 @@ public class IdJsonConverterTests
         //Act
         var id = JsonSerializer.Deserialize<Id>(json, options);
 
-        //Assert
+        //ClassicAssert
         id.Should().Be(expectedId);
     }
 
@@ -124,7 +124,7 @@ public class IdJsonConverterTests
         //Act
         var id = JsonSerializer.Deserialize<Id>(json, options);
 
-        //Assert
+        //ClassicAssert
         id.Should().Be(expectedId);
     }
 
@@ -143,7 +143,7 @@ public class IdJsonConverterTests
         //Act
         var json = JsonSerializer.Serialize(id, options);
 
-        //Assert
+        //ClassicAssert
         var expected = $$"""{"Type":"System.Decimal","Value":{{number.ToInvariantString()}}}""";
         json.Should().Be(expected);
     }
@@ -163,7 +163,7 @@ public class IdJsonConverterTests
         //Act
         var json = JsonSerializer.Serialize(id, options);
 
-        //Assert
+        //ClassicAssert
         var expected = $$"""{"Type":"System.Double","Value":{{number.ToInvariantString()}}}""";
         json.Should().Be(expected);
     }
@@ -183,7 +183,7 @@ public class IdJsonConverterTests
         //Act
         var json = JsonSerializer.Serialize(expectedId, options);
 
-        //Assert
+        //ClassicAssert
         var expected = $$"""{"Type":"System.Guid","Value":"{{guid}}"}""";
         json.Should().Be(expected);
     }
@@ -203,7 +203,7 @@ public class IdJsonConverterTests
         //Act
         var json = JsonSerializer.Serialize(id, options);
 
-        //Assert
+        //ClassicAssert
         var expected = $$"""{"Type":"System.Int32","Value":{{number}}}""";
         json.Should().Be(expected);
     }
@@ -223,7 +223,7 @@ public class IdJsonConverterTests
         //Act
         var json = JsonSerializer.Serialize(expectedId, options);
 
-        //Assert
+        //ClassicAssert
         var expected = $$"""{"Type":"System.Int64","Value":{{number}}}""";
         json.Should().Be(expected);
     }
@@ -243,7 +243,7 @@ public class IdJsonConverterTests
         //Act
         var json = JsonSerializer.Serialize(expectedId, options);
 
-        //Assert
+        //ClassicAssert
         var expected = $$"""{"Type":"System.String","Value":"{{str}}"}""";
         json.Should().Be(expected);
     }

@@ -2,7 +2,6 @@
 using NUnit.Framework;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 
 namespace Foundation
 {
@@ -99,7 +98,7 @@ namespace Foundation
             // Act
             sut.Publish();
 
-            // Assert
+            // ClassicAssert
             countable.Count.Should().Be(1);
         }
 
@@ -157,7 +156,7 @@ namespace Foundation
             sut.Subscribe(func1);
             sut.Subscribe(func2);
 
-            // Assert
+            // ClassicAssert
             sut.SubscriptionCount.Should().Be(2);
         }
 
@@ -177,7 +176,7 @@ namespace Foundation
             //this unsubscribes the delegate
             disposable.Dispose(); 
 
-            // Assert
+            // ClassicAssert
             sut.SubscriptionCount.Should().Be(1);
         }
     }

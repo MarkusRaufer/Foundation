@@ -1,5 +1,5 @@
-﻿using FluentAssertions;
-using NUnit.Framework;
+﻿using NUnit.Framework;
+using Shouldly;
 
 namespace Foundation;
 
@@ -11,7 +11,7 @@ public class EnumHelperTests
     {
         var str = EnumHelper.ToString(Month.Jul, nameAsValue: false);
         var expected = $"{7}";
-        str.Should().Be(expected);
+        str.ShouldBe(expected);
     }
 
     [Test]
@@ -19,6 +19,6 @@ public class EnumHelperTests
     {
         var str = EnumHelper.ToString(Month.Jul, nameAsValue: true);
         var expected = $"{Month.Jul}";
-        str.Should().Be(expected);
+        str.ShouldBe(expected);
     }
 }

@@ -1,4 +1,5 @@
 ﻿using NUnit.Framework;
+using Shouldly;
 using System;
 using System.Linq;
 
@@ -14,7 +15,7 @@ namespace Foundation.Buffers
             var str = ReadOnlyMemoryHelper.ToString(items, ',');
 
             const string expected = "1,2,3,4,5";
-            Assert.AreEqual(expected, str);
+            expected.ShouldBeEquivalentTo(str);
         }
 
         [Test]
@@ -24,7 +25,7 @@ namespace Foundation.Buffers
             var str = ReadOnlyMemoryHelper.ToString(items, ", ".AsMemory());
 
             const string expected = "1, 2, 3, 4, 5";
-            Assert.AreEqual(expected, str);
+            expected.ShouldBeEquivalentTo(str);
         }
     }
 }

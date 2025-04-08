@@ -19,7 +19,7 @@ public class HashMapValueTests
         // Act
         var sut = new HashMapValue<int, string>(keyValues);
 
-        // Assert
+        // ClassicAssert
         sut.Count.Should().Be(keyValues.Count);
     }
 
@@ -43,7 +43,7 @@ public class HashMapValueTests
 
         var equals = sut1.Equals(sut2);
 
-        // Assert
+        // ClassicAssert
         equals.Should().BeFalse();
     }
 
@@ -67,7 +67,7 @@ public class HashMapValueTests
 
         var equals = sut1.Equals(sut2);
 
-        // Assert
+        // ClassicAssert
         equals.Should().BeFalse();
     }
 
@@ -91,7 +91,7 @@ public class HashMapValueTests
 
         var equals = sut1.Equals(sut2);
 
-        // Assert
+        // ClassicAssert
         equals.Should().BeFalse();
     }
 
@@ -113,7 +113,7 @@ public class HashMapValueTests
         // Act
         var equals = sut1.Equals(sut2);
 
-        // Assert
+        // ClassicAssert
         equals.Should().BeTrue();
     }
 
@@ -127,7 +127,7 @@ public class HashMapValueTests
             { 2, 2.ToString() },
         });
 
-        // Assert
+        // ClassicAssert
         sut.Count.Should().Be(2);
     }
 
@@ -146,7 +146,7 @@ public class HashMapValueTests
         // Act
         var value = sut[3];
 
-        // Assert
+        // ClassicAssert
         value.Should().Be(3.ToString());
     }
 
@@ -164,7 +164,7 @@ public class HashMapValueTests
         // Act
         var found = sut.TryGetKey(2.ToString(), out var key);
 
-        // Assert
+        // ClassicAssert
         found.Should().BeTrue();
         key.Should().Be(2);
     }
@@ -183,7 +183,7 @@ public class HashMapValueTests
         // Act
         var found = sut.TryGetValue(2, out var value);
 
-        // Assert
+        // ClassicAssert
         found.Should().BeTrue();
         value.Should().Be(2.ToString());
     }

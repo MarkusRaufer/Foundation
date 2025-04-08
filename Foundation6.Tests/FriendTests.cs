@@ -22,7 +22,7 @@ public class FriendTests
         // Act
         sut[myClass] = changedValue;
 
-        // Assert
+        // ClassicAssert
         sut.Value.Should().Be(changedValue);
     }
 
@@ -41,7 +41,7 @@ public class FriendTests
         // Act
         sut[noFriend] = changedValue;
 
-        // Assert
+        // ClassicAssert
         sut.Value.Should().Be(initialValue);
     }
 
@@ -57,7 +57,7 @@ public class FriendTests
         // Act
         sut[myClass] = changedValue;
 
-        // Assert
+        // ClassicAssert
         sut.Value.Should().Be(changedValue);
     }
 
@@ -74,7 +74,7 @@ public class FriendTests
         // Act
         sut[myClass2] = changedValue;
 
-        // Assert
+        // ClassicAssert
         sut.Value.Should().Be(changedValue);
     }
 
@@ -91,7 +91,7 @@ public class FriendTests
         // Act
         sut[mySubClass] = changedValue;
 
-        // Assert
+        // ClassicAssert
         sut.Value.Should().Be(changedValue);
     }
 }

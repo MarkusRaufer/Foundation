@@ -1,5 +1,5 @@
-﻿using FluentAssertions;
-using NUnit.Framework;
+﻿using NUnit.Framework;
+using Shouldly;
 using System.Collections.Generic;
 
 namespace Foundation;
@@ -15,6 +15,6 @@ public class VoidTests
 
         var result = items.Count > index && Void.Returns(true, () => items.RemoveAt(index));
 
-        result.Should().BeTrue();
+        result.ShouldBeTrue();
     }
 }

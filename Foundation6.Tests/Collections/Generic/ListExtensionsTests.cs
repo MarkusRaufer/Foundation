@@ -1,5 +1,5 @@
-﻿using FluentAssertions;
-using NUnit.Framework;
+﻿using NUnit.Framework;
+using Shouldly;
 using System.Linq;
 
 namespace Foundation.Collections.Generic;
@@ -13,6 +13,6 @@ public class ListExtensionsTests
         var items1 = Enumerable.Range(1, 10).ToList();
 
         items1.TryGet(x => x == 5, out var value);
-        value.Should().Be(5);
+        value.ShouldBe(5);
     }
 }

@@ -69,7 +69,7 @@ public class RandomTests
         // Act
         var randomSelected = sut.GetItemsLazy(numbers, left, right).ToArray();
 
-        // Assert
+        // ClassicAssert
         var length = right - left + 1;
         randomSelected.Length.Should().Be(length);
         randomSelected.All(numbers.Contains).Should().BeTrue();
@@ -86,7 +86,7 @@ public class RandomTests
         // Act
         var numbers = random.IntegersWithoutDuplicates(min, max).ToArray();
 
-        // Assert
+        // ClassicAssert
         var length = max - min + 1;
         numbers.Length.Should().Be(length);
 

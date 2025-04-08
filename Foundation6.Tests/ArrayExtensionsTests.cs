@@ -1,11 +1,8 @@
-﻿using FluentAssertions;
-using Foundation.Collections.Generic;
+﻿using Foundation.Collections.Generic;
 using NUnit.Framework;
+using Shouldly;
 using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Foundation
 {
@@ -17,7 +14,7 @@ namespace Foundation
         [TestCase(new [] { 1, 2, 3 }, new [] { 1, 4, 3 })]
         public void EqualsArray_Should_ReturnFalse_When_ElementsAreNotSame(int[] lhs, int[] rhs)
         {
-            Assert.False(lhs.EqualsArray(rhs));
+            lhs.EqualsArray(rhs).ShouldBeFalse();
         }
 
         [Test]
@@ -25,7 +22,7 @@ namespace Foundation
         [TestCase(new[] { 1, 2, 3 }, new[] { 1, 2, 3 })]
         public void EqualsArray_Should_ReturnTrue_When_ElementsAreSame(int[] lhs, int[] rhs)
         {
-            Assert.True(lhs.EqualsArray(rhs));
+            lhs.EqualsArray(rhs).ShouldBeTrue();
         }
 
         [Test]
@@ -34,16 +31,16 @@ namespace Foundation
             var sut = new[] { 1, 2, 3 };
             var enumerator = sut.GetEnumerator();
 
-            Assert.IsTrue(enumerator.MoveNext());
-            Assert.AreEqual(sut[0], enumerator.Current);
+            enumerator.MoveNext().ShouldBeTrue();
+            sut[0].ShouldBeEquivalentTo(enumerator.Current);
 
-            Assert.IsTrue(enumerator.MoveNext());
-            Assert.AreEqual(sut[1], enumerator.Current);
+            enumerator.MoveNext().ShouldBeTrue();
+            sut[1].ShouldBeEquivalentTo(enumerator.Current);
 
-            Assert.IsTrue(enumerator.MoveNext());
-            Assert.AreEqual(sut[2], enumerator.Current);
+            enumerator.MoveNext().ShouldBeTrue();
+            sut[2].ShouldBeEquivalentTo(enumerator.Current);
 
-            Assert.IsFalse(enumerator.MoveNext());
+            enumerator.MoveNext().ShouldBeFalse();
         }
 
         [Test]
@@ -52,8 +49,8 @@ namespace Foundation
             var sut = new object[] { DateTime.Now, 2, "3", 4.5D };
             
             var comparables = sut.OfTypes(typeof(int), typeof(double));
-            comparables.Should().Contain(2);
-            comparables.Should().Contain(4.5);
+            comparables.ShouldContain(2);
+            comparables.ShouldContain(4.5);
         }
 
         [Test]
@@ -67,7 +64,7 @@ namespace Foundation
             var random = new Random();
 
             var shuffled = sut.Shuffle(random);
-            shuffled.All(x => expected.Contains(x)).Should().BeTrue();
+            shuffled.All(x => expected.Contains(x)).ShouldBeTrue();
         }
 
         [Test]

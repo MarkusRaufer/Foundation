@@ -3,7 +3,6 @@ using NUnit.Framework;
 using System;
 using System.Linq;
 using System.Linq.Expressions;
-using System.Xml.Linq;
 
 namespace Foundation.Linq.Expressions;
 

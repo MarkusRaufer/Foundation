@@ -1,11 +1,7 @@
 ﻿using NUnit.Framework;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text.Json;
-using System.Threading.Tasks;
+using Shouldly;
 using System.Dynamic;
-using FluentAssertions;
+using System.Text.Json;
 
 
 namespace Foundation.Text.Json.Serialization;
@@ -32,6 +28,6 @@ public class ExpandoObjectConverterTests
         var json = JsonSerializer.Serialize<ExpandoObject>(obj, options) as string;
 
         var expected = """{"FirstName":"Markus","IsDirty":true,"Alternatives":["1","2","3"],"State":{"Name":"myName","Description":"my description"}}""";
-        json.Should().Be(expected);
+        json.ShouldBe(expected);
     }
 }

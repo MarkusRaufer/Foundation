@@ -1,7 +1,5 @@
 ﻿using FluentAssertions;
-using Foundation.Text.Json.Serialization;
 using NUnit.Framework;
-using NUnit.Framework.Constraints;
 using System;
 using System.Collections.Generic;
 using System.Text.Json;

@@ -3,13 +3,18 @@ using Timer = System.Timers.Timer;
 
 namespace Foundation.Timers;
 
-public class CountdownTimer
+/// <summary>
+/// Counts a duration of time down.
+/// </summary>
+public sealed class CountdownTimer : IDisposable
 {
-    public Event<Action<TimeSpan>> IntervalElapsed = new();
-    public Event<Action> ZeroReached = new();
-
     private readonly Timer _timer;
 
+    /// <summary>
+    /// Constructor.
+    /// </summary>
+    /// <param name="duration">The duration of the count down (e.g. 10 seconds).</param>
+    /// <param name="interval">The interval of the count down (e.g. 1 second).</param>
     public CountdownTimer(TimeSpan duration, TimeSpan interval)
     {
         Duration = duration;
@@ -18,10 +23,6 @@ public class CountdownTimer
 
         _timer = new Timer(interval.TotalMilliseconds);
         _timer.Elapsed += OnTimerIntervalElapsed;
-        _timer.AutoReset = true;
-        _timer.Enabled = true;
-
-        HasReachedZero = false;
     }
 
     public CountdownTimer(Timer timer, TimeSpan duration)
@@ -31,38 +32,78 @@ public class CountdownTimer
         RemainingDuration = duration;
 
         _timer.Elapsed += OnTimerIntervalElapsed;
-        _timer.AutoReset = true;
-        _timer.Enabled = true;
 
         Interval = TimeSpan.FromMilliseconds(_timer.Interval);
-
-        HasReachedZero = false;
     }
 
+    /// <inheritdoc/>
+    public void Dispose()
+    {
+        Stop();
+
+        _timer.Dispose();
+        IntervalElapsed.Dispose();
+        ZeroReached.Dispose();
+    }
+
+    /// <summary>
+    /// The duration of the count down.
+    /// </summary>
     public TimeSpan Duration { get; }
 
-    public bool HasReachedZero { get; private set; }
+    /// <summary>
+    /// Event which is called on each elapsed interval.
+    /// </summary>
+    public Event<Action<TimeSpan>> IntervalElapsed { get; } = new();
 
+    /// <summary>
+    /// The remaining duration which will be decreased on every elapsed interval.
+    /// </summary>
     public TimeSpan RemainingDuration { get; private set; }
 
+    /// <summary>
+    /// The interval of the count down.
+    /// </summary>
     public TimeSpan Interval { get; }
 
     private void OnTimerIntervalElapsed(object? sender, ElapsedEventArgs e)
     {
         RemainingDuration = RemainingDuration.Subtract(Interval);
-        
-        if (RemainingDuration.Ticks <= 0)
+
+        var zeroReached = RemainingDuration.Ticks <= 0;
+
+        if (zeroReached)
         {
-            _timer.Stop();
+            Stop();
             RemainingDuration = TimeSpan.Zero;
-            HasReachedZero = true;
-            ZeroReached.Publish();
         }
 
         IntervalElapsed.Publish(RemainingDuration);
+        if (zeroReached) ZeroReached.Publish();
     }
 
-    public void Start() => _timer.Start();
+    /// <summary>
+    /// Starts the timer in another thread.
+    /// </summary>
+    public void Start()
+    {
+        _timer.AutoReset = true;
+        _timer.Enabled = true;
+        _timer.Start();
+    }
 
-    public void Stop() => _timer.Stop();
+    /// <summary>
+    /// Stops the timer.
+    /// </summary>
+    public void Stop()
+    {
+        _timer.Stop();
+        _timer.AutoReset = false;
+        _timer.Enabled = false;
+    }
+
+    /// <summary>
+    /// Event is called once when the count down reached zero.
+    /// </summary>
+    public Event<Action> ZeroReached { get; } = new();
 }

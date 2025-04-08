@@ -2277,7 +2277,7 @@ public class EnumerableExtensionsTests
         // Act
         var shingles = numbers.Shingles(5).ToArray();
 
-        // Assert
+        // ClassicAssert
         shingles.Length.Should().Be(1);
         
         var shingle = shingles[0];
@@ -2293,7 +2293,7 @@ public class EnumerableExtensionsTests
         // Act
         var shingles = numbers.Shingles(5).ToArray();
 
-        // Assert
+        // ClassicAssert
         shingles.Length.Should().Be(6);
         {
             var shingle = shingles[0];

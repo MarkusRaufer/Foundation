@@ -1,11 +1,6 @@
 ﻿using FluentAssertions;
 using NUnit.Framework;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Text.Json;
-using System.Threading.Tasks;
 
 namespace Foundation.Text.Json.Serialization;
 
@@ -27,7 +22,7 @@ public class QuantityConverterTests
         //Act
         var quantity = JsonSerializer.Deserialize<Quantity?>(json, options);
 
-        //Assert
+        //ClassicAssert
         quantity.Should().Be(expected);
     }
 
@@ -45,7 +40,7 @@ public class QuantityConverterTests
         //Act
         var json = JsonSerializer.Serialize(quantity, options);
 
-        //Assert
+        //ClassicAssert
         var expected = $$"""{"Unit":"kg","Value":12.34}""";
         json.Should().Be(expected);
     }

@@ -1,4 +1,5 @@
 ﻿using NUnit.Framework;
+using Shouldly;
 
 namespace Foundation;
 
@@ -13,6 +14,6 @@ public class LoopTests
 
         Loop.Repeat(numberOfIterations, () => ++counter);
 
-        Assert.AreEqual(numberOfIterations, counter);
+        numberOfIterations.ShouldBeEquivalentTo(counter);
     }
 }

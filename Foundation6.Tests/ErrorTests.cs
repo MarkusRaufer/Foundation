@@ -1,5 +1,5 @@
-﻿using FluentAssertions;
-using NUnit.Framework;
+﻿using NUnit.Framework;
+using Shouldly;
 using System;
 using System.Linq;
 
@@ -17,7 +17,7 @@ public class ErrorTests
         var err4 = new Error("4", "msg 4", new[] { err1, err3 });
 
         var errors = err4.Flatten().ToArray();
-        errors.Length.Should().Be(4);
+        errors.Length.ShouldBe(4);
     }
 
     [Test]
@@ -36,26 +36,26 @@ public class ErrorTests
         var exception3 = new ArgumentException(message3, id3, exception2);
 
         var error = Error.FromException(exception3);
-        error.Should().NotBeNull();
+        error.ShouldNotBeNull();
         {
-            error.Id.Should().Be(nameof(ArgumentException));
-            error.Message.StartsWith(message3).Should().BeTrue();
+            error.Id.ShouldBe(typeof(ArgumentException).FullName);
+            error.Message.StartsWith(message3).ShouldBeTrue();
         }
         {
-            error.InnerErrors.Should().NotBeNull();
-            error.InnerErrors!.Length.Should().Be(1);
+            error.InnerErrors.ShouldNotBeNull();
+            error.InnerErrors!.Length.ShouldBe(1);
 
             error = error.InnerErrors[0];
-            error.Id.Should().Be(nameof(ArgumentOutOfRangeException));
-            error.Message.StartsWith(id2).Should().BeTrue();
+            error.Id.ShouldBe(typeof(ArgumentOutOfRangeException).FullName);
+            error.Message.StartsWith(id2).ShouldBeTrue();
         }
         {
-            error.InnerErrors.Should().NotBeNull();
-            error.InnerErrors!.Length.Should().Be(1);
+            error.InnerErrors.ShouldNotBeNull();
+            error.InnerErrors!.Length.ShouldBe(1);
 
             error = error.InnerErrors[0];
-            error.Id.Should().Be(nameof(ArgumentNullException));
-            error.Message.StartsWith(id1).Should().BeTrue();
+            error.Id.ShouldBe(typeof(ArgumentNullException).FullName);
+            error.Message.StartsWith(id1).ShouldBeTrue();
         }
     }
 }

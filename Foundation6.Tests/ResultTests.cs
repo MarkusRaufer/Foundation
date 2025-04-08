@@ -67,7 +67,7 @@ public class ResultTests
         // Act
         var sut = Result.Maybe<string>(value);
 
-        // Assert
+        // ClassicAssert
         sut.IsOk.Should().BeFalse();
     }
 
@@ -81,7 +81,7 @@ public class ResultTests
         // Act
         var sut = Result.Maybe<string>(value, () => new ArgumentException(exceptionMessage));
 
-        // Assert
+        // ClassicAssert
         sut.IsOk.Should().BeFalse();
     }
 
