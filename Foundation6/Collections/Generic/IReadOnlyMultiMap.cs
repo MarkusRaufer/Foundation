@@ -34,6 +34,13 @@ public interface IReadOnlyMultiMap<TKey, TValue, TValueCollection>
     where TValueCollection : IEnumerable<TValue>
 {
     /// <summary>
+    /// Indexer gets a value from a specific key.
+    /// </summary>
+    /// <param name="key">The key of the dictionary.</param>
+    /// <returns>A value or throws an exception.</returns>
+    TValue this[TKey key] { get; }
+
+    /// <summary>
     /// Checks if key value pair exists.
     /// </summary>
     /// <param name="key"></param>

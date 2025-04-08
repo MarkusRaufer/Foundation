@@ -35,6 +35,13 @@ public interface IMultiMap<TKey, TValue, TValueCollection>
     where TValueCollection : IEnumerable<TValue>
 {
     /// <summary>
+    /// Indexer gets or sets a value with a specific key.
+    /// </summary>
+    /// <param name="key">The key of the dictionary.</param>
+    /// <returns></returns>
+    new TValue this[TKey key] { get; set; }
+
+    /// <summary>
     /// Adds a list of values to a key.
     /// </summary>
     /// <param name="key"></param>
