@@ -29,8 +29,16 @@ namespace Foundation.Collections.Generic
         : IReadOnlyDictionary<TKey, TValue>
         , INotifyCollectionChanged
     {
+        /// <summary>
+        /// Gets or sets a value with a specific key.
+        /// </summary>
+        /// <param name="key">The key of the value.</param>
+        /// <returns>A value or throws an exception if key not exists.</returns>
         new TValue this[TKey key] { get; set; }
 
+        /// <summary>
+        /// True if the dictionary was changed.
+        /// </summary>
         bool IsDirty { get; set; }
     }
 }

@@ -237,6 +237,20 @@ public static class EnumerableTransformations
     }
 
     /// <summary>
+    /// Creates a <see cref="IImmutableKeysDictionary{TKey, TValue}"/> from a list of key values.
+    /// </summary>
+    /// <typeparam name="TKey">Type of the keys.</typeparam>
+    /// <typeparam name="TValue">Type of the values.</typeparam>
+    /// <param name="keyValues">List of key values which should be added to the <see cref="IImmutableKeysDictionary{TKey, TValue}"/>-</param>
+    /// <returns><see cref="IImmutableKeysDictionary{TKey, TValue}"/> including the <paramref name="keyValues"/>.</returns>
+    public static IImmutableKeysDictionary<TKey, TValue> ToImmutableKeysDictionary<TKey, TValue>(this IEnumerable<KeyValuePair<TKey, TValue>> keyValues)
+        where TKey : notnull
+    {
+        keyValues.ThrowIfNull();
+        return new ImmutableKeysDictionary<TKey, TValue>(keyValues);
+    }
+
+    /// <summary>
     /// Creates a <see cref="IMultiMap{TKey, TValue}"/> from an enumerable.
     /// </summary>
     /// <typeparam name="T"></typeparam>

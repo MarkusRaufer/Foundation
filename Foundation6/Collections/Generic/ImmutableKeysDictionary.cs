@@ -38,36 +38,25 @@ public class ImmutableKeysDictionary<TKey, TValue>
 {
     public event NotifyCollectionChangedEventHandler? CollectionChanged;
 
-    private readonly HashSet<TKey> _keys;
     private readonly IDictionary<TKey, TValue> _keyValues;
-
-    public ImmutableKeysDictionary(IEnumerable<TKey> keys)
-    {
-        _keys = [.. keys];
-        _keyValues = new Dictionary<TKey, TValue>();
-    }
 
     public ImmutableKeysDictionary(IEnumerable<KeyValuePair<TKey, TValue>> keyValues)
     {
         _keyValues = keyValues.ToDictionary(x => x.Key, x => x.Value);
-        _keys = [.. _keyValues.Keys];
     }
 
     public ImmutableKeysDictionary(IDictionary<TKey, TValue> dictionary)
     {
         _keyValues = dictionary.ThrowIfNull();
-        _keys = [.. _keyValues.Keys];
     }
 
+    /// <inheritdoc/>
     public TValue this[TKey key]
     {
         get => _keyValues[key];
         set
         {
-            if (!_keys.Contains(key)) return;
-
-            var valueExists = _keyValues.TryGetValue(key, out TValue? oldValue);
-            if (!valueExists || oldValue.EqualsNullable(value)) return;
+            if (!_keyValues.TryGetValue(key, out TValue? oldValue) || oldValue.EqualsNullable(value)) return;
 
             _keyValues[key] = value;
 
@@ -80,18 +69,25 @@ public class ImmutableKeysDictionary<TKey, TValue>
         }
     }
 
+    /// <inheritdoc/>
     public int Count => _keyValues.Count;
 
+    /// <inheritdoc/>
     public IEnumerable<TKey> Keys => _keyValues.Keys;
 
+    /// <inheritdoc/>
     public IEnumerable<TValue> Values => _keyValues.Values;
 
-    public bool ContainsKey(TKey key) => _keys.Contains(key);
+    /// <inheritdoc/>
+    public bool ContainsKey(TKey key) => _keyValues.ContainsKey(key);
 
+    /// <inheritdoc/>
     public IEnumerator<KeyValuePair<TKey, TValue>> GetEnumerator() => _keyValues.GetEnumerator();
 
+    /// <inheritdoc/>
     IEnumerator IEnumerable.GetEnumerator() => _keyValues.GetEnumerator();
 
+    /// <inheritdoc/>
     public bool IsDirty { get; set; }
 
 #if NETSTANDARD2_0
