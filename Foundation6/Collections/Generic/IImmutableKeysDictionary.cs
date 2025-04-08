@@ -25,10 +25,12 @@
 
 namespace Foundation.Collections.Generic
 {
-    public interface IFixedKeysDictionary<TKey, TValue> 
+    public interface IImmutableKeysDictionary<TKey, TValue> 
         : IReadOnlyDictionary<TKey, TValue>
         , INotifyCollectionChanged
     {
         new TValue this[TKey key] { get; set; }
+
+        bool IsDirty { get; set; }
     }
 }

@@ -33,7 +33,7 @@ namespace Foundation.Collections.Generic;
 /// <typeparam name="TKey"></typeparam>
 /// <typeparam name="TValue"></typeparam>
 public class ImmutableKeysDictionary<TKey, TValue>
-    : IFixedKeysDictionary<TKey, TValue>
+    : IImmutableKeysDictionary<TKey, TValue>
     where TKey : notnull
 {
     public event NotifyCollectionChangedEventHandler? CollectionChanged;
@@ -67,16 +67,15 @@ public class ImmutableKeysDictionary<TKey, TValue>
             if (!_keys.Contains(key)) return;
 
             var valueExists = _keyValues.TryGetValue(key, out TValue? oldValue);
-            if (valueExists && oldValue.EqualsNullable(value)) return;
+            if (!valueExists || oldValue.EqualsNullable(value)) return;
 
             _keyValues[key] = value;
 
+            IsDirty = true;
+
             if (null == CollectionChanged) return;
 
-            var args = valueExists
-                ? new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Replace, Pair.New(key, value), Pair.New(key, oldValue))
-                : new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Replace, Pair.New(key, value), null);
-
+            var args = new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Replace, Pair.New(key, value), Pair.New(key, oldValue));
             CollectionChanged?.Invoke(this, args);
         }
     }
@@ -92,6 +91,8 @@ public class ImmutableKeysDictionary<TKey, TValue>
     public IEnumerator<KeyValuePair<TKey, TValue>> GetEnumerator() => _keyValues.GetEnumerator();
 
     IEnumerator IEnumerable.GetEnumerator() => _keyValues.GetEnumerator();
+
+    public bool IsDirty { get; set; }
 
 #if NETSTANDARD2_0
     public bool TryGetValue(TKey key, out TValue value) => _keyValues.TryGetValue(key, out value);
