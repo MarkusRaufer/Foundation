@@ -224,6 +224,12 @@ public static class EnumerableTransformations
         return DictionaryValue.New(newItems);
     }
 
+    /// <summary>
+    /// Creates a <see cref="HashSetValue{T}"/> from a list of items.
+    /// </summary>
+    /// <typeparam name="T">Type of the items.</typeparam>
+    /// <param name="items">List of items to be added to the <see cref="HashSetValue{T}"/>.</param>
+    /// <returns><see cref="HashSetValue{T}"/> including unique items.</returns>
     public static HashSetValue<T> ToHashSetValue<T>(this IEnumerable<T> items)
     {
         items.ThrowIfEnumerableIsNull();
