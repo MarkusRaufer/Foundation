@@ -26,7 +26,7 @@ public class CountdownTimerTests
         sut.Start();
        
         var times = 0;
-        while (times < 2)
+        while (times < 3)
         {
             Task.Delay(TimeSpan.FromSeconds(1)).Wait();
             times++;
