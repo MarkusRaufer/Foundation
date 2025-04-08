@@ -32,7 +32,7 @@ namespace Foundation.Collections.Generic;
 /// </summary>
 /// <typeparam name="TKey"></typeparam>
 /// <typeparam name="TValue"></typeparam>
-public class FixedKeysDictionary<TKey, TValue>
+public class ImmutableKeysDictionary<TKey, TValue>
     : IFixedKeysDictionary<TKey, TValue>
     where TKey : notnull
 {
@@ -41,22 +41,22 @@ public class FixedKeysDictionary<TKey, TValue>
     private readonly HashSet<TKey> _keys;
     private readonly IDictionary<TKey, TValue> _keyValues;
 
-    public FixedKeysDictionary(IEnumerable<TKey> keys)
+    public ImmutableKeysDictionary(IEnumerable<TKey> keys)
     {
-        _keys = new HashSet<TKey>(keys);
+        _keys = [.. keys];
         _keyValues = new Dictionary<TKey, TValue>();
     }
 
-    public FixedKeysDictionary(IEnumerable<KeyValuePair<TKey, TValue>> keyValues)
+    public ImmutableKeysDictionary(IEnumerable<KeyValuePair<TKey, TValue>> keyValues)
     {
         _keyValues = keyValues.ToDictionary(x => x.Key, x => x.Value);
-        _keys = new HashSet<TKey>(_keyValues.Keys);
+        _keys = [.. _keyValues.Keys];
     }
 
-    public FixedKeysDictionary(IDictionary<TKey, TValue> dictionary)
+    public ImmutableKeysDictionary(IDictionary<TKey, TValue> dictionary)
     {
         _keyValues = dictionary.ThrowIfNull();
-        _keys = new HashSet<TKey>(_keyValues.Keys);
+        _keys = [.. _keyValues.Keys];
     }
 
     public TValue this[TKey key]

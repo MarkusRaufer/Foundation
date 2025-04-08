@@ -32,44 +32,44 @@ using System.Diagnostics.CodeAnalysis;
 /// </summary>
 /// <typeparam name="TKey"></typeparam>
 /// <typeparam name="TValue"></typeparam>
-public class FixedKeysMultiMap<TKey, TValue> : IReadOnlyMultiMap<TKey, TValue>
+public class ImmutableKeysMultiMap<TKey, TValue> : IReadOnlyMultiMap<TKey, TValue>
     where TKey : notnull
 {
     private readonly IDictionary<TKey, ICollection<TValue>> _dictionary;
     private readonly HashSet<TKey> _keys;
     private readonly Func<ICollection<TValue>> _valueCollectionFactory;
 
-    public FixedKeysMultiMap(IEnumerable<TKey> keys) 
+    public ImmutableKeysMultiMap(IEnumerable<TKey> keys) 
         : this(keys, new Dictionary<TKey, ICollection<TValue>>(), () => new List<TValue>())
     {
     }
 
-    public FixedKeysMultiMap(IEnumerable<TKey> keys, IEqualityComparer<TKey> comparer)
+    public ImmutableKeysMultiMap(IEnumerable<TKey> keys, IEqualityComparer<TKey> comparer)
         : this(keys, comparer, () => new List<TValue>())
     {
     }
 
-    public FixedKeysMultiMap(IEnumerable<TKey> keys, IEqualityComparer<TKey> comparer, Func<ICollection<TValue>> valueCollectionFactory)
+    public ImmutableKeysMultiMap(IEnumerable<TKey> keys, IEqualityComparer<TKey> comparer, Func<ICollection<TValue>> valueCollectionFactory)
         : this(keys, new Dictionary<TKey, ICollection<TValue>>(comparer), valueCollectionFactory)
     {
     }
 
-    public FixedKeysMultiMap(IEnumerable<TKey> keys, IDictionary<TKey, ICollection<TValue>> dictionary)
+    public ImmutableKeysMultiMap(IEnumerable<TKey> keys, IDictionary<TKey, ICollection<TValue>> dictionary)
         : this(keys, dictionary, () => new List<TValue>())
     {
     }
 
-    public FixedKeysMultiMap(IEnumerable<TKey> keys, Func<ICollection<TValue>> valueCollectionFactory)
+    public ImmutableKeysMultiMap(IEnumerable<TKey> keys, Func<ICollection<TValue>> valueCollectionFactory)
         : this(keys, new Dictionary<TKey, ICollection<TValue>>(), valueCollectionFactory)
     {
     }
 
-    public FixedKeysMultiMap(
+    public ImmutableKeysMultiMap(
         IEnumerable<TKey> keys,
         IDictionary<TKey, ICollection<TValue>> dictionary,
         Func<ICollection<TValue>> valueCollectionFactory)
     {
-        _keys = new HashSet<TKey>(keys.ThrowIfEnumerableIsNullOrEmpty());
+        _keys = [.. keys.ThrowIfEnumerableIsNullOrEmpty()];
         _dictionary = dictionary.ThrowIfNull();
         _valueCollectionFactory = valueCollectionFactory.ThrowIfNull();
     }
