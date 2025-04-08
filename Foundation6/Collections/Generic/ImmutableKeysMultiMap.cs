@@ -24,7 +24,9 @@
 ﻿namespace Foundation.Collections.Generic;
 
 using System.Collections;
+using System.Collections.Specialized;
 using System.Diagnostics.CodeAnalysis;
+using System.Linq;
 
 /// <summary>
 /// Dictionary that supports multiple values per key.
@@ -32,44 +34,71 @@ using System.Diagnostics.CodeAnalysis;
 /// </summary>
 /// <typeparam name="TKey"></typeparam>
 /// <typeparam name="TValue"></typeparam>
-public class ImmutableKeysMultiMap<TKey, TValue> : IReadOnlyMultiMap<TKey, TValue>
-    where TKey : notnull
+public class ImmutableKeysMultiMap<TKey, TValue> : IImmutableKeysMultiMap<TKey, TValue> where TKey : notnull
 {
     private readonly IDictionary<TKey, ICollection<TValue>> _dictionary;
-    private readonly HashSet<TKey> _keys;
     private readonly Func<ICollection<TValue>> _valueCollectionFactory;
 
-    public ImmutableKeysMultiMap(IEnumerable<TKey> keys) 
-        : this(keys, new Dictionary<TKey, ICollection<TValue>>(), () => new List<TValue>())
+    public event NotifyCollectionChangedEventHandler? CollectionChanged;
+
+    public ImmutableKeysMultiMap(IEnumerable<TKey> keys) : this(keys, () => [])
     {
     }
 
-    public ImmutableKeysMultiMap(IEnumerable<TKey> keys, IEqualityComparer<TKey> comparer)
-        : this(keys, comparer, () => new List<TValue>())
-    {
-    }
-
-    public ImmutableKeysMultiMap(IEnumerable<TKey> keys, IEqualityComparer<TKey> comparer, Func<ICollection<TValue>> valueCollectionFactory)
-        : this(keys, new Dictionary<TKey, ICollection<TValue>>(comparer), valueCollectionFactory)
-    {
-    }
-
-    public ImmutableKeysMultiMap(IEnumerable<TKey> keys, IDictionary<TKey, ICollection<TValue>> dictionary)
-        : this(keys, dictionary, () => new List<TValue>())
+    public ImmutableKeysMultiMap(IEnumerable<KeyValuePair<TKey, ICollection<TValue>>> keyValues) : this (keyValues, () => [])
     {
     }
 
     public ImmutableKeysMultiMap(IEnumerable<TKey> keys, Func<ICollection<TValue>> valueCollectionFactory)
-        : this(keys, new Dictionary<TKey, ICollection<TValue>>(), valueCollectionFactory)
     {
+        _dictionary = new Dictionary<TKey, ICollection<TValue>>();
+        _valueCollectionFactory = valueCollectionFactory.ThrowIfNull();
+
+        foreach (var key in keys)
+        {
+            _dictionary[key] = valueCollectionFactory();
+        }
+    }
+
+    public ImmutableKeysMultiMap(IEnumerable<TKey> keys, IEqualityComparer<TKey> comparer, Func<ICollection<TValue>> valueCollectionFactory)
+    {
+        _dictionary = new Dictionary<TKey, ICollection<TValue>>(comparer);
+        _valueCollectionFactory = valueCollectionFactory.ThrowIfNull();
+
+        foreach (var key in keys)
+        {
+            _dictionary[key] = valueCollectionFactory();
+        }
+    }
+
+    public ImmutableKeysMultiMap(IEnumerable<KeyValuePair<TKey, ICollection<TValue>>> keyValues, Func<ICollection<TValue>> valueCollectionFactory)
+    {
+        _dictionary = new Dictionary<TKey, ICollection<TValue>>();
+        _valueCollectionFactory = valueCollectionFactory.ThrowIfNull();
+
+        foreach (var pair in keyValues.ThrowIfNull())
+        {
+            _dictionary[pair.Key] = pair.Value;
+        }
     }
 
     public ImmutableKeysMultiMap(
-        IEnumerable<TKey> keys,
-        IDictionary<TKey, ICollection<TValue>> dictionary,
+        IEnumerable<KeyValuePair<TKey, ICollection<TValue>>> keyValues,
+        IEqualityComparer<TKey> comparer,
         Func<ICollection<TValue>> valueCollectionFactory)
     {
-        _keys = [.. keys.ThrowIfEnumerableIsNullOrEmpty()];
+        _dictionary = new Dictionary<TKey, ICollection<TValue>>(comparer);
+        _valueCollectionFactory = valueCollectionFactory.ThrowIfNull();
+
+        foreach (var pair in keyValues.ThrowIfNull())
+        {
+            _dictionary[pair.Key] = pair.Value;
+        }
+    }
+
+
+    public ImmutableKeysMultiMap(IDictionary<TKey, ICollection<TValue>> dictionary, Func<ICollection<TValue>> valueCollectionFactory)
+    {
         _dictionary = dictionary.ThrowIfNull();
         _valueCollectionFactory = valueCollectionFactory.ThrowIfNull();
     }
@@ -175,7 +204,7 @@ public class ImmutableKeysMultiMap<TKey, TValue> : IReadOnlyMultiMap<TKey, TValu
             ? GetValues(keys)
             : _dictionary.Values.SelectMany(values => values);
     }
-    
+
     /// <summary>
     /// Returns the keys containing the value.
     /// </summary>
@@ -257,6 +286,13 @@ public class ImmutableKeysMultiMap<TKey, TValue> : IReadOnlyMultiMap<TKey, TValu
         return 0;
     }
 
+
+    /// <inheritdoc/>
+    public bool IsDirty { get; set; }
+
+    /// <summary>
+    /// Gets a value indicating whether the map is readonly or not.
+    /// </summary>
     public bool IsReadOnly => _dictionary.IsReadOnly;
 
     /// <summary>
@@ -286,12 +322,7 @@ public class ImmutableKeysMultiMap<TKey, TValue> : IReadOnlyMultiMap<TKey, TValu
     }
 #pragma warning restore
 
-    /// <summary>
-    /// Returns values of key if true otherwise an empty list.
-    /// </summary>
-    /// <param name="key"></param>
-    /// <param name="values"></param>
-    /// <returns></returns>
+    /// <inheritdoc/>
     public bool TryGetValues(TKey key, [NotNullWhen(true)] out ICollection<TValue>? values)
     {
         if (_dictionary.TryGetValue(key, out ICollection<TValue>? vals))
@@ -304,6 +335,7 @@ public class ImmutableKeysMultiMap<TKey, TValue> : IReadOnlyMultiMap<TKey, TValu
         return false;
     }
 
+    /// <inheritdoc/>
     public bool TryGetKey(TValue value, out TKey? key)
     {
         foreach (var dictionary in _dictionary)
@@ -319,6 +351,7 @@ public class ImmutableKeysMultiMap<TKey, TValue> : IReadOnlyMultiMap<TKey, TValu
         return false;
     }
 
+    /// <inheritdoc/>
     public bool TryGetKeys(TValue value, out IEnumerable<TKey> keys)
     {
         var foundKeys = new List<TKey>();
@@ -342,15 +375,22 @@ public class ImmutableKeysMultiMap<TKey, TValue> : IReadOnlyMultiMap<TKey, TValu
         get => _dictionary[key].First();
         set
         {
-            if (!_keys.Contains(key)) return;
+            if (!_dictionary.TryGetValue(key, out ICollection<TValue>? values)) return;
 
-            if (!_dictionary.TryGetValue(key, out ICollection<TValue>? values))
+            if (null == values)
             {
                 values = _valueCollectionFactory();
                 _dictionary[key] = values;
             }
 
             values.Add(value);
+
+            IsDirty = true;
+
+            if (null == CollectionChanged) return;
+
+            var args = new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Replace, Pair.New(key, value), null);
+            CollectionChanged?.Invoke(this, args);
         }
     }
 }
