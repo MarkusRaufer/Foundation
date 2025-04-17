@@ -26,6 +26,7 @@ namespace Foundation.Collections.Generic;
 using Foundation;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Data;
 using System.Diagnostics.CodeAnalysis;
 using System.Runtime.InteropServices;
@@ -64,7 +65,7 @@ public static class EnumerableExtensions
     }
 
     /// <summary>
-    /// checks if all items are equal.
+    /// checks if all options are equal.
     /// </summary>
     /// <typeparam name="T"></typeparam>
     /// <typeparam name="TSelector"></typeparam>
@@ -101,7 +102,7 @@ public static class EnumerableExtensions
     }
 
     /// <summary>
-    /// checks if all elements of items are equal.
+    /// checks if all elements of options are equal.
     /// </summary>
     /// <typeparam name="T">Type of the elements.</typeparam>
     /// <typeparam name="TSelector">Type of selected value.</typeparam>
@@ -128,11 +129,11 @@ public static class EnumerableExtensions
     }
 
     /// <summary>
-    /// Checks if the selected values of the items are of the same type.
+    /// Checks if the selected values of the options are of the same type.
     /// </summary>
     /// <typeparam name="T">Type of the item.</typeparam>
     /// <typeparam name="TSelector">Type of the selected value of the item.</typeparam>
-    /// <param name="items">List of items.</param>
+    /// <param name="items">List of options.</param>
     /// <param name="selector"></param>
     /// <returns></returns>
     public static bool AllOfSameType<T, TSelector>(this IEnumerable<T> items, Func<T, TSelector> selector)
@@ -209,19 +210,6 @@ public static class EnumerableExtensions
     }
 
     /// <summary>
-    /// Checks if lhs contains at least one element of rhs.
-    /// </summary>
-    /// <typeparam name="T"></typeparam>
-    /// <param name="lhs"></param>
-    /// <param name="rhs"></param>
-    /// <returns></returns>
-    public static bool Contains<T>(this IEnumerable<T> lhs, IEnumerable<T> rhs)
-    {
-        var search = new HashSet<T>(rhs);
-        return search.Overlaps(lhs);
-    }
-
-    /// <summary>
     /// compares to lists of integers.
     /// </summary>
     /// <param name="lhs"></param>
@@ -246,14 +234,27 @@ public static class EnumerableExtensions
     }
 
     /// <summary>
+    /// Checks if lhs contains at least one element of rhs.
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <param name="lhs"></param>
+    /// <param name="rhs"></param>
+    /// <returns></returns>
+    public static bool Contains<T>(this IEnumerable<T> lhs, IEnumerable<T> rhs)
+    {
+        var search = new HashSet<T>(rhs);
+        return search.Overlaps(lhs);
+    }
+
+    /// <summary>
     /// Correlates to lists by a predicate. All elements which match from both lists will be returned.
     /// </summary>
-    /// <typeparam name="T">Type of the items</typeparam>
+    /// <typeparam name="T">Type of the options</typeparam>
     /// <typeparam name="TKey">Type of the predicate value.</typeparam>
     /// <param name="lhs">Left list.</param>
     /// <param name="rhs">Right list.</param>
     /// <param name="selector">Selector funciton.</param>
-    /// <returns>List of correlating items</returns>
+    /// <returns>List of correlating options</returns>
     public static IEnumerable<T> Correlate<T, TKey>(this IEnumerable<T> lhs, IEnumerable<T> rhs, Func<T, TKey> selector)
     {
         foreach (var (x, y) in lhs.Join(rhs, selector, selector, (x, y) => (x, y)))
@@ -264,7 +265,7 @@ public static class EnumerableExtensions
     }
 
     /// <summary>
-    /// Creates an endless list of items. Always limit the iteration. Means don't use e.g. ToList() directly.
+    /// Creates an endless list of options. Always limit the iteration. Means don't use e.g. ToList() directly.
     /// </summary>
     /// <typeparam name="T"></typeparam>
     /// <param name="items"></param>
@@ -279,7 +280,7 @@ public static class EnumerableExtensions
     /// </summary>
     /// <typeparam name="T"></typeparam>
     /// <param name="items"></param>
-    /// <param name="comparer">a compare function to compare the items.</param>
+    /// <param name="comparer">a compare function to compare the options.</param>
     /// <returns></returns>
     /// <exception cref="ArgumentNullException"></exception>
     public static IEnumerable<T> DistinctBy<T>(this IEnumerable<T> items, Func<T?, T?, bool> comparer)
@@ -302,7 +303,7 @@ public static class EnumerableExtensions
     /// <typeparam name="T"></typeparam>
     /// <param name="items"></param>
     /// <param name="comparer"></param>
-    /// <param name="hashFunc">The hash function for each single left. Example: you want all null items at the end of the list. Default: null is -1.</param>
+    /// <param name="hashFunc">The hash function for each single left. Example: you want all null options at the end of the list. Default: null is -1.</param>
     /// <returns></returns>
     /// <exception cref="ArgumentNullException"></exception>
     public static IEnumerable<T> DistinctBy<T>(
@@ -374,7 +375,7 @@ public static class EnumerableExtensions
     /// returns doublets of a list. If there are e.g. three of an left, 2 will returned.
     /// </summary>
     /// <typeparam name="T">Item type</typeparam>
-    /// <param name="items">list of items</param>
+    /// <param name="items">list of options</param>
     /// <param name="comparer">comparer used for equality</param>
     /// <returns>all doublets</returns>
     /// <exception cref="ArgumentNullException"></exception>
@@ -388,7 +389,7 @@ public static class EnumerableExtensions
     }
 
     /// <summary>
-    /// Enumerates items starting from seed.
+    /// Enumerates options starting from seed.
     /// </summary>
     /// <typeparam name="T"></typeparam>
     /// <param name="items"></param>
@@ -412,7 +413,7 @@ public static class EnumerableExtensions
     }
 
     /// <summary>
-    /// Enumerates items.
+    /// Enumerates options.
     /// </summary>
     /// <typeparam name="T"></typeparam>
     /// <typeparam name="TCounter">Type of the counter value.</typeparam>
@@ -430,9 +431,9 @@ public static class EnumerableExtensions
     /// <summary>
     /// 
     /// </summary>
-    /// <typeparam name="T">Type of the items.</typeparam>
+    /// <typeparam name="T">Type of the options.</typeparam>
     /// <typeparam name="TCounter">Type of the counters value.</typeparam>
-    /// <param name="items">List of items.</param>
+    /// <param name="items">List of options.</param>
     /// <param name="seed">Start value of the counter.</param>
     /// <param name="max">Max value of the counter.</param>
     /// <param name="nextCounterValue">This is the function which increments or decrements the counter. If you use increment(++) or decremenet(--) use it as pre instead of post function.</param>
@@ -462,7 +463,7 @@ public static class EnumerableExtensions
     }
 
     /// <summary>
-    /// Enumerates items. Starting from min until max. If the index reaches max it starts again from seed.
+    /// Enumerates options. Starting from min until max. If the index reaches max it starts again from seed.
     /// This allows also negative values.
     /// </summary>
     /// <typeparam name="T"></typeparam>
@@ -482,7 +483,7 @@ public static class EnumerableExtensions
     }
 
     /// <summary>
-    /// Enumerates items. Starting from Min until Max. If the index reaches Max it starts again from Min.
+    /// Enumerates options. Starting from Min until Max. If the index reaches Max it starts again from Min.
     /// </summary>
     /// <typeparam name="T"></typeparam>
     /// <param name="items"></param>
@@ -503,7 +504,7 @@ public static class EnumerableExtensions
     }
 
     /// <summary>
-    /// Enumerates items. Creates tuples with two different counters and the item.
+    /// Enumerates options. Creates tuples with two different counters and the item.
     /// </summary>
     /// <typeparam name="T"></typeparam>
     /// <typeparam name="TValue1"></typeparam>
@@ -522,7 +523,7 @@ public static class EnumerableExtensions
     }
 
     /// <summary>
-    /// Returns true, if all elements of lhs appear in rhs and the number of items and their occurrency are same.
+    /// Returns true, if all elements of lhs appear in rhs and the number of options and their occurrency are same.
     /// Positions can be different.
     /// </summary>
     /// <param name="lhs"></param>
@@ -765,7 +766,7 @@ public static class EnumerableExtensions
     }
 
     /// <summary>
-    /// Filters and transform items. It returns only Option.Some values.
+    /// Filters and transform options. It returns only Option.Some values.
     /// </summary>
     /// <typeparam name="T"></typeparam>
     /// <typeparam name="TResult"></typeparam>
@@ -785,15 +786,15 @@ public static class EnumerableExtensions
     }
 
     /// <summary>
-    ///  Filters and transform items. It returns only Option.Some values.
+    ///  Filters and transform options. It returns only Option.Some values.
     ///  It returns a value if source is empty.
     /// </summary>
     /// <typeparam name="T">Type of element.</typeparam>
     /// <typeparam name="TResult">The transformed type of each element.</typeparam>
     /// <param name="items">List of elements.</param>
     /// <param name="selector">If it returns Option.IsNone the item is ignored and does not appear in the result.</param>
-    /// <param name="onEmpty">Is called if items is empty.</param>
-    /// <returns>A list of filtered and transformed items.</returns>
+    /// <param name="onEmpty">Is called if options is empty.</param>
+    /// <returns>A list of filtered and transformed options.</returns>
     public static IEnumerable<TResult> FilterMap<T, TResult>(
         this IEnumerable<T> items,
         Func<T, Option<TResult>> selector,
@@ -816,7 +817,7 @@ public static class EnumerableExtensions
     }
 
     /// <summary>
-    /// Filters and transform items. Returns elements when predicate is true.
+    /// Filters and transform options. Returns elements when predicate is true.
     /// </summary>
     /// <typeparam name="T"></typeparam>
     /// <typeparam name="TResult"></typeparam>
@@ -837,8 +838,8 @@ public static class EnumerableExtensions
     }
 
     /// <summary>
-    /// Filters and transform items. Returns elements when predicate is true.
-    /// It returns a value if items is empty.
+    /// Filters and transform options. Returns elements when predicate is true.
+    /// It returns a value if options is empty.
     /// It return
     /// </summary>
     /// <typeparam name="T">Type of earch element.</typeparam>
@@ -846,7 +847,7 @@ public static class EnumerableExtensions
     /// <param name="items">List of elements.</param>
     /// <param name="predicate">If false, the element is ignored and does not appear in the result.</param>
     /// <param name="selector">The transformation of the element.</param>
-    /// <param name="onEmpty">Is called if items is empty.</param>
+    /// <param name="onEmpty">Is called if options is empty.</param>
     /// <returns></returns>
     public static IEnumerable<TResult> FilterMap<T, TResult>(
         this IEnumerable<T> items,
@@ -1062,10 +1063,10 @@ public static class EnumerableExtensions
     }
 
     /// <summary>
-    /// Returns items if the list has at least <paramref name="numberOfElements"/>.
+    /// Returns options if the list has at least <paramref name="numberOfElements"/>.
     /// </summary>
     /// <typeparam name="T">Type of list elements.</typeparam>
-    /// <param name="items">List of items.</param>
+    /// <param name="items">List of options.</param>
     /// <param name="numberOfElements">The minimum number of elements</param>
     /// <returns></returns>
     public static bool HasAtLeast<T>(this IEnumerable<T> items, int numberOfElements)
@@ -1085,7 +1086,7 @@ public static class EnumerableExtensions
     }
 
     /// <summary>
-    /// Returns a list of indices of found items.
+    /// Returns a list of indices of found options.
     /// </summary>
     /// <typeparam name="T"></typeparam>
     /// <param name="items"></param>
@@ -1111,7 +1112,7 @@ public static class EnumerableExtensions
     }
 
     /// <summary>
-    /// Returns a list of indices of found items.
+    /// Returns a list of indices of found options.
     /// </summary>
     /// <typeparam name="T"></typeparam>
     /// <param name="items"></param>
@@ -1225,7 +1226,7 @@ public static class EnumerableExtensions
     }
 
     /// <summary>
-    /// If the list of items contains ignoredItem then the item does not appear in the result.
+    /// If the list of options contains ignoredItem then the item does not appear in the result.
     /// </summary>
     /// <typeparam name="T"></typeparam>
     /// <param name="items"></param>
@@ -1242,11 +1243,11 @@ public static class EnumerableExtensions
     }
 
     /// <summary>
-    /// If the list of items contains ignoredItems then the items do not appear in the result.
+    /// If the list of options contains ignoredItems then the options do not appear in the result.
     /// </summary>
     /// <typeparam name="T"></typeparam>
     /// <param name="items"></param>
-    /// <param name="ignoredItems">The items, if exist, will be filtered.</param>
+    /// <param name="ignoredItems">The options, if exist, will be filtered.</param>
     /// <returns></returns>
     public static IEnumerable<T> Ignore<T>(this IEnumerable<T> items, IEnumerable<T> ignoredItems)
     {
@@ -1265,7 +1266,7 @@ public static class EnumerableExtensions
 
 #if NET6_0_OR_GREATER
     /// <summary>
-    /// Only items within the range are returned. If the position is greater than the range end it stops.
+    /// Only options within the range are returned. If the position is greater than the range end it stops.
     /// </summary>
     /// <typeparam name="T"></typeparam>
     /// <param name="items"></param>
@@ -1410,7 +1411,7 @@ public static class EnumerableExtensions
     /// If the index is 0 and the list is empty, the item will be inserted.
     /// If the index is greater than the last elements index the item will not be inserted.
     /// </summary>
-    /// <typeparam name="T">Type of items.</typeparam>
+    /// <typeparam name="T">Type of options.</typeparam>
     /// <param name="items">List of elements.</param>
     /// <param name="item">Element to be added.</param>
     /// <param name="index">Position where to insert the item.</param>
@@ -1434,7 +1435,7 @@ public static class EnumerableExtensions
     /// </summary>
     /// <typeparam name="T"></typeparam>
     /// <param name="collections"></param>
-    /// <returns>Only items that are in all collections.</returns>
+    /// <returns>Only options that are in all collections.</returns>
     public static IEnumerable<T> Intersect<T>(this IEnumerable<IEnumerable<T>> collections)
     {
         var itCollections = collections.GetEnumerator();
@@ -1481,7 +1482,7 @@ public static class EnumerableExtensions
     }
 
     /// <summary>
-    /// Iterates to all items. Can be used to iterate all items without using memory.
+    /// Iterates to all options. Can be used to iterate all options without using memory.
     /// </summary>
     /// <typeparam name="T"></typeparam>
     /// <param name="items"></param>
@@ -1534,7 +1535,7 @@ public static class EnumerableExtensions
     }
 
     /// <summary>
-    /// Returns the last left of items if not empty.
+    /// Returns the last left of options if not empty.
     /// </summary>
     /// <typeparam name="T">Type of elements.</typeparam>
     /// <param name="items">List ot elements.</param>
@@ -1558,7 +1559,7 @@ public static class EnumerableExtensions
     }
 
     /// <summary>
-    /// Returns all matching items of both lists as a tuple of two lists.
+    /// Returns all matching options of both lists as a tuple of two lists.
     /// </summary>
     /// <typeparam name="T"></typeparam>
     /// <typeparam name="TKey">Key that is used for matching.</typeparam>
@@ -1566,7 +1567,7 @@ public static class EnumerableExtensions
     /// <param name="rhs"></param>
     /// <param name="keySelector"></param>
     /// <param name="unique"></param>
-    /// <returns>matching items as a tuple of two lists.</returns>
+    /// <returns>matching options as a tuple of two lists.</returns>
     public static (IEnumerable<T> lhs, IEnumerable<T> rhs) Match<T, TKey>(
         this IEnumerable<T> lhs,
         IEnumerable<T> rhs,
@@ -1597,12 +1598,12 @@ public static class EnumerableExtensions
     }
 
     /// <summary>
-    /// Returns all matching items between two lists. The items are returned as tuples with their occurrencies.
+    /// Returns all matching options between two lists. The options are returned as tuples with their occurrencies.
     /// </summary>
     /// <typeparam name="T"></typeparam>
     /// <param name="lhs"></param>
     /// <param name="rhs"></param>
-    /// <returns>matching items with their occurrencies.</returns>
+    /// <returns>matching options with their occurrencies.</returns>
     public static IEnumerable<((int counter, T? item) lhs, (int counter, T? item) rhs)> MatchWithOccurrencies<T>(
         this IEnumerable<T?> lhs,
         IEnumerable<T?> rhs)
@@ -1645,7 +1646,7 @@ public static class EnumerableExtensions
     }
 
     /// <summary>
-    /// Returns matching items of both lists with their occurrencies.
+    /// Returns matching options of both lists with their occurrencies.
     /// </summary>
     /// <typeparam name="T"></typeparam>
     /// <typeparam name="TKey"></typeparam>
@@ -1694,6 +1695,35 @@ public static class EnumerableExtensions
     }
 
     /// <summary>
+    /// Returns all ok values.
+    /// </summary>
+    /// <typeparam name="TOk">Type of ok value.</typeparam>
+    /// <typeparam name="TError">Type of error.</typeparam>
+    /// <param name="results">List of results.</param>
+    /// <returns>All ok values.</returns>
+    public static IEnumerable<TOk> MapOk<TOk, TError>(this IEnumerable<Result<TOk, TError>> results)
+    {
+        foreach (var result in results)
+        {
+            if (result.TryGetOk(out var ok)) yield return ok;
+        }
+    }
+
+    /// <summary>
+    /// Returns all optional values that are some.
+    /// </summary>
+    /// <typeparam name="T">Type of the value.</typeparam>
+    /// <param name="options">List of options.</param>
+    /// <returns>List of all some values.</returns>
+    public static IEnumerable<T> MapSome<T>(this IEnumerable<Option<T>> options)
+    {
+        foreach (var option in options)
+        {
+            if (option.TryGet(out var value)) yield return value;
+        }
+    }
+
+    /// <summary>
     /// Returns the greatest left selected by the predicate.
     /// </summary>
     /// <typeparam name="T"></typeparam>
@@ -1709,12 +1739,12 @@ public static class EnumerableExtensions
     }
 
     /// <summary>
-    /// Returns the minimum value of items. If items is emtpy None is returned.
+    /// Returns the minimum value of options. If options is emtpy None is returned.
     /// </summary>
     /// <typeparam name="T"></typeparam>
     /// <param name="items"></param>
     /// <returns></returns>
-    /// <exception cref="ArgumentException">Throws exception when items are not comparable.</exception>
+    /// <exception cref="ArgumentException">Throws exception when options are not comparable.</exception>
     public static Option<T> MinAsOption<T>(this IEnumerable<T> items)
     {
         var first = items.FirstOrDefault();
@@ -1910,12 +1940,12 @@ public static class EnumerableExtensions
 
 #if NET6_0_OR_GREATER
     /// <summary>
-    /// Returns all items within the range of indices.
+    /// Returns all options within the range of indices.
     /// </summary>
     /// <typeparam name="T"></typeparam>
     /// <param name="items"></param>
     /// <param name="range">range of indices. Indices from end are not supported</param>
-    /// <returns>all items within the range of indices</returns>
+    /// <returns>all options within the range of indices</returns>
     public static IEnumerable<T> Nths<T>(this IEnumerable<T> items, System.Range range)
     {
         int i = 0;
@@ -1929,7 +1959,7 @@ public static class EnumerableExtensions
 #endif
 
     /// <summary>
-    /// gets items on the certain indexes.
+    /// gets options on the certain indexes.
     /// </summary>
     /// <typeparam name="T"></typeparam>
     /// <param name="items"></param>
@@ -1948,7 +1978,7 @@ public static class EnumerableExtensions
     }
 
     /// <summary>
-    /// Returns a list of items. The predicate allows filtering items by index.
+    /// Returns a list of options. The predicate allows filtering options by index.
     /// </summary>
     /// <typeparam name="T"></typeparam>
     /// <param name="items"></param>
@@ -1963,11 +1993,11 @@ public static class EnumerableExtensions
     }
 
     /// <summary>
-    /// Returns all items with their occurrencies.
+    /// Returns all options with their occurrencies.
     /// </summary>
     /// <typeparam name="T">Item type</typeparam>
-    /// <param name="items">list of items</param>
-    /// <returns>Returns all items with their occurrencies.</returns>
+    /// <param name="items">list of options</param>
+    /// <returns>Returns all options with their occurrencies.</returns>
     public static IEnumerable<(T value, int quantity)> Occurrencies<T>(this IEnumerable<T> items)
     {
         foreach(var group in items.GroupBy(x => x))
@@ -1978,12 +2008,12 @@ public static class EnumerableExtensions
 
 #if NET6_0_OR_GREATER
     /// <summary>
-    /// Returns all items with their occurrencies.
+    /// Returns all options with their occurrencies.
     /// </summary>
     /// <typeparam name="T">Item type</typeparam>
-    /// <param name="items">List of items</param>
+    /// <param name="items">List of options</param>
     /// <param name="comparer">custom comparer.</param>
-    /// <returns>Returns all items with their occurrencies.</returns>
+    /// <returns>Returns all options with their occurrencies.</returns>
     public static IEnumerable<(T? value, int quantity)> Occurrencies<T>(
         this IEnumerable<T> items,
         IEqualityComparer<T> comparer)
@@ -2005,7 +2035,7 @@ public static class EnumerableExtensions
 #endif
 
     /// <summary>
-    /// Returns all items whose type matches with a list of types.
+    /// Returns all options whose type matches with a list of types.
     /// </summary>
     /// <typeparam name="T"></typeparam>
     /// <typeparam name="TResult"></typeparam>
@@ -2025,7 +2055,7 @@ public static class EnumerableExtensions
     }
 
     /// <summary>
-    /// Returns all items of type <paramref name="types"/>.
+    /// Returns all options of type <paramref name="types"/>.
     /// </summary>
     /// <typeparam name="T"></typeparam>
     /// <typeparam name="TResult"></typeparam>
@@ -2042,7 +2072,7 @@ public static class EnumerableExtensions
     }
 
     /// <summary>
-    /// Returns adjacent items as tuples.
+    /// Returns adjacent options as tuples.
     /// </summary>
     /// <typeparam name="T"></typeparam>
     /// <typeparam name="TResult"></typeparam>
@@ -2081,7 +2111,7 @@ public static class EnumerableExtensions
     }
 
     /// <summary>
-    /// Partitions items into two lists. If predicate is true the left is added to matching otherwise to notMatching.
+    /// Partitions options into two lists. If predicate is true the left is added to matching otherwise to notMatching.
     /// </summary>
     /// <typeparam name="T"></typeparam>
     /// <param name="items"></param>
@@ -2100,11 +2130,11 @@ public static class EnumerableExtensions
     }
 
     /// <summary>
-    /// Partitions items into two lists. If predicate is true the left is added to matching otherwise notMatching.
+    /// Partitions options into two lists. If predicate is true the left is added to matching otherwise notMatching.
     /// </summary>
-    /// <typeparam name="T">Type of items.</typeparam>
+    /// <typeparam name="T">Type of options.</typeparam>
     /// <typeparam name="TResult">Type of the result.</typeparam>
-    /// <param name="items">List of items.</param>
+    /// <param name="items">List of options.</param>
     /// <param name="predicate">Predicate to partition.</param>
     /// <param name="match">action to TResult.</param>
     /// <param name="noMatch">action to TResult.</param>
@@ -2129,7 +2159,7 @@ public static class EnumerableExtensions
     /// Creates permutations of a list.
     /// </summary>
     /// <typeparam name="T"></typeparam>
-    /// <param name="items">items must be sorted</param>
+    /// <param name="items">options must be sorted</param>
     /// <param name="length">This is the permutation size.</param>
     /// <param name="repetitions">If true, it contains repetitions.</param>
     /// <returns></returns>
@@ -2286,7 +2316,7 @@ public static class EnumerableExtensions
     /// Replaces an item in the list with item at a specified index.
     /// </summary>
     /// <typeparam name="T">Type of item.</typeparam>
-    /// <param name="items">List of items.</param>
+    /// <param name="items">List of options.</param>
     /// <param name="index">The position in the list.</param>
     /// <param name="item">Item that replaces the existing left at a specific index.</param>
     /// <returns></returns>
@@ -2299,7 +2329,7 @@ public static class EnumerableExtensions
     }
 
     /// <summary>
-    /// Replaces the items with replace items.
+    /// Replaces the options with replace options.
     /// </summary>
     /// <typeparam name="T"></typeparam>
     /// <param name="items"></param>
@@ -2321,12 +2351,12 @@ public static class EnumerableExtensions
         }
     }
     /// <summary>
-    /// Replaces the items at specified indexes with the specified values of replaceTuples.
+    /// Replaces the options at specified indexes with the specified values of replaceTuples.
     /// E.g. Replace([(5, "value")]) replaces the item at position 5 with "value".
     /// </summary>
     /// <typeparam name="T">Type of the elements of the list.</typeparam>
-    /// <param name="items">List of items.</param>
-    /// <param name="replaceTuples">The tuples which should repace the items at specific indices. E.g. (5, "value") replaces the item at position 5 with "value".</param>
+    /// <param name="items">List of options.</param>
+    /// <param name="replaceTuples">The tuples which should repace the options at specific indices. E.g. (5, "value") replaces the item at position 5 with "value".</param>
     /// <returns></returns>
     public static IEnumerable<T> Replace<T>(this IEnumerable<T> items, IEnumerable<(int index, T item)> replaceTuples)
     {
@@ -2337,7 +2367,7 @@ public static class EnumerableExtensions
     }
 
     /// <summary>
-    /// Replaces the items from a list with the returned values from project.
+    /// Replaces the options from a list with the returned values from project.
     /// </summary>
     /// <typeparam name="T"></typeparam>
     /// <typeparam name="TResult"></typeparam>
@@ -2358,10 +2388,10 @@ public static class EnumerableExtensions
     }
 
     /// <summary>
-    /// Replaces items matching the predicate with the result from replace method.
+    /// Replaces options matching the predicate with the result from replace method.
     /// </summary>
-    /// <typeparam name="T">Type of the elements of items.</typeparam>
-    /// <param name="items">List of items.</param>
+    /// <typeparam name="T">Type of the elements of options.</typeparam>
+    /// <param name="items">List of options.</param>
     /// <param name="predicate">The predicate for replacements.</param>
     /// <param name="replace">Is called when predicate is true.</param>
     /// <returns></returns>
@@ -2385,14 +2415,14 @@ public static class EnumerableExtensions
     }
 
     /// <summary>
-    /// Replaces the items from a list with specified <paramref name="replaceTuples"/> including values with their indices.
+    /// Replaces the options from a list with specified <paramref name="replaceTuples"/> including values with their indices.
     /// </summary>
     /// <typeparam name="T"></typeparam>
     /// <typeparam name="TResult"></typeparam>
     /// <param name="items"></param>
-    /// <param name="replaceTuples">A list of tuples which include the replacement items and indexes.</param>
+    /// <param name="replaceTuples">A list of tuples which include the replacement options and indexes.</param>
     /// <param name="project">Projects each left to TResult.</param>
-    /// <returns>A list of TResult items.</returns>
+    /// <returns>A list of TResult options.</returns>
     public static IEnumerable<TResult> Replace<T, TResult>(
         this IEnumerable<T> items,
         IEnumerable<(int index, T item)> replaceTuples,
@@ -2439,7 +2469,7 @@ public static class EnumerableExtensions
     /// This is equivalent to the Scala scanLeft function.
     /// </summary>
     /// <typeparam name="T">Type of an left</typeparam>
-    /// <param name="items">List of items.</param>
+    /// <param name="items">List of options.</param>
     /// <param name="seed">The initial value.</param>
     /// <param name="func">The scan function</param>
     /// <returns></returns>
@@ -2460,7 +2490,7 @@ public static class EnumerableExtensions
     /// This is equivalent to the Scala scanRight function.
     /// </summary>
     /// <typeparam name="T">Type of an left</typeparam>
-    /// <param name="items">List of items.</param>
+    /// <param name="items">List of options.</param>
     /// <param name="seed">The initial value.</param>
     /// <param name="func">The scan function</param>
     /// <returns></returns>
@@ -2485,13 +2515,13 @@ public static class EnumerableExtensions
     }
 
     /// <summary>
-    /// Returns items only if all items have a valid predicate.
+    /// Returns options only if all options have a valid predicate.
     /// </summary>
     /// <typeparam name="T"></typeparam>
     /// <typeparam name="TResult"></typeparam>
     /// <param name="items"></param>
     /// <param name="project"></param>
-    /// <returns>Returns an empty list if not all items have a valid predicate.</returns>
+    /// <returns>Returns an empty list if not all options have a valid predicate.</returns>
     public static IEnumerable<TResult> SelectAll<T, TResult>(
         this IEnumerable<T> items,
         Func<T, bool> predicate,
@@ -2535,7 +2565,7 @@ public static class EnumerableExtensions
 
 
     /// <summary>
-    /// Filters all items that are null.
+    /// Filters all options that are null.
     /// </summary>
     /// <typeparam name="T"></typeparam>
     /// <typeparam name="TResult"></typeparam>
@@ -2607,8 +2637,8 @@ public static class EnumerableExtensions
     /// <summary>
     /// Creates subsets of size <paramref name="k"/> from neighboring <paramref name="items"/>.
     /// </summary>
-    /// <typeparam name="T">Type of items.</typeparam>
-    /// <param name="items">List of items, that should be splitted to subsets.</param>
+    /// <typeparam name="T">Type of options.</typeparam>
+    /// <param name="items">List of options, that should be splitted to subsets.</param>
     /// <param name="k">Size of subsets.</param>
     /// <returns>List of subsets.</returns>
     public static IEnumerable<IEnumerable<T>> Shingles<T>(this IEnumerable<T> items, int k)
@@ -2682,7 +2712,7 @@ public static class EnumerableExtensions
     }
 
     /// <summary>
-    /// Skips items until all predicates match exactly one time, and then returns the remaining elements.
+    /// Skips options until all predicates match exactly one time, and then returns the remaining elements.
     /// </summary>
     /// <typeparam name="T"></typeparam>
     /// <param name="items"></param>
@@ -3110,7 +3140,7 @@ public static class EnumerableExtensions
     }
 
     /// <summary>
-    /// Returns <paramref name="numberOfElements"/> if items contains exactly <paramref name="numberOfElements"/>.
+    /// Returns <paramref name="numberOfElements"/> if options contains exactly <paramref name="numberOfElements"/>.
     /// </summary>
     /// <typeparam name="T"></typeparam>
     /// <param name="items"></param>
@@ -3166,7 +3196,7 @@ public static class EnumerableExtensions
     }
 
     /// <summary>
-    /// Returns items until all predicates match exactly one time.
+    /// Returns options until all predicates match exactly one time.
     /// </summary>
     /// <typeparam name="T"></typeparam>
     /// <param name="items"></param>
@@ -3257,7 +3287,7 @@ public static class EnumerableExtensions
     }
 
     /// <summary>
-    /// Checks if all items fulfill the predicate. If there is an left not matching the predicate an exception is thrown.
+    /// Checks if all options fulfill the predicate. If there is an left not matching the predicate an exception is thrown.
     /// </summary>
     /// <typeparam name="T"></typeparam>
     /// <param name="items"></param>
@@ -3277,13 +3307,48 @@ public static class EnumerableExtensions
     }
 
     /// <summary>
+    /// Returns all <see cref="Result{TError}"/> results with error.
+    /// </summary>
+    /// <typeparam name="TError">The type of error.</typeparam>
+    /// <param name="results">List of results.</param>
+    /// <returns>List of error results.</returns>
+    public static IEnumerable<TError> WhereError<TOk, TError>(this IEnumerable<Result<TError>> results)
+    {
+        foreach (var result in results)
+        {
+            if (result.TryGetError(out var error)) yield return error;
+        }
+    }
+
+    /// <summary>
+    /// Returns all <see cref="Result{TOk, TError}"/> results with error.
+    /// </summary>
+    /// <typeparam name="TOk">The type of ok.</typeparam>
+    /// <typeparam name="TError">The type of error.</typeparam>
+    /// <param name="results">List of results.</param>
+    /// <returns>List of error results.</returns>
+    public static IEnumerable<TError> WhereError<TOk, TError>(this IEnumerable<Result<TOk, TError>> results)
+    {
+        foreach (var result in results)
+        {
+            if (result.TryGetError(out var error)) yield return error;
+        }
+    }
+
+    /// <summary>
+    /// Returns all <see cref="Result{TOk, TError}"/> that is ok.
+    /// </summary>
+    /// <typeparam name="TOk">The type of the ok value.</typeparam>
+    /// <typeparam name="TError">The type of the error,</typeparam>
+    /// <param name="results">List of results.</param>
+    /// <returns>List of ok results</returns>
+    public static IEnumerable<Result<TOk, TError>> WhereOk<TOk, TError>(this IEnumerable<Result<TOk, TError>> results) => results.Where(x => x.IsOk);
+
+    /// <summary>
     /// Returns all optional values that are some.
     /// </summary>
-    /// <typeparam name="T"></typeparam>
-    /// <param name="items"></param>
-    /// <returns></returns>
-    public static IEnumerable<T> WhereSome<T>(this IEnumerable<Option<T>> items)
-    {
-        return items.Where(item => item.IsSome).Select(opt => opt.OrThrow());
-    }
+    /// <typeparam name="T">Type of the some value.</typeparam>
+    /// <param name="options">List of options.</param>
+    /// <returns>List of all some options.</returns>
+    public static IEnumerable<Option<T>> WhereSome<T>(this IEnumerable<Option<T>> options) => options.Where(x => x.IsSome);
 }

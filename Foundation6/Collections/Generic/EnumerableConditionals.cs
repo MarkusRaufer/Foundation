@@ -188,6 +188,38 @@ public static class EnumerableConditionals
     }
 
     /// <summary>
+    /// Returns true if <paramref name="lhs"/> contains a sequence <paramref name="rhs"/>.
+    /// </summary>
+    /// <typeparam name="T">Type of elements.</typeparam>
+    /// <param name="lhs">List of elements.</param>
+    /// <param name="rhs">List of sub sequence.</param>
+    /// <returns>True if sequence was found otherwise false.</returns>
+    public static bool ContainsSequence<T>(this IEnumerable<T> lhs, IEnumerable<T> rhs)
+    {
+        var itLhs = lhs.GetEnumerator();
+        var itRhs = rhs.GetEnumerator();
+
+        if (!itLhs.MoveNext()) return false;
+        if (!itRhs.MoveNext()) return false;
+
+        var found = false;
+        while (itLhs.MoveNext())
+        {
+            if (itLhs.Current.EqualsNullable(itRhs.Current))
+            {
+                if (!itRhs.MoveNext()) return true;
+
+                found = true;
+                continue;
+            }
+
+            if (found) return false;
+        }
+
+        return false;
+    }
+
+    /// <summary>
     /// Returns true if items include all types.
     /// </summary>
     /// <typeparam name="T"></typeparam>

@@ -42,6 +42,25 @@ public class EnumerableConditionalsTests
         all.Should().BeTrue();
     }
 
+    [Test]
+    public void ContainInOrder_Should_ReturnFalse_When_Collection_ContainsElementsInOrder()
+    {
+        int[] numbers = [2, 3, 4, 5, 10, 1, 6, 7, 8, 9];
+        int[] expected = [5, 10, 6];
+
+        var result = numbers.ContainsSequence(expected);
+        result.Should().BeFalse();
+    }
+
+    [Test]
+    public void ContainInOrder_Should_ReturnTrue_When_Collection_ContainsElementsInOrder()
+    {
+        int[] numbers = [2, 3, 4, 5, 10, 1, 6, 7, 8, 9];
+        int[] expected = [5, 10, 1];
+
+        var result = numbers.ContainsSequence(expected);
+        result.Should().BeTrue();
+    }
 
     [Test]
     public void If_Should_ExecuteAction_When_Predicate_IsTrue()
