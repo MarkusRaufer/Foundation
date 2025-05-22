@@ -17,7 +17,8 @@ public class Utf8JsonReaderExtensionsTests
                 "first-name": "Peter",
                 "last-name": "Pan",
                 "age": 14,
-                "weight": 56.78
+                "weight": 56.78,
+                "optional": null
             }
             """;
 

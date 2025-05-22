@@ -165,7 +165,12 @@ public sealed class Countable<T> : IEquatable<Countable<T>>
     /// </summary>
     /// <param name="obj"></param>
     /// <returns></returns>
-	public override bool Equals(object? obj) => Equals(obj as Countable<T>);
+	public override bool Equals(object? obj)
+    {
+        if( obj is Countable<T> other) return Equals(other);
+
+        return Value.EqualsNullable(obj);
+    }
 
     /// <summary>
     /// If EqualsIncludesCount is true, then the counter is included in the hash value as well in the comparison.

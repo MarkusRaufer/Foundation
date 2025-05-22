@@ -6,29 +6,29 @@ using System.Text.Json;
 namespace Foundation.Text.Json.Serialization;
 
 [TestFixture]
-public class HashSetValueConverterTests
+public class ArrayValueJsonConverterTests
 {
     [Test]
-    public void DeserialzeToJson_Should_ReturnJsonString_When_Called_JsonSerializer_Serialize()
+    public void Deserialze_Should_ReturnAValidHashSetValue_When_UsedHashSetValueJsonConverter()
     {
-        var sut = HashSetValue.New([1, 2, 3]);
+        var sut = ArrayValue.New([1, 2, 3]);
 
         var jsonOptions = new JsonSerializerOptions
         {
-            Converters = { new HashSetValueJsonConverter<int>() }
+            Converters = { new ArrayValueJsonConverter<int>() }
         };
 
         var json = JsonSerializer.Serialize(sut, jsonOptions);
 
-        var deserialized = JsonSerializer.Deserialize<HashSetValue<int>>(json, jsonOptions);
+        var deserialized = JsonSerializer.Deserialize<ArrayValue<int>>(json, jsonOptions);
 
         sut.Should().BeEquivalentTo(deserialized);
     }
 
     [Test]
-    public void SerialzeToJson_Should_ReturnJsonString_When_Called_JsonSerializer_Serialize()
+    public void Serialze_Should_ReturnValidJsonString_When_UsingStandardJsonSerializer()
     {
-        var sut = HashSetValue.New([1, 2, 3]);
+        var sut = ArrayValue.New([1, 2, 3]);
 
         var json = JsonSerializer.Serialize(sut);
 

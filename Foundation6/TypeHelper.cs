@@ -27,6 +27,21 @@ namespace Foundation;
 
 public static class TypeHelper
 {
+ 
+    /// <summary>
+    /// Checks if all types are different.
+    /// </summary>
+    /// <param name="types">List of types.</param>
+    /// <returns>true if all types are different otherwise false.</returns>
+    public static bool AreAllDifferent(params ICollection<Type> types) => types.Count == new HashSet<Type>(types).Count;
+
+    /// <summary>
+    /// Checks if all types are equal.
+    /// </summary>
+    /// <param name="types">List of types</param>
+    /// <returns>true if all types are equal otherwise false.</returns>
+    public static bool AreAllEqual(params ICollection<Type> types) => new HashSet<Type>(types).Count == 1;
+
     public static Type? GetFromString(string typeName, params Assembly[] assemblies)
     {
         var type = Type.GetType(typeName);
@@ -46,7 +61,7 @@ public static class TypeHelper
     /// </summary>
     /// <param typeName="shortTypeName"></param>
     /// <returns></returns>
-    public static Type? GetNullablePrimitveType(string shortTypeName)
+    public static Type? GetNullablePrimitiveType(string shortTypeName)
     {
         var fullName = GetNullablePrimitiveTypeFullName(shortTypeName);
         if (null == fullName) return null;

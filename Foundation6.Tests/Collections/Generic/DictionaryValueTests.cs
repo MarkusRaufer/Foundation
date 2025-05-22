@@ -1,6 +1,8 @@
-﻿using FluentAssertions;
+﻿using Foundation.Text.Json.Serialization;
 using NUnit.Framework;
+using Shouldly;
 using System.Collections.Generic;
+using System.Text.Json;
 
 namespace Foundation.Collections.Generic;
 
@@ -24,8 +26,33 @@ public class DictionaryValueTests
             ["three"] = 3
         });
 
-        sut.Should().NotBeNull();
-        sut.Should().BeEquivalentTo(expected);
+        sut.ShouldNotBeNull();
+        sut.ShouldBeEquivalentTo(expected);
+    }
+
+    [Test]
+    public void Deserialze_Should_ReturnValidJsonString_When_UsingDictionaryValueJsonConverter()
+    {
+        // Arrange
+        var keyValues = new Dictionary<string, object>
+        {
+            { "one", 1 },
+            { "two", 2 },
+            { "three", 3 }
+        };
+
+        var sut = new DictionaryValue<string, object>(keyValues);
+        var json = JsonSerializer.Serialize(sut);
+        var options = new JsonSerializerOptions
+        {
+            Converters = { new DictionaryValueJsonConverter<string, object>() }
+        };
+
+        // Act
+        var deserialized = JsonSerializer.Deserialize<DictionaryValue<string, object>>(json, options);
+
+        // Assert
+        sut.ShouldBe(deserialized);
     }
 
     [Test]
@@ -129,15 +156,15 @@ public class DictionaryValueTests
     {
         var sut = DictionaryValue.New<string, object>(("one", 1), ("two", 2), ("three", 3));
 
-        var expected = new DictionaryValue<string, int>(new Dictionary<string, int>
+        var expected = new DictionaryValue<string, object>(new Dictionary<string, object>
         {
             ["one"] = 1,
             ["two"] = 2,
             ["three"] = 3
         });
 
-        sut.Should().NotBeNull();
-        sut.Should().BeEquivalentTo(expected);
+        sut.ShouldNotBeNull();
+        sut.ShouldBeEquivalentTo(expected);
 
     }
     [Test]
@@ -150,15 +177,15 @@ public class DictionaryValueTests
             ("three", 3)
         ]);
 
-        var expected = new DictionaryValue<string, int>(new Dictionary<string, int>
+        var expected = new DictionaryValue<string, object>(new Dictionary<string, object>
         {
             ["one"] = 1,
             ["two"] = 2,
             ["three"] = 3
         });
 
-        sut.Should().NotBeNull();
-        sut.Should().BeEquivalentTo(expected);
+        sut.ShouldNotBeNull();
+        sut.ShouldBe(expected);
     }
 
     [Test]
@@ -182,9 +209,29 @@ public class DictionaryValueTests
 
         var sut2 = sut.NewWith(keyValues2);
 
-        sut2.Count.Should().Be(sut.Count);
-        sut2.Should().Contain(new KeyValuePair<string, object>("one", 10));
-        sut2.Should().Contain(new KeyValuePair<string, object>("two", 2));
-        sut2.Should().Contain(new KeyValuePair<string, object>("three", 3));
+        sut2.Count.ShouldBe(sut.Count);
+        sut2.ShouldContain(new KeyValuePair<string, object>("one", 10));
+        sut2.ShouldContain(new KeyValuePair<string, object>("two", 2));
+        sut2.ShouldContain(new KeyValuePair<string, object>("three", 3));
+    }
+
+    [Test]
+    public void Serialze_Should_ReturnAValidJsonString_When_CalledJsonSerializerSerialize()
+    {
+        // Arrange
+        var keyValues = new Dictionary<string, object>
+        {
+            { "one", 1 },
+            { "two", 2 },
+            { "three", 3 }
+        };
+
+        var sut = new DictionaryValue<string, object>(keyValues);
+
+        // Act
+        var json = JsonSerializer.Serialize(sut);
+
+        // Assert
+        json.ShouldBe("""{"one":1,"two":2,"three":3}""");
     }
 }

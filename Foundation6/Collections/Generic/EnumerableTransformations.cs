@@ -446,7 +446,51 @@ public static class EnumerableTransformations
     }
 
     /// <summary>
-    /// Works like Zip with comparer. Maps only maching items.
+    /// Creates a dictionary from key values.
+    /// </summary>
+    /// <typeparam name="TKey">Type of the keys.</typeparam>
+    /// <typeparam name="TValue">Type of the values.</typeparam>
+    /// <param name="keyValues">List of keyValues. Can have duplicates.</param>
+    /// <param name="overWriteExisting">If true existing key values will be overwritten otherwise the first occurrence of a key value will remain.</param>
+    /// <returns></returns>
+    public static Dictionary<TKey, TValue> ToSaveDictionary<TKey, TValue>(
+        this IEnumerable<KeyValuePair<TKey, TValue>> keyValues,
+        bool overWriteExisting = true)
+        where TKey : notnull
+    {
+        return keyValues.ToSaveDictionary(x => x.Key, x => x.Value, overWriteExisting);
+    }
+
+    public static Dictionary<TKey, TValue> ToSaveDictionary<T, TKey, TValue>(
+        this IEnumerable<T> items,
+        Func<T, TKey> keySelector,
+        Func<T, TValue> valueSelector,
+        bool overWriteExisting = true)
+        where TKey : notnull
+    {
+        items.ThrowIfNull();
+        keySelector.ThrowIfNull();
+        valueSelector.ThrowIfNull();
+
+        Dictionary<TKey, TValue> dictionary = [];
+        foreach (var item in items)
+        {
+            var key = keySelector(item);
+            var value = valueSelector(item);
+
+            if (overWriteExisting)
+            {
+                dictionary[key] = value;
+                continue;
+            }
+            if (dictionary.ContainsKey(key)) continue;
+            dictionary.Add(key, value);
+        }
+
+        return dictionary;
+    }
+    /// <summary>
+    /// Works like Zip with comparer. Maps only matching items.
     /// </summary>
     /// <typeparam name="T1"></typeparam>
     /// <typeparam name="T2"></typeparam>
@@ -470,5 +514,50 @@ public static class EnumerableTransformations
                from secondItem in second
                where comparer(firstItem, secondItem)
                select resultSelector(firstItem, secondItem);
+    }
+
+    /// <summary>
+    /// Zips left and right together and returns a list of tuples containing all values from both sides.
+    /// </summary>
+    /// <typeparam name="T1">Type of the left elements.</typeparam>
+    /// <typeparam name="T2">Type of the right elements.</typeparam>
+    /// <typeparam name="TSelector">The selector for the comparison value.</typeparam>
+    /// <param name="left">The left list.</param>
+    /// <param name="right">The right list.</param>
+    /// <param name="leftSelector">The selector of the left list.</param>
+    /// <param name="rightSelector">The selector of the right list.</param>
+    /// <returns>Returns a list of tuples containing all values from both sides.</returns>
+    public static IEnumerable<(Option<T1> left, Option<T2> right)> ZipAll<T1, T2, TSelector>(
+        this IEnumerable<T1> left,
+        IEnumerable<T2> right,
+        Func<T1, TSelector> leftSelector,
+        Func<T2, TSelector> rightSelector)
+        where TSelector : notnull
+    {
+        left.ThrowIfNull();
+        right.ThrowIfNull();
+        leftSelector.ThrowIfNull();
+        rightSelector.ThrowIfNull();
+
+        var rhs = right.NotNull().ToSaveDictionary(x => rightSelector(x), x => Countable.New(x));
+        
+        foreach (var lhs in left)
+        {
+            if (lhs is null) continue;
+
+            if (rhs.TryGetValue(leftSelector(lhs), out var element) && element is not null)
+            {
+               element.Inc();
+               yield return (Option.Some(lhs), Option.Some(element.Value!));
+               continue;
+            }
+
+            yield return (Option.Some(lhs), Option.None<T2>());
+        }
+
+        foreach (var r in rhs.Values)
+        {
+           if (r.Count == 1) yield return (Option.None<T1>(), Option.Some(r.Value!));
+        }
     }
 }

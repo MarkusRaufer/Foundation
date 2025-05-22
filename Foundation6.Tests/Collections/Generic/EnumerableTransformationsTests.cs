@@ -340,4 +340,14 @@ public class EnumerableTransformationsTests
         var expected = Enumerable.Range(1, 6).Select(Id.New);
         right.Should().BeEquivalentTo(expected);
     }
+
+    [Test]
+    public void ZipAll_ShouldReturn8Tuples_When_SidesHaveSameAndDifferentValues()
+    {
+        int[] left = [1, 2, 3, 4, 5, 7];
+        int[] right = [2, 4, 6, 8];
+
+        var zipped = left.ZipAll(right, x => x, x => x).ToArray();
+
+    }
 }

@@ -21,7 +21,8 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
-﻿namespace Foundation.Collections.Generic;
+
+namespace Foundation.Collections.Generic;
 
 /// <summary>
 /// Extends IEnumerable with LINQ like events.
@@ -153,7 +154,7 @@ public static class EnumerableEvents
     }
 
     /// <summary>
-    /// Calls action on each element.
+    /// Calls <paramref name="action"/> on each element.
     /// </summary>
     /// <typeparam name="T"></typeparam>
     /// <param name="items"></param>
@@ -166,6 +167,26 @@ public static class EnumerableEvents
         foreach (var item in items.ThrowIfEnumerableIsNull())
         {
             action(item);
+            yield return item;
+        }
+    }
+
+    /// <summary>
+    /// Calls <paramref name="action"/> every time <paramref name="predicate"/> returns true.
+    /// </summary>
+    /// <typeparam name="T">Type of item.</typeparam>
+    /// <param name="items">List of items.</param>
+    /// <param name="predicate">Predicate which enables the call of <paramref name="action"/></param>
+    /// <param name="action">The action which will be executed when <paramref name="predicate"/> is true.</param>
+    /// <returns>All <paramref name="items"/>.</returns>
+    public static IEnumerable<T> OnEach<T>(this IEnumerable<T> items, Func<T, bool> predicate, Action<T> action)
+    {
+        predicate.ThrowIfNull();
+        action.ThrowIfNull();
+
+        foreach (var item in items.ThrowIfEnumerableIsNull())
+        {
+            if (predicate(item)) action(item);
             yield return item;
         }
     }
@@ -302,6 +323,32 @@ public static class EnumerableEvents
         while (it.MoveNext())
         {
             yield return it.Current;
+        }
+    }
+
+    /// <summary>
+    /// <paramref name="action"/> is called when <paramref name="predicate"/> returns true the first time.
+    /// </summary>
+    /// <typeparam name="T">Type of element.</typeparam>
+    /// <param name="items">List of elements.</param>
+    /// <param name="predicate">Predicate to trigger <paramref name="action"/>.</param>
+    /// <param name="action">Will be triggered once when <paramref name="predicate"/> returns true.</param>
+    /// <returns>All items.l</returns>
+    public static IEnumerable<T> OnFirst<T>(this IEnumerable<T> items, Func<T, bool> predicate, Action<T> action)
+    {
+        items.ThrowIfNull();
+        predicate.ThrowIfNull();
+        action.ThrowIfNull();
+
+        var called = false;
+        foreach (var item in items)
+        {
+            if (!called && predicate(item))
+            {
+                called = true;
+                action(item);
+            }
+            yield return item;
         }
     }
 

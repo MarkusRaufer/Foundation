@@ -29,6 +29,7 @@ public static class Utf8JsonReaderExtensions
 {
     public static Result<KeyValuePair<string, object?>, Error> GetProperty(this ref Utf8JsonReader reader)
     {
+        reader.GetValue(JsonTokenType.PropertyName);
         if (reader.TokenType != JsonTokenType.PropertyName) reader.Read();
 
         if (reader.TokenType != JsonTokenType.PropertyName)
@@ -76,25 +77,25 @@ public static class Utf8JsonReaderExtensions
         return Result.Ok(new KeyValuePair<string, object?>(name, value));
     }
 
-    public static Result<object?, Error> GetValue(this Utf8JsonReader reader)
+    public static Result<Option<object>, Error> GetValue(this Utf8JsonReader reader)
     {
         if (!reader.TokenType.IsValue())
         {
-            return Result.Error<object?>(new Error("property value", "property value not found"));
+            return Result.Error<Option<object>>(new Error("property value", "property value not found"));
         }
 
         switch (reader.TokenType)
         {
-            case JsonTokenType.False: return Result.Ok<object?>(false);
-            case JsonTokenType.Null: return Result.Ok<object?>(default);
+            case JsonTokenType.False: return Result.Ok<Option<object>>(Option.Some(false));
+            case JsonTokenType.Null: return Result.Ok<Option<object>>(Option.None<object>());
             case JsonTokenType.Number:
-                if (reader.TryGetInt64(out var i64)) return Result.Ok<object?>(i64);
-                if (reader.TryGetDecimal(out var real)) return Result.Ok<object?>(real);
+                if (reader.TryGetInt64(out var i64)) return Result.Ok<Option<object>>(Option.Some(i64));
+                if (reader.TryGetDecimal(out var real)) return Result.Ok<Option<object>>(Option.Some(real));
 
-                return Result.Error<object?>(new Error("property value", "elegal number format"));
-            case JsonTokenType.String: return Result.Ok<object?>(reader.GetString());
-            case JsonTokenType.True: return Result.Ok<object?>(true);
-            default: return Result.Error<object?>(new Error("property value", "format not supported"));
+                return Result.Error<Option<object>>(new Error("property value", "illegal number format"));
+            case JsonTokenType.String: return Result.Ok<Option<object>>(Option.Some(reader.GetString()));
+            case JsonTokenType.True: return Result.Ok<Option<object>>(Option.Some(true));
+            default: return Result.Error<Option<object>>(new Error("property value", "format not supported"));
         }
     }
 
@@ -104,59 +105,43 @@ public static class Utf8JsonReaderExtensions
         {
             case JsonTokenType.False: return false;
             case JsonTokenType.True: return true;
-            case JsonTokenType.Null: return default;
+            case JsonTokenType.Null: return null;
             case JsonTokenType.Number:
                 if (reader.TryGetInt64(out var i64)) return i64;
                 if (reader.TryGetDecimal(out var real)) return real;
                 return null;
             case JsonTokenType.String: return reader.GetString();
-            default: return default;
+            default: return null;
         };
     }
 
-    public static object? GetValue(this Utf8JsonReader reader, TypeCode typeCode)
+    public static Option<object> GetValue(this Utf8JsonReader reader, TypeCode typeCode)
     {
         return typeCode switch
         {
-            TypeCode.Boolean => reader.GetBoolean(),
-            TypeCode.Byte => reader.GetByte(),
-            TypeCode.Char => reader.GetString(),
-            TypeCode.DateTime => reader.GetDateTime(),
-            TypeCode.Decimal => reader.GetDecimal(),
-            TypeCode.Double => reader.GetDouble(),
-            TypeCode.Int16 => reader.GetInt16(),
-            TypeCode.Int32 => reader.GetInt32(),
-            TypeCode.Int64 => reader.GetInt64(),
-            TypeCode.UInt16 => reader.GetUInt16(),
-            TypeCode.UInt32 => reader.GetUInt32(),
-            TypeCode.UInt64 => reader.GetUInt64(),
-            TypeCode.SByte => reader.GetSByte(),
-            TypeCode.Single => reader.GetSingle(),
-            TypeCode.String => reader.GetString(),
-            _ => default,
+            TypeCode.Boolean => Option.Some(reader.GetBoolean()),
+            TypeCode.Byte => Option.Some(reader.GetByte()),
+            TypeCode.Char => Option.Some(reader.GetString()),
+            TypeCode.DateTime => Option.Some(reader.GetDateTime()),
+            TypeCode.Decimal => Option.Some(reader.GetDecimal()),
+            TypeCode.Double => Option.Some(reader.GetDouble()),
+            TypeCode.Int16 => Option.Some(reader.GetInt16()),
+            TypeCode.Int32 => Option.Some(reader.GetInt32()),
+            TypeCode.Int64 => Option.Some(reader.GetInt64()),
+            TypeCode.UInt16 => Option.Some(reader.GetUInt16()),
+            TypeCode.UInt32 => Option.Some(reader.GetUInt32()),
+            TypeCode.UInt64 => Option.Some(reader.GetUInt64()),
+            TypeCode.SByte => Option.Some(reader.GetSByte()),
+            TypeCode.Single => Option.Some(reader.GetSingle()),
+            TypeCode.String => Option.Some(reader.GetString()),
+            _ => Option.None<object>(),
         };
     }
 
     public static object? GetValue(this Utf8JsonReader reader, Type type)
     {
-        switch (Type.GetTypeCode(type))
-        {
-            case TypeCode.Boolean: return reader.GetBoolean();
-            case TypeCode.Byte: return reader.GetByte();
-            case TypeCode.Char: return reader.GetString();
-            case TypeCode.DateTime: return reader.GetDateTime();
-            case TypeCode.Decimal: return reader.GetDecimal();
-            case TypeCode.Double: return reader.GetDouble();
-            case TypeCode.Int16: return reader.GetInt16();
-            case TypeCode.Int32: return reader.GetInt32();
-            case TypeCode.Int64: return reader.GetInt64();
-            case TypeCode.UInt16: return reader.GetUInt16();
-            case TypeCode.UInt32: return reader.GetUInt32();
-            case TypeCode.UInt64: return reader.GetUInt64();
-            case TypeCode.SByte: return reader.GetSByte();
-            case TypeCode.Single: return reader.GetSingle();
-            case TypeCode.String: return reader.GetString();
-        }
+        var valueOption = reader.GetValue(Type.GetTypeCode(type));
+        if (valueOption.TryGet(out var value)) return value;
 
         switch(type)
         {

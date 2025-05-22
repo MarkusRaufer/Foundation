@@ -821,8 +821,9 @@ public static class EnumerableExtensions
     /// </summary>
     /// <typeparam name="T"></typeparam>
     /// <typeparam name="TResult"></typeparam>
-    /// <param name="items"></param>
-    /// <param name="selector"></param>
+    /// <param name="items">list of items to filter.</param>
+    /// <param name="predicate">The filter.</param>
+    /// <param name="selector">The selector of the result.</param>
     /// <returns></returns>
     public static IEnumerable<TResult> FilterMap<T, TResult>(
         this IEnumerable<T> items, 
