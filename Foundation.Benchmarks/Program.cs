@@ -32,7 +32,8 @@ public class Program
     {
         //BenchmarkRunner.Run<ArrayValueBenchmarks>();
         //BenchmarkRunner.Run<ByteStringBenchMarks>();
-        //BenchmarkRunner.Run<SortedSetXBenchmarks>();
+        
+        BenchmarkRunner.Run<CircularArrayBenchmarks>();
         //BenchmarkRunner.Run<CollectionsCreationBenchmarks>();
         //BenchmarkRunner.Run<CollectionsSearchBenchmarks>();
         //BenchmarkRunner.Run<EnumerableBenchMarks>();
@@ -43,6 +44,7 @@ public class Program
         //BenchmarkRunner.Run<ReadOnlySpanAndMemoryExtensionsBenchmarks>();
         //BenchmarkRunner.Run<SortedListBenchmarks_AddItems>();
         //BenchmarkRunner.Run<SortedListBenchmarks_SeachItems>();
+        //BenchmarkRunner.Run<SortedSetXBenchmarks>();
         //BenchmarkRunner.Run<StringExtensionsBenchmark>();
     }
 
