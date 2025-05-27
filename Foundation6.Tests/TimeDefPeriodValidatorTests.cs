@@ -16,7 +16,7 @@ public class TimeDefPeriodValidatorTests
         var start = new DateTime(2015, 6, 1);
         var end = new DateTime(2015, 8, 1);
 
-        Assert.IsFalse(sut.Validate(dateSpan, Period.New(start, end)));
+        Assert.IsFalse(sut.IsValid(dateSpan, Period.New(start, end)));
     }
 
     [Test]
@@ -29,7 +29,7 @@ public class TimeDefPeriodValidatorTests
         var start = new DateTime(2015, 6, 1, 7, 0, 0);
         var end = new DateTime(2015, 6, 1, 18, 0, 0);
 
-        Assert.IsFalse(sut.Validate(hour, Period.New(start, end)));
+        Assert.IsFalse(sut.IsValid(hour, Period.New(start, end)));
     }
 
     [Test]
@@ -42,7 +42,7 @@ public class TimeDefPeriodValidatorTests
         var start = new DateTime(2015, 6, 1, 7, 0, 0);
         var end = new DateTime(2015, 6, 1, 7, 30, 0);
 
-        Assert.IsFalse(sut.Validate(minute, Period.New(start, end)));
+        Assert.IsFalse(sut.IsValid(minute, Period.New(start, end)));
     }
 
     [Test]
@@ -58,7 +58,7 @@ public class TimeDefPeriodValidatorTests
         var start = new DateTime(2015, 6, 1);
         var end = new DateTime(2018, 7, 1);
 
-        Assert.IsTrue(sut.Validate(timedef, Period.New(start, end)));
+        Assert.IsTrue(sut.IsValid(timedef, Period.New(start, end)));
     }
 
     [Test]
@@ -71,7 +71,7 @@ public class TimeDefPeriodValidatorTests
         var start = new DateTime(2015, 1, 1);
         var end = new DateTime(2015, 12, 31);
 
-        Assert.IsTrue(sut.Validate(dateSpan, Period.New(start, end)));
+        Assert.IsTrue(sut.IsValid(dateSpan, Period.New(start, end)));
     }
     
     [Test]
@@ -84,7 +84,7 @@ public class TimeDefPeriodValidatorTests
         var start = new DateTime(2015, 6, 1, 7, 0, 0);
         var end = new DateTime(2015, 6, 1, 18, 0, 0);
 
-        Assert.IsTrue(sut.Validate(hour, Period.New(start, end)));
+        Assert.IsTrue(sut.IsValid(hour, Period.New(start, end)));
     }
 
     [Test]
@@ -97,7 +97,7 @@ public class TimeDefPeriodValidatorTests
         var start = new DateTime(2015, 6, 1, 7, 0, 0);
         var end = new DateTime(2015, 6, 1, 8, 0, 0);
 
-        Assert.IsTrue(sut.Validate(minute, Period.New(start, end)));
+        Assert.IsTrue(sut.IsValid(minute, Period.New(start, end)));
     }
 
     [Test]
@@ -110,7 +110,7 @@ public class TimeDefPeriodValidatorTests
         var start = new DateTime(2015, 6, 1);
         var end = new DateTime(2015, 10, 1);
 
-        Assert.IsTrue(sut.Validate(month, Period.New(start, end)));
+        Assert.IsTrue(sut.IsValid(month, Period.New(start, end)));
     }
 
     [Test]
@@ -123,7 +123,7 @@ public class TimeDefPeriodValidatorTests
         var start = new DateTime(2015, 6, 1);
         var end = new DateTime(2015, 6, 7);
 
-        Assert.IsTrue(sut.Validate(weekday, Period.New(start, end)));
+        Assert.IsTrue(sut.IsValid(weekday, Period.New(start, end)));
     }
 
     [Test]
@@ -136,7 +136,7 @@ public class TimeDefPeriodValidatorTests
         var start = new DateTime(2015, 6, 1);
         var end = new DateTime(2018, 7, 1);
 
-        Assert.IsTrue(sut.Validate(year, Period.New(start, end)));
+        Assert.IsTrue(sut.IsValid(year, Period.New(start, end)));
     }
 
 

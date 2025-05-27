@@ -54,11 +54,12 @@ public class DateTimeHelper
             // Accuracy reduced to date
             "yyyyMMdd",
             "yyyy-MM-dd"
-        };
+    };
 
     public static DateTime CreateTime(int hour, int minute, int second)
     {
-        return default(DateTime).AddHours(hour).AddMinutes(minute).AddSeconds(second);
+        var year = DateOnly.MinValue.Year;
+        return new DateTime(year, 1, 1, hour, minute, second);
     }
 
     public static int GetDaysOfYear(int year)
@@ -89,7 +90,7 @@ public class DateTimeHelper
     }
 
     /// <summary>
-    /// Returns the current time dependend on kind.
+    /// Returns the current time dependent on kind.
     /// </summary>
     /// <param name="kind"></param>
     /// <returns>If kind is <see cref="DateTimeKind.Unspecified"/> it returns <see cref="DateTime.UtcNow">.</returns>

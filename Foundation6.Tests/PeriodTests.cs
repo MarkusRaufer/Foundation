@@ -794,7 +794,7 @@ public class PeriodTests
     }
 
     [Test]
-    public void Weeks_1Month()
+    public void Weeks_Should_Return5Weeks_When2MonthAndStartIsMonday()
     {
         var start = new DateTime(2015, 7, 1, 8, 0, 0);
         var end = new DateTime(2015, 8, 2, 18, 0, 0);
@@ -805,29 +805,25 @@ public class PeriodTests
         var periods = period.Weeks().ToArray();
 
         Assert.AreEqual(5, periods.Length);
+
         Assert.AreEqual(start, periods[0].Start);
-        Assert.AreEqual(newDate(7,  6), periods[0].End);
-        Assert.AreEqual(TimeSpan.FromDays(4) + TimeSpan.FromHours(16), periods[0].Duration);
+        Assert.AreEqual(newDate(7,  5), periods[0].End);
 
         Assert.AreEqual(newDate(7,  6), periods[1].Start);
-        Assert.AreEqual(newDate(7, 13), periods[1].End);
-        Assert.AreEqual(TimeSpan.FromDays(7), periods[1].Duration);
+        Assert.AreEqual(newDate(7, 12), periods[1].End);
 
         Assert.AreEqual(newDate(7, 13), periods[2].Start);
-        Assert.AreEqual(newDate(7, 20), periods[2].End);
-        Assert.AreEqual(TimeSpan.FromDays(7), periods[2].Duration);
+        Assert.AreEqual(newDate(7, 19), periods[2].End);
 
         Assert.AreEqual(newDate(7, 20), periods[3].Start);
-        Assert.AreEqual(newDate(7, 27), periods[3].End);
-        Assert.AreEqual(TimeSpan.FromDays(7), periods[3].Duration);
+        Assert.AreEqual(newDate(7, 26), periods[3].End);
 
         Assert.AreEqual(newDate(7, 27), periods[4].Start);
         Assert.AreEqual(end, periods[4].End);
-        Assert.AreEqual(TimeSpan.FromDays(6) + TimeSpan.FromHours(18), periods[4].Duration);
     }
 
     [Test]
-    public void Weeks_2MonthsWithTime()
+    public void Weeks_Should_Return6Weeks_When2MonthsWithTimeAndStartIsMonday()
     {
         static DateTime newDate(int month, int day, int hour) => new (2015, month, day, hour, 0, 0);
 
@@ -838,22 +834,55 @@ public class PeriodTests
         var periods = period.Weeks().ToArray();
 
         Assert.AreEqual(6, periods.Length);
+
         Assert.AreEqual(start, periods[0].Start);
-        Assert.AreEqual(newDate(7, 6, 0), periods[0].End);
+        Assert.AreEqual(newDate(7, 5, 0), periods[0].End);
 
         Assert.AreEqual(newDate(7, 6, 0), periods[1].Start);
-        Assert.AreEqual(newDate(7, 13, 0), periods[1].End);
+        Assert.AreEqual(newDate(7, 12, 0), periods[1].End);
 
         Assert.AreEqual(newDate(7, 13, 0), periods[2].Start);
-        Assert.AreEqual(newDate(7, 20, 0), periods[2].End);
+        Assert.AreEqual(newDate(7, 19, 0), periods[2].End);
 
         Assert.AreEqual(newDate(7, 20, 0), periods[3].Start);
-        Assert.AreEqual(newDate(7, 27, 0), periods[3].End);
+        Assert.AreEqual(newDate(7, 26, 0), periods[3].End);
 
         Assert.AreEqual(newDate(7, 27, 0), periods[4].Start);
-        Assert.AreEqual(newDate(8, 3, 0), periods[4].End);
+        Assert.AreEqual(newDate(8, 2, 0), periods[4].End);
 
         Assert.AreEqual(newDate(8, 3, 0), periods[5].Start);
+        Assert.AreEqual(end, periods[5].End);
+    }
+
+    [Test]
+    public void Weeks_Should_Return6Weeks_When2MonthsWithTimeAndStartIsSunday()
+    {
+        static DateTime newDate(int month, int day, int hour) => new(2015, month, day, hour, 0, 0);
+
+        var start = newDate(7, 1, 8);
+        var end = newDate(8, 4, 18);
+        var period = Period.New(start, end);
+
+        var periods = period.Weeks(DayOfWeek.Sunday).ToArray();
+
+        Assert.AreEqual(6, periods.Length);
+
+        Assert.AreEqual(start, periods[0].Start);
+        Assert.AreEqual(newDate(7, 4, 0), periods[0].End);
+
+        Assert.AreEqual(newDate(7, 5, 0), periods[1].Start);
+        Assert.AreEqual(newDate(7, 11, 0), periods[1].End);
+
+        Assert.AreEqual(newDate(7, 12, 0), periods[2].Start);
+        Assert.AreEqual(newDate(7, 18, 0), periods[2].End);
+
+        Assert.AreEqual(newDate(7, 19, 0), periods[3].Start);
+        Assert.AreEqual(newDate(7, 25, 0), periods[3].End);
+
+        Assert.AreEqual(newDate(7, 26, 0), periods[4].Start);
+        Assert.AreEqual(newDate(8, 1, 0), periods[4].End);
+
+        Assert.AreEqual(newDate(8, 2, 0), periods[5].Start);
         Assert.AreEqual(end, periods[5].End);
     }
 

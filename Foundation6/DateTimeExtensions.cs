@@ -24,6 +24,7 @@
 ﻿namespace Foundation;
 
 using System.Globalization;
+using System.Runtime.CompilerServices;
 
 public static class DateTimeExtensions
 {
@@ -31,7 +32,8 @@ public static class DateTimeExtensions
 
     public static int DaysOfYear(this DateTime dateTime)
     {
-        return DateTimeHelper.GetDaysOfYear(dateTime.Year);
+        //return DateTimeHelper.GetDaysOfYear(dateTime.Year);
+        return dateTime.DayOfYear;
     }
 
     public static DateTime EndOfDay(this DateTime dateTime)
@@ -51,29 +53,37 @@ public static class DateTimeExtensions
 
     public static DateTime EndOfMonth(this DateTime date)
     {
-        return new DateTime(date.Year, date.Month, LastDayOfMonth(date), 0, 0, 0, date.Kind);
+        return new DateTime(date.Year, date.Month, LastDayOfMonthAsInt(date), 0, 0, 0, date.Kind);
     }
 
-    public static DateTime EndOfWeek(this DateTime date)
+    public static DateTime EndOfWeek(this DateTime date, bool withinMonth = true)
     {
         var culture = Thread.CurrentThread.CurrentCulture;
-        return EndOfWeek(date, culture);
+        return EndOfWeek(date, culture, withinMonth);
     }
 
-    public static DateTime EndOfWeek(this DateTime date, DayOfWeek start)
+    public static DateTime EndOfWeek(this DateTime date, DayOfWeek start, bool withinMonth = true)
     {
         if (!DayOfWeekHelper.IsValidFirstDayOfWeek(start))
             throw new ArgumentOutOfRangeException(nameof(start));
 
-        var days = 7 + (int)start - (int)date.DayOfWeek;
+        if (start.LastDayOfWeek() == date.DayOfWeek) return date;
+
+        var days = 7 + (int)start - (int)date.DayOfWeek - 1;
+
+        if (withinMonth)
+        {
+            var lastDayOfMonth = date.LastDayOfMonthAsInt();
+            if ((date.Day + days) > lastDayOfMonth) days = lastDayOfMonth - date.Day;
+        }
         return date.AddDays((double)days).Date;
     }
 
-    public static DateTime EndOfWeek(this DateTime date, CultureInfo culture)
+    public static DateTime EndOfWeek(this DateTime date, CultureInfo culture, bool withinMonth = true)
     {
         if (null == culture) throw new ArgumentOutOfRangeException(nameof(culture));
 
-        return EndOfWeek(date, culture.DateTimeFormat.FirstDayOfWeek);
+        return EndOfWeek(date, culture.DateTimeFormat.FirstDayOfWeek, withinMonth);
     }
 
     public static DateTime EndOfYear(this DateTime dt)
@@ -117,7 +127,13 @@ public static class DateTimeExtensions
     /// </summary>
     /// <param name="date"></param>
     /// <returns></returns>
-    public static int LastDayOfMonth(this DateTime date)
+    public static DateTime LastDayOfMonth(this DateTime date)
+    {
+        var lastDay = LastDayOfMonthAsInt(date);
+        return new DateTime(date.Year, date.Month, lastDay);
+    }
+
+    public static int LastDayOfMonthAsInt(this DateTime date)
     {
         return DateTime.DaysInMonth(date.Year, date.Month);
     }
@@ -178,7 +194,7 @@ public static class DateTimeExtensions
     }
 
     /// <summary>
-    /// Truncates the miniutes of the <see cref="DateTime"/>.
+    /// Truncates the minutes of the <see cref="DateTime"/>.
     /// </summary>
     /// <param name="dt"></param>
     /// <returns></returns>
@@ -217,6 +233,59 @@ public static class DateTimeExtensions
     {
         if (lhs.Kind != rhs.Kind) return false;
         return lhs.Equals(rhs);
+    }
+
+    /// <summary>
+    /// Returns the weeks of the Month.
+    /// </summary>
+    /// <param name="date"></param>
+    /// <param name="kind"></param>
+    /// <returns></returns>
+    public static IEnumerable<Period> WeeksOfMonth(this DateTime date, DateTimeKind kind = DateTimeKind.Utc)
+    {
+        var cultureInfo = Thread.CurrentThread.CurrentCulture;
+        return date.WeeksOfMonth(cultureInfo, kind);
+    }
+
+    /// <summary>
+    /// Returns the weeks of the Month.
+    /// </summary>
+    /// <param name="date"></param>
+    /// <param name="cultureInfo"></param>
+    /// <param name="kind"></param>
+    /// <returns></returns>
+    public static IEnumerable<Period> WeeksOfMonth(this DateTime date, CultureInfo cultureInfo, DateTimeKind kind = DateTimeKind.Utc)
+    {
+        return date.WeeksOfMonth(cultureInfo.DateTimeFormat.FirstDayOfWeek, kind);
+    }
+
+    /// <summary>
+    /// Returns the weeks of the Month.
+    /// </summary>
+    /// <param name="date"></param>
+    /// <param name="start"></param>
+    /// <param name="kind"></param>
+    /// <returns></returns>
+    public static IEnumerable<Period> WeeksOfMonth(this DateTime date, DayOfWeek start, DateTimeKind kind = DateTimeKind.Utc)
+    {
+        if (date.Kind != kind) throw new ArgumentException($"{nameof(date)} should be {kind}.");
+
+        var lastDay = date.LastDayOfMonth();
+
+        var weekStart = date.Day == 1 ? date : new DateTime(date.Year, date.Month, 1);
+        for (var day = weekStart.Day; day <= lastDay.Day;)
+        {
+            var endOfWeek = weekStart.EndOfWeek(start);
+            if (endOfWeek >= lastDay)
+            {
+                yield return Period.New(weekStart, endOfWeek);
+                break;
+            }
+
+            yield return Period.New(weekStart, endOfWeek);
+            weekStart = endOfWeek.AddDays(1);
+            day = weekStart.Day;
+        }
     }
 }
 

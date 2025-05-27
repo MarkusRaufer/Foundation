@@ -213,7 +213,7 @@ public class TimeDefTests
             var month = new TimeDef.DateSpan(From: new DateOnly(2022, 6, 1), To: new DateOnly(2022, 6, 30));
             var and = new TimeDef.And(month, weekday);
 
-            var valid = validator.Validate(and, Period.New(start, end));
+            var valid = validator.IsValid(and, Period.New(start, end));
 
             Assert.IsTrue(sut1.Equals(sut2));
             Assert.IsTrue(sut1 == sut2); 

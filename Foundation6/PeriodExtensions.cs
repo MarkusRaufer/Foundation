@@ -509,19 +509,21 @@ public static class PeriodExtensions
     /// <returns></returns>
     public static IEnumerable<Period> Weeks(this Period period, DayOfWeek start = DayOfWeek.Monday)
     {
-        if (!DayOfWeekHelper.IsValidFirstDayOfWeek(start)) throw new ArgumentOutOfRangeException("start");
-        if (period.End < period.Start.EndOfWeek(start))
+        if (!DayOfWeekHelper.IsValidFirstDayOfWeek(start)) throw new ArgumentOutOfRangeException(nameof(start));
+        if (period.End < period.Start.EndOfWeek(start, false))
         {
             yield return period;
             yield break;
         }
         var currentWeek = period.Start;
+        var periodEnd = period.End.Date;
         while (currentWeek < period.End)
         {
-            var end = currentWeek.EndOfWeek(start);
-            if (end > period.End) end = period.End;
+            var end = currentWeek.EndOfWeek(start, false);
+            
+            if (end >= periodEnd) end = period.End;
             yield return Period.New(currentWeek, end);
-            currentWeek = end;
+            currentWeek = end.AddDays(1);
         }
     }
 

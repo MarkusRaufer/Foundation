@@ -47,7 +47,7 @@ public class ExpressionExtensionsTests
     [Test]
     public void ExtractExpressions_Should_Return1MemberExpression_When_UsingLambdaExpression_WithMemberAccessAndObjectProperty()
     {
-        LambdaExpression lambda = (DateTime x) => x.EndOfWeek().Day == 7;
+        LambdaExpression lambda = (DateTime x) => x.EndOfWeek(true).Day == 7;
 
         var memberExpressions = lambda.ExtractExpressions<MemberExpression>().ToArray();
 
