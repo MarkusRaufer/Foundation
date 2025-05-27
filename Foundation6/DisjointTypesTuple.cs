@@ -23,19 +23,19 @@
 // SOFTWARE.
 ﻿namespace Foundation;
 
-public abstract class DisparateTupleBase<TTuple> : IEquatable<DisparateTupleBase<TTuple>>
+public abstract class DisjointTypesTupleBase<TTuple> : IEquatable<DisjointTypesTupleBase<TTuple>>
     where TTuple : notnull
 {
-    protected DisparateTupleBase(TTuple tuple)
+    protected DisjointTypesTupleBase(TTuple tuple)
     {
         Tuple = tuple.ThrowIfNull();
     }
 
-    public override bool Equals(object? obj) => Equals(obj as DisparateTupleBase<TTuple>);
+    public override bool Equals(object? obj) => Equals(obj as DisjointTypesTupleBase<TTuple>);
 
-    public bool Equals(DisparateTupleBase<TTuple>? other)
+    public bool Equals(DisjointTypesTupleBase<TTuple>? other)
     {
-        return null != other && Tuple.Equals(other);
+        return null != other && Tuple.Equals(other.Tuple);
     }
 
     public abstract Option<T> Get<T>();
@@ -47,9 +47,9 @@ public abstract class DisparateTupleBase<TTuple> : IEquatable<DisparateTupleBase
     protected TTuple Tuple { get; }
 }
 
-public class DisparateTuple<T1> : DisparateTupleBase<Tuple<T1>>
+public class DisjointTypesTuple<T1> : DisjointTypesTupleBase<Tuple<T1>>
 {
-    public DisparateTuple(T1 value) : base(System.Tuple.Create(value))
+    public DisjointTypesTuple(T1 value) : base(System.Tuple.Create(value))
     {
     }
 
@@ -61,9 +61,9 @@ public class DisparateTuple<T1> : DisparateTupleBase<Tuple<T1>>
     }
 }
 
-public class DisparateTuple<T1, T2> : DisparateTupleBase<Tuple<T1, T2>>
+public class DisjointTypesTuple<T1, T2> : DisjointTypesTupleBase<Tuple<T1, T2>>
 {
-    public DisparateTuple(T1 item1, T2 item2) : base(System.Tuple.Create(item1, item2))
+    public DisjointTypesTuple(T1 item1, T2 item2) : base(System.Tuple.Create(item1, item2))
     {
         item1.ThrowIfNull();
         item2.ThrowIfNull();
@@ -80,9 +80,9 @@ public class DisparateTuple<T1, T2> : DisparateTupleBase<Tuple<T1, T2>>
     }
 }
 
-public class DisparateTuple<T1, T2, T3> : DisparateTupleBase<Tuple<T1, T2, T3>>
+public class DisjointTypesTuple<T1, T2, T3> : DisjointTypesTupleBase<Tuple<T1, T2, T3>>
 {
-    public DisparateTuple(T1 item1, T2 item2, T3 item3) : base(System.Tuple.Create(item1, item2, item3))
+    public DisjointTypesTuple(T1 item1, T2 item2, T3 item3) : base(System.Tuple.Create(item1, item2, item3))
     {
         item1.ThrowIfNull();
         item2.ThrowIfNull();
@@ -101,9 +101,9 @@ public class DisparateTuple<T1, T2, T3> : DisparateTupleBase<Tuple<T1, T2, T3>>
     }
 }
 
-public class DisparateTuple<T1, T2, T3, T4> : DisparateTupleBase<Tuple<T1, T2, T3, T4>>
+public class DisjointTypesTuple<T1, T2, T3, T4> : DisjointTypesTupleBase<Tuple<T1, T2, T3, T4>>
 {
-    public DisparateTuple(T1 item1, T2 item2, T3 item3, T4 item4) : base(System.Tuple.Create(item1, item2, item3, item4))
+    public DisjointTypesTuple(T1 item1, T2 item2, T3 item3, T4 item4) : base(System.Tuple.Create(item1, item2, item3, item4))
     {
         item1.ThrowIfNull();
         item2.ThrowIfNull();
@@ -124,9 +124,9 @@ public class DisparateTuple<T1, T2, T3, T4> : DisparateTupleBase<Tuple<T1, T2, T
     }
 }
 
-public class DisparateTuple<T1, T2, T3, T4, T5> : DisparateTupleBase<Tuple<T1, T2, T3, T4, T5>>
+public class DisjointTypesTuple<T1, T2, T3, T4, T5> : DisjointTypesTupleBase<Tuple<T1, T2, T3, T4, T5>>
 {
-    public DisparateTuple(T1 item1, T2 item2, T3 item3, T4 item4, T5 item5) : base(System.Tuple.Create(item1, item2, item3, item4, item5))
+    public DisjointTypesTuple(T1 item1, T2 item2, T3 item3, T4 item4, T5 item5) : base(System.Tuple.Create(item1, item2, item3, item4, item5))
     {
         item1.ThrowIfNull();
         item2.ThrowIfNull();
@@ -149,9 +149,9 @@ public class DisparateTuple<T1, T2, T3, T4, T5> : DisparateTupleBase<Tuple<T1, T
     }
 }
 
-public class DisparateTuple<T1, T2, T3, T4, T5, T6> : DisparateTupleBase<Tuple<T1, T2, T3, T4, T5, T6>>
+public class DisjointTypesTuple<T1, T2, T3, T4, T5, T6> : DisjointTypesTupleBase<Tuple<T1, T2, T3, T4, T5, T6>>
 {
-    public DisparateTuple(T1 item1, T2 item2, T3 item3, T4 item4, T5 item5, T6 item6) : base(System.Tuple.Create(item1, item2, item3, item4, item5, item6))
+    public DisjointTypesTuple(T1 item1, T2 item2, T3 item3, T4 item4, T5 item5, T6 item6) : base(System.Tuple.Create(item1, item2, item3, item4, item5, item6))
     {
         item1.ThrowIfNull();
         item2.ThrowIfNull();
@@ -176,9 +176,9 @@ public class DisparateTuple<T1, T2, T3, T4, T5, T6> : DisparateTupleBase<Tuple<T
     }
 }
 
-public class DisparateTuple<T1, T2, T3, T4, T5, T6, T7> : DisparateTupleBase<Tuple<T1, T2, T3, T4, T5, T6, T7>>
+public class DisjointTypesTuple<T1, T2, T3, T4, T5, T6, T7> : DisjointTypesTupleBase<Tuple<T1, T2, T3, T4, T5, T6, T7>>
 {
-    public DisparateTuple(T1 item1, T2 item2, T3 item3, T4 item4, T5 item5, T6 item6, T7 item7)
+    public DisjointTypesTuple(T1 item1, T2 item2, T3 item3, T4 item4, T5 item5, T6 item6, T7 item7)
         : base(System.Tuple.Create(item1, item2, item3, item4, item5, item6, item7))
     {
         item1.ThrowIfNull();
