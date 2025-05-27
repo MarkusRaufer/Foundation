@@ -35,7 +35,7 @@ public class OneOf<T1, T2> : IEquatable<OneOf<T1, T2>>
     }
 
     /// <summary>
-    /// Construcor that selects the specific type.
+    /// Constructor that selects the specific type.
     /// </summary>
     /// <param name="t1"></param>
     public OneOf(T1 t1)
@@ -52,7 +52,7 @@ public class OneOf<T1, T2> : IEquatable<OneOf<T1, T2>>
     }
 
     /// <summary>
-    /// Construcor that selects the specific type.
+    /// Constructor that selects the specific type.
     /// </summary>
     /// <param name="t2"></param>
     public OneOf(T2 t2)
@@ -240,7 +240,7 @@ public class OneOf<T1, T2, T3>
     }
 
     /// <summary>
-    /// Construcor that selects the specific type.
+    /// Constructor that selects the specific type.
     /// </summary>
     /// <param name="t3"></param>
     public OneOf(T3 t3)
@@ -382,7 +382,7 @@ public class OneOf<T1, T2, T3, T4>
     }
 
     /// <summary>
-    /// Construcor that selects the specific type.
+    /// Constructor that selects the specific type.
     /// </summary>
     /// <param name="t4"></param>
     public OneOf(T4 t4)
@@ -536,7 +536,7 @@ public class OneOf<T1, T2, T3, T4, T5>
     }
 
     /// <summary>
-    /// Construcor that selects the specific type.
+    /// Constructor that selects the specific type.
     /// </summary>
     /// <param name="t5"></param>
     public OneOf(T5 t5)
@@ -702,7 +702,7 @@ public class OneOf<T1, T2, T3, T4, T5, T6>
     }
 
     /// <summary>
-    /// Construcor that selects the specific type.
+    /// Constructor that selects the specific type.
     /// </summary>
     /// <param name="t6"></param>
     public OneOf(T6 t6)
@@ -878,7 +878,7 @@ public class OneOf<T1, T2, T3, T4, T5, T6, T7>
     }
 
     /// <summary>
-    /// Construcor that selects the specific type.
+    /// Constructor that selects the specific type.
     /// </summary>
     /// <param name="t7"></param>
     public OneOf(T7 t7)
@@ -1066,7 +1066,7 @@ public class OneOf<T1, T2, T3, T4, T5, T6, T7, T8>
     }
 
     /// <summary>
-    /// Construcor that selects the specific type.
+    /// Constructor that selects the specific type.
     /// </summary>
     /// <param name="t8"></param>
     public OneOf(T8 t8)
@@ -1266,7 +1266,7 @@ public class OneOf<T1, T2, T3, T4, T5, T6, T7, T8, T9>
     }
 
     /// <summary>
-    /// Construcor that selects the specific type.
+    /// Constructor that selects the specific type.
     /// </summary>
     /// <param name="t9"></param>
     public OneOf(T9 t9)
@@ -1479,7 +1479,7 @@ public class OneOf<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10>
     }
 
     /// <summary>
-    /// Construcor that selects the specific type.
+    /// Constructor that selects the specific type.
     /// </summary>
     /// <param name="t10"></param>
     public OneOf(T10 t10)
