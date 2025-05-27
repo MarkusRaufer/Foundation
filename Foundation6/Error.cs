@@ -70,7 +70,7 @@ public sealed record Error(string Id, string Message, Error[]? InnerErrors = nul
     {
         var id = error.ThrowIfNull().GetType().Name;
 
-        return errors is null 
+        return errors.Length == 0 
             ? new Error(id, selector(error))
             : new Error(id, selector(error), errors);
     }

@@ -58,4 +58,20 @@ public class ErrorTests
             error.Message.StartsWith(id1).ShouldBeTrue();
         }
     }
+
+    [Test]
+    public void FromType_Should_ReturnError_When_Error_IncludesOtherErrors()
+    {
+        // Arrange
+        var dt = DateTime.Now;
+        var message = "invalid date";
+
+        // Act
+        var sut = Error.FromType(dt, x => message);
+
+        // Assert
+        sut.Id.ShouldBe(nameof(DateTime));
+        sut.Message.ShouldBe(message);
+        sut.InnerErrors.ShouldBeNull();
+    }
 }
