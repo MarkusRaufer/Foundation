@@ -51,7 +51,7 @@ public class CircularArrayBenchmarks
     [GlobalSetup]
     public void GlobalSetup()
     {
-        _circularArray = new CircularArray<string>(NumberOfElements);
+        _circularArray = CircularArray.New<string>(NumberOfElements);
         _circularBuffer = new CircularBuffer<string>(NumberOfElements);
 
         var numbers = _random.IntegersWithoutDuplicates(0, NumberOfElements);

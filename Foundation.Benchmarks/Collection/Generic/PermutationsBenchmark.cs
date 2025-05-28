@@ -23,6 +23,8 @@
 // SOFTWARE.
 ﻿using BenchmarkDotNet.Attributes;
 using Foundation.Collections;
+using ZLinq;
+using ZLinq.Linq;
 
 namespace Foundation.Benchmark;
 
@@ -38,8 +40,7 @@ public class PermutationsBenchmark
     private List<List<object>> _smallList;
 
     private object[][] _large;
-    private List<List<object>> _largeList;
-
+    private List<List<object>> _largeList;    
 
     public PermutationsBenchmark()
     {
@@ -54,90 +55,87 @@ public class PermutationsBenchmark
         _largeList = new List<List<object>> { _charsLarge.ToList(), _numbersLarge.ToList(), _booleans.ToList() };
     }
 
-    [Benchmark]
-    public void Permutations_Small()
-    {
-        foreach (var permutation in _small.Permutations())
-        {
-        }
-    }
+    //[Benchmark]
+    //public void Permutations_Small()
+    //{
+    //    foreach (var permutation in _small.Permutations())
+    //    {
+    //    }
+    //}
 
-    [Benchmark]
-    public void PermutationsArrays_Small()
-    {
-        foreach(var permutation in _small.PermutationsArrays())
-        {
-        }
-    }
+    //[Benchmark]
+    //public void PermutationsArrays_Small()
+    //{
+    //    foreach (var permutation in _small.PermutationsArrays())
+    //    {
+    //    }
+    //}
 
-    [Benchmark]
-    public void PermutationsLists_Small()
-    {
-        foreach(var permutation in _smallList.PermutationsLists())
-        {
-        }
-    }
+    //[Benchmark]
+    //public void PermutationsLists_Small()
+    //{
+    //    foreach (var permutation in _smallList.PermutationsLists())
+    //    {
+    //    }
+    //}
 
+    //[Benchmark]
+    //public void Permutations_Large()
+    //{
+    //    foreach (var permutation in _large.Permutations())
+    //    {
+    //    }
+    //}
 
-    [Benchmark]
-    public void Permutations_Large()
-    {
-        foreach (var permutation in _large.Permutations())
-        {
-        }
-    }
+    //[Benchmark]
+    //public void PermutationsArrays_Large()
+    //{
+    //    foreach (var permutation in _large.PermutationsArrays())
+    //    {
+    //    }
+    //}
 
-    [Benchmark]
-    public void PermutationsArrays_Large()
-    {
-        foreach (var permutation in _large.PermutationsArrays())
-        {
-        }
-    }
+    //[Benchmark]
+    //public void PermutationsLists_Large()
+    //{
+    //    foreach (var permutation in _largeList.PermutationsLists())
+    //    {
+    //    }
+    //}
 
+    //[Benchmark]
+    //public void Permutations_Search_Small()
+    //{
+    //    foreach (var items in _small.Permutations())
+    //    {
+    //        if (items.First() is char c && c == 'm') break;
+    //    }
+    //}
 
-    [Benchmark]
-    public void PermutationsLists_Large()
-    {
-        foreach (var permutation in _largeList.PermutationsLists())
-        {
-        }
-    }
+    //[Benchmark]
+    //public void PermutationsArrays_Search_Small()
+    //{
+    //    foreach (var items in _small.PermutationsArrays())
+    //    {
+    //        if (items.First() is char c && c == 'm') break;
+    //    }
+    //}
 
-
-    [Benchmark]
-    public void Permutations_Search_Small()
-    {
-        foreach (var items in _small.Permutations())
-        {
-            if ((char)items.First() == 'm') break;
-        }
-    }
-
-    [Benchmark]
-    public void PermutationsArrays_Search_Small()
-    {
-        foreach (var items in _small.PermutationsArrays())
-        {
-            if ((char)items.First() == 'm') break;
-        }
-    }
-
-    [Benchmark]
-    public void PermutationsLists_Search_Small()
-    {
-        foreach (var items in _smallList.PermutationsLists())
-        {
-            if ((char)items.First() == 'm') break;
-        }
-    }
+    //[Benchmark]
+    //public void PermutationsLists_Search_Small()
+    //{
+    //    foreach (var items in _smallList.PermutationsLists())
+    //    {
+    //        if (items.First() is char c && c == 'm') break;
+    //    }
+    //}
 
     [Benchmark]
     public void Permutations_Search_Large()
     {
         foreach (var items in _large.Permutations())
         {
-            if ((char)items.First() == 'm') break;
+            if (items.First() is char c && c == 'm') break;
         }
     }
 
@@ -146,7 +144,7 @@ public class PermutationsBenchmark
     {
         foreach (var items in _large.PermutationsArrays())
         {
-            if ((char)items.First() == 'm') break;
+            if (items.First() is char c && c == 'm') break;
         }
     }
 
@@ -155,8 +153,7 @@ public class PermutationsBenchmark
     {
         foreach (var items in _largeList.PermutationsLists())
         {
-            if ((char)items.First() == 'm') break;
+            if (items.First() is char c && c == 'm') break;
         }
     }
-
 }

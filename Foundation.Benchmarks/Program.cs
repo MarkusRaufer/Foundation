@@ -30,10 +30,12 @@ public class Program
 {
     public static void Main(string[] args)
     {
+        //Call_PermutationsBenchmark();
+
         //BenchmarkRunner.Run<ArrayValueBenchmarks>();
         //BenchmarkRunner.Run<ByteStringBenchMarks>();
-        
-        BenchmarkRunner.Run<CircularArrayBenchmarks>();
+
+        //BenchmarkRunner.Run<CircularArrayBenchmarks>();
         //BenchmarkRunner.Run<CollectionsCreationBenchmarks>();
         //BenchmarkRunner.Run<CollectionsSearchBenchmarks>();
         //BenchmarkRunner.Run<EnumerableBenchMarks>();
@@ -48,5 +50,11 @@ public class Program
         //BenchmarkRunner.Run<StringExtensionsBenchmark>();
     }
 
+    public static void Call_PermutationsBenchmark()
+    {
+        var bm = new PermutationsBenchmark();
+        bm.Permutations_Search_Large();
+        //bm.Permutations_Search_LargeZLinq();
+    }
 
 }

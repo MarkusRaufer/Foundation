@@ -7,7 +7,7 @@ using System.Linq;
 namespace Foundation.Collections.Generic;
 
 [TestFixture]
-public class CircularArrayTests
+public class CircularListTests
 {
 
     [Test]
@@ -15,7 +15,7 @@ public class CircularArrayTests
     {
         // Arrange
         var capacity = 3;
-        var sut = CircularArray.New<int>(capacity);
+        var sut = CircularList.New<int>(capacity);
 
         // Act
         sut.Add(1);
@@ -36,7 +36,7 @@ public class CircularArrayTests
     {
         // Arrange
         var capacity = 3;
-        var sut = CircularArray.New<int>(capacity);
+        var sut = CircularList.New<int>(capacity);
 
         // Act
         sut.Add(1);
@@ -59,7 +59,7 @@ public class CircularArrayTests
     {
         // Arrange
         var capacity = 3;
-        var sut = CircularArray.New<int>(capacity);
+        var sut = CircularList.New<int>(capacity);
 
         // Act
         sut.Add(1);
@@ -83,7 +83,7 @@ public class CircularArrayTests
     {
         // Arrange
         var capacity = 3;
-        var sut = CircularArray.New<int>(capacity);
+        var sut = CircularList.New<int>(capacity);
         sut.Add(1);
         sut.Add(2);
         sut.Add(3);
@@ -102,7 +102,7 @@ public class CircularArrayTests
     {
         // Arrange
         var capacity = 3;
-        var sut = CircularArray.New<int>(capacity);
+        var sut = CircularList.New<int>(capacity);
         sut.Add(1);
         sut.Add(2);
         sut.Add(3);
@@ -128,7 +128,7 @@ public class CircularArrayTests
         var capacity = 3;
 
         // Act
-        var sut = CircularArray.New<int>(capacity);
+        var sut = CircularList.New<int>(capacity);
 
         // Assert
         sut.Count.ShouldBe(0);
@@ -144,7 +144,7 @@ public class CircularArrayTests
         var numbers = new int[] { 1, 2, 3 };
 
         // Act
-        var sut = CircularArray.New<int>(numbers);
+        var sut = CircularList.New<int>(numbers);
 
         // Assert
         sut.Count.ShouldBe(numbers.Length);
@@ -165,7 +165,7 @@ public class CircularArrayTests
     {
         // Arrange
         var capacity = 3;
-        var sut = CircularArray.New<int>(capacity);
+        var sut = CircularList.New<int>(capacity);
         sut.Add(1);
         sut.Add(2);
         sut.Add(3);
@@ -183,7 +183,7 @@ public class CircularArrayTests
     {
         // Arrange
         var capacity = 3;
-        var sut = CircularArray.New<string>(capacity);
+        var sut = CircularList.New<string>(capacity);
         sut.Add("one");
         sut.Add("two");
         sut.Add("three");
@@ -201,7 +201,7 @@ public class CircularArrayTests
     {
         // Arrange
         var capacity = 3;
-        var sut = CircularArray.New<string>(capacity);
+        var sut = CircularList.New<string>(capacity);
         sut.Add("one");
         sut.Add("two");
         sut.Add("three");
@@ -223,7 +223,7 @@ public class CircularArrayTests
     {
         // Arrange
         var capacity = 3;
-        var sut = CircularArray.New<string>(capacity);
+        var sut = CircularList.New<string>(capacity);
         sut.Add("1");
         sut.Add("2");
         sut.Add("3");
@@ -241,7 +241,7 @@ public class CircularArrayTests
     {
         // Arrange
         var capacity = 3;
-        var sut = CircularArray.New<string>(capacity);
+        var sut = CircularList.New<string>(capacity);
         sut.Add("1");
         sut.Add("2");
         sut.Add("3");
@@ -259,7 +259,7 @@ public class CircularArrayTests
     {
         // Arrange
         var capacity = 3;
-        var sut = CircularArray.New<string>(capacity);
+        var sut = CircularList.New<string>(capacity);
         sut.Add("1");
         sut.Add("2");
         sut.Add("3");
@@ -280,7 +280,7 @@ public class CircularArrayTests
     {
         // Arrange
         var capacity = 3;
-        var sut = CircularArray.New<string>(capacity);
+        var sut = CircularList.New<string>(capacity);
         sut.Add("1");
         sut.Add("2");
         sut.Add("3");
@@ -298,7 +298,7 @@ public class CircularArrayTests
     {
         // Arrange
         var capacity = 3;
-        var sut = CircularArray.New<string>(capacity);
+        var sut = CircularList.New<string>(capacity);
         sut.Add("one");
         sut.Add("two");
         sut.Add("three");
@@ -316,7 +316,7 @@ public class CircularArrayTests
     {
         // Arrange
         var capacity = 3;
-        var sut = CircularArray.New<string>(capacity);
+        var sut = CircularList.New<string>(capacity);
         sut.Add("one");
         sut.Add("two");
         sut.Add("three");
