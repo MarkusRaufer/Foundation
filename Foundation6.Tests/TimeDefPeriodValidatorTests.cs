@@ -24,12 +24,12 @@ public class TimeDefPeriodValidatorTests
     {
         var sut = new TimeDefPeriodValidator();
 
-        var hour = new TimeDef.Hour(new[] { 8, 19 });
+        var hours = new TimeDef.Hours(8);
 
         var start = new DateTime(2015, 6, 1, 7, 0, 0);
         var end = new DateTime(2015, 6, 1, 18, 0, 0);
 
-        Assert.IsFalse(sut.IsValid(hour, Period.New(start, end)));
+        Assert.IsFalse(sut.IsValid(hours, Period.New(start, end)));
     }
 
     [Test]
@@ -37,12 +37,12 @@ public class TimeDefPeriodValidatorTests
     {
         var sut = new TimeDefPeriodValidator();
 
-        var minute = new TimeDef.Minute(new[] { 30, 45 });
+        var minute = new TimeDef.Minutes(30);
 
         var start = new DateTime(2015, 6, 1, 7, 0, 0);
         var end = new DateTime(2015, 6, 1, 7, 30, 0);
 
-        Assert.IsFalse(sut.IsValid(minute, Period.New(start, end)));
+        Assert.IsTrue(sut.IsValid(minute, Period.New(start, end)));
     }
 
     [Test]

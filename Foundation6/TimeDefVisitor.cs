@@ -25,11 +25,9 @@
 
 public abstract class TimeDefVisitor
 {
-    private TriState _result;
-
     public virtual bool Visit(TimeDef timedef)
     {
-        if (_result.State.TryGet(out bool state) && !state) return false;
+        if (timedef is null) return false;
 
         var result = timedef switch
         {
@@ -56,8 +54,6 @@ public abstract class TimeDefVisitor
             TimeDef.Years td => VisitYears(td),
             _ => false,
         };
-
-        _result = new TriState(result);
 
         return result;
     }
