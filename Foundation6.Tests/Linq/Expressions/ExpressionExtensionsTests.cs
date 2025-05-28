@@ -55,7 +55,9 @@ public class ExpressionExtensionsTests
 
         var memberExpression = memberExpressions[0];
         LambdaExpression lambda2 = (DateTime x) => true;
-        memberExpression.ToString().Should().Be("x.EndOfWeek().Day");
+
+        var str = memberExpression.ToString();
+        str.Should().Be("x.EndOfWeek(True).Day");
     }
 
     [Test]
