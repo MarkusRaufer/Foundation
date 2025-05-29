@@ -89,7 +89,7 @@ public static class EnumerableEvents
     {
         action.ThrowIfNull();
 
-        var it = items.ThrowIfEnumerableIsNull()
+        var it = items.ThrowIfNull()
                       .GetEnumerator();
 
         if (!it.MoveNext()) yield break;
@@ -118,7 +118,7 @@ public static class EnumerableEvents
     {
         action.ThrowIfNull();
 
-        var it = items.ThrowIfEnumerableIsNull()
+        var it = items.ThrowIfNull()
                       .GetEnumerator();
 
         if (!it.MoveNext()) yield break;
@@ -146,7 +146,7 @@ public static class EnumerableEvents
     {
         action.ThrowIfNull();
 
-        foreach (var item in items.ThrowIfEnumerableIsNull())
+        foreach (var item in items.ThrowIfNull())
         {
             action();
             yield return item;
@@ -164,7 +164,7 @@ public static class EnumerableEvents
     {
         action.ThrowIfNull();
 
-        foreach (var item in items.ThrowIfEnumerableIsNull())
+        foreach (var item in items.ThrowIfNull())
         {
             action(item);
             yield return item;
@@ -184,7 +184,7 @@ public static class EnumerableEvents
         predicate.ThrowIfNull();
         action.ThrowIfNull();
 
-        foreach (var item in items.ThrowIfEnumerableIsNull())
+        foreach (var item in items.ThrowIfNull())
         {
             if (predicate(item)) action(item);
             yield return item;
@@ -202,7 +202,7 @@ public static class EnumerableEvents
     {
         action.ThrowIfNull();
 
-        var it = items.ThrowIfEnumerableIsNull()
+        var it = items.ThrowIfNull()
                       .GetEnumerator();
 
         if (!it.MoveNext())
@@ -230,7 +230,7 @@ public static class EnumerableEvents
     {
         onEmpty.ThrowIfNull();
 
-        var it = items.ThrowIfEnumerableIsNull()
+        var it = items.ThrowIfNull()
                       .GetEnumerator();
 
         if (!it.MoveNext())
@@ -261,7 +261,7 @@ public static class EnumerableEvents
         onEmpty.ThrowIfNull();
         onNotEmpty.ThrowIfNull();
 
-        var it = items.ThrowIfEnumerableIsNull()
+        var it = items.ThrowIfNull()
                       .GetEnumerator();
 
         if (!it.MoveNext())
@@ -288,7 +288,7 @@ public static class EnumerableEvents
     {
         action.ThrowIfNull();
 
-        var it = items.ThrowIfEnumerableIsNull()
+        var it = items.ThrowIfNull()
                       .GetEnumerator();
 
         if (!it.MoveNext()) yield break;
@@ -312,7 +312,7 @@ public static class EnumerableEvents
     {
         action.ThrowIfNull();
 
-        var it = items.ThrowIfEnumerableIsNull()
+        var it = items.ThrowIfNull()
                       .GetEnumerator();
 
         if (!it.MoveNext()) yield break;
@@ -363,7 +363,7 @@ public static class EnumerableEvents
     {
         action.ThrowIfNull();
 
-        var it = items.ThrowIfEnumerableIsNull()
+        var it = items.ThrowIfNull()
                       .GetEnumerator();
 
         if (it.MoveNext())
@@ -391,7 +391,7 @@ public static class EnumerableEvents
     {
         action.ThrowIfNull();
 
-        var it = items.ThrowIfEnumerableIsNull()
+        var it = items.ThrowIfNull()
                       .GetEnumerator();
 
         if (it.MoveNext())
@@ -421,7 +421,7 @@ public static class EnumerableEvents
     {
         action.ThrowIfNull();
 
-        var it = items.ThrowIfEnumerableIsNull().GetEnumerator();
+        var it = items.ThrowIfNull().GetEnumerator();
         var counter = 0;
         bool hasNext;
         while (hasNext = it.MoveNext())
@@ -459,7 +459,7 @@ public static class EnumerableEvents
         var counter = 0;
         var idx = indices.ToArray();
 
-        foreach (var item in items.ThrowIfEnumerableIsNull())
+        foreach (var item in items.ThrowIfNull())
         {
             if (idx.Contains(counter))
                 action(counter, item);

@@ -34,7 +34,7 @@ public static class DualStreamsFactory
     /// <returns></returns>
     public static DualStreams<TLeft, TRight> ToDualStreams<TLeft, TRight>(this IEnumerable<TLeft> items)
     {
-        items.ThrowIfEnumerableIsNull();
+        items.ThrowIfNull();
 
         return new DualStreams<TLeft, TRight>
         {
@@ -59,7 +59,7 @@ public static class DualStreamsFactory
         Func<TLeft, TRight> project,
         bool isExhaustive = true)
     {
-        items.ThrowIfEnumerableIsNull();
+        items.ThrowIfNull();
         predicate.ThrowIfNull();
         project.ThrowIfNull();
 
@@ -97,7 +97,7 @@ public static class DualStreamsFactory
         Func<TSelector, TRight> project,
         bool isExhaustive = true)
     {
-        items.ThrowIfEnumerableIsNull();
+        items.ThrowIfNull();
         project.ThrowIfNull();
 
         var streams = new DualStreams<TLeft, TRight>();

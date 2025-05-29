@@ -129,7 +129,7 @@ public class EquatableSortedDictionary<TKey, TValue>
 
     public void Add(IEnumerable<KeyValuePair<TKey, TValue>> keyValues)
     {
-        keyValues.ThrowIfEnumerableIsNull();
+        keyValues.ThrowIfNull();
 
         foreach (var keyValue in keyValues)
         {

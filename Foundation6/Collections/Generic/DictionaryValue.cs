@@ -95,6 +95,10 @@ public class DictionaryValue<TKey, TValue>
         : this(new Dictionary<TKey, TValue>(keyValues, comparer))
     {
     }
+    public DictionaryValue(IEnumerable<(TKey key, TValue value)> keyValues, IEqualityComparer<TKey> comparer)
+        : this(new Dictionary<TKey, TValue>(keyValues.ToKeyValues(), comparer))
+    {
+    }
 #endif
 
     private DictionaryValue(IDictionary<TKey, TValue> dictionary)

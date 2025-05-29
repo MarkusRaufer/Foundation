@@ -155,7 +155,7 @@ public static class EnumerableTransformations
     /// <returns></returns>
     public static IEnumerable<T> ToBreakable<T>(this IEnumerable<T> items, ref ObservableValue<bool> stop)
     {
-        return new BreakableEnumerable<T>(items.ThrowIfEnumerableIsNull(), ref stop);
+        return new BreakableEnumerable<T>(items.ThrowIfNull(), ref stop);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -232,7 +232,7 @@ public static class EnumerableTransformations
     /// <returns><see cref="HashSetValue{T}"/> including unique items.</returns>
     public static HashSetValue<T> ToHashSetValue<T>(this IEnumerable<T> items)
     {
-        items.ThrowIfEnumerableIsNull();
+        items.ThrowIfNull();
         return new HashSetValue<T>(items);
     }
 
@@ -251,6 +251,16 @@ public static class EnumerableTransformations
     }
 
     /// <summary>
+    /// Transforms key value tuples to a list of <see cref="KeyValuePair{TKey, TValue}"/>.
+    /// </summary>
+    /// <typeparam name="TKey">Type of the key.</typeparam>
+    /// <typeparam name="TValue">Type of the value.</typeparam>
+    /// <param name="keyValues">List of key value tuples.</param>
+    /// <returns>List of <see cref="KeyValuePair{TKey, TValue}"/>.</returns>
+    public static IEnumerable<KeyValuePair<TKey, TValue>> ToKeyValues<TKey, TValue>(this IEnumerable<(TKey, TValue)> keyValues)
+        => keyValues.Select(x => new KeyValuePair<TKey, TValue>(x.Item1, x.Item2));
+
+    /// <summary>
     /// Creates a <see cref="IMultiMap{TKey, TValue}"/> from an enumerable.
     /// </summary>
     /// <typeparam name="T"></typeparam>
@@ -261,7 +271,7 @@ public static class EnumerableTransformations
     public static IMultiMap<TKey, T> ToMultiMap<T, TKey>(this IEnumerable<T> items, Func<T, TKey> keySelector)
         where TKey : notnull
     {
-        items.ThrowIfEnumerableIsNull();
+        items.ThrowIfNull();
         keySelector.ThrowIfNull();
 
         return ToMultiMap(items, keySelector, x => x);
@@ -283,7 +293,7 @@ public static class EnumerableTransformations
         Func<T, TValue> valueSelector)
         where TKey : notnull
     {
-        items.ThrowIfEnumerableIsNull();
+        items.ThrowIfNull();
         keySelector.ThrowIfNull();
 
         var dictionary = new MultiMap<TKey, TValue>();
@@ -333,7 +343,7 @@ public static class EnumerableTransformations
         Func<TSource, TRhs> rhsSelector)
         where TLhs : notnull
     {
-        source.ThrowIfEnumerableIsNull();
+        source.ThrowIfNull();
         lhsSelector.ThrowIfNull();
         rhsSelector.ThrowIfNull();
 
@@ -372,7 +382,7 @@ public static class EnumerableTransformations
         Func<TSource, TLhs> lhsSelector,
         Func<TSource, IEnumerable<TRhs>> rhsSelector)
     {
-        source.ThrowIfEnumerableIsNull();
+        source.ThrowIfNull();
         lhsSelector.ThrowIfNull();
         rhsSelector.ThrowIfNull();
 
@@ -397,7 +407,7 @@ public static class EnumerableTransformations
         this IEnumerable<T> items,
         Func<T, Option<TResult>> project)
     {
-        items.ThrowIfEnumerableIsNull();
+        items.ThrowIfNull();
         project.ThrowIfNull();
 
         return items.Select(project);
@@ -405,7 +415,7 @@ public static class EnumerableTransformations
 
     public static IEnumerable<Ordinal<T>> ToOrdinals<T>(this IEnumerable<T> items, Func<T, bool> predicate)
     {
-        items.ThrowIfEnumerableIsNull();
+        items.ThrowIfNull();
         predicate.ThrowIfNull();
 
         return items.Enumerate()
@@ -430,7 +440,7 @@ public static class EnumerableTransformations
     /// <returns></returns>
     public static string ToReadableString<T>(this IEnumerable<T> items, string separator = ",")
     {
-        items.ThrowIfEnumerableIsNull();
+        items.ThrowIfNull();
         var sb = new StringBuilder();
         foreach (var item in items.AfterEach(() => sb.Append(separator)))
         {
@@ -441,7 +451,7 @@ public static class EnumerableTransformations
 
     public static IReadOnlyCollection<T> ToReadOnlyCollection<T>(this IEnumerable<T> items)
     {
-        items.ThrowIfEnumerableIsNull();
+        items.ThrowIfNull();
         return ReadOnlyCollection.New(items);
     }
 
@@ -506,7 +516,7 @@ public static class EnumerableTransformations
         Func<T1, T2, bool> comparer,
         Func<T1, T2, TResult> resultSelector)
     {
-        second.ThrowIfEnumerableIsNull();
+        second.ThrowIfNull();
         comparer.ThrowIfNull();
         resultSelector.ThrowIfNull();
 

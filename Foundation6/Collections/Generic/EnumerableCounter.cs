@@ -36,12 +36,12 @@ namespace Foundation.Collections.Generic
 
         public EnumerableCounter(IEnumerable<T> items)
         {
-            _items = items.ThrowIfEnumerableIsNull();
+            _items = items.ThrowIfNull();
         }
 
         public EnumerableCounter(IEnumerable<T> items, out Func<EnumerableCounter<T>> self)
         {
-            _items = items.ThrowIfEnumerableIsNull();
+            _items = items.ThrowIfNull();
             self = () => this;
         }
         

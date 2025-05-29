@@ -65,7 +65,7 @@ public readonly struct ArrayValue<T>
 
     public ArrayValue(IEnumerable<T> values)
     {
-        _values = values.ThrowIfEnumerableIsNull().ToArray();
+        _values = values.ThrowIfNull().ToArray();
         _hashCode = HashCode.FromObjects(_values);
     }
 

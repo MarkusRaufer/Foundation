@@ -131,7 +131,7 @@ public class EquatableDictionary<TKey, TValue>
     /// <param name="keyValues"></param>
     public void AddRange(IEnumerable<KeyValuePair<TKey, TValue>> keyValues)
     {
-        keyValues.ThrowIfEnumerableIsNull();
+        keyValues.ThrowIfNull();
 
         foreach (var keyValue in keyValues)
         {

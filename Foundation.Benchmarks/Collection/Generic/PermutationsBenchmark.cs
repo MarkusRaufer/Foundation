@@ -23,8 +23,6 @@
 // SOFTWARE.
 ﻿using BenchmarkDotNet.Attributes;
 using Foundation.Collections;
-using ZLinq;
-using ZLinq.Linq;
 
 namespace Foundation.Benchmark;
 

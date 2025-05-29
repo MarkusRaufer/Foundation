@@ -33,7 +33,7 @@ public static class EnumerableConditionals
 
         public ElseIf(IEnumerable<T> items)
         {
-            _items = items.ThrowIfEnumerableIsNull();
+            _items = items.ThrowIfNull();
         }
 
         public IEnumerable<T> Else() => _items;
@@ -67,7 +67,7 @@ public static class EnumerableConditionals
 
         public ElseIf(IEnumerable<(T? lhs, TResult? rhs, bool isLhs)> items, Func<T, TResult> selector)
         {
-            _items = items.ThrowIfEnumerableIsNull();
+            _items = items.ThrowIfNull();
             _selector = selector.ThrowIfNull();
         }
 
@@ -119,7 +119,7 @@ public static class EnumerableConditionals
             Func<T, bool> predicate,
             Func<T, TResult> mapIf)
         {
-            _items = items.ThrowIfEnumerableIsNull();
+            _items = items.ThrowIfNull();
             _predicate = predicate.ThrowIfNull();
             _mapIf = mapIf.ThrowIfNull();
         }
@@ -229,7 +229,7 @@ public static class EnumerableConditionals
     /// <returns></returns>
     public static bool ExistsType<T>(this IEnumerable<T> items, bool includeAssignableTypes, params Type[] types)
     {
-        items = items.ThrowIfEnumerableIsNull();
+        items = items.ThrowIfNull();
         types.ThrowIfOutOfRange(() => types.Length == 0);
 
         var search = types.ToList();
@@ -339,7 +339,7 @@ public static class EnumerableConditionals
     /// <returns></returns>
     public static IEnumerable<T> IfEmpty<T>(this IEnumerable<T> lhs, IEnumerable<T> rhs)
     {
-        rhs.ThrowIfEnumerableIsNull();
+        rhs.ThrowIfNull();
         
         return lhs.Any() ? lhs : rhs;
     }
@@ -385,7 +385,7 @@ public static class EnumerableConditionals
     public static bool IsInAscendingOrder<T>(this IEnumerable<T> items, bool allowEqual = false)
         where T : IComparable<T>
     {
-        items.ThrowIfEnumerableIsNull();
+        items.ThrowIfNull();
 
         var it = items.GetEnumerator();
 
@@ -414,7 +414,7 @@ public static class EnumerableConditionals
     /// <returns></returns>
     public static bool IsInAscendingOrder<T>(this IEnumerable<T> items, Func<T, T, CompareResult> compare)
     {
-        items.ThrowIfEnumerableIsNull();
+        items.ThrowIfNull();
         compare.ThrowIfNull();
 
         var it = items.GetEnumerator();
@@ -454,7 +454,7 @@ public static class EnumerableConditionals
     /// <returns></returns>
     public static bool IsSubsetOf<T>(this IEnumerable<T> lhs, IEnumerable<T> rhs)
     {
-        rhs.ThrowIfEnumerableIsNull();
+        rhs.ThrowIfNull();
 
         var search = new HashSet<T>(lhs);
         return search.IsSubsetOf(rhs);
@@ -521,7 +521,7 @@ public static class EnumerableConditionals
         Func<T, TResult> selector,
         params Type[] types)
     {
-        foreach (var item in items.ThrowIfEnumerableIsNull())
+        foreach (var item in items.ThrowIfNull())
         {
             if (null == item) continue;
 
@@ -650,18 +650,6 @@ public static class EnumerableConditionals
             throw exception;
         }
         return items;
-    }
-
-    /// <summary>
-    /// Throws exception if items is null.
-    /// </summary>
-    /// <typeparam name="T">Type of element.</typeparam>
-    /// <param name="items">Elements of the enumerable.</param>
-    /// <param name="name">name of the enumerable.</param>
-    /// <returns></returns>
-    public static IEnumerable<T> ThrowIfEnumerableIsNull<T>(this IEnumerable<T> items, [CallerArgumentExpression(nameof(items))] string name = "")
-    {
-        return items.ThrowIfNull(name);
     }
 
     /// <summary>
