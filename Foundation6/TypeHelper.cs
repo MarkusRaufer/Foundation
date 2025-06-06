@@ -104,7 +104,7 @@ public static class TypeHelper
     }
 
     /// <summary>
-    /// returns the fullname of the type.
+    /// returns the full name of the type.
     /// </summary>
     /// <param typeName="shortTypeName">e.g. DateTime?, decimal?, string.</param>
     /// <returns></returns>
@@ -133,7 +133,7 @@ public static class TypeHelper
     /// </summary>
     /// <param typeName="shortTypeName"></param>
     /// <returns></returns>
-    public static Type? GetPrimitveType(string shortTypeName)
+    public static Type? GetPrimitiveType(string shortTypeName)
     {
         var fullName = GetPrimitiveTypeFullName(shortTypeName);
         if (null == fullName) return null;
@@ -177,24 +177,25 @@ public static class TypeHelper
     /// returns the type from the short typeName. e.g. int, string.
     /// </summary>
     /// <param typeName="shortTypeName">The typeName of the type.</param>
-    /// <param typeName="whithPrimitives">Including primitive types.</param>
+    /// <param typeName="withPrimitives">Including primitive types.</param>
     /// <returns></returns>
-    public static Type? GetScalarType(string shortTypeName, bool whithPrimitives)
+    public static Type? GetScalarType(string shortTypeName, bool withPrimitives)
     {
-        var fullName = GetScalarTypeFullName(shortTypeName, whithPrimitives);
+        var fullName = GetScalarTypeFullName(shortTypeName, withPrimitives);
         if (null == fullName) return null;
 
         return Type.GetType(fullName);
     }
 
     /// <summary>
-    /// returns the fullname of the type. e.g. int => System.Int32.
+    /// returns the full name of the type. e.g. int => System.Int32.
     /// </summary>
     /// <param typeName="shortTypeName">e.g. DateTime, decimal, string.</param>
+    /// <param name="withPrimitives">If true the primitive types are also included otherwise not.</param>
     /// <returns></returns>
-    public static string? GetScalarTypeFullName(string shortTypeName, bool whithPrimitives = true)
+    public static string? GetScalarTypeFullName(string shortTypeName, bool withPrimitives = true)
     {
-        if(whithPrimitives)
+        if(withPrimitives)
         {
             var fullName = GetPrimitiveTypeFullName(shortTypeName);
             if (null != fullName) return fullName;
@@ -203,11 +204,11 @@ public static class TypeHelper
         return shortTypeName switch
         {
             nameof(DateOnly) => typeof(DateOnly).FullName,
-            nameof(TimeOnly) => typeof(TimeOnly).FullName,
             nameof(DateTime) => typeof(DateTime).FullName,
             "decimal"  => typeof(Decimal).FullName,
             nameof(Guid) => typeof(Guid).FullName,
             "string" => typeof(String).FullName,
+            nameof(TimeOnly) => typeof(TimeOnly).FullName,
             nameof(TimeSpan) => typeof(TimeSpan).FullName,
             _ => null,
         };
@@ -217,11 +218,11 @@ public static class TypeHelper
     /// returns true if type is a scalar or primitive type.
     /// </summary>
     /// <param typeName="type">Type to check if it is scalar or primitive.</param>
-    /// <param typeName="whithoutPrimitives">If true primitive types are not considered.</param>
+    /// <param typeName="withoutPrimitives">If true primitive types are not considered.</param>
     /// <returns></returns>
-    public static bool IsScalarType(Type type, bool whithoutPrimitives = false)
+    public static bool IsScalarType(Type type, bool withoutPrimitives = false)
     {
-        return ScalarTypes(whithoutPrimitives).Any(x => x == type);
+        return ScalarTypes(withoutPrimitives).Any(x => x == type);
     }
 
     public static IEnumerable<Type> NullablePrimitiveTypes()
@@ -265,12 +266,12 @@ public static class TypeHelper
                 yield return primitive;
             }
         }
-        yield return typeof(DateOnly?);
         yield return typeof(TimeOnly?);
         yield return typeof(DateTime?);
         yield return typeof(decimal?);
         yield return typeof(Guid?);
         yield return typeof(string);
+        yield return typeof(DateOnly?);
         yield return typeof(TimeSpan?);
     }
 
@@ -358,12 +359,12 @@ public static class TypeHelper
                 yield return primitive;
             }
         }
-        yield return typeof(DateOnly[]);
         yield return typeof(TimeOnly[]);
         yield return typeof(DateTime[]);
         yield return typeof(decimal[]);
         yield return typeof(Guid[]);
         yield return typeof(string[]);
+        yield return typeof(DateOnly[]);
         yield return typeof(TimeSpan[]);
     }
 
@@ -377,11 +378,11 @@ public static class TypeHelper
             }
         }
         yield return typeof(IEnumerable<DateOnly>);
-        yield return typeof(IEnumerable<TimeOnly>);
         yield return typeof(IEnumerable<DateTime>);
         yield return typeof(IEnumerable<decimal>);
         yield return typeof(IEnumerable<Guid>);
         yield return typeof(IEnumerable<string>);
+        yield return typeof(IEnumerable<TimeOnly>);
         yield return typeof(IEnumerable<TimeSpan>);
     }
 
@@ -395,11 +396,11 @@ public static class TypeHelper
             }
         }
         yield return typeof(DateOnly);
-        yield return typeof(TimeOnly);
         yield return typeof(DateTime);
         yield return typeof(decimal);
         yield return typeof(Guid);
         yield return typeof(string);
+        yield return typeof(TimeOnly);
         yield return typeof(TimeSpan);
     }
 

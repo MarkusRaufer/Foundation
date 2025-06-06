@@ -64,7 +64,7 @@ public class TypeHelperTests
     {
         var expected = typeof(int);
         
-        var actual = TypeHelper.GetPrimitveType("int");
+        var actual = TypeHelper.GetPrimitiveType("int");
         Assert.IsNotNull(actual);
         Assert.AreEqual(expected, actual);
     }
