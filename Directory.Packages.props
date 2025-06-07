@@ -6,7 +6,7 @@
     <PackageVersion Include="BenchmarkDotNet" Version="0.15.0" />
     <PackageVersion Include="BenchmarkDotNet.Annotations" Version="0.15.0" />
     <PackageVersion Include="FluentAssertions" Version="7.0.0" />
-    <PackageVersion Include="Foundation" Version="1.6.20" />
+    <PackageVersion Include="Foundation" Version="1.6.21" />
     <PackageVersion Include="Foundation.Algorithm" Version="1.6.20" />
     <PackageVersion Include="Foundation.DesignPatterns" Version="1.6.20"/>
     <PackageVersion Include="Foundation.TestUtil" Version="1.6.18" />
