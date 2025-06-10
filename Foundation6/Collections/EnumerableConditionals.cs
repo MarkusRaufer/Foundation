@@ -67,4 +67,42 @@ public static class EnumerableConditionals
 
         return false;
     }
+
+    /// <summary>
+    /// Returns all items of type <paramref name="types"/>.
+    /// </summary>
+    /// <param name="items">The list of items to be filtered by type.</param>
+    /// <param name="includeAssignableTypes">If true also assignable types are returned otherwise only exact types.</param>
+    /// <param name="types">List of types.</param>
+    /// <returns>List of filtered items.</returns>
+    public static IEnumerable OfType(this IEnumerable items, bool includeAssignableTypes, params Type[] types)
+    {
+        items = items.ThrowIfNull();
+        types.ThrowIfOutOfRange(() => types.Length == 0);
+
+        Func<Type, Type, bool> checkType = includeAssignableTypes ? ofType : ofExactType;
+
+        foreach (var item in items)
+        {
+            if (null == item) continue;
+
+            var type = item.GetType();
+            if (!types.Any(x => checkType(x, type))) continue;
+
+            yield return item;
+        }
+
+        static bool ofExactType(Type lhs, Type rhs)
+        {
+            return lhs.Equals(rhs);
+        }
+
+        static bool ofType(Type lhs, Type rhs)
+        {
+            var isExactEqual = ofExactType(lhs, rhs);
+            if (isExactEqual) return true;
+
+            return lhs.IsAssignableFrom(rhs);
+        }
+    }
 }
