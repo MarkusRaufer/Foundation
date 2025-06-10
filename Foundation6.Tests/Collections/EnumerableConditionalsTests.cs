@@ -1,5 +1,5 @@
-﻿using FluentAssertions;
-using NUnit.Framework;
+﻿using NUnit.Framework;
+using Shouldly;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -16,9 +16,8 @@ public class EnumerableConditionalsTests
     {
         var objects = new object[] { "1", 2, 3.5, DateTime.Now.ToTimeOnly() };
 
-        objects.ExistsType(false, new Type[] { typeof(DateOnly), typeof(TimeOnly) })
-               .Should()
-               .BeFalse();
+        var exists = objects.ExistsType(false, new Type[] { typeof(DateOnly), typeof(TimeOnly) });
+        exists.ShouldBeFalse();
     }
 
     [Test]
@@ -28,9 +27,8 @@ public class EnumerableConditionalsTests
 
         var objects = new object[] { "1", 2, DateTime.Now.ToDateOnly(), number, DateTime.Now.ToTimeOnly() };
 
-        objects.ExistsType(false, new Type[] { typeof(DateOnly), typeof(TimeOnly), typeof(System.Collections.IEnumerable) })
-               .Should()
-               .BeFalse();
+        var exists = objects.ExistsType(false, new Type[] { typeof(DateOnly), typeof(TimeOnly), typeof(System.Collections.IEnumerable) });
+        exists.ShouldBeFalse();
     }
 
     [Test]
@@ -38,9 +36,8 @@ public class EnumerableConditionalsTests
     {
         var objects = new object[] { "1", 2, DateTime.Now.ToDateOnly(), 3.5, DateTime.Now.ToTimeOnly() };
 
-        objects.ExistsType(false, new Type[] { typeof(DateOnly), typeof(TimeOnly) })
-               .Should()
-               .BeTrue();
+        var exists = objects.ExistsType(false, new Type[] { typeof(DateOnly), typeof(TimeOnly) });
+        exists.ShouldBeTrue();
     }
 
     [Test]
@@ -50,8 +47,26 @@ public class EnumerableConditionalsTests
 
         var objects = new object[] { "1", 2, DateTime.Now.ToDateOnly(), number, DateTime.Now.ToTimeOnly() };
 
-        objects.ExistsType(true, new Type[] { typeof(DateOnly), typeof(TimeOnly), typeof(System.Collections.IEnumerable) })
-               .Should()
-               .BeTrue();
+        var exists = objects.ExistsType(true, new Type[] { typeof(DateOnly), typeof(TimeOnly), typeof(System.Collections.IEnumerable) });
+        exists.ShouldBeTrue();
+    }
+
+
+    [Test]
+    public void OfType_Should_BeTrue_When_AllTypesExist_AssignableTypeIsTrue()
+    {
+        var numbers = new List<int> { 1, 2, 3 };
+
+        var date = DateTime.Now.ToDateOnly();
+        var time = DateTime.Now.ToTimeOnly();
+        var objects = new object[] { "1", 2, date, numbers, time };
+
+        var filtered = objects.OfType(true, [typeof(DateOnly), typeof(TimeOnly), typeof(System.Collections.IEnumerable)])
+                              .ToObjectArray();
+        filtered.Length.ShouldBe(4);
+        filtered[0].ShouldBe("1");
+        filtered[1].ShouldBe(date);
+        filtered[2].ShouldBe(numbers);
+        filtered[3].ShouldBe(time);
     }
 }
