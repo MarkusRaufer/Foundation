@@ -30,9 +30,10 @@ public static class LambdaEqualityComparer
     public static LambdaEqualityComparer<T> New<T>(Func<T?, T?, bool> equals) => new(equals);
     public static LambdaEqualityComparer<T> New<T>(Func<T?, int> hashCodeFunc) => new(hashCodeFunc);
     public static LambdaEqualityComparer<T> New<T>(Func<T?, T?, bool> equals, Func<T?, int>? hashCodeFunc) => new(equals, hashCodeFunc);
+    public static LambdaEqualityComparer<T, TKey> New<T, TKey>(Func<T, TKey> keyFunc) => new(keyFunc);
 }
 
-public class LambdaEqualityComparer<T> : EqualityComparer<T>
+public class LambdaEqualityComparer<T> : IEqualityComparer<T>
 {
     private readonly Func<T?, int> _hashCodeFunc;
     private readonly Func<T?, T?, bool> _equals;
@@ -70,12 +71,12 @@ public class LambdaEqualityComparer<T> : EqualityComparer<T>
             return x.Equals(y);
         };
 
-    public override bool Equals(T? x, T? y) => _equals(x, y);
+    public bool Equals(T? x, T? y) => _equals(x, y);
 
 #if NETSTANDARD2_0
-    public override int GetHashCode(T obj) => _hashCodeFunc(obj);
+    public int GetHashCode(T obj) => _hashCodeFunc(obj);
 #else
-    public override int GetHashCode([DisallowNull] T obj) => _hashCodeFunc(obj);
+    public int GetHashCode([DisallowNull] T obj) => _hashCodeFunc(obj);
 #endif
 }
 
@@ -87,8 +88,8 @@ public class LambdaEqualityComparer<T, TKey> : IEqualityComparer<T>
     /// <summary>
     /// Constructor
     /// </summary>
-    /// <param name="selector">value selector for equation and hashcode.</param>
-    /// <param name="hashCodeFunc">a hashcode function</param>
+    /// <param name="selector">value selector for equation and hash code.</param>
+    /// <param name="hashCodeFunc">a hash code function</param>
     public LambdaEqualityComparer(Func<T, TKey?> selector, Func<TKey?, int>? hashCodeFunc = null)
     {
         _selector = selector.ThrowIfNull();

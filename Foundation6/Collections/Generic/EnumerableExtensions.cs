@@ -3287,6 +3287,21 @@ public static class EnumerableExtensions
         return true;
     }
 
+#if NETSTANDARD2_0
+    /// <summary>
+    /// Returns the union of <paramref name="lhs"/> and <paramref name="rhs"/> which match the <paramref name="predicate"/>.
+    /// </summary>
+    /// <typeparam name="T">Type of the elements.</typeparam>
+    /// <param name="lhs">Left list.</param>
+    /// <param name="rhs">Right list.</param>
+    /// <param name="predicate">Predicate for equality.</param>
+    /// <returns>Return a union of two list.</returns>
+    public static IEnumerable<T> UnionBy<T, TKey>(this IEnumerable<T> lhs, IEnumerable<T> rhs, Func<T?, TKey?> keySelector)
+    {
+        return lhs.Union(rhs, LambdaEqualityComparer.New(keySelector));
+    }
+#endif
+
     /// <summary>
     /// Checks if all options fulfill the predicate. If there is an left not matching the predicate an exception is thrown.
     /// </summary>

@@ -106,7 +106,7 @@ public class EquatableDictionary<TKey, TValue>
     }
 
     /// <inheritdoc/>
-    public void Add(TKey key, TValue value)
+    public virtual void Add(TKey key, TValue value)
     {
         key.ThrowIfNull();
 
@@ -114,7 +114,7 @@ public class EquatableDictionary<TKey, TValue>
     }
 
     /// <inheritdoc/>
-    public void Add(KeyValuePair<TKey, TValue> keyValue)
+    public virtual void Add(KeyValuePair<TKey, TValue> keyValue)
     {
         keyValue.ThrowIfKeyIsNull();
 
@@ -129,7 +129,7 @@ public class EquatableDictionary<TKey, TValue>
     /// Adds a list of <see cref="=KeyValuePair<typeparamref name="TKey"/>, <typeparamref name="TValue"/>" to the dictionary./>
     /// </summary>
     /// <param name="keyValues"></param>
-    public void AddRange(IEnumerable<KeyValuePair<TKey, TValue>> keyValues)
+    public virtual void AddRange(IEnumerable<KeyValuePair<TKey, TValue>> keyValues)
     {
         keyValues.ThrowIfNull();
 
