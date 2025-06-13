@@ -1,12 +1,6 @@
 ﻿using NUnit.Framework;
 using Shouldly;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Text.Json;
 using System.Text.Json.Nodes;
-using System.Threading.Tasks;
 
 namespace Foundation.Text.Json;
 
@@ -25,6 +19,7 @@ public class JsonNodeExtensionsTests
             """;
 
         var jsonNode = JsonNode.Parse(json);
+        jsonNode.ShouldNotBeNull();
 
         // Act
         var property1 = jsonNode["property1"].GetNullableValue<int>();
@@ -47,6 +42,7 @@ public class JsonNodeExtensionsTests
             """;
 
         var jsonNode = JsonNode.Parse(json);
+        jsonNode.ShouldNotBeNull();
 
         // Act
         var property1 = jsonNode["property1"].GetNullableValue<string>();
@@ -69,6 +65,7 @@ public class JsonNodeExtensionsTests
             """;
 
         var jsonNode = JsonNode.Parse(json);
+        jsonNode.ShouldNotBeNull();
 
         // Act
         var property1 = jsonNode["property1"].GetValueAsOption<int>();
