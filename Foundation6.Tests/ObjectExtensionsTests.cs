@@ -1,5 +1,5 @@
-﻿using FluentAssertions;
-using NUnit.Framework;
+﻿using NUnit.Framework;
+using Shouldly;
 using System;
 
 namespace Foundation;
@@ -24,23 +24,44 @@ public class ObjectExtensionsTests
     }
 
     [Test]
+    public void IfTrue_Should_ReturnNull_When_ValueIsNull()
+    {
+        string? word = null;
+        word.IfTrue(x => x.Length == 5).ShouldBeNull();
+    }
+
+    [Test]
+    public void IfTrue_Should_ReturnNull_When_ValueIsNotNullAndPredicateFalse()
+    {
+        string? word = "test";
+        word.IfTrue(x => x.Length == 10).ShouldBeNull();
+    }
+
+    [Test]
+    public void IfTrue_Should_ReturnString_When_ValueIsNotNullAndPredicateTrue()
+    {
+        string? word = "test";
+        word.IfTrue(x => x.Length == 4).ShouldBe(word);
+    }
+
+    [Test]
     public void OrDefault_Should_ReturnDefaultValue_When_ValueIsNull()
     {
         int? number = null;
-        number.OrDefault(() => 123).Should().Be(123);
+        number.OrDefault(() => 123).ShouldBe(123);
     }
 
     [Test]
     public void OrDefault_Should_ReturnValue_When_ValueNotNull()
     {
-        123.OrDefault(() => 11).Should().Be(123);
+        123.OrDefault(() => 11).ShouldBe(123);
     }
 
     [Test]
     public void OrDefault_Should_ReturnStringDefaultValue_When_IntValueIsNull()
     {
         int? number = null;
-        number.OrDefault(x => $"{x}", () => "default").Should().Be("default");
+        number.OrDefault(x => $"{x}", () => "default").ShouldBe("default");
     }
 
     [Test]
@@ -86,8 +107,8 @@ public class ObjectExtensionsTests
 
         var kv = str.Length.ToKeyValue(propertyNameOnly: false);
 
-        kv.Key.Should().Be("str.Length");
-        kv.Value.Should().Be(str.Length);
+        kv.Key.ShouldBe("str.Length");
+        kv.Value.ShouldBe(str.Length);
     }
 
     [Test]
@@ -97,8 +118,8 @@ public class ObjectExtensionsTests
 
         var kv = str.Length.ToKeyValue();
 
-        kv.Key.Should().Be(nameof(str.Length));
-        kv.Value.Should().Be(str.Length);
+        kv.Key.ShouldBe(nameof(str.Length));
+        kv.Value.ShouldBe(str.Length);
     }
 
     [Test]
@@ -110,9 +131,9 @@ public class ObjectExtensionsTests
 
         var result = str.ToResult(Int32.Parse, () => expected);
 
-        result.IsOk.Should().BeFalse();
-        result.TryGetError(out var error).Should().BeTrue();
-        error.Should().Be(expected);
+        result.IsOk.ShouldBeFalse();
+        result.TryGetError(out var error).ShouldBeTrue();
+        error.ShouldBe(expected);
     }
 
     [Test]
@@ -123,9 +144,9 @@ public class ObjectExtensionsTests
         var result = str.ToResult(Int32.Parse, () => -1);
 
         var expected = Int32.Parse(str);
-        result.IsOk.Should().BeTrue();
-        result.TryGetOk(out var ok).Should().BeTrue();
-        ok.Should().Be(expected);
+        result.IsOk.ShouldBeTrue();
+        result.TryGetOk(out var ok).ShouldBeTrue();
+        ok.ShouldBe(expected);
     }
 
     [Test]
@@ -138,7 +159,7 @@ public class ObjectExtensionsTests
         var result = str.ToType(Int32.Parse);
 
         var expected = Int32.Parse(str);
-        result.Should().Be(expected);
+        result.ShouldBe(expected);
     }
 
 }

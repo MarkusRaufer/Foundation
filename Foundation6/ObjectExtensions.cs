@@ -225,11 +225,25 @@ public static class ObjectExtensions
     /// Calls <paramref name="hashCode"/> if <paramref name="obj"/> is not null otherwise returns 0.
     /// </summary>
     /// <typeparam name="T">Type of <paramref name="obj"/>.</typeparam>
-    /// <param name="obj">Object that has a hashcode.</param>
-    /// <param name="hashCode">Function that returns a hashcode from an object.</param>
+    /// <param name="obj">Object that has a hash code.</param>
+    /// <param name="hashCode">Function that returns a hash code from an object.</param>
     /// <returns></returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static int GetNullableHashCode<T>(this T? obj, Func<T, int> hashCode) => obj is null ? 0 : hashCode(obj);
+
+    /// <summary>
+    /// Returns the object when the object is not null and <paramref name="predicate"/> returns true.
+    /// </summary>
+    /// <typeparam name="T">Type of the object.</typeparam>
+    /// <param name="obj">Instance of an object.</param>
+    /// <param name="predicate">predicate that checks the object.</param>
+    /// <returns>The object if object is not null and fulfills the predicate.</returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static T? IfTrue<T>(this T? obj, Func<T, bool> predicate)
+    {
+        if (obj is T t && predicate(t)) return t;
+        return default;
+    }
 
     /// <summary>
     /// Checks if an object is of a generic type.

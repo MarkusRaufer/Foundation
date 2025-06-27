@@ -70,7 +70,6 @@ public static class FusedValueExtensions
     /// <param name="value"></param>
     /// <returns></returns>
     public static Fused<T> BlowIfChanged<T>(this FusedValue<T> value)
-        where T : IComparable<T>
     {
         var initialValue = value;
 

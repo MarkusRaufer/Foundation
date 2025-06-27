@@ -35,6 +35,16 @@ public static class If
         return new IfElse<T>(predicate(), selector);
     }
 
+    public static IIfElse<T, TResult> True<T, TResult>(Func<Option<T>> option, Func<T, TResult> selector)
+    {
+        option.ThrowIfNull();
+        selector.ThrowIfNull();
+
+        var isTrue = option().TryGet(out var value);
+
+        return new IfElse<T, TResult>(isTrue, value, selector);
+    }
+
     public static IIfType<T> Type<T>(object? obj)
     {
         if(obj is T t)
@@ -151,6 +161,7 @@ internal record IfValue<T>(T? Value) : IIfValue<T>
     public IIfElse<T, TResult> Is<TResult>(Func<T, bool> predicate, Func<T, TResult> selector)
     {
         predicate.ThrowIfNull();
+        selector.ThrowIfNull();
 
         var isPredicateTrue = Value is not null && predicate(Value);
         return new IfElse<T, TResult>(isPredicateTrue, Value, selector);
@@ -197,6 +208,7 @@ public interface IIfType<T, TResult>
 public interface IIfValue<T>
 {
     IIfElse<T, TResult> Is<TResult>(Func<T, bool> predicate, Func<T, TResult> selector);
+
     IIfElse<TResult> NotNull<TResult>(Func<T, TResult> selector);
 }
 
