@@ -33,13 +33,13 @@ namespace Foundation.Collections.Generic;
 public static class NonEmptyHashSetValue
 {
     /// <summary>
-    /// Creates a new <see cref="NonEmptySetValue{T}"/> from values.
+    /// Creates a new <see cref="NonEmptyHashSetValue{T}"/> from values.
     /// </summary>
     /// <typeparam name="T">The type of the values.</typeparam>
     /// <param name="values"></param>
     /// <returns></returns>
     /// <exception cref="ArgumentOutOfRangeException">Is thrown if values is empty.</exception>
-    public static NonEmptySetValue<T> New<T>(IEnumerable<T> values)
+    public static NonEmptyHashSetValue<T> New<T>(IEnumerable<T> values)
        => new (HashSetValue.New(values));
 }
 
@@ -49,9 +49,9 @@ public static class NonEmptyHashSetValue
 /// </summary>
 /// <typeparam name="T">The type of the values</typeparam>
 [Serializable]
-public readonly struct NonEmptySetValue<T>
+public readonly struct NonEmptyHashSetValue<T>
     : IReadOnlyCollection<T>
-    , IEquatable<NonEmptySetValue<T>>
+    , IEquatable<NonEmptyHashSetValue<T>>
 {
     private readonly HashSetValue<T> _values;
 
@@ -60,7 +60,7 @@ public readonly struct NonEmptySetValue<T>
     /// </summary>
     /// <param name="values">The unique values. Duplicates are ignored.</param>
     /// <exception cref="ArgumentOutOfRangeException">Is thrown if values is empty.</exception>
-    public NonEmptySetValue(HashSetValue<T> values)
+    public NonEmptyHashSetValue(HashSetValue<T> values)
     {
         _values = values.ThrowIfNull();
         if(_values.Count == 0) throw new ArgumentOutOfRangeException(nameof(values), $"{nameof(values)} must have at least one element");
@@ -72,7 +72,7 @@ public readonly struct NonEmptySetValue<T>
     /// <param name="left"></param>
     /// <param name="right"></param>
     /// <returns></returns>
-    public static bool operator ==(NonEmptySetValue<T> left, NonEmptySetValue<T> right)
+    public static bool operator ==(NonEmptyHashSetValue<T> left, NonEmptyHashSetValue<T> right)
     {
         return left.Equals(right);
     }
@@ -83,12 +83,12 @@ public readonly struct NonEmptySetValue<T>
     /// <param name="left"></param>
     /// <param name="right"></param>
     /// <returns></returns>
-    public static bool operator !=(NonEmptySetValue<T> left, NonEmptySetValue<T> right)
+    public static bool operator !=(NonEmptyHashSetValue<T> left, NonEmptyHashSetValue<T> right)
     {
         return !(left == right);
     }
 
-    public static implicit operator NonEmptySetValue<T>(T[] values) => new(values);
+    public static implicit operator NonEmptyHashSetValue<T>(T[] values) => new(values);
 
     /// <inheritdoc/>
     public int Count => _values.Count;
@@ -99,14 +99,14 @@ public readonly struct NonEmptySetValue<T>
     /// <param name="obj"></param>
     /// <returns></returns>
     public override bool Equals([NotNullWhen(true)] object? obj)
-        => obj is NonEmptySetValue<T> other && Equals(other);
+        => obj is NonEmptyHashSetValue<T> other && Equals(other);
 
     /// <summary>
     /// Considers the equality and number of all elements <see cref="Equals"/>. The position of the elements are ignored.
     /// </summary>
     /// <param name="other"></param>
     /// <returns></returns>
-    public bool Equals(NonEmptySetValue<T> other) => _values.Equals(other._values);
+    public bool Equals(NonEmptyHashSetValue<T> other) => _values.Equals(other._values);
 
     /// Hash code considers all elements.
     public override int GetHashCode() => _values.GetHashCode();

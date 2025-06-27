@@ -312,12 +312,12 @@ public static class EnumerableTransformations
     public static NonEmptyArrayValue<T> ToNonEmptyArrayValue<T>(this IEnumerable<T> items) => new(items.ToArray());
 
     /// <summary>
-    /// Creates a <see cref="NonEmptySetValue{T}"/> from a list of items.
+    /// Creates a <see cref="NonEmptyHashSetValue{T}"/> from a list of items.
     /// </summary>
     /// <typeparam name="T"></typeparam>
     /// <param name="items"></param>
     /// <returns></returns>
-    public static NonEmptySetValue<T> ToNonEmptyHashSetValue<T>(this IEnumerable<T> items) => new (HashSetValue.New(items));
+    public static NonEmptyHashSetValue<T> ToNonEmptyHashSetValue<T>(this IEnumerable<T> items) => new (HashSetValue.New(items));
 
     /// <summary>
     /// Transforms an <see cref="IEnumerable{T}"/> into <see cref="IEnumerable{object}"/>

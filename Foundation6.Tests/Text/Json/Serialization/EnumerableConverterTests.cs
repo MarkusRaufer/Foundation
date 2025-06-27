@@ -37,13 +37,13 @@ public class EnumerableConverterTests
         {
             Converters =
             {
-                new EnumerableJsonConverter<int, NonEmptySetValue<int>>(items => items.ToNonEmptyHashSetValue())
+                new EnumerableJsonConverter<int, NonEmptyHashSetValue<int>>(items => items.ToNonEmptyHashSetValue())
             }
         };
 
         var json = JsonSerializer.Serialize(sut, options);
 
-        var deserialized = JsonSerializer.Deserialize<NonEmptySetValue<int>>(json, options);
+        var deserialized = JsonSerializer.Deserialize<NonEmptyHashSetValue<int>>(json, options);
 
         sut.Should().BeEquivalentTo(deserialized);
     }
@@ -57,7 +57,7 @@ public class EnumerableConverterTests
         {
             Converters =
             {
-                new EnumerableJsonConverter<int, NonEmptySetValue<int>>(items => items.ToNonEmptyHashSetValue())
+                new EnumerableJsonConverter<int, NonEmptyHashSetValue<int>>(items => items.ToNonEmptyHashSetValue())
             }
         };
 

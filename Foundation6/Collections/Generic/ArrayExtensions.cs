@@ -287,6 +287,6 @@ public static class ArrayExtensions
 
     public static NonEmptyArrayValue<T> ToNonEmptyArrayValue<T>(this T[] arr) => new (arr);
 
-    public static NonEmptySetValue<T> ToNonEmptySetValue<T>(this T[] arr) => new(arr);
+    public static NonEmptyHashSetValue<T> ToNonEmptySetValue<T>(this T[] arr) => new(arr);
 }
 
