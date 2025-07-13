@@ -1,5 +1,6 @@
-﻿using FluentAssertions;
+﻿using Shouldly;
 using NUnit.Framework;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace Foundation;
@@ -19,7 +20,7 @@ public class ScopeTests
             return Option.None<int>();
         });
 
-        option.IsNone.Should().Be(true);
+        option.IsNone.ShouldBeTrue();
     }
 
     [Test]
@@ -28,8 +29,8 @@ public class ScopeTests
         var x = 10;
         var option = Scope.ReturnsOption(() => x % 2 == 0, () => x + 2);
 
-        option.TryGet(out var value).Should().Be(true);
-        value.Should().Be(x + 2);
+        option.TryGet(out var value).ShouldBeTrue();
+        value.ShouldBe(x + 2);
     }
 
     [Test]
@@ -47,8 +48,8 @@ public class ScopeTests
             return evenNumbers;
         }).ToArray();
 
-        result.Length.Should().Be(5);
-        result.Should().Contain(new int[] { 2, 4, 6, 8, 10 });
+        result.Length.ShouldBe(5);
+        result.ShouldBe(new int[] { 2, 4, 6, 8, 10 });
     }
 
     [Test]
@@ -67,6 +68,28 @@ public class ScopeTests
             return number;
         });
 
-        result.Should().Be(-100);
+        result.ShouldBe(-100);
+    }
+
+    [Test]
+    public void ReturnsMany_Should_ReturnValue_When_Called()
+    {
+        var max = 10;
+        var expected = Enumerable.Range(1, max).ToArray();
+
+        var result = Scope.ReturnsMany(() =>
+        {
+            IEnumerable<int> numbers()
+            {
+                foreach (var number in Enumerable.Range(1, max))
+                {
+                    yield return number;
+                }
+            }
+
+            return numbers();
+        }).ToArray();
+
+        result.ShouldBe(expected);
     }
 }
