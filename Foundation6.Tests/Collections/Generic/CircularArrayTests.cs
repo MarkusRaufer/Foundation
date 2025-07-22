@@ -24,6 +24,7 @@ public class CircularArrayTests
 
         // Assert
         sut.Count.ShouldBe(3);
+
         var values = sut.ToArray();
         values.Length.ShouldBe(3);
         values[0].ShouldBe(1);
@@ -160,7 +161,7 @@ public class CircularArrayTests
     [TestCase(0, 1)]
     [TestCase(1, 2)]
     [TestCase(2, 0)]
-    [TestCase(3, -1)]
+    [TestCase(3, -2)]
     public void GetInternalIndex_Should_Return2_When_CapacityIs3AndAdded4AndIndexIs3(int value, int index)
     {
         // Arrange
@@ -291,6 +292,26 @@ public class CircularArrayTests
 
         // Assert
         index.ShouldBe(0);
+    }
+
+    [Test]
+    public void OnReplaced_Should_TriggerEvent_When_AValueIsOverwritten()
+    {
+        // Arrange
+        var capacity = 3;
+        var sut = CircularArray.New<string>(capacity);
+        var replaced = "";
+        sut.OnReplaced.Subscribe(x => replaced = x);
+
+        sut.Add("one");
+        sut.Add("two");
+        sut.Add("three");
+
+        // Act
+        sut.Add("four");
+
+        // Assert
+        replaced.ShouldBe("one");
     }
 
     [Test]

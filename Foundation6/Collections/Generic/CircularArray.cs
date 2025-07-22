@@ -79,7 +79,7 @@ public static class CircularArray
 /// <typeparam name="T">The type of the elements.</typeparam>
 public class CircularArray<T> : IReadOnlyCollection<T>
 {
-    public Event<Action<T>> OnAddReplaced = new();
+    public Event<Action<T>> OnReplaced = new();
 
     private readonly T[] _array;
     private int _head;
@@ -120,6 +120,7 @@ public class CircularArray<T> : IReadOnlyCollection<T>
 
     /// <summary>
     /// The indexer where you can get and set an item at a specific index.
+    /// If there is no element at the index an IndexOutOfRangeException is thrown.
     /// </summary>
     /// <param name="index">The index at which you want to retrieve or set an element.</param>
     /// <returns></returns>
@@ -133,7 +134,11 @@ public class CircularArray<T> : IReadOnlyCollection<T>
         set
         {
             var internalIndex = GetInternalIndex(index);
+
+            var oldValue = _array[internalIndex];
             _array[internalIndex] = value;
+
+            OnReplaced.Publish(oldValue);
         }
     }
 
@@ -153,17 +158,30 @@ public class CircularArray<T> : IReadOnlyCollection<T>
             var tail = _array[_tail];
 
             _array[_tail] = item;
-            OnAddReplaced.Publish(tail);
+            OnReplaced.Publish(tail);
             return;
         }
 
+        var replace = false;
         if (_tail == _head && _numberOfElements > 0)
         {
+            replace = true;
             _head++;
             if (_head > _maxIndex) _head = 0;
         }
 
-        _array[_tail] = item;
+        
+        if (replace)
+        {
+            var tail = _array[_tail];
+            _array[_tail] = item;
+            OnReplaced.Publish(tail);
+        }
+        else
+        {
+            _array[_tail] = item;
+        }
+
         if (_numberOfElements < _array.Length) _numberOfElements++;
     }
 
@@ -208,13 +226,14 @@ public class CircularArray<T> : IReadOnlyCollection<T>
     IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
 
     /// <summary>
-    /// Returns the internal index of the <see cref="CircularArray{T}"/> from the ordinal index.
+    /// Returns the internal index of the <see cref="CircularArray{T}"/> from the ordinal <paramref name="index"/>.
+    /// If the array at that index is not set a -1 is returned. If <paramref name="index"/> is out of range a -2 is returned.  
     /// </summary>
     /// <param name="index"></param>
     /// <returns></returns>
     public int GetInternalIndex(int index)
     {
-        if (!IsIndexInRange(index)) return -1;
+        if (!IsIndexInRange(index)) return -2;
 
         var j = 0;
         foreach (var i in Indices)
@@ -294,6 +313,18 @@ public class CircularArray<T> : IReadOnlyCollection<T>
         if (index < 0) return false;
 
         return index < _numberOfElements;
+    }
+
+    /// <summary>
+    /// Checks if the internal index <paramref name="index"/> is in range.
+    /// </summary>
+    /// <param name="index">Internal index.</param>
+    /// <returns></returns>
+    public bool IsInternalIndexInRange(int index)
+    {
+        var (min, max) = _tail < _head ? (0, _maxIndex) : (_head, _tail);
+
+        return index >= min && index <= max;
     }
 
     /// <summary>
