@@ -207,6 +207,13 @@ public class CircularArray<T> : IReadOnlyCollection<T>
     /// </summary>
     public int Count => _numberOfElements;
 
+    private void DecrementNumberOfElements()
+    {
+        _numberOfElements--;
+
+        if (_numberOfElements < 0) _numberOfElements = 0;
+    }
+
     /// <summary>
     /// An enumerator of the <see cref="CircularArray{T}"/>.
     /// </summary>
@@ -276,6 +283,44 @@ public class CircularArray<T> : IReadOnlyCollection<T>
     }
 
     /// <summary>
+    /// Returns the ordinal index of the first item found with a specific predicate.
+    /// </summary>
+    /// <param name="predicate">The predicate to select an item.</param>
+    /// <returns>The index of an item with a specific predicate.</returns>
+    public int IndexOf(Func<T, bool> predicate)
+    {
+        predicate.ThrowIfNull();
+
+        var j = 0;
+        foreach (var i in Indices)
+        {
+            var element = _array[i];
+            if (predicate(element)) return j;
+            j++;
+        }
+
+        return -1;
+    }
+
+    /// <summary>
+    /// Returns all indices of items where the predicate returns true.
+    /// </summary>
+    /// <param name="predicate">The predicate to select items.</param>
+    /// <returns>List of indices of items which match the predicate.</returns>
+    public IEnumerable<int> IndicesOf(Func<T, bool> predicate)
+    {
+        predicate.ThrowIfNull();
+
+        var j = 0;
+        foreach (var i in Indices)
+        {
+            var element = _array[i];
+            if (predicate(element)) yield return j;
+            j++;
+        }
+    }
+
+    /// <summary>
     /// Returns the internal index of the item in the <see cref="CircularArray{T}"/>.
     /// </summary>
     /// <param name="item">The item which index should be returned.</param>
@@ -325,6 +370,32 @@ public class CircularArray<T> : IReadOnlyCollection<T>
         var (min, max) = _tail < _head ? (0, _maxIndex) : (_head, _tail);
 
         return index >= min && index <= max;
+    }
+    
+    /// <summary>
+    /// Removes an item at a specific index.
+    /// </summary>
+    /// <param name="index">Index at which an item will be removed.</param>
+    public void RemoveAt(int index)
+    {
+        if (!IsIndexInRange(index)) return;
+
+        var internalIndex = GetInternalIndex(index);
+        if (-1 == internalIndex) return;
+
+        if (internalIndex == _tail)
+        {
+            _tail = internalIndex - 1;
+            if (_tail < 0) _tail = 0;
+            DecrementNumberOfElements();
+            return;
+        }
+
+        var sourceIndex = internalIndex + 1;
+        var length = _numberOfElements - sourceIndex;
+        Array.Copy(_array, sourceIndex, _array, internalIndex,  length);
+
+        DecrementNumberOfElements();
     }
 
     /// <summary>

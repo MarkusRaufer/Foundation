@@ -1,7 +1,6 @@
 ﻿using NUnit.Framework;
 using NUnit.Framework.Internal;
 using Shouldly;
-using System;
 using System.Linq;
 
 namespace Foundation.Collections.Generic;
@@ -216,6 +215,26 @@ public class CircularArrayTests
     }
 
     [Test]
+    public void IndicesOf_Should_Return2Indices_When_PredicateMatchesWithTwoItems()
+    {
+        // Arrange
+        var capacity = 4;
+        var sut = CircularArray.New<string>(capacity);
+        sut.Add("one");
+        sut.Add("two");
+        sut.Add("three");
+        sut.Add("four");
+
+        // Act
+        var indices = sut.IndicesOf(x => x.StartsWith("t")).ToArray();
+
+        // Assert
+        indices.Length.ShouldBe(2);
+        indices[0].ShouldBe(1);
+        indices[1].ShouldBe(2);
+    }
+
+    [Test]
     [TestCase("1", -1)]
     [TestCase("2", 0)]
     [TestCase("3", 1)]
@@ -235,6 +254,24 @@ public class CircularArrayTests
 
         // Assert
         result.ShouldBe(index);
+    }
+
+    [Test]
+    public void IndicesOf_Should_ReturnIndexOfFoundItem_When_PredicateMatchesItem()
+    {
+        // Arrange
+        var capacity = 4;
+        var sut = CircularArray.New<string>(capacity);
+        sut.Add("one");
+        sut.Add("two");
+        sut.Add("three");
+        sut.Add("four");
+
+        // Act
+        var index = sut.IndexOf(x => x.StartsWith("t"));
+
+        // Assert
+        index.ShouldBe(1);
     }
 
     [Test]
@@ -312,6 +349,158 @@ public class CircularArrayTests
 
         // Assert
         replaced.ShouldBe("one");
+    }
+
+    [Test]
+    public void RemoveAt_Should_Have2Elements_When_OneElementRemoved()
+    {
+        // Arrange
+        var capacity = 3;
+        var sut = CircularArray.New<int>(capacity);
+
+        sut.Add(1);
+        sut.Add(2);
+        sut.Add(3);
+
+        // Act
+        sut.RemoveAt(1);
+
+        // Assert
+        sut.Count.ShouldBe(2);
+
+        var values = sut.ToArray();
+        values.Length.ShouldBe(2);
+        values[0].ShouldBe(1);
+        values[1].ShouldBe(3);
+    }
+
+    [Test]
+    public void RemoveAt_Should_Have2Elements_When_TailRemoved()
+    {
+        // Arrange
+        var capacity = 3;
+        var sut = CircularArray.New<int>(capacity);
+
+        sut.Add(1);
+        sut.Add(2);
+        sut.Add(3);
+
+        // Act
+        sut.RemoveAt(2);
+
+        // Assert
+        sut.Count.ShouldBe(2);
+
+        var values = sut.ToArray();
+        values.Length.ShouldBe(2);
+        values[0].ShouldBe(1);
+        values[1].ShouldBe(2);
+    }
+
+    [Test]
+    public void RemoveAt_Should_Have0Elements_When_IndexIsOutOfRange()
+    {
+        // Arrange
+        var capacity = 3;
+        var sut = CircularArray.New<int>(capacity);
+
+        // Act
+        sut.RemoveAt(0);
+
+        // Assert
+        sut.Count.ShouldBe(0);
+
+        var values = sut.ToArray();
+        values.Length.ShouldBe(0);
+    }
+
+    [Test]
+    public void RemoveAt_Should_Have0Elements_When_1ElementExisted()
+    {
+        // Arrange
+        var capacity = 3;
+        var sut = CircularArray.New<int>(capacity);
+
+        // Act
+        sut.RemoveAt(0);
+
+        // Assert
+        sut.Count.ShouldBe(0);
+
+        var values = sut.ToArray();
+        values.Length.ShouldBe(0);
+    }
+
+    [Test]
+    public void RemoveAt_Should_Have1Element_When_2ElementsExisted()
+    {
+        // Arrange
+        var capacity = 3;
+        var sut = CircularArray.New<int>(capacity);
+
+        sut.Add(1);
+        sut.Add(2);
+
+        // Act
+        sut.RemoveAt(0);
+
+        // Assert
+        sut.Count.ShouldBe(1);
+
+        var values = sut.ToArray();
+        values.Length.ShouldBe(1);
+        values[0].ShouldBe(2);
+    }
+
+    [Test]
+    public void RemoveAt_Should_Have3Elements_When_IndexIsOutOfRange()
+    {
+        // Arrange
+        var capacity = 3;
+        var sut = CircularArray.New<int>(capacity);
+
+        sut.Add(1);
+        sut.Add(2);
+        sut.Add(3);
+
+        // Act
+        sut.RemoveAt(5);
+
+        // Assert
+        sut.Count.ShouldBe(3);
+
+        var values = sut.ToArray();
+        values.Length.ShouldBe(3);
+        values[0].ShouldBe(1);
+        values[1].ShouldBe(2);
+        values[2].ShouldBe(3);
+    }
+
+    [Test]
+    public void RemoveAt_Should_Have4Elements_When_OneElementRemoved()
+    {
+        // Arrange
+        var capacity = 5;
+        var sut = CircularArray.New<int>(capacity);
+
+        sut.Add(1);
+        sut.Add(2);
+        sut.Add(3);
+        sut.Add(4);
+        sut.Add(5);
+
+        // Act
+        sut.RemoveAt(1);
+        sut.RemoveAt(2);
+
+        // Assert
+        sut.Count.ShouldBe(3);
+
+        var values = sut.ToArray();
+        values.Length.ShouldBe(3);
+        values[0].ShouldBe(1);
+        values[1].ShouldBe(3);
+        values[2].ShouldBe(5);
     }
 
     [Test]
