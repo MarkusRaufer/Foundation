@@ -235,6 +235,24 @@ public class CircularArrayTests
     }
 
     [Test]
+    public void IndicesOf_Should_ReturnIndexOfFoundItem_When_PredicateMatchesItem()
+    {
+        // Arrange
+        var capacity = 4;
+        var sut = CircularArray.New<string>(capacity);
+        sut.Add("one");
+        sut.Add("two");
+        sut.Add("three");
+        sut.Add("four");
+
+        // Act
+        var index = sut.IndexOf(x => x.StartsWith("t"));
+
+        // Assert
+        index.ShouldBe(1);
+    }
+
+    [Test]
     [TestCase("1", -1)]
     [TestCase("2", 0)]
     [TestCase("3", 1)]
@@ -254,24 +272,6 @@ public class CircularArrayTests
 
         // Assert
         result.ShouldBe(index);
-    }
-
-    [Test]
-    public void IndicesOf_Should_ReturnIndexOfFoundItem_When_PredicateMatchesItem()
-    {
-        // Arrange
-        var capacity = 4;
-        var sut = CircularArray.New<string>(capacity);
-        sut.Add("one");
-        sut.Add("two");
-        sut.Add("three");
-        sut.Add("four");
-
-        // Act
-        var index = sut.IndexOf(x => x.StartsWith("t"));
-
-        // Assert
-        index.ShouldBe(1);
     }
 
     [Test]

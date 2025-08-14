@@ -460,11 +460,11 @@ public class MultiMap<TKey, TValue, TValueCollection>
     /// <inheritdoc/>
     public bool TryGetKey(TValue value, out TKey? key)
     {
-        foreach (var dictionary in _dictionary)
+        foreach (var kvp in _dictionary)
         {
-            if (dictionary.Value.Contains(value))
+            if (kvp.Value.Contains(value))
             {
-                key = dictionary.Key;
+                key = kvp.Key;
                 return true;
             }
         }
