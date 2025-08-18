@@ -377,6 +377,10 @@ public readonly struct Result<TOk, TError>
 #endif
     }
 
+    public static implicit operator Result<TOk, TError>(TError error) => Result.Error<TOk, TError>(error);
+
+    public static implicit operator Result<TOk, TError>(TOk ok) => Result.Ok<TOk, TError>(ok);
+
     public static bool operator ==(Result<TOk, TError> left, Result<TOk, TError> right)
     {
         return left.Equals(right);

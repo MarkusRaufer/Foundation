@@ -1,4 +1,5 @@
 ﻿using FluentAssertions;
+using Microsoft.Testing.Platform.Extensions.Messages;
 using NUnit.Framework;
 using System;
 
@@ -8,12 +9,21 @@ namespace Foundation;
 public class ResultTests
 {
     [Test]
+    public void Cast_Should_ReturnOkResult_When_TypeIsVOfOkType()
+    {
+        var value = 5;
+        Result<int, Error> sut = value;
+
+        sut.IsOk.Should().BeTrue();
+        sut.TryGetOk(out int ok).Should().BeTrue();
+        ok.Should().Be(value);
+    }
+
+    [Test]
     public void FromOption_Should_ReturnErrorResult_When_TypeIsInvalid()
     {
-        object value = 5;
-
         var error = new Error("test error", "this is a test error");
-        var sut = Result.FromOption(() => Option.MaybeOfType<string>(value), () => error);
+        Result<int, Error> sut = error;
 
         sut.IsOk.Should().BeFalse();
         sut.TryGetError(out var err).Should().BeTrue();
