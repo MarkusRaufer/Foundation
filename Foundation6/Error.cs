@@ -31,6 +31,8 @@
 /// <param name="InnerErrors"></param>
 public sealed record Error(string Id, string Message, Error[]? InnerErrors = null)
 {
+    public static implicit operator Error(Exception exception) => Error.FromException(exception);
+
     /// <summary>
     /// Creates an Error instance from an exception.
     /// </summary>

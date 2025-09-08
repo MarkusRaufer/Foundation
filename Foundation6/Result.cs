@@ -281,6 +281,8 @@ public readonly struct Result<TError>
         _isError = true;
     }
 
+    public static implicit operator Result<TError>(TError error) => Result.Error<TError>(error);
+
     /// <summary>
     /// Checks equality of two results.
     /// </summary>
