@@ -23,6 +23,7 @@
 // SOFTWARE.
 ﻿namespace Foundation.Reflection;
 
+using System.Collections;
 using System.Reflection;
 public static class MemberInfoExtensions
 {
