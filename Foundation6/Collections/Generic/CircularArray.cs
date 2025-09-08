@@ -417,4 +417,40 @@ public class CircularArray<T> : IReadOnlyCollection<T>
     /// The internal index of the last object.
     /// </summary>
     public int TailIndex => _tail;
+
+    /// <summary>
+    /// Tries to get value from index.
+    /// </summary>
+    /// <param name="index">The index of the array.</param>
+    /// <param name="value">The found value at the index.</param>
+    /// <returns>True if value found otherwise false.</returns>
+    public bool TryGetValue(int index, out T? value)
+    {
+        var internalIndex = GetInternalIndex(index);
+
+        if (internalIndex < 0)
+        {
+            value = default;
+            return false;
+        }
+        value = _array[internalIndex];
+        return true;
+    }
+
+    /// <summary>
+    /// Tries to get a value from the internal index.
+    /// </summary>
+    /// <param name="index">The index of the array.</param>
+    /// <param name="value">The found value.</param>
+    /// <returns>True if value found otherwise false.</returns>
+    public bool TryGetValueFromInternalIndex(int index, out T? value)
+    {
+        if (!IsIndexInRange(index))
+        {
+            value = default;
+            return false;
+        }
+        value = _array[index];
+        return true;
+    }
 }

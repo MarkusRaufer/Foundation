@@ -1,7 +1,10 @@
 ﻿using FluentAssertions;
+using Foundation.Linq.Expressions;
 using NUnit.Framework;
 using System;
 using System.Linq;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 
 namespace Foundation.Collections.Generic;
 
@@ -107,8 +110,47 @@ public class ArrayValueTests
     {
         var array = new int[] { 1, 2, 3 };
 
-        var eqArray = ArrayValue.New(array);
+        var sut = ArrayValue.New(array);
 
-        Assert.AreEqual(array.Length, eqArray.Length);
+        Assert.AreEqual(array.Length, sut.Length);
     }
+
+    [Test]
+    public void Serialize_Should_ReturnAnEquatableArrayWith3Elements_When_ArrayArgumentHas3Elements()
+    {
+        
+        var array = new int[] { 1, 2, 3 };
+
+        var mc = new MyTest<int>(array);
+        var options = new JsonSerializerOptions
+        {
+            IncludeFields = true
+        };
+        var j = JsonSerializer.Serialize(mc);
+
+        var ds = JsonSerializer.Deserialize<MyTest<int>>(j);
+
+
+        var sut = ArrayValue.New(array);
+
+        var json = JsonSerializer.Serialize(sut);
+
+        var deserialized = JsonSerializer.Deserialize<ArrayValue<int>>(json);
+
+        Assert.AreEqual(array.Length, sut.Length);
+    }
+}
+internal class MyTest<T>
+{
+    [JsonInclude]
+    private T[] _array;
+
+    [JsonConstructor]
+    public MyTest(T[] array)
+    {
+        _array = array;
+    }
+
+    [JsonIgnore]
+    public ReadOnlySpan<T> Array => _array;
 }

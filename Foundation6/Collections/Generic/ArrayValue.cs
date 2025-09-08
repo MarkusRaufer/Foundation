@@ -86,10 +86,10 @@ public readonly struct ArrayValue<T>
     public T this[int index] => _values[index];
 
     /// <summary>
-    /// Returns the internal array.
+    /// Returns a ReadOnlySpan of the internal array.
     /// </summary>
     /// <returns></returns>
-    public T[] AsArray() => _values;
+    public ReadOnlySpan<T> AsReadOnlySpan() => _values;
 
     public object Clone()
     {
