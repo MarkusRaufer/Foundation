@@ -97,10 +97,10 @@ public class FactoryMethodConverter<T> : JsonConverter<T?>
 
             if (!string.IsNullOrEmpty(propertyName))
             {
-                if (!factoryParameters.TryGetValue(propertyName, out var memberInfo)) continue;
+                if (!factoryParameters.TryGetValue(propertyName!, out var memberInfo)) continue;
 
                 var parameterValue = JsonSerializer.Deserialize(ref reader, memberInfo.GetMemberType(), options);
-                parameterValues.Add(propertyName, parameterValue);
+                parameterValues.Add(propertyName!, parameterValue);
                 propertyName = null;
             }
         }
