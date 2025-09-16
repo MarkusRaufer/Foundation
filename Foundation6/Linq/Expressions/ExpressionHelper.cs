@@ -66,19 +66,19 @@ public static class ExpressionHelper
                           .TryGet(out var binaryExpression) ? binaryExpression : null;
     }
 
-    //public static Expression<Func<T, object>> ConvertToReturnTypeObject<T>(MemberExpression member)
+    //public static Expression<Func<TSelf, object>> ConvertToReturnTypeObject<TSelf>(MemberExpression member)
     //{
     //    var objectMember = Expression.Convert(member, typeof(object));
 
     //    return member.Expression is ParameterExpression parameter
-    //        ? Expression.Lambda<Func<T, object>>(objectMember, parameter)
-    //        : Expression.Lambda<Func<T, object>>(objectMember);
+    //        ? Expression.Lambda<Func<TSelf, object>>(objectMember, parameter)
+    //        : Expression.Lambda<Func<TSelf, object>>(objectMember);
     //}
 
-    //public static Expression<Func<T, object>> ConvertToReturnTypeObject<T, TMember>(Expression<Func<T, TMember>> expression)
+    //public static Expression<Func<TSelf, object>> ConvertToReturnTypeObject<TSelf, TMember>(Expression<Func<TSelf, TMember>> expression)
     //{
     //    var converted = Expression.Convert(expression.Body, typeof(object));
-    //    return Expression.Lambda<Func<T, object>>(converted, expression.Parameters);
+    //    return Expression.Lambda<Func<TSelf, object>>(converted, expression.Parameters);
     //}
 
     //public static int CreateHashCode(this Expression expression)

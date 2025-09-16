@@ -58,7 +58,6 @@ public abstract record TimeDef
     #endregion time defintions
 
     #region factory methods
-
     /// <summary>
     /// Chains a list of <see cref="TimeDef"/> by <see cref="TimeDef.And"/>.
     /// </summary>
@@ -67,17 +66,31 @@ public abstract record TimeDef
     public static TimeDef ChainByAnd(params TimeDef[] timeDefs) => timeDefs.ChainByAnd();
 
     /// <summary>
-    /// Chains timeDefs by Or.
+    /// Chains <see cref="TimeDef"/>s by Or.
     /// </summary>
     /// <param name="timeDefs"></param>
     /// <returns></returns>
     public static TimeDef ChainByOr(params TimeDef[] timeDefs) => timeDefs.ChainByOr();
 
+    /// <summary>
+    /// Creates a <see cref="TimeDef"/> from a yeas, month, and day.
+    /// </summary>
+    /// <param name="year">The year which should be added to the <see cref="TimeDef"/>.</param>
+    /// <param name="month">The month which should be added to the <see cref="TimeDef"/>.</param>
+    /// <param name="day">The day which should be added to the <see cref="TimeDef"/>.</param>
+    /// <returns></returns>
     public static TimeDef FromDate(int year, int month, int day)
     {
         return FromDate(year, (Foundation.Month)month, day);
     }
 
+    // <summary>
+    /// Creates a <see cref="TimeDef"/> from a yeas, month, and day.
+    /// </summary>
+    /// <param name="year">The year which should be added to the <see cref="TimeDef"/>.</param>
+    /// <param name="month">The month which should be added to the <see cref="TimeDef"/>.</param>
+    /// <param name="day">The day which should be added to the <see cref="TimeDef"/>.</param>
+    /// <returns></returns>
     public static TimeDef FromDate(int year, Foundation.Month month, int day)
     {
         var dtYear = FromYear(year);
@@ -87,6 +100,11 @@ public abstract record TimeDef
         return ChainByAnd(dtYear, dtMonth, dtDay);
     }
 
+    /// <summary>
+    /// Creates a <see cref="TimeDef"/> from a <see cref="DateTime"/>
+    /// </summary>
+    /// <param name="dateTime">The DateTime that should be transformed to a TimeDef.</param>
+    /// <returns>A valid TimeDef.</returns>
     public static TimeDef FromDateTime(DateTime dateTime)
     {
         var year = FromYear(dateTime.Year);
@@ -98,6 +116,11 @@ public abstract record TimeDef
         return ChainByAnd(year, month, day, hour, minute);
     }
 
+    /// <summary>
+    /// Creates a <see cref="TimeDef"/> from a list of days.
+    /// </summary>
+    /// <param name="day">The list of days that should be transformed to a TimeDef.</param>
+    /// <returns>A valid TimeDef.</returns>
     public static TimeDef FromDay(params int[] day)
     {
         if (day.Any(d => d is < 1 or > 31)) throw new ArgumentOutOfRangeException(nameof(day), "must be between [1..31]");
@@ -105,6 +128,11 @@ public abstract record TimeDef
         return new Day(day);
     }
 
+    /// <summary>
+    /// Creates a <see cref="TimeDef"/> from a list of hours.
+    /// </summary>
+    /// <param name="day">The list of hours that should be transformed to a TimeDef.</param>
+    /// <returns>A valid TimeDef.</returns>
     public static TimeDef FromHour(params int[] hour)
     {
         if (hour.Any(h => h is < 0 or > 23)) throw new ArgumentOutOfRangeException(nameof(hour), "must be between [0..23]");
@@ -112,29 +140,54 @@ public abstract record TimeDef
         return new Hour(hour);
     }
 
+    /// <summary>
+    /// Creates a <see cref="TimeDef"/> from a <see cref="DateOnly"/>
+    /// </summary>
+    /// <param name="date">The DateOnly that should be transformed to a TimeDef.</param>
+    /// <returns>A valid TimeDef.</returns>
     public static TimeDef FromDateOnly(DateOnly date)
     {
         return FromDate(date.Year, date.Month, date.Day);
     }
 
+    /// <summary>
+    /// Creates a <see cref="TimeDef"/> from a range of days.
+    /// </summary>
+    /// <param name="range">The range of days that will be transformed to a <see cref="TimeDef"/>.
+    /// <returns>A valid TimeDef.</returns>
     public static TimeDef FromDay(System.Range range)
     {
         var days = range.ToEnumerable();
         return FromDay(days.ToArray());
     }
 
+    /// <summary>
+    /// Creates a <see cref="TimeDef"/> from a range of hours.
+    /// </summary>
+    /// <param name="range">The range of hours that will be transformed to a <see cref="TimeDef"/>.
+    /// <returns>A valid TimeDef.</returns>
     public static TimeDef FromHour(System.Range range)
     {
         var hours = range.ToEnumerable();
         return FromHour(hours.ToArray());
     }
 
+    /// <summary>
+    /// Creates a <see cref="TimeDef"/> from a range of minutes.
+    /// </summary>
+    /// <param name="range">The range of minutes that will be transformed to a <see cref="TimeDef"/>.
+    /// <returns>A valid TimeDef.</returns>
     public static TimeDef FromMinute(System.Range range)
     {
         var minutes = range.ToEnumerable();
         return FromMinute(minutes.ToArray());
     }
 
+    /// <summary>
+    /// Creates a <see cref="TimeDef"/> from a <see cref="TimeOnly"/>.
+    /// </summary>
+    /// <param name="range">The <see cref="TimeOnly"/> that will be transformed to a <see cref="TimeDef"/>.
+    /// <returns>A valid TimeDef.</returns>
     public static TimeDef FromTimeOnly(TimeOnly time)
     {
         var hour = new Hour(new[] { time.Hour });
@@ -143,12 +196,22 @@ public abstract record TimeDef
         return new And(hour, minute);
     }
 
+    /// <summary>
+    /// Creates a <see cref="TimeDef"/> from a range of years.
+    /// </summary>
+    /// <param name="range">The range of years that will be transformed to a <see cref="TimeDef"/>.
+    /// <returns>A valid TimeDef.</returns>
     public static TimeDef FromYear(System.Range range)
     {
         var years = range.ToEnumerable();
         return new Year(years.ToArray());
     }
 
+    /// <summary>
+    /// Creates a <see cref="TimeDef"/> from a list of minutes.
+    /// </summary>
+    /// <param name="minute">The list of minutes that will be transformed to a <see cref="TimeDef"/>.
+    /// <returns>A valid TimeDef.</returns>
     public static TimeDef FromMinute(params int[] minute)
     {
         if (minute.Any(m => m is < 0 or > 59)) throw new ArgumentOutOfRangeException(nameof(minute), "must be between [0..59]");
@@ -156,16 +219,31 @@ public abstract record TimeDef
         return new Minute(minute);
     }
 
+    /// <summary>
+    /// Creates a <see cref="TimeDef"/> from a list of <see cref="Foundation.Month"/>.
+    /// </summary>
+    /// <param name="minute">The list of <see cref="Foundation.Month"/> that will be transformed to a <see cref="TimeDef"/>.
+    /// <returns>A valid TimeDef.</returns>
     public static TimeDef FromMonth(params Foundation.Month[] month)
     {
         return new Month(month);
     }
 
+    /// <summary>
+    /// Creates a <see cref="TimeDef"/> from a list of months.
+    /// </summary>
+    /// <param name="minute">The list of months that will be transformed to a <see cref="TimeDef"/>.
+    /// <returns>A valid TimeDef.</returns>
     public static TimeDef FromMonth(params int[] month)
     {
         return new Month(month.Cast<Foundation.Month>().ToArray());
     }
 
+    /// <summary>
+    /// Creates a <see cref="TimeDef"/> from an hour and minute.
+    /// </summary>
+    /// <param name="minute">The hour and minute that will be transformed to a <see cref="TimeDef"/>.
+    /// <returns>A valid TimeDef.</returns>
     public static TimeDef FromTime(int hour, int minute)
     {
         var tdHour = FromHour(hour);
@@ -174,20 +252,35 @@ public abstract record TimeDef
         return new And(tdHour, tdMinute);
     }
 
+    /// <summary>
+    /// Creates a <see cref="TimeDef"/> from a list of <see cref="DayOfWeek"/>.
+    /// </summary>
+    /// <param name="minute">The list of <see cref="DayOfWeek"/> that will be transformed to a <see cref="TimeDef"/>.
+    /// <returns>A valid TimeDef.</returns>
     public static TimeDef FromWeekday(params DayOfWeek[] dayOfWeek)
     {
         return new Weekday(dayOfWeek);
     }
 
+    /// <summary>
+    /// Creates a <see cref="TimeDef"/> from a list of weeks of month.
+    /// </summary>
+    /// <param name="weekStartsWith">The start day of the week.</param>
+    /// <param name="week">The list of weeks of month.</param>
+    /// <returns>A valid TimeDef.</returns>
     public static TimeDef FromWeekOfMonth(DayOfWeek weekStartsWith, params int[] week)
     {
         return new WeekOfMonth(weekStartsWith, week);
     }
 
+    /// <summary>
+    /// Creates a <see cref="TimeDef"/> from a years.
+    /// </summary>
+    /// <param name="year">The list of years that will be transformed to a <see cref="TimeDef"/>.
+    /// <returns>A valid TimeDef.</returns>
     public static TimeDef FromYear(params int[] year)
     {
         return new Year(year);
     }
-
     # endregion factory methods
 }
