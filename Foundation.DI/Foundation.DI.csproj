@@ -13,7 +13,7 @@
 		<PackageId>Foundation.DI</PackageId>
 		<PackageTags>Foundation, dependency injection, di</PackageTags>
 		<ProductName>Foundation.DI</ProductName>
-		<Version>1.6.25</Version>
+		<Version>1.6.28</Version>
 	</PropertyGroup>
 
 </Project>

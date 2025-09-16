@@ -136,6 +136,7 @@ public static class JsonTest2
     }
 }
 
+#pragma warning disable CS8618
 public class JsonTest2<T>
 {
     [JsonPrivateField]
@@ -167,3 +168,5 @@ public class JsonTest2<T>
 
     public int Number => _number;
 }
+
+#pragma warning restore
