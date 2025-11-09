@@ -41,12 +41,11 @@ public class DelegateOwnerTests
     public void DynamicInvoke_Should_CallDelegate_When_UsingTyped_IDelegateOwner()
     {
         //Arrange
-        var str = "";
-
         var owner = new DelegateOwner("123");
         var owned = owner.MoveDelegateOwnerShip();
 
         // Act
+        owned.ShouldNotBeNull();
         owned.Delegate("456");
         var owned2 = owner.MoveDelegateOwnerShip();
 

@@ -75,10 +75,10 @@ public class MutableOwnerShipOwnerTests
     public void Invoke_Should_CallDelegate_When_Using_IDelegateOwner()
     {
         //Arrange
-        var str = "";
-
         var owner = new Address("Berlin", "Marienstrasse", new DateOnly(1972, 3, 1));
         var setStreet = owner.MoveOwnerShip<SetStreet>();
+        setStreet.ShouldNotBeNull();
+
         var changedStreet = "Hauptstrasse";
 
         // Act

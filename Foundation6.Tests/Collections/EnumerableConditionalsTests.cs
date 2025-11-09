@@ -1,4 +1,5 @@
-﻿using NUnit.Framework;
+﻿using Foundation.Collections.Generic;
+using NUnit.Framework;
 using Shouldly;
 using System;
 using System.Collections.Generic;
@@ -68,5 +69,20 @@ public class EnumerableConditionalsTests
         filtered[1].ShouldBe(date);
         filtered[2].ShouldBe(numbers);
         filtered[3].ShouldBe(time);
+    }
+
+    [Test]
+    public void OrEmpty_Should_ReturnAnEmptyList_When_ItemsIsNull()
+    {
+        // Arrange
+        IEnumerable<int>? numbers = null;
+
+        // Act
+        var result = numbers.OrEmpty().ToArray();
+
+        // Assert
+
+        result.Length.ShouldBe(0);
+        
     }
 }
