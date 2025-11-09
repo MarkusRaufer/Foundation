@@ -21,7 +21,8 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
-﻿using System.Runtime.CompilerServices;
+using System.Diagnostics.CodeAnalysis;
+using System.Runtime.CompilerServices;
 
 namespace Foundation.Collections.Generic;
 
@@ -570,6 +571,15 @@ public static class EnumerableConditionals
             yield return it.Current;
         }
     }
+
+    /// <summary>
+    /// Returns items or an empty list if items is null.
+    /// </summary>
+    /// <typeparam name="T">Type of the items.</typeparam>
+    /// <param name="items">List of elements.</param>
+    /// <returns>A list of items.</returns>
+    [return: NotNull]
+    public static IEnumerable<T> OrEmpty<T>(this IEnumerable<T>? items) => items is null ? [] : items;
 
     /// <summary>
     /// Stops iteration when predication returns true.

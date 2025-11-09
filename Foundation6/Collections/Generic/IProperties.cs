@@ -31,7 +31,8 @@ namespace Foundation.Collections.Generic
     public interface IProperties<TEvent>
         : IDictionary<string, object>
         , IEventHandler<TEvent>
-        , IEventHistory<TEvent>
+        , IReadOnlyEventHistory<TEvent>
+        , IHasClearEvents
     {
     }
 

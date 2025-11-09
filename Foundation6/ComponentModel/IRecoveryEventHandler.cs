@@ -23,7 +23,15 @@
 // SOFTWARE.
 ﻿namespace Foundation.ComponentModel;
 
+/// <summary>
+/// Contract of a generic recovery event handler.
+/// </summary>
+/// <typeparam name="TEvent">The type of the event.</typeparam>
 public interface IRecoveryEventHandler<TEvent>
 {
+    /// <summary>
+    /// Object gets recoverd from event. 
+    /// </summary>
+    /// <param name="ev">The event used for recovery.</param>
     void RecoverFromEvent(TEvent ev);
 }

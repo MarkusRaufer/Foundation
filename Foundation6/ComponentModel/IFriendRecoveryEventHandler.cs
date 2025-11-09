@@ -1,4 +1,4 @@
-// The MIT License (MIT)
+﻿// The MIT License (MIT)
 //
 // Copyright (c) 2020 Markus Raufer
 //
@@ -21,23 +21,20 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
-﻿namespace Foundation.ComponentModel;
+namespace Foundation.ComponentModel;
 
 /// <summary>
-/// Contract of an event history provider.
+/// A contract of a generic recovery event handler that only allows to be recovered from a <see cref="IFriend"/>.
 /// </summary>
-/// <typeparam name="TEvent"></typeparam>
-public interface IEventHistory<TEvent> : IEventHistory<TEvent, IEnumerable<TEvent>>
-{
-}
+/// </summary>
+/// <typeparam name="TEvent">The type of the event. This must be a <see cref="IFriend"/>.</typeparam>
+public interface IFriendRecoveryEventHandler<TEvent> : IFriendRecoveryEventHandler<TEvent, object>
+    where TEvent : IFriend;
 
 /// <summary>
-/// Contract of a mutable event history provider.
+/// A contract of a generic recovery event handler that only allows to be recovered from a <see cref="IFriend"/>.
 /// </summary>
-/// <typeparam name="TEvent">Type of the events.</typeparam>
-/// <typeparam name="TEventCollection">Type of the event collection.</typeparam>
-public interface IEventHistory<TEvent, TEventCollection>
-    : IReadOnlyEventHistory<TEvent, TEventCollection>
-    , IHasClearEvents
-{
-}
+/// <typeparam name="TEvent">The type of the event. This must be a <see cref="IFriend{TFriendId}"/>.</typeparam>
+/// <typeparam name="TFriendId">The typeof of the friend identifier.</typeparam>
+public interface IFriendRecoveryEventHandler<TEvent, TFriendId> : IRecoveryEventHandler<TEvent>
+    where TEvent : IFriend<TFriendId>;

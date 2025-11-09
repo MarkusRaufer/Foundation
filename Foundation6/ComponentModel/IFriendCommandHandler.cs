@@ -1,4 +1,4 @@
-// The MIT License (MIT)
+﻿// The MIT License (MIT)
 //
 // Copyright (c) 2020 Markus Raufer
 //
@@ -21,23 +21,19 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
-﻿namespace Foundation.ComponentModel;
+namespace Foundation.ComponentModel;
 
 /// <summary>
-/// Contract of an event history provider.
+/// A contract of a generic command handler that only allows to be changed from a <see cref="IFriend"/>.
 /// </summary>
-/// <typeparam name="TEvent"></typeparam>
-public interface IEventHistory<TEvent> : IEventHistory<TEvent, IEnumerable<TEvent>>
-{
-}
+/// <typeparam name="TCommand">The type of the command.</typeparam>
+public interface IFriendCommandHandler<TCommand> : IFriendCommandHandler<TCommand, object>
+    where TCommand : IFriend;
 
 /// <summary>
-/// Contract of a mutable event history provider.
+/// A contract of a generic command handler that only allows to be changed from a <see cref="IFriend"/>.
 /// </summary>
-/// <typeparam name="TEvent">Type of the events.</typeparam>
-/// <typeparam name="TEventCollection">Type of the event collection.</typeparam>
-public interface IEventHistory<TEvent, TEventCollection>
-    : IReadOnlyEventHistory<TEvent, TEventCollection>
-    , IHasClearEvents
-{
-}
+/// <typeparam name="TCommand">The type of the command.</typeparam>
+/// <typeparam name="TFriendId">The type of the friend identifier.</typeparam>
+public interface IFriendCommandHandler<TCommand, TFriendId> : ICommandHandler<TCommand>
+    where TCommand : IFriend<TFriendId>;
