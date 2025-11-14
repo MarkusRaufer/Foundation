@@ -27,6 +27,44 @@ public class InterceptionExtensionsTests
     private record Pet(string Name, DateOnly Birthday);
 
     [Test]
+    public void ChangeWith_Should_ChangeProperties_When_ClassWithMutablePropertyAndCtorArgumentIsUsed()
+    {
+        // Arrange
+        var firstName = "Peter";
+        var lastName = "Pan";
+        var person = new Person(firstName, lastName) { Birthday = new DateOnly(1961, 2, 3) };
+        IDictionary<string, object?> changes = null;
+
+        var newBirthday = new DateOnly(1962, 3, 4);
+        var newLastName = "Doe";
+
+        // Act
+        var p2 = person.ChangeWith(x => x.LastName, newLastName)
+                       .And(x => x.Birthday, newBirthday)
+                       .Build(x => changes = x);
+
+        // Assert
+        var eq = ReferenceEquals(person, p2);
+        eq.ShouldBeTrue();
+
+        p2.FirstName.ShouldBe(firstName);
+        p2.LastName.ShouldBe(newLastName);
+        p2.Birthday.ShouldBe(newBirthday);
+
+        changes.ShouldNotBeNull();
+        changes.Count.ShouldBe(2);
+
+        {
+            var value = changes[nameof(Person.Birthday)];
+            value.ShouldBe(newBirthday);
+        }
+        {
+            var value = changes[nameof(Person.LastName)];
+            value.ShouldBe(newLastName);
+        }
+    }
+
+    [Test]
     public void ChangeWith_Should_ChangeProperty_When_ClassWithMutablePropertyIsUsed()
     {
         // Arrange

@@ -33,22 +33,21 @@ public static class InterceptionExtensions
     /// <summary>Creates a builder that enables to change an object an record the changes.
     /// </summary>
     /// <typeparam name="T">Type of the source.</typeparam>
-    /// <typeparam name="TProp">Type of the property.</typeparam>
     /// <param name="source">An instance of an object.</param>
     /// <param name="propertySelector">The selector of the property.</param>
     /// <param name="newValue">The new value.</param>
     /// <returns>Returns the same changed object.</returns>
     /// <exception cref="ArgumentException"></exception>
     /// <exception cref="ArgumentNullException"></exception>
-    public static IInterceptionBuilder<T, TProp> ChangeWith<T, TProp>(
+    public static IInterceptionBuilder<T> ChangeWith<T>(
         this T source,
-        Expression<Func<T, TProp>> propertySelector,
-        TProp newValue)
+        Expression<Func<T, object>> propertySelector,
+        object? newValue)
     {
         source.ThrowIfNull();
         propertySelector.ThrowIfNull();
 
-        return new InterceptionBuilder<T, TProp>(
+        return new InterceptionBuilder<T>(
                         InterceptionBuilder.BuildMode.ChangeWith,
                         source,
                         propertySelector, newValue);
@@ -59,22 +58,21 @@ public static class InterceptionExtensions
     /// and replacing the new values. The changes are recorded.
     /// </summary>
     /// <typeparam name="T">Type of the source.</typeparam>
-    /// <typeparam name="TProp">Type of the property.</typeparam>
     /// <param name="source">An instance of an object.</param>
     /// <param name="propertySelector">The selector of the property.</param>
     /// <param name="newValue">The new value.</param>
     /// <returns>An IInterceptionBuilder.</returns>    
     /// <exception cref="ArgumentException"></exception>
     /// <exception cref="ArgumentNullException"></exception>
-    public static IInterceptionBuilder<T, TProp> NewWith<T, TProp>(
+    public static IInterceptionBuilder<T> NewWith<T>(
         this T source,
-        Expression<Func<T, TProp>> propertySelector,
-        TProp newValue)
+        Expression<Func<T, object>> propertySelector,
+        object? newValue)
     {
         source.ThrowIfNull();
         propertySelector.ThrowIfNull();
 
-        return new InterceptionBuilder<T, TProp>(
+        return new InterceptionBuilder<T>(
                         InterceptionBuilder.BuildMode.NewWith,
                         source,
                         propertySelector, newValue);

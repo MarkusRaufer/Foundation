@@ -24,13 +24,14 @@
 using Foundation.Collections.Generic;
 using System.Linq.Expressions;
 using System.Reflection;
+using System.Runtime.CompilerServices;
 
 namespace Foundation.ComponentModel;
 
 
-public interface IInterceptionBuilder<T, TProp>
+public interface IInterceptionBuilder<T>
 {
-    IInterceptionBuilder<T, TProp> And(Expression<Func<T, TProp>> propertySelector, object? newValue);
+    IInterceptionBuilder<T> And(Expression<Func<T, object>> propertySelector, object? newValue);
     T Build(Action<IDictionary<string, object?>> interceptChanges);
 }
 
@@ -43,22 +44,22 @@ public class InterceptionBuilder
     };
 }
 
-public class InterceptionBuilder<T, TProp> : IInterceptionBuilder<T, TProp>
+public class InterceptionBuilder<T> : IInterceptionBuilder<T>
 {
     private readonly InterceptionBuilder.BuildMode _buildMode;
     private static readonly KeyValuePair<string, object?> _empty = default;
     private Dictionary<string, object?> _properties = [];
-    private T _source;
+    private readonly T _source;
 
-    public InterceptionBuilder(InterceptionBuilder.BuildMode mode, T source, Expression<Func<T, TProp>> propertySelector, object? newValue)
+    public InterceptionBuilder(InterceptionBuilder.BuildMode mode, T source, Expression<Func<T, object>> propertySelector, object? newValue)
     {
         _buildMode = mode;
         _source = source.ThrowIfNull();
 
-        AddKeyValue(_source, propertySelector, newValue);
+        AddKeyValue(_source, propertySelector.ThrowIfNull(), newValue);
     }
 
-    private void AddKeyValue(T source, Expression<Func<T, TProp>> propertySelector, object? newValue)
+    private void AddKeyValue(T source, Expression<Func<T, object>> propertySelector, object? newValue)
     {
         var keyValue = ToKeyValue(_source, propertySelector, newValue);
         if (keyValue.Equals(_empty)) return;
@@ -66,9 +67,9 @@ public class InterceptionBuilder<T, TProp> : IInterceptionBuilder<T, TProp>
         _properties.Add(keyValue.Key, keyValue.Value);
     }
 
-    public IInterceptionBuilder<T, TProp> And(Expression<Func<T, TProp>> propertySelector, object? newValue)
+    public IInterceptionBuilder<T> And(Expression<Func<T, object>> propertySelector, object? newValue)
     {
-        AddKeyValue(_source, propertySelector, newValue);
+        AddKeyValue(_source, propertySelector.ThrowIfNull(), newValue);
         return this;
     }
 
@@ -162,17 +163,30 @@ public class InterceptionBuilder<T, TProp> : IInterceptionBuilder<T, TProp>
         return (ctor, GetArguments(type, ctor));
     }
 
-    private static PropertyInfo GetPropertyInfo(Expression<Func<T, TProp>> propertySelector)
+    private static PropertyInfo GetPropertyInfo(Expression<Func<T, object>> propertySelector)
     {
-        var member = propertySelector.Body as MemberExpression
-            ?? throw new ArgumentException("property selector must be a member expression", nameof(propertySelector));
+        propertySelector.ThrowIfNull();
 
+        var member = GetMember(propertySelector);
+        
         if (member.Member is not PropertyInfo property)
             throw new ArgumentException("expression must target a property", nameof(propertySelector));
 
         return property;
     }
 
+    private static MemberExpression GetMember(LambdaExpression lambda)
+    {
+        var memberExpression = lambda.Body as MemberExpression;
+        if (memberExpression is not null) return memberExpression;
+
+        if (lambda.Body is UnaryExpression ue)
+        {
+            if (ue.Operand is MemberExpression member) return member;
+        }    
+
+        throw new ArgumentException($"{nameof(lambda)} must be a {nameof(MemberExpression)}", nameof(lambda));
+    }
     private IEnumerable<object?> GetValues(PropertyInfo[] properties, Dictionary<string, object?> changes)
     {
         foreach (var property in properties)
@@ -195,9 +209,9 @@ public class InterceptionBuilder<T, TProp> : IInterceptionBuilder<T, TProp>
         }
     }
 
-    private static KeyValuePair<string, object?> ToKeyValue(T source, Expression<Func<T, TProp>> propertySelector, object? newValue)
+    private static KeyValuePair<string, object?> ToKeyValue(T source, Expression<Func<T, object>> propertySelector, object? newValue)
     {
-        var property = GetPropertyInfo(propertySelector);
+        var property = GetPropertyInfo(propertySelector.ThrowIfNull());
 
         var value = property.GetValue(source);
         if (value.EqualsNullable(newValue)) return default;
