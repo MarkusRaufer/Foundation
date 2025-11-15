@@ -1,4 +1,4 @@
-﻿using FluentAssertions;
+﻿using Shouldly;
 using Foundation.Linq.Expressions;
 using NUnit.Framework;
 using System;
@@ -14,10 +14,13 @@ public class ArrayValueTests
     [Test]
     public void Cast_Should_ImplicitlyCastToEquatableArray_When_CastFrom_Array_To_EquatableArray()
     {
+        // Arrange
         var array = new int[] { 1, 2, 3 };
 
+        // Act
         ArrayValue<int> sut = array;
 
+        // Assert
         Assert.IsTrue(array.SequenceEqual(sut));
     }
 
@@ -80,7 +83,7 @@ public class ArrayValueTests
         var sut = ArrayValue.New(array);
 
         var result = sut.Find(x => x == 4);
-        result.Should().Be(4);
+        result.ShouldBe(4);
     }
 
     [Test]
@@ -91,7 +94,7 @@ public class ArrayValueTests
         var sut = ArrayValue.New(array);
 
         var index = sut.FindIndex(x => x == 4);
-        index.Should().Be(3);
+        index.ShouldBe(3);
     }
 
     [Test]
@@ -102,7 +105,7 @@ public class ArrayValueTests
         var sut = ArrayValue.New(array);
 
         var index = sut.FindIndex(4, x => x == 4);
-        index.Should().Be(7);
+        index.ShouldBe(7);
     }
 
     [Test]
@@ -118,31 +121,23 @@ public class ArrayValueTests
     [Test]
     public void Serialize_Should_ReturnAnEquatableArrayWith3Elements_When_ArrayArgumentHas3Elements()
     {
-        
+        // Arrange
         var array = new int[] { 1, 2, 3 };
-
-        var mc = new MyTest<int>(array);
-        var options = new JsonSerializerOptions
-        {
-            IncludeFields = true
-        };
-        var j = JsonSerializer.Serialize(mc);
-
-        var ds = JsonSerializer.Deserialize<MyTest<int>>(j);
-
+        var expected = JsonSerializer.Serialize(array);
 
         var sut = ArrayValue.New(array);
 
+        // Act
         var json = JsonSerializer.Serialize(sut);
 
-        var deserialized = JsonSerializer.Deserialize<ArrayValue<int>>(json);
+        // Assert
+        json.ShouldBe(expected);
 
-        Assert.AreEqual(array.Length, sut.Length);
     }
 }
 internal class MyTest<T>
 {
-    [JsonInclude]
+    [JsonIgnore]
     private T[] _array;
 
     [JsonConstructor]
@@ -151,6 +146,5 @@ internal class MyTest<T>
         _array = array;
     }
 
-    [JsonIgnore]
     public ReadOnlySpan<T> Array => _array;
 }

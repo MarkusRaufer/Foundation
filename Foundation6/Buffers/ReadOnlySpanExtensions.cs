@@ -335,18 +335,13 @@ public static class ReadOnlySpanExtensions
     public static bool IsSameAs<T>(this ReadOnlySpan<T> lhs, ReadOnlySpan<T> rhs)
     {
         if (lhs.Length != rhs.Length) return false;
+        if (lhs.Length == 0) return true;
 
         for (var i = 0; i < lhs.Length; i++)
         {
             var left = lhs[i];
             var right = rhs[i];
-            if(null == left)
-            {
-                if(null != rhs) return false;
-                continue;
-            }
-
-            if (!left.Equals(right)) return false;
+            if (!left.EqualsNullable(right)) return false;
         }
 
         return true;

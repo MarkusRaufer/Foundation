@@ -21,12 +21,9 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
-using Foundation.Collections.Generic;
 using System.Linq.Expressions;
-using System.Reflection;
 
 namespace Foundation.ComponentModel;
-
 
 public static class InterceptionExtensions
 {

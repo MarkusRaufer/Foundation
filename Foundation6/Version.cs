@@ -21,11 +21,13 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
-﻿#if NET8_0_OR_GREATER
+#if NET8_0_OR_GREATER
 
 using Foundation.Buffers;
 
 #endif
+
+using Foundation.Buffers;
 
 namespace Foundation;
 
@@ -60,11 +62,10 @@ public record struct Version(int Major, int Minor, int Patch)
         if (string.IsNullOrWhiteSpace(version)) return null;
 
         var span = version.AsSpan();
-
         ReadOnlySpan<char> separators = stackalloc char[1] { '.' };
 
 #if NET8_0_OR_GREATER
-        var enumerator = span.Split(separators);
+        var enumerator = span.Split(separators, false);
 
         //major
         if (!enumerator.MoveNext()) return null;
