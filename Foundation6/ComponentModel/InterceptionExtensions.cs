@@ -39,7 +39,7 @@ public static class InterceptionExtensions
     /// <returns>Returns the same changed object.</returns>
     /// <exception cref="ArgumentException"></exception>
     /// <exception cref="ArgumentNullException"></exception>
-    public static IInterceptionBuilder<T> ChangeWith<T>(
+    public static InterceptionBuilder<T> ChangeWith<T>(
         this T source,
         Expression<Func<T, object>> propertySelector,
         object? newValue)
@@ -64,7 +64,7 @@ public static class InterceptionExtensions
     /// <returns>An IInterceptionBuilder.</returns>    
     /// <exception cref="ArgumentException"></exception>
     /// <exception cref="ArgumentNullException"></exception>
-    public static IInterceptionBuilder<T> NewWith<T>(
+    public static InterceptionBuilder<T> NewWith<T>(
         this T source,
         Expression<Func<T, object>> propertySelector,
         object? newValue)

@@ -29,9 +29,10 @@ using System.Runtime.CompilerServices;
 namespace Foundation.ComponentModel;
 
 
-public interface IInterceptionBuilder<T>
+public interface IInterceptionBuilder<T, TBuilder>
+    where TBuilder : IInterceptionBuilder<T, TBuilder>
 {
-    IInterceptionBuilder<T> And(Expression<Func<T, object>> propertySelector, object? newValue);
+    TBuilder And(Expression<Func<T, object>> propertySelector, object? newValue);
     T Build(Action<IDictionary<string, object?>> interceptChanges);
 }
 
@@ -44,7 +45,7 @@ public class InterceptionBuilder
     };
 }
 
-public class InterceptionBuilder<T> : IInterceptionBuilder<T>
+public struct InterceptionBuilder<T> : IInterceptionBuilder<T, InterceptionBuilder<T>>
 {
     private readonly InterceptionBuilder.BuildMode _buildMode;
     private static readonly KeyValuePair<string, object?> _empty = default;
@@ -67,7 +68,7 @@ public class InterceptionBuilder<T> : IInterceptionBuilder<T>
         _properties.Add(keyValue.Key, keyValue.Value);
     }
 
-    public IInterceptionBuilder<T> And(Expression<Func<T, object>> propertySelector, object? newValue)
+    public InterceptionBuilder<T> And(Expression<Func<T, object>> propertySelector, object? newValue)
     {
         AddKeyValue(_source, propertySelector.ThrowIfNull(), newValue);
         return this;
@@ -209,9 +210,13 @@ public class InterceptionBuilder<T> : IInterceptionBuilder<T>
         }
     }
 
-    private static KeyValuePair<string, object?> ToKeyValue(T source, Expression<Func<T, object>> propertySelector, object? newValue)
+    private KeyValuePair<string, object?> ToKeyValue(T source, Expression<Func<T, object>> propertySelector, object? newValue)
     {
         var property = GetPropertyInfo(propertySelector.ThrowIfNull());
+
+        if (_buildMode == InterceptionBuilder.BuildMode.ChangeWith
+            && !property.CanWrite)
+            throw new ArgumentException($"property {property.Name} has no setter");
 
         var value = property.GetValue(source);
         if (value.EqualsNullable(newValue)) return default;

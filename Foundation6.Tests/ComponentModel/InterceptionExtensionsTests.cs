@@ -27,7 +27,7 @@ public class InterceptionExtensionsTests
     private record Pet(string Name, DateOnly Birthday);
 
     [Test]
-    public void ChangeWith_Should_ChangeProperties_When_ClassWithMutablePropertyAndCtorArgumentIsUsed()
+    public void ChangeWith_Should_ThrowException_When_ClassWithImmutablePropertyIsUsed()
     {
         // Arrange
         var firstName = "Peter";
@@ -39,29 +39,12 @@ public class InterceptionExtensionsTests
         var newLastName = "Doe";
 
         // Act
-        var p2 = person.ChangeWith(x => x.LastName, newLastName)
+        var ex = Should.Throw<ArgumentException>(() => person.ChangeWith(x => x.LastName, newLastName)
                        .And(x => x.Birthday, newBirthday)
-                       .Build(x => changes = x);
+                       .Build(x => changes = x));
 
         // Assert
-        var eq = ReferenceEquals(person, p2);
-        eq.ShouldBeTrue();
-
-        p2.FirstName.ShouldBe(firstName);
-        p2.LastName.ShouldBe(newLastName);
-        p2.Birthday.ShouldBe(newBirthday);
-
-        changes.ShouldNotBeNull();
-        changes.Count.ShouldBe(2);
-
-        {
-            var value = changes[nameof(Person.Birthday)];
-            value.ShouldBe(newBirthday);
-        }
-        {
-            var value = changes[nameof(Person.LastName)];
-            value.ShouldBe(newLastName);
-        }
+        ex.ShouldNotBeNull();
     }
 
     [Test]
