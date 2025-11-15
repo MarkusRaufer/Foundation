@@ -22,9 +22,9 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 using Foundation.Collections.Generic;
+using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
-using System.Runtime.CompilerServices;
 
 namespace Foundation.ComponentModel;
 
@@ -33,6 +33,7 @@ public interface IInterceptionBuilder<T, TBuilder>
     where TBuilder : IInterceptionBuilder<T, TBuilder>
 {
     TBuilder And(Expression<Func<T, object>> propertySelector, object? newValue);
+    TBuilder And(IEnumerable<KeyValuePair<string, object?>> properties);
     T Build(Action<IDictionary<string, object?>> interceptChanges);
 }
 
@@ -60,17 +61,39 @@ public struct InterceptionBuilder<T> : IInterceptionBuilder<T, InterceptionBuild
         AddKeyValue(_source, propertySelector.ThrowIfNull(), newValue);
     }
 
+    public InterceptionBuilder(InterceptionBuilder.BuildMode mode, T source, IEnumerable<KeyValuePair<string, object?>> properties)
+    {
+        _buildMode = mode;
+        _source = source.ThrowIfNull();
+
+        foreach (var property in properties)
+            AddProperty(property);            
+    }
+
     private void AddKeyValue(T source, Expression<Func<T, object>> propertySelector, object? newValue)
     {
         var keyValue = ToKeyValue(_source, propertySelector, newValue);
         if (keyValue.Equals(_empty)) return;
 
-        _properties.Add(keyValue.Key, keyValue.Value);
+        AddProperty(keyValue);
+    }
+
+    private void AddProperty(KeyValuePair<string, object?> property)
+    {
+        _properties.Add(property.Key, property.Value);
     }
 
     public InterceptionBuilder<T> And(Expression<Func<T, object>> propertySelector, object? newValue)
     {
         AddKeyValue(_source, propertySelector.ThrowIfNull(), newValue);
+        return this;
+    }
+
+    public InterceptionBuilder<T> And(IEnumerable<KeyValuePair<string, object?>> properties)
+    {
+        foreach (var property in properties)
+            AddProperty(property);
+
         return this;
     }
 

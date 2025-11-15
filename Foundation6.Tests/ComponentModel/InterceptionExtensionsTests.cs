@@ -1,4 +1,5 @@
-﻿using NUnit.Framework;
+﻿using Foundation.Collections.Generic;
+using NUnit.Framework;
 using Shouldly;
 using System;
 using System.Collections.Generic;
@@ -184,6 +185,92 @@ public class InterceptionExtensionsTests
         {
             var lastName = changes[nameof(Person.LastName)] as string;
             lastName.ShouldBe(newLastName);
+        }
+    }
+
+    [Test]
+    public void NewWith_Should_ReturnNewObjectWith2ChangedProperties_When_ClassWithPropertiesIsUsed()
+    {
+        // Arrange
+        var person = new Person("Peter", "Pan") { Birthday = new DateOnly(1961, 2, 3) };
+        IDictionary<string, object?>? changes = null;
+        var newFirstName = "John";
+        var newLastName = "Doe";
+        Dictionary<string, object?> properties = new()
+        {
+            { nameof(Person.FirstName), newFirstName  },
+            { nameof(Person.LastName), newLastName }
+        };
+
+        // Act
+        var p2 = person.NewWith(properties)
+                       .Build(x => changes = x);
+
+
+        // Assert
+        var eq = ReferenceEquals(person, p2);
+        eq.ShouldBeFalse();
+
+        p2.FirstName.ShouldBe(newFirstName);
+        p2.LastName.ShouldBe(newLastName);
+
+        changes.ShouldNotBeNull();
+        changes.Count.ShouldBe(2);
+
+        {
+            var firstName = changes[nameof(Person.FirstName)] as string;
+            firstName.ShouldBe(newFirstName);
+        }
+        {
+            var lastName = changes[nameof(Person.LastName)] as string;
+            lastName.ShouldBe(newLastName);
+        }
+    }
+
+    [Test]
+    public void NewWith_Should_ReturnNewObjectWith3ChangedProperties_When_ClassWithPropertiesIsUsed()
+    {
+        // Arrange
+        var person = new Person("Peter", "Pan") { Birthday = new DateOnly(1961, 2, 3) };
+        IDictionary<string, object?>? changes = null;
+        var newFirstName = "John";
+        var newLastName = "Doe";
+        var newBirthday = new DateOnly(1964, 5, 6);
+
+        Dictionary<string, object?> properties = new()
+        {
+            { nameof(Person.FirstName), newFirstName  },
+            { nameof(Person.LastName), newLastName }
+        };
+
+        // Act
+        var p2 = person.NewWith(properties)
+                       .And([nameof(Person.Birthday).ToKeyValue(newBirthday)])
+                       .Build(x => changes = x);
+
+
+        // Assert
+        var eq = ReferenceEquals(person, p2);
+        eq.ShouldBeFalse();
+
+        p2.FirstName.ShouldBe(newFirstName);
+        p2.LastName.ShouldBe(newLastName);
+        p2.Birthday.ShouldBe(newBirthday);
+
+        changes.ShouldNotBeNull();
+        changes.Count.ShouldBe(3);
+
+        {
+            var firstName = changes[nameof(Person.FirstName)] as string;
+            firstName.ShouldBe(newFirstName);
+        }
+        {
+            var lastName = changes[nameof(Person.LastName)] as string;
+            lastName.ShouldBe(newLastName);
+        }
+        {
+            var birthday = changes[nameof(Person.Birthday)];
+            birthday.ShouldBe(newBirthday);
         }
     }
 

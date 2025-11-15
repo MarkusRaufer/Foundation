@@ -53,6 +53,19 @@ public static class InterceptionExtensions
                         propertySelector, newValue);
     }
 
+    public static InterceptionBuilder<T> ChangeWith<T>(
+        this T source,
+        IEnumerable<KeyValuePair<string, object?>> properties)
+    {
+        source.ThrowIfNull();
+        properties.ThrowIfNull();
+
+        return new InterceptionBuilder<T>(
+                        InterceptionBuilder.BuildMode.ChangeWith,
+                        source,
+                        properties);
+    }
+
     /// <summary>
     /// Creates a builder that enables the creation of a new object by copiing <paramref name="source"/>
     /// and replacing the new values. The changes are recorded.
@@ -78,61 +91,16 @@ public static class InterceptionExtensions
                         propertySelector, newValue);
     }
 
-    public static ICollection<T> NewWith<T>(this ICollection<T> source,
-        Func<T> valueSelector,
-        T newValue,
-        Action<KeyValuePair<object, object>> onChange)
+    public static InterceptionBuilder<T> NewWith<T>(
+        this T source,
+        IEnumerable<KeyValuePair<string, object?>> properties)
     {
         source.ThrowIfNull();
-        valueSelector.ThrowIfNull();
-        newValue.ThrowIfNull();
-        onChange.ThrowIfNull();
+        properties.ThrowIfNull();
 
-        if (!source.FirstAsOption().TryGet(out var value)) return source;
-
-        if (value.EqualsNullable(newValue)) return source;
-
-        var type = source.GetType();
-        var ctor = type.GetConstructor(Type.EmptyTypes);
-        if (ctor is null) return source;
-
-        var newInstance = (ICollection<T>)ctor.Invoke([]);
-
-        foreach (var elem in source)
-        {
-            if (elem is null) continue;
-
-            if (elem.EqualsNullable(newValue))
-            {
-                newInstance.Add(elem);
-                continue;
-            }
-
-            newInstance.Add(newValue);
-            onChange(new KeyValuePair<object, object>(elem, newValue!));
-        }
-
-        return newInstance;
+        return new InterceptionBuilder<T>(
+                        InterceptionBuilder.BuildMode.NewWith,
+                        source,
+                        properties);
     }
-
-    //public static IDictionary<TKey, TValue> ReplaceWith<TKey, TValue>(this IDictionary<TKey, TValue> source,
-    //    Func<TKey> keySelector,
-    //    TValue newValue,
-    //    Action<KeyValuePair<string, object?>> onChange)
-    //{
-    //    source.ThrowIfNull();
-    //    keySelector.ThrowIfNull();
-    //    onChange.ThrowIfNull();
-
-    //    var key = keySelector();
-    //    if (!source.TryGetValue(key, out var value)) return source;
-
-    //    if (value.EqualsNullable(newValue)) return source;
-
-    //    source[key] = newValue;
-
-    //    onChange(new KeyValuePair<string, object?>(key, newValue));
-
-    //    return source;
-    //}
 }
