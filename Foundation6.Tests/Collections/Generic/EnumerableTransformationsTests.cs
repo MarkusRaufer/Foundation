@@ -1,7 +1,10 @@
 ﻿using FluentAssertions;
 using Foundation.ComponentModel;
 using NUnit.Framework;
+using Shouldly;
 using System;
+using System.Collections.Generic;
+using System.Data;
 using System.Linq;
 using System.Text.RegularExpressions;
 
@@ -221,6 +224,38 @@ public class EnumerableTransformationsTests
         i3.Should().Be(6);
     }
 
+    [Test]
+    public void ToDictionaryValue_Should_ReturnDictionaryValue_When_UsedEnumerableWithKeyValuePairsAndNoSelector()
+    {
+        // Arrange
+        var numberOfItems = 3;
+        var items = Enumerable.Range(1, numberOfItems).Select(x => new KeyValuePair<int, string>(x, x.ToString()));
+
+        // Act
+        var dictionary = items.ToDictionaryValue();
+
+        // Assert
+        dictionary.Count.ShouldBe(numberOfItems);
+        dictionary[1].ShouldBe("1");
+        dictionary[2].ShouldBe("2");
+        dictionary[3].ShouldBe("3");
+    }
+
+    [Test]
+    public void ToDictionaryValue_Should_ReturnDictionaryValueWithTransformedValues_When_SelectorIsUsed()
+    {
+        var items = new[]
+        {
+            (Key: "one",   Value: 1),
+            (Key: "two",   Value: 2),
+            (Key: "three", Value: 3),
+        };
+        var dictionary = items.ToDictionaryValue(x => x.Key, x => x.Value * 10);
+        dictionary.Count.Should().Be(3);
+        dictionary["one"].Should().Be(10);
+        dictionary["two"].Should().Be(20);
+        dictionary["three"].Should().Be(30);
+    }
 
     [Test]
     public void ToDualStreams_Should_ReturnDualStreams_When_PredicateIsFizzBuzz_And_IsExhaustiveIsTrue()

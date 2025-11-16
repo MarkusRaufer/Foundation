@@ -188,6 +188,18 @@ public static class EnumerableTransformations
     }
 
     /// <summary>
+    /// Creates a new DictionaryValue containing the key-value pairs from the specified enumerable collection.
+    /// </summary>
+    /// <typeparam name="TKey">The type of keys in the collection. Keys must not be null.</typeparam>
+    /// <typeparam name="TValue">The type of values in the collection.</typeparam>
+    /// <param name="items">An enumerable collection of key-value pairs to include in the DictionaryValue. Cannot be null.</param>
+    /// <returns>A DictionaryValue<TKey, TValue> containing the key-value pairs from the specified collection.</returns>
+    public static DictionaryValue<TKey, TValue> ToDictionaryValue<TKey, TValue>(
+       this IEnumerable<KeyValuePair<TKey, TValue>> items)
+        where TKey : notnull
+        => DictionaryValue.New(items);
+
+    /// <summary>
     /// Transforms a list of KeyValuePairs into a DictionaryValue.
     /// </summary>
     /// <typeparam name="TKey"></typeparam>
