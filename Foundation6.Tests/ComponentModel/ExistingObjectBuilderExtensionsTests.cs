@@ -8,7 +8,7 @@ using System.Linq;
 namespace Foundation.ComponentModel;
 
 [TestFixture]
-public class InterceptionExtensionsTests
+public class ExistingObjectBuilderExtensionsTests
 {
     private class Person
     {
@@ -34,15 +34,17 @@ public class InterceptionExtensionsTests
         var firstName = "Peter";
         var lastName = "Pan";
         var person = new Person(firstName, lastName) { Birthday = new DateOnly(1961, 2, 3) };
-        IDictionary<string, object?> changes = null;
+        IDictionary<string, object?>? changes = null;
 
         var newBirthday = new DateOnly(1962, 3, 4);
         var newLastName = "Doe";
 
         // Act
-        var ex = Should.Throw<ArgumentException>(() => person.ChangeWith(x => x.LastName, newLastName)
-                       .And(x => x.Birthday, newBirthday)
-                       .Build(x => changes = x));
+        var ex = Should.Throw<ArgumentException>(() => 
+                            person.ChangeWith(x => x.LastName, newLastName)
+                                  .And(x => x.Birthday, newBirthday)
+                                  .Build(x => changes = x)
+                       );
 
         // Assert
         ex.ShouldNotBeNull();
@@ -55,7 +57,7 @@ public class InterceptionExtensionsTests
         var firstName = "Peter";
         var lastName = "Pan";
         var person = new Person(firstName, lastName) { Birthday = new DateOnly(1961, 2, 3) };
-        IDictionary<string, object?> changes = null;
+        IDictionary<string, object?>? changes = null;
 
         var newBirthday = new DateOnly(1962, 3, 4);
 
@@ -146,9 +148,12 @@ public class InterceptionExtensionsTests
         p2.LastName.ShouldBe(newLastName);
         p2.Birthday.ShouldBe(birthday);
 
-        
+        changes.ShouldNotBeNull();
+        changes.Count.ShouldBe(1);
+
+        var change = changes.First();
         var expected = new KeyValuePair<string, object?>(nameof(Person.LastName), newLastName);
-        //changes.ShouldBe(expected);
+        change.ShouldBe(expected);
     }
 
     [Test]
@@ -161,8 +166,6 @@ public class InterceptionExtensionsTests
         var newLastName = "Doe";
 
         // Act
-        //var p2 = person.NewWith(x => x.LastName, newLastName, x => changes = x);
-
         var p2 = person.NewWith(x => x.LastName, newLastName)
                        .And(x => x.FirstName, newFirstName)
                        .Build(x => changes = x);

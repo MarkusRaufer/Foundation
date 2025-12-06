@@ -25,9 +25,9 @@ using System.Linq.Expressions;
 
 namespace Foundation.ComponentModel;
 
-public static class InterceptionExtensions
+public static class ExistingObjectBuilderExtensions
 {
-    /// <summary>Creates a builder that enables to change an object an record the changes.
+    /// <summary>Creates a builder that enables to change an object and record the changes.
     /// </summary>
     /// <typeparam name="T">Type of the source.</typeparam>
     /// <param name="source">An instance of an object.</param>
@@ -36,7 +36,7 @@ public static class InterceptionExtensions
     /// <returns>Returns the same changed object.</returns>
     /// <exception cref="ArgumentException"></exception>
     /// <exception cref="ArgumentNullException"></exception>
-    public static InterceptionBuilder<T> ChangeWith<T>(
+    public static ExistingObjectBuilder<T> ChangeWith<T>(
         this T source,
         Expression<Func<T, object>> propertySelector,
         object? newValue)
@@ -44,21 +44,21 @@ public static class InterceptionExtensions
         source.ThrowIfNull();
         propertySelector.ThrowIfNull();
 
-        return new InterceptionBuilder<T>(
-                        InterceptionBuilder.BuildMode.ChangeWith,
+        return new ExistingObjectBuilder<T>(
+                        ExistingObjectBuilder.BuildMode.ChangeWith,
                         source,
                         propertySelector, newValue);
     }
 
-    public static InterceptionBuilder<T> ChangeWith<T>(
+    public static ExistingObjectBuilder<T> ChangeWith<T>(
         this T source,
         IEnumerable<KeyValuePair<string, object?>> properties)
     {
         source.ThrowIfNull();
         properties.ThrowIfNull();
 
-        return new InterceptionBuilder<T>(
-                        InterceptionBuilder.BuildMode.ChangeWith,
+        return new ExistingObjectBuilder<T>(
+                        ExistingObjectBuilder.BuildMode.ChangeWith,
                         source,
                         properties);
     }
@@ -71,10 +71,10 @@ public static class InterceptionExtensions
     /// <param name="source">An instance of an object.</param>
     /// <param name="propertySelector">The selector of the property.</param>
     /// <param name="newValue">The new value.</param>
-    /// <returns>An IInterceptionBuilder.</returns>    
+    /// <returns>An IExistingObjectBuilder.</returns>    
     /// <exception cref="ArgumentException"></exception>
     /// <exception cref="ArgumentNullException"></exception>
-    public static InterceptionBuilder<T> NewWith<T>(
+    public static ExistingObjectBuilder<T> NewWith<T>(
         this T source,
         Expression<Func<T, object>> propertySelector,
         object? newValue)
@@ -82,21 +82,21 @@ public static class InterceptionExtensions
         source.ThrowIfNull();
         propertySelector.ThrowIfNull();
 
-        return new InterceptionBuilder<T>(
-                        InterceptionBuilder.BuildMode.NewWith,
+        return new ExistingObjectBuilder<T>(
+                        ExistingObjectBuilder.BuildMode.NewWith,
                         source,
                         propertySelector, newValue);
     }
 
-    public static InterceptionBuilder<T> NewWith<T>(
+    public static ExistingObjectBuilder<T> NewWith<T>(
         this T source,
         IEnumerable<KeyValuePair<string, object?>> properties)
     {
         source.ThrowIfNull();
         properties.ThrowIfNull();
 
-        return new InterceptionBuilder<T>(
-                        InterceptionBuilder.BuildMode.NewWith,
+        return new ExistingObjectBuilder<T>(
+                        ExistingObjectBuilder.BuildMode.NewWith,
                         source,
                         properties);
     }

@@ -29,15 +29,15 @@ using System.Reflection;
 namespace Foundation.ComponentModel;
 
 
-public interface IInterceptionBuilder<T, TBuilder>
-    where TBuilder : IInterceptionBuilder<T, TBuilder>
+public interface IExistingObjectBuilder<T, TBuilder>
+    where TBuilder : IExistingObjectBuilder<T, TBuilder>
 {
     TBuilder And(Expression<Func<T, object>> propertySelector, object? newValue);
     TBuilder And(IEnumerable<KeyValuePair<string, object?>> properties);
-    T Build(Action<IDictionary<string, object?>> interceptChanges);
+    T Build(Action<IDictionary<string, object?>> trackedChanges);
 }
 
-public class InterceptionBuilder
+public class ExistingObjectBuilder
 {
     public enum BuildMode
     {
@@ -46,14 +46,14 @@ public class InterceptionBuilder
     };
 }
 
-public struct InterceptionBuilder<T> : IInterceptionBuilder<T, InterceptionBuilder<T>>
+public struct ExistingObjectBuilder<T> : IExistingObjectBuilder<T, ExistingObjectBuilder<T>>
 {
-    private readonly InterceptionBuilder.BuildMode _buildMode;
+    private readonly ExistingObjectBuilder.BuildMode _buildMode;
     private static readonly KeyValuePair<string, object?> _empty = default;
     private Dictionary<string, object?> _properties = [];
     private readonly T _source;
 
-    public InterceptionBuilder(InterceptionBuilder.BuildMode mode, T source, Expression<Func<T, object>> propertySelector, object? newValue)
+    public ExistingObjectBuilder(ExistingObjectBuilder.BuildMode mode, T source, Expression<Func<T, object>> propertySelector, object? newValue)
     {
         _buildMode = mode;
         _source = source.ThrowIfNull();
@@ -61,7 +61,7 @@ public struct InterceptionBuilder<T> : IInterceptionBuilder<T, InterceptionBuild
         AddKeyValue(_source, propertySelector.ThrowIfNull(), newValue);
     }
 
-    public InterceptionBuilder(InterceptionBuilder.BuildMode mode, T source, IEnumerable<KeyValuePair<string, object?>> properties)
+    public ExistingObjectBuilder(ExistingObjectBuilder.BuildMode mode, T source, IEnumerable<KeyValuePair<string, object?>> properties)
     {
         _buildMode = mode;
         _source = source.ThrowIfNull();
@@ -83,13 +83,13 @@ public struct InterceptionBuilder<T> : IInterceptionBuilder<T, InterceptionBuild
         _properties.Add(property.Key, property.Value);
     }
 
-    public InterceptionBuilder<T> And(Expression<Func<T, object>> propertySelector, object? newValue)
+    public ExistingObjectBuilder<T> And(Expression<Func<T, object>> propertySelector, object? newValue)
     {
         AddKeyValue(_source, propertySelector.ThrowIfNull(), newValue);
         return this;
     }
 
-    public InterceptionBuilder<T> And(IEnumerable<KeyValuePair<string, object?>> properties)
+    public ExistingObjectBuilder<T> And(IEnumerable<KeyValuePair<string, object?>> properties)
     {
         foreach (var property in properties)
             AddProperty(property);
@@ -97,19 +97,19 @@ public struct InterceptionBuilder<T> : IInterceptionBuilder<T, InterceptionBuild
         return this;
     }
 
-    public T Build(Action<IDictionary<string, object?>> interceptChanges)
+    public T Build(Action<IDictionary<string, object?>> trackedChanges)
     {
         var type = typeof(T);
 
         return _buildMode switch
         {
-            InterceptionBuilder.BuildMode.ChangeWith => ChangeObject(type, interceptChanges),
-            InterceptionBuilder.BuildMode.NewWith => CreateNewObject(type, interceptChanges),
+            ExistingObjectBuilder.BuildMode.ChangeWith => ChangeObject(type, trackedChanges),
+            ExistingObjectBuilder.BuildMode.NewWith => CreateNewObject(type, trackedChanges),
             _ => throw new NotImplementedException(_buildMode.ToString())
         };
     }
 
-    private T ChangeObject(Type type, Action<IDictionary<string, object?>> interceptChanges)
+    private T ChangeObject(Type type, Action<IDictionary<string, object?>> trackedChanges)
     {
         Dictionary<string, object?> changes = [];
 
@@ -125,12 +125,12 @@ public struct InterceptionBuilder<T> : IInterceptionBuilder<T, InterceptionBuild
             changes.Add(property.Name, newValue);
         }
 
-        if (changes.Count > 0) interceptChanges(changes);
+        if (changes.Count > 0) trackedChanges(changes);
 
         return _source;
     }
 
-    private T CreateNewObject(Type type, Action<IDictionary<string, object?>> interceptChanges)
+    private T CreateNewObject(Type type, Action<IDictionary<string, object?>> trackedChanges)
     {
         var (ctor, args) = GetCtorWithArguments(type);
 
@@ -165,7 +165,7 @@ public struct InterceptionBuilder<T> : IInterceptionBuilder<T, InterceptionBuild
             }
         }
 
-        if (changes.Count > 0) interceptChanges(changes);
+        if (changes.Count > 0) trackedChanges(changes);
 
         return newInstance;
     }
@@ -237,7 +237,7 @@ public struct InterceptionBuilder<T> : IInterceptionBuilder<T, InterceptionBuild
     {
         var property = GetPropertyInfo(propertySelector.ThrowIfNull());
 
-        if (_buildMode == InterceptionBuilder.BuildMode.ChangeWith
+        if (_buildMode == ExistingObjectBuilder.BuildMode.ChangeWith
             && !property.CanWrite)
             throw new ArgumentException($"property {property.Name} has no setter");
 

@@ -43,13 +43,13 @@ public class FactoryMethodConverterTests
         var options = new JsonSerializerOptions
         {
             IncludeFields = true,
-            Converters = { new FactoryMethodConverterFactory() }
+            Converters = { new FactoryMethodConverterFactory(typeof(MyClassWithFactoryMethod)) }
         };
 
         int[] array = [1, 2, 3];
         var name = "John";
         var number = 123;
-        object? obj = MyClassWithFactoryMethod.New(array, name, number);
+        var obj = MyClassWithFactoryMethod.New(array, name, number);
 
         var json = JsonSerializer.Serialize(obj, options);
 

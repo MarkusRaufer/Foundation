@@ -109,4 +109,3 @@ public struct NumShort : INumeric<short>
 
     public short Subtract(short a, short b) => (short)(a - b);
 }
-

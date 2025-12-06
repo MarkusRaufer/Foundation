@@ -27,8 +27,6 @@ using Foundation.Buffers;
 
 #endif
 
-using Foundation.Buffers;
-
 namespace Foundation;
 
 /// <summary>

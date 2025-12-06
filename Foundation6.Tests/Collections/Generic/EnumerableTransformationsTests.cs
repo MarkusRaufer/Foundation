@@ -1,5 +1,4 @@
-﻿using FluentAssertions;
-using Foundation.ComponentModel;
+﻿using Foundation.ComponentModel;
 using NUnit.Framework;
 using Shouldly;
 using System;
@@ -24,15 +23,15 @@ public class EnumerableTransformationsTests
 
         var streams = tuples.SplitInto(x => (object)x.lhs, x => (object)x.rhs).ToArray();
 
-        streams.Length.Should().Be(2);
+        streams.Length.ShouldBe(2);
         {
             var stream = streams[0].ObjectOfType<string>();
             var expected = Enumerable.Range(1, 10).Select(x => $"{x}");
-            stream.Should().ContainInOrder(expected);
+            stream.SequenceEqual(expected).ShouldBeTrue();
         }
         {
             var stream = streams[1].ObjectOfType<int>();
-            stream.Should().ContainInOrder(Enumerable.Range(1, 10));
+            stream.SequenceEqual(Enumerable.Range(1, 10)).ShouldBeTrue();
         }
     }
 
@@ -49,22 +48,22 @@ public class EnumerableTransformationsTests
             x => x % 10 == 0
         }).ToArray();
 
-        streams.Length.Should().Be(4);
+        streams.Length.ShouldBe(4);
         {
             var stream = streams[0];
-            stream.Should().ContainInOrder(Enumerable.Range(1, 20).Where(x => x % 2 == 0));
+            stream.SequenceEqual(Enumerable.Range(1, 20).Where(x => x % 2 == 0)).ShouldBeTrue();
         }
         {
             var stream = streams[1];
-            stream.Should().ContainInOrder(new[] {5, 10, 15, 20 });
+            stream.SequenceEqual(new[] {5, 10, 15, 20 }).ShouldBeTrue();
         }
         {
             var stream = streams[2];
-            stream.Should().ContainInOrder(new[] { 3, 6, 9, 12, 15, 18 });
+            stream.SequenceEqual(new[] { 3, 6, 9, 12, 15, 18 }).ShouldBeTrue();
         }
         {
             var stream = streams[3];
-            stream.Should().ContainInOrder(new[] { 10, 20 });
+            stream.SequenceEqual(new[] { 10, 20 }).ShouldBeTrue();
         }
     }
 
@@ -83,18 +82,18 @@ public class EnumerableTransformationsTests
         allowSameElements: false,
         removeEmptyStreams: true).ToArray();
 
-        streams.Length.Should().Be(3);
+        streams.Length.ShouldBe(3);
         {
             var stream = streams[0];
-            stream.Should().ContainInOrder(Enumerable.Range(1, 20).Where(x => x % 2 == 0));
+            stream.SequenceEqual(Enumerable.Range(1, 20).Where(x => x % 2 == 0)).ShouldBeTrue();
         }
         {
             var stream = streams[1];
-            stream.Should().ContainInOrder(new[] { 5, 15, });
+            stream.SequenceEqual(new[] { 5, 15 }).ShouldBeTrue();
         }
         {
             var stream = streams[2];
-            stream.Should().ContainInOrder(new[] { 3, 9 });
+            stream.SequenceEqual(new[] { 3, 9 }).ShouldBeTrue();
         }
     }
 
@@ -111,22 +110,22 @@ public class EnumerableTransformationsTests
             x => x % 10 == 0
         }, allowSameElements: false).ToArray();
 
-        streams.Length.Should().Be(4);
+        streams.Length.ShouldBe(4);
         {
             var stream = streams[0];
-            stream.Should().ContainInOrder(Enumerable.Range(1, 20).Where(x => x % 2 == 0));
+            stream.SequenceEqual(Enumerable.Range(1, 20).Where(x => x % 2 == 0)).ShouldBeTrue();
         }
         {
             var stream = streams[1];
-            stream.Should().ContainInOrder(new[] { 5, 15, });
+            stream.SequenceEqual(new[] { 5, 15 }).ShouldBeTrue();
         }
         {
             var stream = streams[2];
-            stream.Should().ContainInOrder(new[] { 3, 9 });
+            stream.SequenceEqual(new[] { 3, 9 }).ShouldBeTrue();
         }
         {
             var stream = streams[3];
-            stream.Should().ContainInOrder(Array.Empty<int>());
+            stream.SequenceEqual(Array.Empty<int>()).ShouldBeTrue();
         }
     }
 
@@ -151,8 +150,8 @@ public class EnumerableTransformationsTests
                 }
             }
 
-            i1.Should().Be(1);
-            i2.Should().Be(2);
+            i1.ShouldBe(1);
+            i2.ShouldBe(2);
         }
 
         {
@@ -180,9 +179,9 @@ public class EnumerableTransformationsTests
                 }
             }
 
-            i1.Should().Be(3);
-            i2.Should().Be(3);
-            i3.Should().Be(6);
+            i1.ShouldBe(3);
+            i2.ShouldBe(3);
+            i3.ShouldBe(6);
         }
     }
 
@@ -219,9 +218,9 @@ public class EnumerableTransformationsTests
             }
         }
 
-        i1.Should().Be(2);
-        i2.Should().Be(3);
-        i3.Should().Be(6);
+        i1.ShouldBe(2);
+        i2.ShouldBe(3);
+        i3.ShouldBe(6);
     }
 
     [Test]
@@ -251,10 +250,10 @@ public class EnumerableTransformationsTests
             (Key: "three", Value: 3),
         };
         var dictionary = items.ToDictionaryValue(x => x.Key, x => x.Value * 10);
-        dictionary.Count.Should().Be(3);
-        dictionary["one"].Should().Be(10);
-        dictionary["two"].Should().Be(20);
-        dictionary["three"].Should().Be(30);
+        dictionary.Count.ShouldBe(3);
+        dictionary["one"].ShouldBe(10);
+        dictionary["two"].ShouldBe(20);
+        dictionary["three"].ShouldBe(30);
     }
 
     [Test]
@@ -273,7 +272,7 @@ public class EnumerableTransformationsTests
         foreach (var (counter, item) in all.Enumerate(seed: 1))
         {
             var expected = (0 == counter % 2) ? $"even({counter})" : $"odd({counter})";
-            item.Should().Be(expected);
+            item.ShouldBe(expected);
         }
     }
 
@@ -296,22 +295,22 @@ public class EnumerableTransformationsTests
         {
             if (0 == counter % 15)
             {
-                fizzBuzz.Should().Be(item);
+                fizzBuzz.ShouldBe(item);
                 continue;
             }
             if (0 == counter % 3)
             {
-                fizz.Should().Be(item);
+                fizz.ShouldBe(item);
                 continue;
             }
 
             if (0 == counter % 5)
             {
-                buzz.Should().Be(item);
+                buzz.ShouldBe(item);
                 continue;
             }
 
-            item.Should().Be(counter.ToString());
+            item.ShouldBe(counter.ToString());
         }
     }
 
@@ -328,11 +327,11 @@ public class EnumerableTransformationsTests
                              .LeftToRightMany(x => x is EntityIds, x => ((EntityIds)x).Ids);
 
         var left  = streams.Left.ToArray();
-        left.Length.Should().Be(0);
+        left.Length.ShouldBe(0);
 
         var right = streams.Right.ToArray();
         var expected = Enumerable.Range(1, 6).Select(Id.New);
-        right.Should().BeEquivalentTo(expected);
+        right.ShouldBe(expected);
     }
 
     [Test]
@@ -348,11 +347,11 @@ public class EnumerableTransformationsTests
                              .LeftToRightMany<object, EntityIds, Id>(x => x.Ids);
 
         var left = streams.Left.ToArray();
-        left.Length.Should().Be(0);
+        left.Length.ShouldBe(0);
 
         var right = streams.Right.ToArray();
         var expected = Enumerable.Range(1, 6).Select(Id.New);
-        right.Should().BeEquivalentTo(expected);
+        right.ShouldBe(expected);
     }
 
     [Test]
@@ -369,11 +368,11 @@ public class EnumerableTransformationsTests
                              .LeftToRightMany<object, EntityIds, Id>(x => x.Ids);
 
         var left = streams.Left.ToArray();
-        left.Length.Should().Be(0);
+        left.Length.ShouldBe(0);
 
         var right = streams.Right.ToArray();
         var expected = Enumerable.Range(1, 6).Select(Id.New);
-        right.Should().BeEquivalentTo(expected);
+        right.ShouldBe(expected);
     }
 
     [Test]
