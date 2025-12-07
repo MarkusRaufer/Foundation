@@ -26,55 +26,74 @@ using System.Collections.ObjectModel;
 
 namespace Foundation.ComponentModel;
 
-
 public interface IExistingReadOnlyDictionaryBuilder<TKey, TValue, TDictionary, TBuilder>
-    where TDictionary : IReadOnlyDictionary<TKey, TValue>
+    where TDictionary : IEnumerable<KeyValuePair<TKey, TValue>>
     where TBuilder : IExistingReadOnlyDictionaryBuilder<TKey, TValue, TDictionary,TBuilder>
 {
     TBuilder And(TKey key, TValue newValue);
     TBuilder And(IEnumerable<KeyValuePair<TKey, TValue>> keyValues);
     TBuilder AndRemove(TKey key);
     TBuilder AndRemove(IEnumerable<TKey> keys);
-    IReadOnlyDictionary<TKey, TValue> Build(Action<IDictionary<TKey, EventActionValue<TValue>>> trackedChanges);
+    TDictionary Build();
+    TDictionary Build(Action<IDictionary<TKey, EventActionValue<TValue>>> trackedChanges);
 }
 
 public class ExistingReadOnlyDictionaryBuilder<TKey, TValue, TDictionary> : IExistingReadOnlyDictionaryBuilder<TKey, TValue, TDictionary, ExistingReadOnlyDictionaryBuilder<TKey, TValue, TDictionary>>
     where TKey : notnull
-    where TDictionary : IReadOnlyDictionary<TKey, TValue>
+    where TDictionary : IEnumerable<KeyValuePair<TKey, TValue>>
 {
-    private Func<IEnumerable<KeyValuePair<TKey, TValue>>, TDictionary> _factory;
-    private Dictionary<TKey, EventActionValue<TValue>> _properties = [];
+    private readonly Func<IEnumerable<KeyValuePair<TKey, TValue>>, TDictionary> _factory;
+    private readonly Dictionary<TKey, EventActionValue<TValue>> _properties = [];
     private readonly IReadOnlyDictionary<TKey, TValue> _source;
 
     public ExistingReadOnlyDictionaryBuilder(
-        IReadOnlyDictionary<TKey, TValue> source,
+        TDictionary source,
         TKey key,
         Func<IEnumerable<KeyValuePair<TKey, TValue>>, TDictionary> factory)
     {
-        _source = source.ThrowIfNull();
+        _source = source.ThrowIfNull() switch
+        {
+            IReadOnlyDictionary<TKey, TValue> rod => rod,
+            IDictionary<TKey, TValue> d => new ReadOnlyDictionary<TKey, TValue>(d),
+            IEnumerable<KeyValuePair<TKey, TValue>> kvs => new ReadOnlyDictionary<TKey, TValue>(kvs.ToDictionary(x => x.Key, x => x.Value)),
+            _ => throw new ArgumentException($"invalid {nameof(source)}", nameof(source))
+        };
+
         _factory = factory.ThrowIfNull();
 
         RemoveKey(_source, key);
     }
 
     public ExistingReadOnlyDictionaryBuilder(
-        IReadOnlyDictionary<TKey, TValue> source,
+        TDictionary source,
         TKey key,
         TValue newValue,
         Func<IEnumerable<KeyValuePair<TKey, TValue>>, TDictionary> factory)
     {
-        _source = source.ThrowIfNull();
+        _source = source switch
+        {
+            IReadOnlyDictionary<TKey, TValue> rod => rod,
+            IDictionary<TKey, TValue> d => new ReadOnlyDictionary<TKey, TValue>(d),
+            _ => throw new ArgumentException($"invalid {nameof(source)}", nameof(source))
+        };
+
         _factory = factory.ThrowIfNull();
 
         AddKeyValue(_source, key.ThrowIfNull(), newValue);
     }
 
     public ExistingReadOnlyDictionaryBuilder(
-        IReadOnlyDictionary<TKey, TValue> source,
+        TDictionary source,
         IEnumerable<TKey> keys,
         Func<IEnumerable<KeyValuePair<TKey, TValue>>, TDictionary> factory)
     {
-        _source = source.ThrowIfNull();
+        _source = source switch
+        {
+            IReadOnlyDictionary<TKey, TValue> rod => rod,
+            IDictionary<TKey, TValue> d => new ReadOnlyDictionary<TKey, TValue>(d),
+            _ => throw new ArgumentException($"invalid {nameof(source)}", nameof(source))
+        };
+
         _factory = factory.ThrowIfNull();
 
         foreach (var key in keys)
@@ -82,15 +101,64 @@ public class ExistingReadOnlyDictionaryBuilder<TKey, TValue, TDictionary> : IExi
     }
 
     public ExistingReadOnlyDictionaryBuilder(
-        IReadOnlyDictionary<TKey, TValue> source,
+        TDictionary source,
         IEnumerable<KeyValuePair<TKey, TValue>> keyValues,
         Func<IEnumerable<KeyValuePair<TKey, TValue>>, TDictionary> factory)
     {
-        _source = source.ThrowIfNull();
+        _source = source switch
+        {
+            IReadOnlyDictionary<TKey, TValue> rod => rod,
+            IDictionary<TKey, TValue> d => new ReadOnlyDictionary<TKey, TValue>(d),
+            _ => throw new ArgumentException($"invalid {nameof(source)}", nameof(source))
+        };
+
         _factory = factory.ThrowIfNull();
 
         foreach (var kvp in keyValues)
             AddKeyValue(_source, kvp.Key, kvp.Value);
+    }
+
+    public ExistingReadOnlyDictionaryBuilder(
+        TDictionary source,
+        IEnumerable<KeyValuePair<TKey, EventActionValue<TValue>>> updates,
+        Func<IEnumerable<KeyValuePair<TKey, TValue>>, TDictionary> factory)
+    {
+        _source = source switch
+        {
+            IReadOnlyDictionary<TKey, TValue> rod => rod,
+            IDictionary<TKey, TValue> d => new ReadOnlyDictionary<TKey, TValue>(d),
+            _ => throw new ArgumentException($"invalid {nameof(source)}", nameof(source))
+        };
+
+        _factory = factory.ThrowIfNull();
+
+        foreach (var (key, update) in updates)
+            AddEvent(_source, key, update);
+    }
+
+    private void AddEvent(IReadOnlyDictionary<TKey, TValue> source, TKey key, EventActionValue<TValue> actionValue)
+    {
+        var exists = source.TryGetValue(key, out var value);
+        switch (actionValue.Action)
+        {
+            case EventAction.Add:
+                if (exists) break;
+                
+                _properties.Add(key, actionValue);
+                break;
+            case EventAction.Remove:
+                if (!exists) break;
+
+#pragma warning disable CS8604 // Possible null reference argument.
+                _properties.Add(key, new EventActionValue<TValue>(EventAction.Remove, value));
+#pragma warning restore CS8604 // Possible null reference argument.
+                break;
+            case EventAction.Update:
+                if (!exists) break;
+                if (value.EqualsNullable(actionValue.Value)) break;
+                _properties.Add(key, actionValue);
+                break;
+        }
     }
 
     private void AddKeyValue(IReadOnlyDictionary<TKey, TValue> source, TKey key, TValue newValue)
@@ -98,9 +166,11 @@ public class ExistingReadOnlyDictionaryBuilder<TKey, TValue, TDictionary> : IExi
         if (source.TryGetValue(key, out var value))
         {
             if (value.EqualsNullable(newValue)) return;
+
             _properties.Add(key, new EventActionValue<TValue>(EventAction.Update, newValue));
             return;
         }
+
         _properties.Add(key, new EventActionValue<TValue>(EventAction.Add, newValue));
     }
 
@@ -132,13 +202,18 @@ public class ExistingReadOnlyDictionaryBuilder<TKey, TValue, TDictionary> : IExi
         return this;
     }
 
-    public IReadOnlyDictionary<TKey, TValue> Build(Action<IDictionary<TKey, EventActionValue<TValue>>> trackedChanges)
+    public TDictionary Build()
+    {
+        return CreateNewObject(null);
+    }
+
+    public TDictionary Build(Action<IDictionary<TKey, EventActionValue<TValue>>> trackedChanges)
     {
         return CreateNewObject(trackedChanges);
     }
 
-    private IReadOnlyDictionary<TKey, TValue> CreateNewObject(
-        Action<IDictionary<TKey, EventActionValue<TValue>>> trackedChanges)
+    private TDictionary CreateNewObject(
+        Action<IDictionary<TKey, EventActionValue<TValue>>>? trackedChanges)
     {
         var newInstance = new Dictionary<TKey, TValue>();
 
@@ -168,7 +243,7 @@ public class ExistingReadOnlyDictionaryBuilder<TKey, TValue, TDictionary> : IExi
             newInstance.Add(kvp.Key, kvp.Value);
         }
 
-        if (changes.Count > 0) trackedChanges(changes);
+        if (changes.Count > 0 && trackedChanges is not null) trackedChanges(changes);
 
         return _factory(newInstance);
     }
@@ -176,7 +251,6 @@ public class ExistingReadOnlyDictionaryBuilder<TKey, TValue, TDictionary> : IExi
     private void RemoveKey(IReadOnlyDictionary<TKey, TValue> source, TKey key)
     {
         if (key is null) return;
-
         if (!source.TryGetValue(key, out var value)) return;
 
         _properties.Add(key, new EventActionValue<TValue>(EventAction.Remove, value));

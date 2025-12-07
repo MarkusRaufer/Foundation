@@ -33,6 +33,7 @@ public interface IExistingDictionaryBuilder<TKey, TValue, TBuilder>
     TBuilder And(IEnumerable<KeyValuePair<TKey, TValue>> keyValues);
     TBuilder AndRemove(TKey key);
     TBuilder AndRemove(IEnumerable<TKey> keys);
+    IDictionary<TKey, TValue> Build();
     IDictionary<TKey, TValue> Build(Action<IDictionary<TKey, EventActionValue<TValue>>> trackedChanges);
 }
 
@@ -41,7 +42,6 @@ public class ExistingDictionaryBuilder
     public enum BuildMode
     {
         ChangeWith,
-        NewWith,
         UpdateWith
     };
 }
@@ -138,18 +138,27 @@ public struct ExistingDictionaryBuilder<TKey, TValue> : IExistingDictionaryBuild
         return this;
     }
 
+    public IDictionary<TKey, TValue> Build()
+    {
+        return _buildMode switch
+        {
+            ExistingDictionaryBuilder.BuildMode.ChangeWith => ChangeObject(null),
+            ExistingDictionaryBuilder.BuildMode.UpdateWith => UpdateObject(null),
+            _ => throw new NotImplementedException(_buildMode.ToString())
+        };
+    }
+
     public IDictionary<TKey, TValue> Build(Action<IDictionary<TKey, EventActionValue<TValue>>> trackedChanges)
     {
         return _buildMode switch
         {
             ExistingDictionaryBuilder.BuildMode.ChangeWith => ChangeObject(trackedChanges),
-            ExistingDictionaryBuilder.BuildMode.NewWith => CreateNewObject(trackedChanges),
             ExistingDictionaryBuilder.BuildMode.UpdateWith => UpdateObject(trackedChanges),
             _ => throw new NotImplementedException(_buildMode.ToString())
         };
     }
 
-    private IDictionary<TKey, TValue> ChangeObject(Action<IDictionary<TKey, EventActionValue<TValue>>> trackedChanges)
+    private IDictionary<TKey, TValue> ChangeObject(Action<IDictionary<TKey, EventActionValue<TValue>>>? trackedChanges)
     {
         Dictionary<TKey, EventActionValue<TValue>> changes = [];
 
@@ -170,45 +179,9 @@ public struct ExistingDictionaryBuilder<TKey, TValue> : IExistingDictionaryBuild
             changes.Add(key, actionValue);
         }
 
-        if (changes.Count > 0) trackedChanges(changes);
+        if (changes.Count > 0 && trackedChanges is not null) trackedChanges(changes);
 
         return _source;
-    }
-
-    private IDictionary<TKey, TValue> CreateNewObject(
-        Action<IDictionary<TKey, EventActionValue<TValue>>> trackedChanges)
-    {
-        var newInstance = new Dictionary<TKey, TValue>();
-
-        Dictionary<TKey, EventActionValue<TValue>> changes = [];
-
-        foreach (var (key, actionValue) in _properties)
-        {
-            switch (actionValue.Action)
-            {
-                case EventAction.Add:
-                    newInstance.Add(key, actionValue.Value);
-                    break;
-                case EventAction.Update:
-                    newInstance[key] = actionValue.Value;
-                    break;
-            }
-            changes.Add(key, actionValue);
-        }
-
-        foreach (var kvp in _source)
-        {
-            if (_properties.TryGetValue(kvp.Key, out var actionValue)
-                && actionValue.Action == EventAction.Remove) continue;
-
-            if (newInstance.ContainsKey(kvp.Key)) continue;
-
-            newInstance.Add(kvp.Key, kvp.Value);
-        }
-
-        if (changes.Count > 0) trackedChanges(changes);
-
-        return newInstance;
     }
 
     private void RemoveKey(IDictionary<TKey, TValue> source, TKey key)
@@ -220,7 +193,7 @@ public struct ExistingDictionaryBuilder<TKey, TValue> : IExistingDictionaryBuild
         _properties.Add(key, new EventActionValue<TValue>(EventAction.Remove, value));
     }
 
-    private IDictionary<TKey, TValue> UpdateObject(Action<IDictionary<TKey, EventActionValue<TValue>>> trackedChanges)
+    private IDictionary<TKey, TValue> UpdateObject(Action<IDictionary<TKey, EventActionValue<TValue>>>? trackedChanges)
     {
         Dictionary<TKey, EventActionValue<TValue>> changes = [];
 
@@ -234,7 +207,7 @@ public struct ExistingDictionaryBuilder<TKey, TValue> : IExistingDictionaryBuild
             changes.Add(key, actionValue);
         }
 
-        if (changes.Count > 0) trackedChanges(changes);
+        if (changes.Count > 0 && trackedChanges is not null) trackedChanges(changes);
 
         return _source;
     }

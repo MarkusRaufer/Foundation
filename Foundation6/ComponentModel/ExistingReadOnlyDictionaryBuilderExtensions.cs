@@ -53,11 +53,7 @@ public static class ExistingReadOnlyDictionaryBuilderExtensions
         source.ThrowIfNull();
         key.ThrowIfNull();
 
-        return new ExistingReadOnlyDictionaryBuilder<TKey, TValue, IReadOnlyDictionary<TKey, TValue>>(
-                        source,
-                        key,
-                        newValue,
-                        ReadOnlyDictionaryFactory);
+        return NewWith(source, key, newValue, ReadOnlyDictionaryFactory);
     }
 
     /// <summary>Creates a builder that enables the creation of a new dictionary by copiing <paramref name="source"/>
@@ -79,10 +75,7 @@ public static class ExistingReadOnlyDictionaryBuilderExtensions
         source.ThrowIfNull();
         keyValues.ThrowIfNull();
 
-        return new ExistingReadOnlyDictionaryBuilder<TKey, TValue, IReadOnlyDictionary<TKey, TValue>>(
-                        source,
-                        keyValues,
-                        ReadOnlyDictionaryFactory);
+        return NewWith(source, keyValues, ReadOnlyDictionaryFactory);
     }
 
     /// <summary>Creates a builder that enables the creation of a new dictionary by copiing <paramref name="source"/>
@@ -127,5 +120,106 @@ public static class ExistingReadOnlyDictionaryBuilderExtensions
                         source,
                         keys,
                         ReadOnlyDictionaryFactory);
+    }
+
+    /// <summary>
+    /// Creates a builder that enables the creation of a new dictionary by copiing <paramref name="source"/>
+    /// and replacing the new values. Keys can also be removed. The changes are recorded.
+    /// </summary>
+    /// <typeparam name="TKey">Type of the keys of <paramref name="source"/>.</typeparam>
+    /// <typeparam name="TValue">Type of the values of <paramref name="source"/>.</typeparam>
+    /// <typeparam name="TDictionary">The type of the dictionary.</typeparam>
+    /// <param name="source">An instance of a dictionary.</param>
+    /// <param name="key">The selector of the property.</param>
+    /// <param name="newValue">The new value.</param>
+    /// <param name="factory">The factory to create a new instance of <typeparamref name="TDictionary"/>.</param>
+    /// <returns>An ExistingReadOnlyDictionaryBuilder.</returns>    
+    /// <exception cref="ArgumentException"></exception>
+    /// <exception cref="ArgumentNullException"></exception>
+    public static ExistingReadOnlyDictionaryBuilder<TKey, TValue, TDictionary> NewWith<TKey, TValue, TDictionary>(
+        this TDictionary source,
+        TKey key,
+        TValue newValue,
+        Func<IEnumerable<KeyValuePair<TKey, TValue>>, TDictionary> factory)
+        where TKey : notnull
+        where TDictionary : IEnumerable<KeyValuePair<TKey, TValue>>
+    {
+        source.ThrowIfNull();
+        key.ThrowIfNull();
+
+        return new ExistingReadOnlyDictionaryBuilder<TKey, TValue, TDictionary>(
+                        source,
+                        key,
+                        newValue,
+                        factory);
+    }
+
+    /// <summary>Creates a builder that enables the creation of a new dictionary by copiing <paramref name="source"/>
+    /// and replacing the new values. Keys can also be removed. The changes are recorded.
+    /// </summary>
+    /// <typeparam name="TKey">Type of the keys of <paramref name="source"/>.</typeparam>
+    /// <typeparam name="TValue">Type of the values of <paramref name="source"/>.</typeparam>
+    /// <param name="source">An instance of dictionary.</param>
+    /// <param name="keyValues">The KeyValuePair tuples to create the dictionary.</param>
+    /// <param name="factory">The factory to create a new instance of <typeparamref name="TDictionary"/>.</param>
+    /// <returns>An IExistingObjectBuilder.</returns>    
+    /// <exception cref="ArgumentException"></exception>
+    /// <exception cref="ArgumentNullException"></exception>
+    public static ExistingReadOnlyDictionaryBuilder<TKey, TValue, TDictionary> NewWith<TKey, TValue, TDictionary>(
+        this TDictionary source,
+        IEnumerable<KeyValuePair<TKey, TValue>> keyValues,
+        Func<IEnumerable<KeyValuePair<TKey, TValue>>, TDictionary> factory)
+        where TKey : notnull
+        where TDictionary : IEnumerable<KeyValuePair<TKey, TValue>>
+    {
+        source.ThrowIfNull();
+        keyValues.ThrowIfNull();
+
+        return new ExistingReadOnlyDictionaryBuilder<TKey, TValue, TDictionary>(
+                        source,
+                        keyValues,
+                        factory);
+    }
+
+    public static ExistingReadOnlyDictionaryBuilder<TKey, TValue, TDictionary> NewWith<TKey, TValue, TDictionary>(
+        this TDictionary source,
+        IEnumerable<KeyValuePair<TKey, EventActionValue<TValue>>> updates,
+        Func<IEnumerable<KeyValuePair<TKey, TValue>>, TDictionary> factory)
+        where TKey : notnull
+        where TDictionary : IEnumerable<KeyValuePair<TKey, TValue>>
+    {
+        source.ThrowIfNull();
+        updates.ThrowIfNull();
+
+        return new ExistingReadOnlyDictionaryBuilder<TKey, TValue, TDictionary>(
+                        source,
+                        updates,
+                        factory);
+    }
+
+    /// <summary>Creates a builder that enables the creation of a new dictionary by copiing <paramref name="source"/>
+    /// and replacing the new values. Keys can also be removed. The changes are recorded.
+    /// </summary>
+    /// <typeparam name="TKey"></typeparam>
+    /// <typeparam name="TValue"></typeparam>
+    /// <typeparam name="TDictionary">The type of the dictionary.</typeparam>
+    /// <param name="source"></param>
+    /// <param name="key"></param>
+    /// <param name="factory">The factory to create an instance of <typeparamref name="TDictionary"/>.</param>
+    /// <returns></returns>
+    public static ExistingReadOnlyDictionaryBuilder<TKey, TValue, TDictionary> RemoveNewWith<TKey, TValue, TDictionary>(
+        this TDictionary source,
+        TKey key,
+        Func<IEnumerable<KeyValuePair<TKey, TValue>>, TDictionary> factory)
+        where TKey : notnull
+        where TDictionary : IEnumerable<KeyValuePair<TKey, TValue>>
+    {
+        source.ThrowIfNull();
+        key.ThrowIfNull();
+
+        return new ExistingReadOnlyDictionaryBuilder<TKey, TValue, TDictionary>(
+                        source,
+                        key,
+                        factory);
     }
 }

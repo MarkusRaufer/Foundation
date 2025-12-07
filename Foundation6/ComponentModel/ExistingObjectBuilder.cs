@@ -34,6 +34,7 @@ public interface IExistingObjectBuilder<T, TBuilder>
 {
     TBuilder And(Expression<Func<T, object>> propertySelector, object? newValue);
     TBuilder And(IEnumerable<KeyValuePair<string, object?>> properties);
+    T Build();
     T Build(Action<IDictionary<string, object?>> trackedChanges);
 }
 
@@ -97,6 +98,18 @@ public struct ExistingObjectBuilder<T> : IExistingObjectBuilder<T, ExistingObjec
         return this;
     }
 
+    public T Build()
+    {
+        var type = typeof(T);
+
+        return _buildMode switch
+        {
+            ExistingObjectBuilder.BuildMode.ChangeWith => ChangeObject(type, null),
+            ExistingObjectBuilder.BuildMode.NewWith => CreateNewObject(type, null),
+            _ => throw new NotImplementedException(_buildMode.ToString())
+        };
+    }
+
     public T Build(Action<IDictionary<string, object?>> trackedChanges)
     {
         var type = typeof(T);
@@ -109,7 +122,7 @@ public struct ExistingObjectBuilder<T> : IExistingObjectBuilder<T, ExistingObjec
         };
     }
 
-    private T ChangeObject(Type type, Action<IDictionary<string, object?>> trackedChanges)
+    private T ChangeObject(Type type, Action<IDictionary<string, object?>>? trackedChanges)
     {
         Dictionary<string, object?> changes = [];
 
@@ -125,12 +138,12 @@ public struct ExistingObjectBuilder<T> : IExistingObjectBuilder<T, ExistingObjec
             changes.Add(property.Name, newValue);
         }
 
-        if (changes.Count > 0) trackedChanges(changes);
+        if (changes.Count > 0 && trackedChanges is not null) trackedChanges(changes);
 
         return _source;
     }
 
-    private T CreateNewObject(Type type, Action<IDictionary<string, object?>> trackedChanges)
+    private T CreateNewObject(Type type, Action<IDictionary<string, object?>>? trackedChanges)
     {
         var (ctor, args) = GetCtorWithArguments(type);
 
@@ -165,7 +178,7 @@ public struct ExistingObjectBuilder<T> : IExistingObjectBuilder<T, ExistingObjec
             }
         }
 
-        if (changes.Count > 0) trackedChanges(changes);
+        if (changes.Count > 0 && trackedChanges is not null) trackedChanges(changes);
 
         return newInstance;
     }
