@@ -70,6 +70,51 @@ public class TypeHelperTests
     }
 
     [Test]
+    public void GetPrimitiveTypeOptionalStringParser_Should_ReturnAStringParserAsLambda_When_TypeIsInt()
+    {
+        // Arrange
+        var type = typeof(int);
+
+        // Act
+        var parser = TypeHelper.GetPrimitiveTypeOptionalStringParser(type);
+
+        // Assert
+        parser.ShouldNotBeNull();
+        var option = parser("123");
+        option.TryGet(out var value).ShouldBeTrue();
+        value.ShouldBe(123);
+    }
+
+    [Test]
+    public void GetPrimitiveTypeStringParser_Should_ReturnAStringParserAsLambda_When_TypeIsInt()
+    {
+        // Arrange
+        var type = typeof(int);
+
+        // Act
+        var parser = TypeHelper.GetPrimitiveTypeStringParser(type);
+
+        // Assert
+        parser.ShouldNotBeNull();
+        var value = parser("123");
+        value.ShouldNotBeNull();
+        value.ShouldBe(123);
+    }
+
+    [Test]
+    public void GetPrimitiveTypeStringParser_Should_ReturnNull_When_TypeIsString()
+    {
+        // Arrange
+        var type = typeof(string);
+
+        // Act
+        var parser = TypeHelper.GetPrimitiveTypeStringParser(type);
+
+        // Assert
+        parser.ShouldBeNull();
+    }
+
+    [Test]
     public void GetScalarType_Should_ReturnAValidType_When_UsingValidShortName()
     {
         {
@@ -78,5 +123,37 @@ public class TypeHelperTests
             Assert.IsNotNull(actual);
             Assert.AreEqual(expected, actual);
         }
+    }
+
+    [Test]
+    public void GetScalarTypeOptionalStringParser_Should_ReturnAStringParserAsLambda_When_TypeIsDateOnly()
+    {
+        // Arrange
+        var type = typeof(DateOnly);
+
+        // Act
+        var parser = TypeHelper.GetScalarTypeOptionalStringParser(type);
+
+        // Assert
+        parser.ShouldNotBeNull();
+        var option = parser("2025.04.03");
+        option.TryGet(out var value).ShouldBeTrue();
+        value.ShouldBe(new DateOnly(2025, 4, 3));
+    }
+
+    [Test]
+    public void GetScalarTypeStringParser_Should_ReturnAStringParserAsLambda_When_TypeIsString()
+    {
+        // Arrange
+        var type = typeof(string);
+
+        // Act
+        var parser = TypeHelper.GetScalarTypeStringParser(type);
+
+        // Assert
+        parser.ShouldNotBeNull();
+        var value = parser("test");
+        value.ShouldNotBeNull();
+        value.ShouldBe("test");
     }
 }

@@ -239,10 +239,9 @@ public class ExpressionExtensionsTests
 
         parameters = lambda.Body.GetParameters().ToArray();
 
-        parameters.Length.Should().Be(2);
+        parameters.Length.Should().Be(1);
         parameters[0].Name.Should().Be("x");
-        parameters[1].Name.Should().Be("x");
-
+        //parameters[1].Name.Should().Be("x");
     }
 
 

@@ -86,38 +86,40 @@ public static class ExpressionExtensions
     public static IEnumerable<ParameterExpression> GetParameters(this Expression expression)
     {
         expression.ThrowIfNull();
-        switch(expression)
-        {
-            case BinaryExpression be:
-                foreach (var p in be.GetParameters())
-                    yield return p;
+        var extractor = new ExpressionExtractor();
+        return extractor.Extract<ParameterExpression>(expression);
+        //switch(expression)
+        //{
+        //    case BinaryExpression be:
+        //        foreach (var p in be.GetParameters())
+        //            yield return p;
 
-                break;
-            case LambdaExpression lambda:
-                foreach (var p in lambda.Parameters)
-                    yield return p;
+        //        break;
+        //    case LambdaExpression lambda:
+        //        foreach (var p in lambda.Parameters)
+        //            yield return p;
 
-                break;
-            case MethodCallExpression mc:
-                foreach (var p in mc.GetParameters())
-                    yield return p;
-                break;
-            case MemberExpression e:
-                {
-                    foreach (var p in e.GetParameters())
-                        yield return p;
-                }
-                break;
-            case ParameterExpression p:
-                yield return p;
-                break;
-            case UnaryExpression ue:
-                {
-                    var p = ue.GetParameter();
-                    if(null != p) yield return p;
-                }
-                break;
-        };
+        //        break;
+        //    case MethodCallExpression mc:
+        //        foreach (var p in mc.GetParameters())
+        //            yield return p;
+        //        break;
+        //    case MemberExpression e:
+        //        {
+        //            foreach (var p in e.GetParameters())
+        //                yield return p;
+        //        }
+        //        break;
+        //    case ParameterExpression p:
+        //        yield return p;
+        //        break;
+        //    case UnaryExpression ue:
+        //        {
+        //            var p = ue.GetParameter();
+        //            if(null != p) yield return p;
+        //        }
+        //        break;
+        //};
     }
 
     public static IEnumerable<BinaryExpression> GetTerminalBinaryExpressions(this Expression expression)

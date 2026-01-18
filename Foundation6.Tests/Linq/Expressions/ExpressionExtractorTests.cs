@@ -8,6 +8,14 @@ namespace Foundation.Linq.Expressions;
 [TestFixture]
 public class ExpressionExtractorTests
 {
+    private record ObjectFact(string ObjectType);
+
+    private class Container
+    {
+        public bool Exists(Func<ObjectFact, bool> predicate) => ObjectFacts.Any(predicate);
+        public List<ObjectFact> ObjectFacts { get; set; } = [];
+    }
+
     [Test]
     public void Extract_WithGenericParameter_Should_Return1ParameterExpression_When_UsingPredicate_LambdaHas2DifferentParamters()
     {
@@ -38,5 +46,16 @@ public class ExpressionExtractorTests
         body.Right.EqualsToExpression(extracted[1]).Should().BeTrue();
 
         extracted[2].EqualsToExpression(parameter);
+    }
+
+    [Test]
+    public void Extract_WithoutGenericParameter_Should_Return3Expressions_When_UsingObjectMethodWithPredicate()
+    {
+        LambdaExpression lambda = (Container c, ObjectFact fact) => c.Exists(x => x.ObjectType == fact.ObjectType);
+        var sut = new ExpressionExtractor();
+
+        var extracted = sut.Extract<ParameterExpression>(lambda).ToArray();
+
+        extracted.Length.Should().Be(3);
     }
 }
