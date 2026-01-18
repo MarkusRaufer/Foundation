@@ -30,6 +30,64 @@ namespace Foundation.Collections.Generic;
 public static class EnumerableTransformations
 {
     /// <summary>
+    /// Creates a new object from a list of <see cref="KeyValuePair{TKey, TValue}"/> objects.
+    /// </summary>
+    /// <typeparam name="TKey">The type of the keys.</typeparam>
+    /// <typeparam name="TValue">The type of the values.</typeparam>
+    /// <typeparam name="TResult">The type of the returned object.</typeparam>
+    /// <param name="source">The source key values.</param>
+    /// <param name="action">The <see cref="EventAction"/> which can be combined with |.</param>
+    /// <param name="keyValues">The key values wich should update the result.</param>
+    /// <param name="factory">The factory of the returned object.</param>
+    /// <returns></returns>
+    public static TResult NewWith<TKey, TValue, TResult>(
+        this IEnumerable<KeyValuePair<TKey, TValue>> source,
+            EventAction action,
+            IEnumerable<KeyValuePair<TKey, TValue>> keyValues,
+            Func<IEnumerable<KeyValuePair<TKey, TValue>>, TResult> factory)
+        where TKey : notnull
+        where TResult : notnull
+    {
+        source.ThrowIfNull();
+        keyValues.ThrowIfNull();
+        factory.ThrowIfNull();
+
+        Dictionary<TKey, TValue> newKeyValues = [];
+        var sourceDictionary = source.ToDictionary();
+        
+        foreach (var kv in keyValues)
+        {
+            if (!sourceDictionary.TryGetValue(kv.Key, out var value))
+            {
+                if ((action & EventAction.Add) == EventAction.Add)
+                {
+#pragma warning disable CS8604
+                    newKeyValues.Add(kv.Key, kv.Value);
+#pragma warning restore
+                    continue;
+                }
+                continue;
+            }
+            if ((action & EventAction.Update) == EventAction.Update)
+            {
+                var property = kv.Value.EqualsNullable(value) ? Pair.New(kv.Key, value) : kv;
+                newKeyValues.Add(kv.Key, kv.Value);
+            }
+        }
+
+        var keys = keyValues.Select(x => x.Key).ToArray();
+        foreach (var property in sourceDictionary)
+        {
+            if (keys.Contains(property.Key)) continue;
+
+            if ((action & EventAction.Remove) == EventAction.Remove) continue;
+
+            newKeyValues.Add(property.Key, property.Value);
+        }
+        return factory(newKeyValues);
+    }
+
+    /// <summary>
     /// Splits a stream into multiple new streams. For each predicate an extra stream.
     /// </summary>
     /// <typeparam name="T">Type of elements.</typeparam>
@@ -186,6 +244,17 @@ public static class EnumerableTransformations
             _ => []
         };
     }
+
+    /// <summary>
+    /// Creates a <see cref="Dictionary{TKey, TValue}"/> from a list of <see cref="KeyValuePair{TKey, TValue}"/>.
+    /// </summary>
+    /// <typeparam name="TKey">Type of the keys.</typeparam>
+    /// <typeparam name="TValue">Type of the values.</typeparam>
+    /// <param name="items"></param>
+    /// <returns>A dictionary containing items.</returns>
+    public static Dictionary<TKey, TValue> ToDictionary<TKey, TValue>(this IEnumerable<KeyValuePair<TKey, TValue>> items)
+        where TKey : notnull
+        => items.ToDictionary(x => x.Key, x => x.Value);
 
     /// <summary>
     /// Creates a new DictionaryValue containing the key-value pairs from the specified enumerable collection.
@@ -409,7 +478,7 @@ public static class EnumerableTransformations
     }
 
     /// <summary>
-    /// Transforms items from T to Option<TResult>. If T could not transformed to TResult a Option.None is returned.
+    /// Transforms items from TOk to Option<TResult>. If TOk could not transformed to TResult a Option.None is returned.
     /// </summary>
     /// <typeparam name="T"></typeparam>
     /// <param name="items"></param>

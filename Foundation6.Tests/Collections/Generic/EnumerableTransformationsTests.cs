@@ -17,6 +17,68 @@ public class EnumerableTransformationsTests
     private record EntityIds(Id[] Ids);
 
     [Test]
+    public void NewWith_Should_HaveResultWithSameKeyValues_When_ÁctionIsUpdateAndKeyValuesIncludeNewValue()
+    {
+        // Arrange
+        var keyValues = Enumerable.Range(1, 3).ToDictionary(x => $"{x}", x => x);
+        var newKeyValues = Enumerable.Range(2, 3).ToDictionary(x => $"{x}", x => x);
+
+        // Act
+        var result = keyValues.NewWith(EventAction.Update, newKeyValues, x => x.ToDictionary(x => x.Key, x => x.Value));
+
+        // Assert
+        result.ShouldNotBeNull();
+        result.Count.ShouldBe(keyValues.Count);
+        
+        result["1"].ShouldBe(1);
+        result["2"].ShouldBe(2);
+        result["3"].ShouldBe(3);
+    }
+
+    [Test]
+    public void NewWith_Should_HaveResultWithAllKeyValuesFromSourceAnd1AdditionalKeyValue_When_ActionIsAddAndUpdateAndKeyValuesIncludeNewValue()
+    {
+        // Arrange
+        var keyValues = Enumerable.Range(1, 3).ToDictionary(x => $"{x}", x => x);
+        var newKeyValues = Enumerable.Range(2, 3).ToDictionary(x => $"{x}", x => x);
+
+        // Act
+        var result = keyValues.NewWith(EventAction.Add | EventAction.Update,
+                                       newKeyValues,
+                                       x => x.ToDictionary(x => x.Key, x => x.Value));
+
+        // Assert
+        result.ShouldNotBeNull();
+        result.Count.ShouldBe(keyValues.Count + 1);
+
+        result["1"].ShouldBe(1);
+        result["2"].ShouldBe(2);
+        result["3"].ShouldBe(3);
+        result["4"].ShouldBe(4);
+    }
+
+    [Test]
+    public void NewWith_Should_HaveResultWith3KeyValues_When_ActionIsAddRemoveAndUpdateAndKeyValuesIncludeNewValueAndOneKeyValueLess()
+    {
+        // Arrange
+        var keyValues = Enumerable.Range(1, 3).ToDictionary(x => $"{x}", x => x);
+        var newKeyValues = Enumerable.Range(2, 3).ToDictionary(x => $"{x}", x => x);
+
+        // Act
+        var result = keyValues.NewWith(EventAction.Add | EventAction.Remove | EventAction.Update,
+                                       newKeyValues,
+                                       x => x.ToDictionary(x => x.Key, x => x.Value));
+
+        // Assert
+        result.ShouldNotBeNull();
+        result.Count.ShouldBe(newKeyValues.Count);
+
+        result["2"].ShouldBe(2);
+        result["3"].ShouldBe(3);
+        result["4"].ShouldBe(4);
+    }
+
+    [Test]
     public void SplitInto_Should_Return4StreamsWithSameNumbers_When_4PredicatesAreUsed()
     {
         var tuples = Enumerable.Range(1, 10).Select(x => (lhs: $"{x}", rhs: x)).ToArray();
