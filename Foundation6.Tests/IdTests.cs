@@ -1,7 +1,6 @@
-﻿using FluentAssertions;
-using Foundation.Text.Json.Serialization;
+﻿using Foundation.Text.Json.Serialization;
 using NUnit.Framework;
-using System;
+using Shouldly;
 using System.Globalization;
 using System.Text.Json;
 
@@ -23,7 +22,7 @@ public class IdTests
             Converters = { new IdJsonConverter() }
         });
 
-        sut1.Should().Be(sut2);
+        sut1.ShouldBe(sut2);
     }
 
     [Test]
@@ -39,7 +38,7 @@ public class IdTests
             Converters = { new IdJsonConverter() }
         });
 
-        sut1.Should().Be(sut2);
+        sut1.ShouldBe(sut2);
     }
 
     [Test]
@@ -55,7 +54,7 @@ public class IdTests
             Converters = { new IdJsonConverter() }
         });
 
-        sut1.Should().Be(sut2);
+        sut1.ShouldBe(sut2);
     }
 
     [Test]
@@ -71,7 +70,7 @@ public class IdTests
             Converters = { new IdJsonConverter() }
         });
 
-        sut1.Should().Be(sut2);
+        sut1.ShouldBe(sut2);
     }
 
     [Test]
@@ -87,7 +86,7 @@ public class IdTests
             Converters = { new IdJsonConverter() }
         });
 
-        sut1.Should().Be(sut2);
+        sut1.ShouldBe(sut2);
     }
 
     [Test]
@@ -96,7 +95,7 @@ public class IdTests
         var sut1 = Id.New(10);
         var sut2 = Id.New(20);
 
-        sut1.Equals(sut2).Should().BeFalse();
+        sut1.Equals(sut2).ShouldBeFalse();
     }
 
     [Test]
@@ -105,7 +104,7 @@ public class IdTests
         var sut1 = Id.New(10M);
         var sut2 = Id.New(20M);
 
-        sut1.Equals(sut2).Should().BeFalse();
+        sut1.Equals(sut2).ShouldBeFalse();
     }
 
     [Test]
@@ -114,7 +113,7 @@ public class IdTests
         var sut1 = Id.New("10");
         var sut2 = Id.New("20");
 
-        sut1.Equals(sut2).Should().BeFalse();
+        sut1.Equals(sut2).ShouldBeFalse();
     }
 
     [Test]
@@ -125,7 +124,7 @@ public class IdTests
         var sut1 = Id.New(value);
         var sut2 = Id.New((char)value);
 
-        sut1.Equals(sut2).Should().BeFalse();
+        sut1.Equals(sut2).ShouldBeFalse();
     }
 
     [Test]
@@ -136,7 +135,7 @@ public class IdTests
         var sut1 = Id.New(value);
         var sut2 = Id.New(value);
 
-        sut1.Equals(sut2).Should().BeTrue();
+        sut1.Equals(sut2).ShouldBeTrue();
     }
 
     [Test]
@@ -147,7 +146,7 @@ public class IdTests
         var sut1 = Id.New(value);
         var sut2 = Id.New(value);
 
-        sut1.Equals(sut2).Should().BeTrue();
+        sut1.Equals(sut2).ShouldBeTrue();
     }
 
     [Test]
@@ -158,7 +157,7 @@ public class IdTests
         var sut1 = Id.New(value);
         var sut2 = Id.New(value);
 
-        sut1.Equals(sut2).Should().BeTrue();
+        sut1.Equals(sut2).ShouldBeTrue();
     }
 
     [Test]
@@ -167,7 +166,51 @@ public class IdTests
         var sut1 = Id.New("10");
         var sut2 = Id.New("10");
 
-        sut1.Equals(sut2).Should().BeTrue();
+        sut1.Equals(sut2).ShouldBeTrue();
+    }
+
+    [Test]
+    public void GreaterThan_ReturnsTrue_When_DifferentTypes_And_SameValues()
+    {
+        var value = 10;
+
+        var sut1 = Id.New(value);
+        var sut2 = Id.New((char)value);
+
+        var cmp = sut1 > sut2;
+        cmp.ShouldBeTrue();
+    }
+
+    [Test]
+    public void GreaterThan_ReturnsTrue_When_SameTypes_And_FirstValueIsGreater()
+    {
+        // Arrange
+        var value1 = 10;
+        var value2 = 5;
+
+        // Act
+        var sut1 = Id.New(value1);
+        var sut2 = Id.New(value2);
+
+        // Assert
+        var cmp = sut1 > sut2;
+        cmp.ShouldBeTrue();
+    }
+
+    [Test]
+    public void GreaterThan_ReturnsFalse_When_SameTypes_And_FirstValueIsSmaller()
+    {
+        // Arrange
+        var value1 = 5;
+        var value2 = 8;
+
+        // Act
+        var sut1 = Id.New(value1);
+        var sut2 = Id.New(value2);
+
+        // Assert
+        var cmp = sut1 > sut2;
+        cmp.ShouldBeFalse();
     }
 
     [Test]
@@ -181,8 +224,8 @@ public class IdTests
             Converters = { new IdJsonConverter() }
         });
 
-        var expected = $@"{{""Type"":""System.DateTime"",""Value"":""{value:yyyy-MM-ddTHH:mm:ss}""}}";
-        json.Should().Be(expected);
+        var expected = $@"{{""Type"":""{value.GetType().AssemblyQualifiedName}"",""Value"":""{value:yyyy-MM-ddTHH:mm:ss}""}}";
+        json.ShouldBe(expected);
     }
 
     [Test]
@@ -196,8 +239,8 @@ public class IdTests
             Converters = { new IdJsonConverter() }
         });
 
-        var expected = $@"{{""Type"":""System.DateOnly"",""Value"":""{value:yyyy-MM-dd}""}}";
-        json.Should().Be(expected);
+        var expected = $@"{{""Type"":""{value.GetType().AssemblyQualifiedName}"",""Value"":""{value:yyyy-MM-dd}""}}";
+        json.ShouldBe(expected);
     }
 
     [Test]
@@ -211,8 +254,23 @@ public class IdTests
             Converters = { new IdJsonConverter() }
         });
 
-        var expected = string.Create(CultureInfo.InvariantCulture, $@"{{""Type"":""System.Decimal"",""Value"":{value}}}");
-        json.Should().Be(expected);
+        var expected = string.Create(CultureInfo.InvariantCulture, $@"{{""Type"":""{value.GetType().AssemblyQualifiedName}"",""Value"":{value}}}");
+        json.ShouldBe(expected);
+    }
+
+    [Test]
+    public void Serialize_ToJson_ShouldReturnValidString_When_Using_Guid()
+    {
+        var value = SameGuid.New(1);
+        var sut1 = Id.New(value);
+
+        var json = JsonSerializer.Serialize(sut1, new JsonSerializerOptions
+        {
+            Converters = { new IdJsonConverter() }
+        });
+
+        var expected = $@"{{""Type"":""{value.GetType().AssemblyQualifiedName}"",""Value"":""{value}""}}";
+        json.ShouldBe(expected);
     }
 
     [Test]
@@ -226,8 +284,8 @@ public class IdTests
             Converters = {new IdJsonConverter() }
         });
         
-        var expected = $@"{{""Type"":""System.Int32"",""Value"":{value}}}";
-        json.Should().Be(expected);
+        var expected = $@"{{""Type"":""{value.GetType().AssemblyQualifiedName}"",""Value"":{value}}}";
+        json.ShouldBe(expected);
     }
 
     [Test]
@@ -241,8 +299,8 @@ public class IdTests
             Converters = { new IdJsonConverter() }
         });
 
-        var expected = $@"{{""Type"":""System.String"",""Value"":""{value}""}}";
-        json.Should().Be(expected);
+        var expected = $@"{{""Type"":""{value.GetType().AssemblyQualifiedName}"",""Value"":""{value}""}}";
+        json.ShouldBe(expected);
     }
 
     [Test]
@@ -256,8 +314,52 @@ public class IdTests
             Converters = { new IdJsonConverter() }
         });
 
-        var expected = $@"{{""Type"":""System.TimeOnly"",""Value"":""{value:HH:mm:ss}""}}";
-        json.Should().Be(expected);
+        var expected = $@"{{""Type"":""{value.GetType().AssemblyQualifiedName}"",""Value"":""{value:HH:mm:ss}""}}";
+        json.ShouldBe(expected);
+    }
+
+    [Test]
+    public void SmallerThan_ReturnsFalse_When_DifferentTypes_And_SameValues()
+    {
+        var value = 10;
+
+        var sut1 = Id.New(value);
+        var sut2 = Id.New((char)value);
+
+        var cmp = sut1 < sut2;
+        cmp.ShouldBeFalse();
+    }
+
+    [Test]
+    public void SmallerThan_ReturnsTrue_When_SameTypes_And_FirstValueIsGreater()
+    {
+        // Arrange
+        var value1 = 5;
+        var value2 = 10;
+
+        // Act
+        var sut1 = Id.New(value1);
+        var sut2 = Id.New(value2);
+
+        // Assert
+        var cmp = sut1 < sut2;
+        cmp.ShouldBeTrue();
+    }
+
+    [Test]
+    public void SmallerThan_ReturnsFalse_When_SameTypes_And_FirstValueIsGreater()
+    {
+        // Arrange
+        var value1 = 10;
+        var value2 = 5;
+
+        // Act
+        var sut1 = Id.New(value1);
+        var sut2 = Id.New(value2);
+
+        // Assert
+        var cmp = sut1 < sut2;
+        cmp.ShouldBeFalse();
     }
 }
 
