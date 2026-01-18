@@ -2,9 +2,6 @@
 
 	<PropertyGroup>
 		<TargetFrameworks>netstandard2.0;net8.0;net10.0</TargetFrameworks>
-		<ImplicitUsings>enable</ImplicitUsings>
-		<Nullable>enable</Nullable>
-		<LangVersion>latest</LangVersion>
 		<PackageOutputPath>$(LOCAL_NUGET)\</PackageOutputPath>
 		<BaseOutputPath>bin\</BaseOutputPath>
 
@@ -14,7 +11,6 @@
 		<PackageId>Foundation</PackageId>
 		<PackageTags>LINQ, additional standard types, .NET extension</PackageTags>
 		<ProductName>Foundation</ProductName>
-		<Version>1.8.0-rc.11</Version>
 		<UserSecretsId>4a3dcddf-c97c-408a-aad6-93090d4c1c18</UserSecretsId>
 	</PropertyGroup>
 

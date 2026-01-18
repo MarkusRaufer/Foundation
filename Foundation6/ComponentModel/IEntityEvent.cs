@@ -23,13 +23,27 @@
 // SOFTWARE.
 ﻿namespace Foundation.ComponentModel;
 
-public interface IEntityEvent<TEventId, TEntityId> : IEvent<TEventId>
+/// <summary>
+/// Contract for an entity event.
+/// </summary>
+/// <typeparam name="TEventId">The type of the event id.</typeparam>
+/// <typeparam name="TCommandId">The type of the command id.</typeparam>
+/// <typeparam name="TEntityId">The id of the entity.</typeparam>
+public interface IEntityEvent<TEventId, TCommandId, TEntityId> : IEvent<TEventId, TCommandId>
 {
+    /// <summary>
+    /// Gets the unique identifier for the entity.
+    /// </summary>
     TEntityId EntityId { get; }
 }
 
-public interface IEntityEvent<TEventId, TEntityId, TObjectType>
-    : IEntityEvent<TEventId, TEntityId>
-    , ITypedObject<TObjectType>
-{
-}
+/// <summary>
+/// Contract for an entity event.
+/// </summary>
+/// <typeparam name="TEventId">The type of the event id.</typeparam>
+/// <typeparam name="TCommandId">The type of the command id.</typeparam>
+/// <typeparam name="TEntityId">The id of the entity.</typeparam>
+
+public interface IEntityEvent<TEventId, TCommandId, TObjectType, TEntityId>
+    : IEntityEvent<TEventId, TCommandId, TEntityId>
+    , ITypedObject<TObjectType>;

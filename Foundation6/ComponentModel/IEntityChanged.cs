@@ -23,13 +23,14 @@
 // SOFTWARE.
 ﻿namespace Foundation.ComponentModel;
 
-public interface IEntityChanged<TEventId, TEntityId, TChangedState> : IEntityEvent<TEventId, TEntityId>
+public interface IEntityChanged<TEventId, TCommandId, TEntityId, TChangedState>
+    : IEntityEvent<TEventId, TCommandId, TEntityId>
 {
     TChangedState ChangedState { get; }
 }
 
-public interface IEntityChanged<TEventId, TObjectType, TEntityId, TChangedState>
-    : IEntityChanged<TEventId, TEntityId, TChangedState>
+public interface IEntityChanged<TEventId, TCommandId, TObjectType, TEntityId, TChangedState>
+    : IEntityChanged<TEventId, TCommandId, TEntityId, TChangedState>
     , ITypedObject<TObjectType>
 {
 }

@@ -582,7 +582,7 @@ public static class ObjectExtensions
     }
 
     /// <summary>
-    /// Returns Some(T) if <paramref name="obj"/> <typeparamref name="T"/> otherwise None.
+    /// Returns Some(TOk) if <paramref name="obj"/> <typeparamref name="T"/> otherwise None.
     /// </summary>
     /// <typeparam name="T"></typeparam>
     /// <param name="obj"></param>
@@ -625,7 +625,7 @@ public static class ObjectExtensions
     /// <typeparam name="T">The type of the returned value.</typeparam>
     /// <param name="obj">The object which is casted to <typeparamref name="T"/></param>
     /// <param name="paramName"></param>
-    /// <returns>Value of type <typeparamref name="T"/> if compatible otherwise null</returns>
+    /// <returns>Ok of type <typeparamref name="T"/> if compatible otherwise null</returns>
     /// <exception cref="ArgumentNullException"></exception>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static T? ToType<T>(this object? obj, [CallerArgumentExpression(nameof(obj))] string paramName = "")

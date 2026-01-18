@@ -55,7 +55,7 @@ public static class Option
     public static Option<T> None<T>() => Option<T>.None;
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static Option<T> Some<T>(T value) => null != value ? new(value) : throw new ArgumentNullException(nameof(value));
+    public static Option<T> Some<T>(T value) => value is not null ? new Option<T>(value) : throw new ArgumentNullException(nameof(value));
 }
 
 
@@ -93,6 +93,12 @@ public readonly struct Option<T>
     }
 
     public static implicit operator Option<T>(T obj) => Option.Maybe(obj);
+
+    public static implicit operator Option<object>(Option<T> option)
+    {
+        if (option.TryGet(out var value) && value is not null) return Option.Some<object>(value);
+        return Option.None<object>();
+    }
 
     public static bool operator ==(Option<T> lhs, Option<T> rhs) => lhs.Equals(rhs);
 

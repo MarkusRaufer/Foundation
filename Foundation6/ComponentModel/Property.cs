@@ -26,7 +26,7 @@
 using System.ComponentModel;
 
 /// <summary>
-/// Value-object with a name and a value It implements INotifyPropertyChanged.
+/// Ok-object with a name and a value It implements INotifyPropertyChanged.
 /// </summary>
 public sealed class Property : Property<object>
 {
@@ -36,7 +36,7 @@ public sealed class Property : Property<object>
 }
 
 /// <summary>
-/// Value-object with a name and a value It implements INotifyPropertyChanged.
+/// Ok-object with a name and a value It implements INotifyPropertyChanged.
 /// </summary>
 /// <typeparam name="TValue"></typeparam>
 public class Property<TValue>

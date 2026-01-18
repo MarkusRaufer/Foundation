@@ -59,7 +59,7 @@ public static class TypeHelper
     /// <summary>
     /// Returns the type of a nullable primitive type from type typeName.
     /// </summary>
-    /// <param typeName="shortTypeName"></param>
+    /// <param typeName="assemblyQualifiedName"></param>
     /// <returns></returns>
     public static Type? GetNullablePrimitiveType(string shortTypeName)
     {
@@ -72,7 +72,7 @@ public static class TypeHelper
     /// <summary>
     /// Returns the full typeName of the nullable primitive type from the short typeName.
     /// </summary>
-    /// <param typeName="shortTypeName"></param>
+    /// <param typeName="assemblyQualifiedName"></param>
     /// <returns></returns>
     public static string? GetNullablePrimitiveTypeFullName(string shortTypeName) => shortTypeName switch
     {
@@ -90,10 +90,11 @@ public static class TypeHelper
         "ushort?" => typeof(UInt16?).FullName,
         _ => null,
     };
+
     /// <summary>
     /// returns the type from the short typeName. e.g. int?, string?.
     /// </summary>
-    /// <param typeName="shortTypeName">The typeName of the type.</param>
+    /// <param typeName="assemblyQualifiedName">The typeName of the type.</param>
     /// <returns></returns>
     public static Type? GetNullableScalarType(string shortTypeName, bool withNullablePrimitives = true)
     {
@@ -106,7 +107,7 @@ public static class TypeHelper
     /// <summary>
     /// returns the full name of the type.
     /// </summary>
-    /// <param typeName="shortTypeName">e.g. DateTime?, decimal?, string.</param>
+    /// <param typeName="assemblyQualifiedName">e.g. DateTime?, decimal?, string.</param>
     /// <returns></returns>
     public static string? GetNullableScalarTypeFullName(string shortTypeName, bool withNullablePrimitives = true)
     {
@@ -131,7 +132,7 @@ public static class TypeHelper
     /// <summary>
     /// returns the type from the short typeName. e.g. bool, int.
     /// </summary>
-    /// <param typeName="shortTypeName"></param>
+    /// <param typeName="assemblyQualifiedName"></param>
     /// <returns></returns>
     public static Type? GetPrimitiveType(string shortTypeName)
     {
@@ -144,7 +145,7 @@ public static class TypeHelper
     /// <summary>
     /// returns the fullname of the type. e.g. int => System.Int32.
     /// </summary>
-    /// <param typeName="shortTypeName">e.g. bool, byte int, long, ...</param>
+    /// <param typeName="assemblyQualifiedName">e.g. bool, byte int, long, ...</param>
     /// <returns></returns>
     public static string? GetPrimitiveTypeFullName(string shortTypeName) => shortTypeName switch
     {
@@ -163,10 +164,36 @@ public static class TypeHelper
         _ => null,
     };
 
+
+    /// <summary>
+    /// Returns a parser that parses a string and returns a primitive type value.
+    /// </summary>
+    /// <param name="type">Type of a primitive type.</param>
+    /// <returns>Returns lambda of a string parser.</returns>
+    public static Func<string, object>? GetPrimitiveTypeStringParser(Type type)
+    {
+        return type switch
+        {
+            Type t when t == typeof(Boolean) => (s) => bool.Parse(s),
+            Type t when t == typeof(Byte) => (s) => byte.Parse(s),
+            Type t when t == typeof(Char) => (s) => char.Parse(s),
+            Type t when t == typeof(Double) => (s) => double.Parse(s),
+            Type t when t == typeof(Int16) => (s) => short.Parse(s),
+            Type t when t == typeof(Int32) => (s) => int.Parse(s),
+            Type t when t == typeof(Int64) => (s) => long.Parse(s),
+            Type t when t == typeof(SByte) => (s) => sbyte.Parse(s),
+            Type t when t == typeof(Single) => (s) => Single.Parse(s),
+            Type t when t == typeof(UInt16) => (s) => ushort.Parse(s),
+            Type t when t == typeof(UInt32) => (s) => uint.Parse(s),
+            Type t when t == typeof(UInt64) => (s) => ulong.Parse(s),
+            _ => null,
+        };
+    }
+
     /// <summary>
     /// returns the type from the short typeName. e.g. int, string.
     /// </summary>
-    /// <param typeName="shortTypeName">The typeName of the type.</param>
+    /// <param typeName="assemblyQualifiedName">The typeName of the type.</param>
     /// <returns></returns>
     public static Type? GetScalarType(string shortTypeName)
     {
@@ -176,7 +203,7 @@ public static class TypeHelper
     /// <summary>
     /// returns the type from the short typeName. e.g. int, string.
     /// </summary>
-    /// <param typeName="shortTypeName">The typeName of the type.</param>
+    /// <param typeName="assemblyQualifiedName">The typeName of the type.</param>
     /// <param typeName="withPrimitives">Including primitive types.</param>
     /// <returns></returns>
     public static Type? GetScalarType(string shortTypeName, bool withPrimitives)
@@ -190,7 +217,7 @@ public static class TypeHelper
     /// <summary>
     /// returns the full name of the type. e.g. int => System.Int32.
     /// </summary>
-    /// <param typeName="shortTypeName">e.g. DateTime, decimal, string.</param>
+    /// <param typeName="assemblyQualifiedName">e.g. DateTime, decimal, string.</param>
     /// <param name="withPrimitives">If true the primitive types are also included otherwise not.</param>
     /// <returns></returns>
     public static string? GetScalarTypeFullName(string shortTypeName, bool withPrimitives = true)
@@ -213,6 +240,35 @@ public static class TypeHelper
             _ => null,
         };
     }
+
+
+    /// <summary>
+    /// Returns a parser that parses a string and returns a primitive or scalar type value.
+    /// </summary>
+    /// <param name="type">Type of a scalar type.</param>
+    /// <param name="withPrimitives">If true it includes primitive type string parsers.</param>
+    /// <returns>Returns lambda of a string parser.</returns>
+    public static Func<string, object>? GetScalarTypeStringParser(Type type, bool withPrimitives = true)
+    {
+        if (withPrimitives)
+        {
+            var parser = GetPrimitiveTypeStringParser(type);
+            if (parser is not null) return parser;
+        }
+
+        return type switch
+        {
+            Type t when t == typeof(DateOnly) => (s) => DateOnly.Parse(s),
+            Type t when t == typeof(DateTime) => (s) => DateTime.Parse(s),
+            Type t when t == typeof(decimal) => (s) => decimal.Parse(s),
+            Type t when t == typeof(Guid) => (s) => Guid.Parse(s),
+            Type t when t == typeof(string) => (s) => s,
+            Type t when t == typeof(TimeOnly) => (s) => TimeOnly.Parse(s),
+            Type t when t == typeof(TimeSpan) => (s) => TimeSpan.Parse(s),
+            _ => null,
+        };
+    }
+
 
     /// <summary>
     /// returns true if type is a scalar or primitive type.
@@ -419,6 +475,58 @@ public static class TypeHelper
         yield return nameof(Guid);
         yield return "string";
         yield return nameof(TimeSpan);
+    }
+
+    /// <summary>
+    /// Returns a string parser that returns an optional primitive value.
+    /// </summary>
+    /// <param name="type">Type of primitive type.</param>
+    /// <returns>An optional primitive value.</returns>
+    public static Func<string, Option<object>>? GetPrimitiveTypeOptionalStringParser(Type type)
+    {
+        return type switch
+        {
+            Type t when t == typeof(Boolean) => (s) => bool.TryParse(s, out var value) ? Option.Some(value) : Option.None<object>(),
+            Type t when t == typeof(Byte) => (s) => byte.TryParse(s, out var value) ? Option.Some(value) : Option.None<object>(),
+            Type t when t == typeof(Char) => (s) => char.TryParse(s, out var value) ? Option.Some(value) : Option.None<object>(),
+            Type t when t == typeof(Double) => (s) => double.TryParse(s, out var value) ? Option.Some(value) : Option.None<object>(),
+            Type t when t == typeof(Int16) => (s) => short.TryParse(s, out var value) ? Option.Some(value) : Option.None<object>(),
+            Type t when t == typeof(Int32) => (s) => int.TryParse(s, out var value) ? Option.Some(value) : Option.None<object>(),
+            Type t when t == typeof(Int64) => (s) => long.TryParse(s, out var value) ? Option.Some(value) : Option.None<object>(),
+            Type t when t == typeof(SByte) => (s) => sbyte.TryParse(s, out var value) ? Option.Some(value) : Option.None<object>(),
+            Type t when t == typeof(Single) => (s) => float.TryParse(s, out var value) ? Option.Some(value) : Option.None<object>(),
+            Type t when t == typeof(UInt16) => (s) => ushort.TryParse(s, out var value) ? Option.Some(value) : Option.None<object>(),
+            Type t when t == typeof(UInt32) => (s) => uint.TryParse(s, out var value) ? Option.Some(value) : Option.None<object>(),
+            Type t when t == typeof(UInt64) => (s) => ulong.TryParse(s, out var value) ? Option.Some(value) : Option.None<object>(),
+            _ => null,
+        };
+    }
+
+    /// <summary>
+    /// Returns a string parser if type is a scalar type.
+    /// </summary>
+    /// <param name="type">Type of scalar type.</param>
+    /// <param name="withPrimitives">If true it includes primitive types.</param>
+    /// <returns></returns>
+    public static Func<string, Option<object>>? GetScalarTypeOptionalStringParser(Type type, bool withPrimitives = true)
+    {
+        if (withPrimitives)
+        {
+            var parser = GetPrimitiveTypeOptionalStringParser(type);
+            if (parser is not null) return parser;
+        }
+
+        return type switch
+        {
+            Type t when t == typeof(DateOnly) => (s) => DateOnly.TryParse(s, out var value) ? Option.Some(value) : Option.None<object>(),
+            Type t when t == typeof(DateTime) => (s) => DateTime.TryParse(s, out var value) ? Option.Some(value) : Option.None<object>(),
+            Type t when t == typeof(decimal) => (s) => decimal.TryParse(s, out var value) ? Option.Some(value) : Option.None<object>(),
+            Type t when t == typeof(Guid) => (s) => Guid.TryParse(s, out var value) ? Option.Some(value) : Option.None<object>(),
+            Type t when t == typeof(string) => (s) => s is not null ? Option.Some(s) : Option.None<object>(),
+            Type t when t == typeof(TimeOnly) => (s) => TimeOnly.TryParse(s, out var value) ? Option.Some(value) : Option.None<object>(),
+            Type t when t == typeof(TimeSpan) => (s) => TimeSpan.TryParse(s, out var value) ? Option.Some(value) : Option.None<object>(),
+            _ => null,
+        };
     }
 }
 

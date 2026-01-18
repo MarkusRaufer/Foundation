@@ -21,7 +21,7 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
-﻿// The MIT License (MIT)
+// The MIT License (MIT)
 //
 // Copyright (c) 2020 Markus Raufer
 //
@@ -45,6 +45,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 using Foundation.Collections.Generic;
+using System.Collections.ObjectModel;
 
 namespace Foundation.ComponentModel;
 
@@ -120,6 +121,45 @@ public struct ExistingDictionaryBuilder<TKey, TValue> : IExistingDictionaryBuild
 
         foreach (var kvp in keyValues)
             AddKeyValue(_source, kvp.Key, kvp.Value);
+    }
+
+    public ExistingDictionaryBuilder(
+        ExistingDictionaryBuilder.BuildMode mode,
+        IDictionary<TKey, TValue> source,
+        IEnumerable<KeyValuePair<TKey, EventActionValue<TValue>>> updates)
+    {
+        _buildMode = mode;
+        _source = source.ThrowIfNull();
+        foreach (var (key, update) in updates)
+            AddEvent(_source, key, update);
+    }
+
+    private void AddEvent(IDictionary<TKey, TValue> source, TKey key, EventActionValue<TValue> actionValue)
+    {
+        var exists = source.TryGetValue(key, out var value);
+        switch (actionValue.Action)
+        {
+            case EventAction.Add:
+                if (exists) break;
+                if (_buildMode == ExistingDictionaryBuilder.BuildMode.UpdateWith) break;
+
+                _properties.Add(key, actionValue);
+                break;
+            case EventAction.Remove:
+                if (!exists) break;
+
+                if (_buildMode == ExistingDictionaryBuilder.BuildMode.UpdateWith) break;
+
+#pragma warning disable CS8604 // Possible null reference argument.
+                _properties.Add(key, new EventActionValue<TValue>(EventAction.Remove, value));
+#pragma warning restore CS8604 // Possible null reference argument.
+                break;
+            case EventAction.Update:
+                if (!exists) break;
+                if (value.EqualsNullable(actionValue.Value)) break;
+                _properties.Add(key, actionValue);
+                break;
+        }
     }
 
     private void AddKeyValue(IDictionary<TKey, TValue> source, TKey key, TValue newValue)
@@ -226,7 +266,7 @@ public struct ExistingDictionaryBuilder<TKey, TValue> : IExistingDictionaryBuild
             if (!_source.ContainsKey(key)) continue;
 
             _source[key] = actionValue.Value;
-            
+
             changes.Add(key, actionValue);
         }
 

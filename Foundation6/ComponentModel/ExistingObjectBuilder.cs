@@ -45,6 +45,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 using Foundation.Collections.Generic;
+using Foundation.Linq.Expressions;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
@@ -145,7 +146,7 @@ public struct ExistingObjectBuilder<T> : IExistingObjectBuilder<T, ExistingObjec
         };
     }
 
-    private T ChangeObject(Type type, Action<IDictionary<string, object?>>? trackedChanges)
+    private readonly T ChangeObject(Type type, Action<IDictionary<string, object?>>? trackedChanges)
     {
         Dictionary<string, object?> changes = [];
 
@@ -227,26 +228,27 @@ public struct ExistingObjectBuilder<T> : IExistingObjectBuilder<T, ExistingObjec
     {
         propertySelector.ThrowIfNull();
 
-        var member = GetMember(propertySelector);
+        var member = propertySelector.GetMember();
         
-        if (member.Member is not PropertyInfo property)
+        if (member is null || member.Member is not PropertyInfo property)
             throw new ArgumentException("expression must target a property", nameof(propertySelector));
 
         return property;
     }
 
-    private static MemberExpression GetMember(LambdaExpression lambda)
-    {
-        var memberExpression = lambda.Body as MemberExpression;
-        if (memberExpression is not null) return memberExpression;
+    //private static MemberExpression GetMember(LambdaExpression lambda)
+    //{
+    //    var memberExpression = lambda.Body as MemberExpression;
+    //    if (memberExpression is not null) return memberExpression;
 
-        if (lambda.Body is UnaryExpression ue)
-        {
-            if (ue.Operand is MemberExpression member) return member;
-        }    
+    //    if (lambda.Body is UnaryExpression ue)
+    //    {
+    //        if (ue.Operand is MemberExpression member) return member;
+    //    }    
 
-        throw new ArgumentException($"{nameof(lambda)} must be a {nameof(MemberExpression)}", nameof(lambda));
-    }
+    //    throw new ArgumentException($"{nameof(lambda)} must be a {nameof(MemberExpression)}", nameof(lambda));
+    //}
+
     private IEnumerable<object?> GetValues(PropertyInfo[] properties, Dictionary<string, object?> changes)
     {
         foreach (var property in properties)

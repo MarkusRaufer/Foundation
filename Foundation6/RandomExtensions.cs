@@ -24,6 +24,10 @@
 ﻿namespace Foundation;
 
 using Foundation.Collections.Generic;
+using System;
+#if NET7_0_OR_GREATER
+using System.Numerics;
+#endif
 
 public static class RandomExtensions
 {
@@ -123,6 +127,38 @@ public static class RandomExtensions
         var numbers = Enumerable.Range(min, 1 + max - min).ToArray();
         return numbers.Shuffle(random);
     }
+
+    /// <summary>
+    /// Returns a random value of the specified <paramref name="type"/>.
+    /// </summary>
+    /// <param name="random">An instance of Random.</param>
+    /// <param name="type">The type of the random value.</param>
+    /// <returns>A random value of the specified type.</returns>
+    /// <exception cref="NotSupportedException"></exception>
+    public static object Next(this Random random, Type type)
+    {
+        return type switch
+        {
+            _ when type == typeof(bool) => random.NextBoolean(),
+            _ when type == typeof(char) => random.NextAlphaChar(),
+            _ when type == typeof(DateOnly) => random.NextDateOnly(DateOnly.MinValue, DateOnly.MaxValue),
+            _ when type == typeof(DateTime) => random.NextDateTime(DateTime.MinValue, DateTime.MaxValue),
+            _ when type == typeof(double) => random.NextDouble(),
+            _ when type == typeof(Guid) => random.NextGuid(),
+            _ when type == typeof(int) => random.Next(),
+            _ when type == typeof(long) => random.NextInt64(long.MinValue, long.MaxValue),
+            _ when type == typeof(TimeOnly) => random.NextTimeOnly(TimeOnly.MinValue, TimeOnly.MaxValue),
+            _ => throw new NotSupportedException($"Type '{type}' is not supported.")
+        };
+    }
+
+    /// <summary>
+    ///  Returns a random value of the specified type <typeparamref name="T"/>.
+    /// </summary>
+    /// <typeparam name="T">The type of the random value.</typeparam>
+    /// <param name="random">An instance of Random.</param>
+    /// <returns>A random value of the specified type.</returns>
+    public static object Next<T>(this Random random) => Next(random, typeof(T));
 
     /// <summary>
     /// Returns a random boolean.

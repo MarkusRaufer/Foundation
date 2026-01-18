@@ -101,6 +101,21 @@ public static class ExistingDictionaryBuilderExtensions
                         keyValues);
     }
 
+    public static ExistingDictionaryBuilder<TKey, TValue> ChangeWith<TKey, TValue>(
+        this IDictionary<TKey, TValue> source,
+        IEnumerable<KeyValuePair<TKey, EventActionValue<TValue>>> updates)
+        where TKey : notnull
+    {
+        source.ThrowIfNull();
+        updates.ThrowIfNull();
+
+        return new ExistingDictionaryBuilder<TKey, TValue>(
+                        ExistingDictionaryBuilder.BuildMode.ChangeWith,
+                        source,
+                        updates);
+    }
+
+
     /// <summary>Creates a builder that enables to change a dictionary and record the changes.
     /// New keys can be added. Existing keys can be updated and removed.
     /// </summary>
