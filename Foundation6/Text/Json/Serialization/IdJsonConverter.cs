@@ -84,9 +84,9 @@ public class IdJsonConverter : JsonConverter<Id>
         
         // Type property
         writer.WritePropertyName(nameof(Id.Type));
-        writer.WriteStringValue(id.Type.FullName);
+        writer.WriteStringValue(id.Type.AssemblyQualifiedName);
 
-        // Value property
+        // Ok property
         writer.WritePropertyName(nameof(Id.Value));
         _objectJsonConverter.Write(writer, id.Value, options);
 

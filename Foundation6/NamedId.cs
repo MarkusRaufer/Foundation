@@ -23,157 +23,136 @@
 // SOFTWARE.
 ﻿namespace Foundation;
 
-using System.Diagnostics.CodeAnalysis;
 using System.Text.Json.Serialization;
 
 /// <summary>
 /// This is a named identifier. The name and value are used for equality and comparison.
 /// </summary>
-public readonly struct NamedId
-    : IComparable<NamedId>
-    , IEquatable<NamedId>
+/// <param name="Name">The name of the identifier.</param>
+/// <param name="Value">The value of the identifier.</param>
+public record struct NamedId(string Name, Id Value) : IComparable<NamedId>
 {
-    private readonly IComparable _comparable;
-    private readonly string _name;
-    private readonly object _value;
+    /// <summary>
+    /// The default <paramref name="Name"/> for a named identifier.
+    /// </summary>
+    public static readonly string DefaultName = "Id";
 
-    #region operator overloads
-    public static implicit operator string(NamedId identifier) => identifier.ToString();
+    public static bool operator <(NamedId left, NamedId right) => left.CompareTo(right) < 0;
+    public static bool operator >(NamedId left, NamedId right) => left.CompareTo(right) > 0;
 
-    public static bool operator ==(NamedId lhs, NamedId rhs) => lhs.Equals(rhs);
+    public static bool operator <=(NamedId left, NamedId right) => left.CompareTo(right) <= 0;
 
-    public static bool operator !=(NamedId lhs, NamedId rhs) => !(lhs == rhs);
+    public static bool operator >=(NamedId left, NamedId right) => left.CompareTo(right) >= 0;
 
-    public static bool operator <(NamedId lhs, NamedId rhs) => lhs.CompareTo(rhs) < 0;
+    /// <summary>
+    /// Compares this instance of <see cref="NamedId"/> with the other instance.
+    /// </summary>
+    /// <param name="other">The other to compare with.</param>
+    /// <returns><see cref="IComparable"/></returns>
 
-    public static bool operator <=(NamedId lhs, NamedId rhs) => lhs.CompareTo(rhs) is (<= 0);
-
-    public static bool operator >(NamedId lhs, NamedId rhs) => lhs.CompareTo(rhs) > 0;
-
-    public static bool operator >=(NamedId lhs, NamedId rhs) => lhs.CompareTo(rhs) is (>= 0);
-    #endregion
-
-    public int CompareTo(NamedId other)
+    public readonly int CompareTo(NamedId other)
     {
-        var cmp = Name.CompareNullableTo(other.Name);
-        if(cmp != 0) return cmp;
+        if (Name != other.Name) return 1;
 
-        return _comparable.CompareToNullable(other._value);
+        return Value.CompareTo(other.Value);
     }
 
+    /// <summary>
+    /// An empty instance of NamedId.
+    /// </summary>
     [JsonIgnore]
     public static readonly NamedId Empty;
 
-    public override bool Equals([NotNullWhen(true)] object? obj) => obj is NamedId other && Equals(other);
-
-    public bool Equals(NamedId other)
-    {
-        if (IsEmpty) return other.IsEmpty;
-        if (other.IsEmpty) return false;
-
-        return GetHashCode() == other.GetHashCode() && Name == other.Name && _value.EqualsNullable(other._value);
-    }
-
-#if NETSTANDARD2_0
-    public override int GetHashCode() => HashCode.FromObject(Name, Value);
-
-#else
-    public override int GetHashCode() => System.HashCode.Combine(Name, Value);
-#endif
-
+    /// <summary>
+    /// Returns true when Value is empty otherwise false.
+    /// </summary>
     [JsonIgnore]
-    public bool IsEmpty => _name is null;
+    public readonly bool IsEmpty => Value.IsEmpty;
 
-    public string Name
-    {
-        get => _name;
-        init => _name = value.ThrowIfNullOrWhiteSpace();
-    }
+    /// <summary>
+    /// Returns a new instance of <see cref="NamedId"/> with default name Id and value is a Guid.
+    /// </summary>
+    /// <returns></returns>
+    public static NamedId New() => new(DefaultName, Id.New());
 
-    public static NamedId New(string name) => new() { Name = name, Value = Guid.NewGuid() };
+    /// <summary>
+    /// Returns a new instance of <see cref="NamedId"/> with default name Id.
+    /// </summary>
+    /// <param name="value">The value of the identifer mut not be emtpy.</param>
+    /// <returns></returns>
+    public static NamedId New(Id value) => new(DefaultName, value.ThrowIfEmpty());
 
-    public static NamedId NewId(string name, object value) => new() { Name = name, Value = value };
+    /// <summary>
+    /// Returns a new instance of <see cref="NamedId"/> with default name Id.
+    /// </summary>
+    /// <typeparam name="T">The type of the identifier value.</typeparam>
+    /// <param name="value">The value of the identifier.</param>
+    /// <returns></returns>
+    public static NamedId New<T>(T value) where T : notnull => new(DefaultName, Id.New(value));
 
-    public static NamedId<T> New<T>(string name, T value) where T : notnull, IComparable<T>, IEquatable<T>
-        => new() { Name = name, Value = value };
+    /// <summary>
+    /// Returns a new instance of <see cref="NamedId"/>.
+    /// </summary>
+    /// <param name="name">The name of the identifier.</param>
+    /// <param name="value">The value of the identifier.</param>
+    /// <returns></returns>
+    public static NamedId New(string name, Id value) => new(name.ThrowIfNullOrWhiteSpace(), value.ThrowIfEmpty());
 
-    public override string ToString() => $"{Name}:{Value}";
-
-    public readonly Type Type { get; private init; }
-
-    public readonly object Value
-    {
-        get => _value;
-        init
-        {
-            if (value is not IComparable cmp)
-            {
-                throw new ArgumentException($"{nameof(Value)} must implement {nameof(IComparable)}", nameof(Value));
-            }
-            _comparable = cmp;
-            Type = value.GetType();
-            _value = value;
-        }
-    }
+    /// <summary>
+    /// Returns a new instance of <see cref="NamedId"/>.
+    /// </summary>
+    /// <param name="name">The name of the identifier.</param>
+    /// <param name="value">The value of the identifier.</param>
+    /// <returns></returns>
+    public static NamedId New<T>(string name, T value) where T : notnull => new(name.ThrowIfNullOrWhiteSpace(), Id.New(value));
 }
 
-public readonly struct NamedId<T> 
-    : IComparable<NamedId<T>>
-    , IEquatable<NamedId<T>>
-    where T : notnull, IComparable<T>, IEquatable<T>
+/// <summary>
+/// This is a named identifier. The name and value are used for equality and comparison.
+/// </summary>
+/// <typeparam name="T"></typeparam>
+/// <param name="Name">The name of the identifier.</param>
+/// <param name="Value">The value of the identifier.</param>
+public record struct NamedId<T>(string Name, T Value) : IComparable<NamedId<T>>
+    where T : notnull, IComparable<T>
 {
-    private readonly string _name;
+    public static bool operator <(NamedId<T> left, NamedId<T> right) => left.Name == right.Name && left.Value.CompareTo(right.Value) == -1;
+    public static bool operator >(NamedId<T> left, NamedId<T> right) => left.Name == right.Name && left.Value.CompareTo(right.Value) == 1;
 
-    #region operator overloads
-    public static implicit operator string(NamedId<T> identifier) => identifier.ToString();
+    public static bool operator <=(NamedId<T> left, NamedId<T> right) => left.Name == right.Name && left.Value.CompareTo(right.Value) is -1 or 0;
 
-    public static bool operator ==(NamedId<T> lhs, NamedId<T> rhs) => lhs.Equals(rhs);
+    public static bool operator >=(NamedId<T> left, NamedId<T> right) => left.Name == right.Name && left.Value.CompareTo(right.Value) is 0 or 1;
 
-    public static bool operator !=(NamedId<T> lhs, NamedId<T> rhs) => !(lhs == rhs);
-
-    public static bool operator <(NamedId<T> lhs, NamedId<T> rhs) => lhs.CompareTo(rhs) < 0;
-
-    public static bool operator <=(NamedId<T> lhs, NamedId<T> rhs) => lhs.CompareTo(rhs) is (<= 0);
-
-    public static bool operator >(NamedId<T> lhs, NamedId<T> rhs) => lhs.CompareTo(rhs) > 0;
-
-    public static bool operator >=(NamedId<T> lhs, NamedId<T> rhs) => lhs.CompareTo(rhs) is (>= 0);
-    #endregion
-
+    /// <summary>
+    /// Compares this instance of <see cref="NamedId{T}"/> with the other instance.
+    /// </summary>
+    /// <param name="other">The other to compare with.</param>
+    /// <returns><see cref="IComparable"/></returns>
     public readonly int CompareTo(NamedId<T> other)
     {
-        var cmp = Name.CompareNullableTo(other.Name);
-        if (cmp !=0) return cmp;
+        if (IsEmpty) return other.IsEmpty ? 0 : -1;
+        if (other.IsEmpty) return 1;
 
-        return Value.CompareNullableTo(other.Value);
+        if (Name != other.Name) return 1;
+        return Value.CompareTo(other.Value);
     }
 
-    public override bool Equals([NotNullWhen(true)] object? obj) => obj is NamedId<T> other && Equals(other);
+    /// <summary>
+    /// An empty instance of NamedId.
+    /// </summary>
+    [JsonIgnore] public static readonly NamedId Empty;
 
-    public bool Equals(NamedId<T> other)
-    {
-        if (IsEmpty) return other.IsEmpty;
-        if (other.IsEmpty) return false;
+    /// <summary>
+    /// Returns true when Value is empty otherwise false.
+    /// </summary>
+    [JsonIgnore] public readonly bool IsEmpty => Value is null;
 
-        return GetHashCode() == other.GetHashCode() && Name == other.Name && Value.Equals(other.Value);
-    }
-
-#if NETSTANDARD2_0
-    public override int GetHashCode() => HashCode.FromObject(Name, Value);
-#else
-    public override int GetHashCode() => System.HashCode.Combine(Name, Value);
-#endif
-
-    [JsonIgnore]
-    public readonly bool IsEmpty => string.IsNullOrEmpty(Name);
-
-    public string Name
-    {
-        get => _name;
-        init => _name = value.ThrowIfNullOrWhiteSpace();
-    }
-
-    public override string ToString() => $"{Name}:{Value}";
-
-    public T Value { get; init; }
+    /// <summary>
+    /// Creates a new <see cref="NamedId{T}"/>.
+    /// </summary>
+    /// <param name="name">The name of the identifier.</param>
+    /// <param name="value">The value of the identifier. The value must not be null.</param>
+    /// <exception cref="ArgumentNullException">If value of identifer is null.</exception>
+    /// <returns></returns>
+    public static NamedId<T> New(string name, T value) => new(name.ThrowIfNullOrWhiteSpace(), value.ThrowIfNull());
 }

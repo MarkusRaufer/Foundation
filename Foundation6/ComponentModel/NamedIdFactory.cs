@@ -61,6 +61,6 @@ public class NamedIdFactory<TId>
     public NamedId<TId> NewId()
     {
         var id = _idFactory();
-        return NamedId.New(FactoryId, id);
+        return new NamedId<TId>(FactoryId, id);
     }
 }

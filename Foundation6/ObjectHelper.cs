@@ -25,6 +25,30 @@
 
 public static class ObjectHelper
 {
+    /// <summary>
+    /// Increments the value of <paramref name="obj"/> if <paramref name="obj"/> is a number.
+    /// </summary>
+    /// <param name="obj">instance of an object.</param>
+    /// <returns>An Some with an incremented value of <paramref name="obj"/> if it is a number otherwise None.</returns>
+    public static Option<object> Increment(this object obj)
+    {
+        return obj switch
+        {
+            byte x => Option.Some(++x),
+            char x => Option.Some(++x),
+            decimal x => Option.Some(++x),
+            double x => Option.Some(++x),
+            float x => Option.Some(++x),
+            int x => Option.Some(++x),
+            long x => Option.Some(++x),
+            sbyte x => Option.Some(++x),
+            short x => Option.Some(++x),
+            uint x => Option.Some(++x),
+            ulong x => Option.Some(++x),
+            _ => Option.None<object>(),
+        };
+    }
+
     public static IEnumerable<object> SortByHashCode(params object[] objects)
     {
         var d = new SortedDictionary<int, object>();

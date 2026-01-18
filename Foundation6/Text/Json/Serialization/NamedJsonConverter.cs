@@ -21,7 +21,6 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
-using Foundation.Collections.Generic;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
@@ -29,18 +28,19 @@ namespace Foundation.Text.Json.Serialization;
 
 public class NamedIdJsonConverter : JsonConverter<NamedId>
 {
-    private readonly TypeJsonConverter _typeJsonConverter;
+    private static readonly Type IdType = typeof(Id);
+    private readonly IdJsonConverter _idJsonConverter;
 
-    public NamedIdJsonConverter() : this(new TypeJsonConverter())
+    public NamedIdJsonConverter() : this(new IdJsonConverter())
     {
     }
 
-    public NamedIdJsonConverter(TypeJsonConverter typeJsonConverter)
+    public NamedIdJsonConverter(IdJsonConverter idJsonConverter)
     {
-        _typeJsonConverter = typeJsonConverter.ThrowIfNull();
+        _idJsonConverter = idJsonConverter.ThrowIfNull();
     }
 
-    public override NamedId Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+    public override NamedId Read(ref Utf8JsonReader reader, Type type, JsonSerializerOptions options)
     {
         if (reader.TokenType != JsonTokenType.StartObject) return NamedId.Empty;
         if (!reader.Read()) throw new JsonException(nameof(NamedId));
@@ -55,21 +55,11 @@ public class NamedIdJsonConverter : JsonConverter<NamedId>
         if (!reader.Read()) throw new JsonException(nameof(NamedId));
 
         // Type property
-        var type = _typeJsonConverter.Read(ref reader, typeToConvert, options);
-        if (null == type) throw new JsonException(nameof(Id));
+        var id = _idJsonConverter.Read(ref reader, IdType, options);
 
-        // Value property
-        if (!reader.Read() || reader.TokenType != JsonTokenType.PropertyName) throw new JsonException(nameof(NamedId));
+        if (reader.TokenType != JsonTokenType.EndObject) throw new JsonException(nameof(NamedId));
 
-        var valuePropertyResult = reader.GetProperty(type);
-        if (!valuePropertyResult.TryGetOk(out var valueProperty) || valueProperty.Value is null)
-        {
-            throw new JsonException(nameof(NamedId));
-        }
-
-        reader.Read();
-
-        return NamedId.NewId(name, valueProperty.Value);
+        return NamedId.New(name, id);
     }
 
     public override void Write(Utf8JsonWriter writer, NamedId id, JsonSerializerOptions options)
@@ -82,15 +72,9 @@ public class NamedIdJsonConverter : JsonConverter<NamedId>
         writer.WritePropertyName(nameof(NamedId.Name));
         writer.WriteStringValue(id.Name);
 
-        // Type property
-        writer.WritePropertyName(nameof(NamedId.Type));
-
-        // Type property value
-        _typeJsonConverter.Write(writer, id.Type, options);
-
-        // Value property
+        // Ok property
         writer.WritePropertyName(nameof(NamedId.Value));
-        writer.WriteValue(id.Value);
+        _idJsonConverter.Write(writer, id.Value, options);
 
         writer.WriteEndObject();
     }

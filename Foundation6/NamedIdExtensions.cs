@@ -21,21 +21,32 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
-﻿namespace Foundation.ComponentModel;
+﻿using System.Runtime.CompilerServices;
 
-public class GuidNamedIdFactory
-    : IIdFactory<NamedId>
-    , IIdentifiableFactory<string>
+namespace Foundation;
+
+public static class NamedIdExtensions
 {
-    public GuidNamedIdFactory(string name)
+    /// <summary>
+    /// Throws an <see cref="Exception"/> if <paramref name="id"/> is empty.
+    /// </summary>
+    /// <param name="id">The identifier.</param>
+    /// <param name="paramName">An alternative parameter name.</param>
+    /// <returns></returns>
+    /// <exception cref="ArgumentNullException"></exception>
+    public static NamedId ThrowIfEmpty(this NamedId id, [CallerArgumentExpression(nameof(id))] string paramName = "")
     {
-        FactoryId = name.ThrowIfNullOrEmpty();
+        return ThrowIfEmpty(id, () => throw new ArgumentNullException(paramName));
     }
 
-    public string FactoryId { get; }
-
-    public NamedId NewId()
+    /// <summary>
+    /// Throws an <see cref="Exception"/> if <paramref name="id"/> is empty.
+    /// </summary>
+    /// <param name="id">The identifier which should be checked.</param>
+    /// <param name="exeption">The exception which is thrown on IsEmtpy is true.</param>
+    /// <returns></returns>
+    public static NamedId ThrowIfEmpty(this NamedId id, Func<Exception> exeption)
     {
-        return new() { Name = FactoryId, Value = Id.New() };
+        return id.IsEmpty ? throw exeption() : id;
     }
 }

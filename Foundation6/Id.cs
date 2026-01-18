@@ -36,40 +36,82 @@ public readonly struct Id
     , IComparable<Id>
     , IEquatable<Id>
 {
-    private readonly IComparable _comparable;
-    private readonly object _value;
+    private readonly IComparable _value;
 
     public static bool operator ==(Id lhs, Id rhs) => lhs.Equals(rhs);
 
     public static bool operator !=(Id lhs, Id rhs) => !(lhs == rhs);
 
-    public static bool operator <(Id lhs, Id rhs) => -1 == lhs.CompareTo(rhs);
+    public static bool operator <(Id lhs, Id rhs) => lhs.CompareTo(rhs) == -1;
 
-    public static bool operator <=(Id lhs, Id rhs) => 0 >= lhs.CompareTo(rhs);
+    public static bool operator <=(Id lhs, Id rhs) => lhs.CompareTo(rhs) <= 0;
 
-    public static bool operator >(Id lhs, Id rhs) => 1 == lhs.CompareTo(rhs);
+    public static bool operator >(Id lhs, Id rhs) => lhs.CompareTo(rhs) == 1;
 
-    public static bool operator >=(Id lhs, Id rhs) => 0 <= lhs.CompareTo(rhs);
+    public static bool operator >=(Id lhs, Id rhs) => lhs.CompareTo(rhs) >= 0;
 
-    public int CompareTo(Id other) => _comparable.CompareToNullable(other._value);
+    /// <summary>
+    /// Compares <see cref="Id"/> instance with other <see cref="Id"/> instannce.
+    /// </summary>
+    /// <param name="other"></param>
+    /// <returns></returns>
+    public int CompareTo(Id other)
+    {
+        if (IsEmpty) return other.IsEmpty ? 0 : -1;
+        if (other.IsEmpty) return 1;
+        if (!Type.Equals(other.Type)) return 1;
 
+        return _value.CompareTo(other._value);
+    }
+
+    /// <summary>
+    ///  Compares <see cref="Id"/> instance with other object.
+    /// </summary>
+    /// <param name="other"></param>
+    /// <returns></returns>
     public int CompareTo(object? obj) => obj is Id other ? CompareTo(other) : 1;
 
+    /// <summary>
+    /// An empty instance of <see cref="Id"/>.
+    /// </summary>
     public static readonly Id Empty;
 
+    /// <summary>
+    /// Verifies if this instance of <see cref="Id"/> equals to the other object.
+    /// </summary>
+    /// <param name="obj"></param>
+    /// <returns></returns>
     public override bool Equals([NotNullWhen(true)] object? obj) => obj is Id other && Equals(other);
 
+    /// <summary>
+    /// Verifies if this instance of <see cref="Id"/> equals to the other <see cref="Id"/>.
+    /// </summary>
+    /// <param name="other"></param>
+    /// <returns></returns>
     public bool Equals(Id other)
     {
         if(IsEmpty) return other.IsEmpty;
 
-        return _comparable.Equals(other._value);
+        return _value.Equals(other._value);
     }
 
     public override int GetHashCode() => _value.GetNullableHashCode();
 
+    /// <summary>
+    /// Returns a new Id with an incremented value if value is a number otherwise a new Id with the same value.
+    /// </summary>
+    /// <returns></returns>
+    public Option<Id> Inc()
+    {
+        var option = ObjectHelper.Increment(_value);
+        
+        return option.TryGet(out var value) 
+            ? Option.Some(Id.New(value))
+            : Option.None<Id>();
+    }
+
     [JsonIgnore]
-    public readonly bool IsEmpty => _comparable is null;
+    public readonly bool IsEmpty => _value is null;
 
     public static Id New() => New(Guid.NewGuid());
 
@@ -90,9 +132,8 @@ public readonly struct Id
             {
                 throw new ArgumentException($"{nameof(Value)} must implement {nameof(IComparable)}", nameof(Value));
             }
-            _comparable = cmp;
             Type = value.GetType();
-            _value = value;
+            _value = cmp;
         }
     }
 }
