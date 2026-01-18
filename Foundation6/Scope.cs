@@ -70,7 +70,7 @@ public static class Scope
     /// Returns an nullable from a scope. This can be used to avoid state. This enables e.g. return a value from an if or foreach statement.
     /// </summary>
     /// </summary>
-    /// <typeparam name="T"></typeparam>
+    /// <typeparam name="TOk"></typeparam>
     /// <param name="ret"></param>
     /// <returns></returns>
     public static T? ReturnsNullable<T>(Func<T?> ret)

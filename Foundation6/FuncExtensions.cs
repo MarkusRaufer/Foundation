@@ -36,7 +36,7 @@ public static class FuncExtensions
     }
 
     /// <summary>
-    /// Converts a Func{T} to Func{object}.
+    /// Converts a Func{TOk} to Func{object}.
     /// </summary>
     /// <typeparam name="T"></typeparam>
     /// <param name="func"></param>
@@ -49,7 +49,7 @@ public static class FuncExtensions
     }
 
     /// <summary>
-    /// Converts a Func{T, bool} to Func{object, bool}.
+    /// Converts a Func{TOk, bool} to Func{object, bool}.
     /// </summary>
     /// <typeparam name="T"></typeparam>
     /// <typeparam name="TResult"></typeparam>
@@ -61,7 +61,7 @@ public static class FuncExtensions
     }
 
     /// <summary>
-    /// Converts a Func{T, bool} to Func{object, bool}.
+    /// Converts a Func{TOk, bool} to Func{object, bool}.
     /// </summary>
     /// <typeparam name="T"></typeparam>
     /// <param name="func"></param>

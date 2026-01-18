@@ -211,7 +211,7 @@ public static class OptionExtensions
     }
 
     /// <summary>
-    /// Converts an option of type T into an option of type TResult.
+    /// Converts an option of type TOk into an option of type TResult.
     /// If conversion is not possible, it returns None.
     /// </summary>
     /// <typeparam name="T"></typeparam>

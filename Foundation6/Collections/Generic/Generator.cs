@@ -29,7 +29,7 @@ public static class Generator
     /// Creates an endless number of elements.
     /// </summary>
     /// <typeparam name="T">Type of each element.</typeparam>
-    /// <param name="factory">Factory of elements of type T.</param>
+    /// <param name="factory">Factory of elements of type TOk.</param>
     /// <param name="seed">This is the seed value which is the first element.</param>
     /// <returns></returns>
     public static IEnumerable<T> Create<T>(Func<T, T> factory, T seed)

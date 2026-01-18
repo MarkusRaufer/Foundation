@@ -200,7 +200,7 @@ public sealed class Countable<T> : IEquatable<Countable<T>>
 	}
 
     /// <summary>
-    /// Returns the hash code of the Value.
+    /// Returns the hash code of the Ok.
     /// </summary>
     /// <returns></returns>
     public int GetValueHashCode() => Value.GetNullableHashCode();

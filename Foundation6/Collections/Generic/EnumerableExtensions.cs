@@ -594,7 +594,7 @@ public static class EnumerableExtensions
     /// <typeparam name="T1">Type of elements of first.</typeparam>
     /// <typeparam name="T2">Type of elements of second.</typeparam>
     /// <typeparam name="TKey">Type of the compare value.</typeparam>
-    /// <typeparam name="TResult">Value which will be returned of the first list.</typeparam>
+    /// <typeparam name="TResult">Ok which will be returned of the first list.</typeparam>
     /// <param name="lhs">First list.</param>
     /// <param name="rhs">Second list.</param>
     /// <param name="lhsKeySelector">Compare value of the elements of the first list. Must be of type TKey.</param>
@@ -625,7 +625,7 @@ public static class EnumerableExtensions
 
     /// <summary>
     /// Returns all elements from <paramref name="lhs"/> which are not in <paramref name="rhs"/> including duplicates.
-    /// If T implements <see cref="=IComparable<typeparamref name="T"/>"/> use <see cref="=ExceptOrderedWithDuplicates"/>, because it is more efficient.
+    /// If TOk implements <see cref="=IComparable<typeparamref name="T"/>"/> use <see cref="=ExceptOrderedWithDuplicates"/>, because it is more efficient.
     /// The smaller list should be rhs.
     /// </summary>
     /// <typeparam name="T"></typeparam>
@@ -971,7 +971,7 @@ public static class EnumerableExtensions
     }
 
     /// <summary>
-    /// Returns the first occurrence of type T. If the sequence does not contain the type T it throws an exception.
+    /// Returns the first occurrence of type TOk. If the sequence does not contain the type TOk it throws an exception.
     /// </summary>
     /// <typeparam name="T">Type of element searched for.</typeparam>
     /// <param name="items">List of elements.</param>
@@ -990,7 +990,7 @@ public static class EnumerableExtensions
         => items.ThrowIfNull().ObjectOfType<TResult>().FirstOrDefault();
 
     /// <summary>
-    /// Returns the first occurrence of type T otherwise null.
+    /// Returns the first occurrence of type TOk otherwise null.
     /// </summary>
     /// <typeparam name="T">Type of the returned element.</typeparam>
     /// <param name="items">List of elements.</param>
@@ -1806,7 +1806,7 @@ public static class EnumerableExtensions
     /// <summary>
     /// Returns the seed and max value.
     /// </summary>
-    /// <typeparam name="T">T must implement IComparable<T></typeparam>
+    /// <typeparam name="T">TOk must implement IComparable<TOk></typeparam>
     /// <param name="items"></param>
     /// <returns></returns>
     public static Option<(T min, T max)> MinMax<T>(this IEnumerable<T> items)
@@ -2078,7 +2078,7 @@ public static class EnumerableExtensions
     /// <typeparam name="T"></typeparam>
     /// <typeparam name="TResult"></typeparam>
     /// <param name="items"></param>
-    /// <param name="selector">First T is lhs left and second T is the rhs left and so on.</param>
+    /// <param name="selector">First TOk is lhs left and second TOk is the rhs left and so on.</param>
     /// <returns></returns>
     public static IEnumerable<(T lhs, T rhs)> Pairs<T>(this IEnumerable<T> items)
     {

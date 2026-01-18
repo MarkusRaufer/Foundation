@@ -119,7 +119,7 @@ public sealed class ByteString
     }
 
     /// <summary>
-    /// Determines the relative order of the sequences being compared by comparing the elements using IComparable{T}.CompareTo(T).
+    /// Determines the relative order of the sequences being compared by comparing the elements using IComparable{TOk}.CompareTo(TOk).
     /// </summary>
     /// <param name="other">The other ByteString which should be compared.</param>
     /// <returns></returns>

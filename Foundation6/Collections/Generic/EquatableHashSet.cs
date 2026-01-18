@@ -76,7 +76,7 @@ public class EquatableHashSet<T>
     /// 
     /// </summary>
     /// <param name="collection">list of items.
-    /// Use T[], Collection<typeparamref name="T"/> or List<typeparamref name="T"/></param>
+    /// Use TOk[], Collection<typeparamref name="T"/> or List<typeparamref name="T"/></param>
     /// <param name="comparer"></param>
     public EquatableHashSet(IEnumerable<T> collection, IEqualityComparer<T>? comparer) : base(collection, comparer)
     {

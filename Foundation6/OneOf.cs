@@ -74,7 +74,7 @@ public class OneOf<T1, T2> : IEquatable<OneOf<T1, T2>>
     public static implicit operator OneOf<T1, T2>(T2 value) => new(value);
 
     /// <summary>
-    /// Executes either onT1 or onT2 depending on Value is of type T1 or T2.
+    /// Executes either onT1 or onT2 depending on Ok is of type T1 or T2.
     /// </summary>
     /// <typeparam name="TResult"></typeparam>
     /// <param name="onT1"></param>
@@ -119,7 +119,7 @@ public class OneOf<T1, T2> : IEquatable<OneOf<T1, T2>>
     protected int HashCode { get; set; }
 
     /// <summary>
-    /// Invokes action if Value is of type T1.
+    /// Invokes action if Ok is of type T1.
     /// </summary>
     /// <param name="action"></param>
     /// <returns></returns>
@@ -134,7 +134,7 @@ public class OneOf<T1, T2> : IEquatable<OneOf<T1, T2>>
     }
 
     /// <summary>
-    /// Invokes action if Value is of type T2.
+    /// Invokes action if Ok is of type T2.
     /// </summary>
     /// <param name="action"></param>
     /// <returns></returns>
@@ -162,7 +162,7 @@ public class OneOf<T1, T2> : IEquatable<OneOf<T1, T2>>
     }
 
     /// <summary>
-    /// Returns true is the selected type if of type T.
+    /// Returns true is the selected type if of type TOk.
     /// </summary>
     /// <typeparam name="T"></typeparam>
     /// <returns></returns>
@@ -264,7 +264,7 @@ public class OneOf<T1, T2, T3>
     public static implicit operator OneOf<T1, T2, T3>(T3 value) => new(value);
 
     /// <summary>
-    /// Executes either onT1 or onT2 depending on Value is of type T1, T2 or T3.
+    /// Executes either onT1 or onT2 depending on Ok is of type T1, T2 or T3.
     /// </summary>
     /// <typeparam name="TResult"></typeparam>
     /// <param name="onT1"></param>
@@ -300,7 +300,7 @@ public class OneOf<T1, T2, T3>
     public override int GetHashCode() => HashCode;
 
     /// <summary>
-    /// Invokes action if Value is of type T3.
+    /// Invokes action if Ok is of type T3.
     /// </summary>
     /// <param name="action"></param>
     /// <returns></returns>
@@ -408,7 +408,7 @@ public class OneOf<T1, T2, T3, T4>
     public static implicit operator OneOf<T1, T2, T3, T4>(T4 value) => new(value);
 
     /// <summary>
-    /// Executes either onT1 or onT2 depending on Value is of type T1, T2, T3 or T4.
+    /// Executes either onT1 or onT2 depending on Ok is of type T1, T2, T3 or T4.
     /// </summary>
     /// <typeparam name="TResult"></typeparam>
     /// <param name="onT1"></param>
@@ -446,7 +446,7 @@ public class OneOf<T1, T2, T3, T4>
     public override int GetHashCode() => HashCode;
 
     /// <summary>
-    /// Invokes action if Value is of type T4.
+    /// Invokes action if Ok is of type T4.
     /// </summary>
     /// <param name="action"></param>
     /// <returns></returns>
@@ -564,7 +564,7 @@ public class OneOf<T1, T2, T3, T4, T5>
     public static implicit operator OneOf<T1, T2, T3, T4, T5>(T5 value) => new(value);
 
     /// <summary>
-    /// Executes either onT1 or onT2 depending on Value is of type T1, T2, T3, T4 or T5.
+    /// Executes either onT1 or onT2 depending on Ok is of type T1, T2, T3, T4 or T5.
     /// </summary>
     /// <typeparam name="TResult"></typeparam>
     /// <param name="onT1"></param>
@@ -604,7 +604,7 @@ public class OneOf<T1, T2, T3, T4, T5>
     public override int GetHashCode() => HashCode;
 
     /// <summary>
-    /// Invokes action if Value is of type T5.
+    /// Invokes action if Ok is of type T5.
     /// </summary>
     /// <param name="action"></param>
     /// <returns></returns>
@@ -773,7 +773,7 @@ public class OneOf<T1, T2, T3, T4, T5, T6>
     public override int GetHashCode() => HashCode;
 
     /// <summary>
-    /// Invokes action if Value is of type T5.
+    /// Invokes action if Ok is of type T5.
     /// </summary>
     /// <param name="action"></param>
     /// <returns></returns>
@@ -952,7 +952,7 @@ public class OneOf<T1, T2, T3, T4, T5, T6, T7>
     public override int GetHashCode() => HashCode;
 
     /// <summary>
-    /// Invokes action if Value is of type T5.
+    /// Invokes action if Ok is of type T5.
     /// </summary>
     /// <param name="action"></param>
     /// <returns></returns>
@@ -1145,7 +1145,7 @@ public class OneOf<T1, T2, T3, T4, T5, T6, T7, T8>
     public override int GetHashCode() => HashCode;
 
     /// <summary>
-    /// Invokes action if Value is of type T8.
+    /// Invokes action if Ok is of type T8.
     /// </summary>
     /// <param name="action"></param>
     /// <returns></returns>
@@ -1350,7 +1350,7 @@ public class OneOf<T1, T2, T3, T4, T5, T6, T7, T8, T9>
     public override int GetHashCode() => HashCode;
 
     /// <summary>
-    /// Invokes action if Value is of type T9.
+    /// Invokes action if Ok is of type T9.
     /// </summary>
     /// <param name="action"></param>
     /// <returns></returns>
@@ -1566,7 +1566,7 @@ public class OneOf<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10>
     public override int GetHashCode() => HashCode;
 
     /// <summary>
-    /// Invokes action if Value is of type T10.
+    /// Invokes action if Ok is of type T10.
     /// </summary>
     /// <param name="action"></param>
     /// <returns></returns>

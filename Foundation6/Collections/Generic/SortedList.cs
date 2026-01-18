@@ -31,7 +31,7 @@ namespace Foundation.Collections.Generic;
 /// Represents a collection of values that are sorted by the values and are accessible by value and by index.
 /// This list supports duplicates unlike the <see cref="SortedList{TKey, TValue}" of Microsoft./>
 /// </summary>
-/// <typeparam name="T">T should implement IComparable<typeparamref name="T"/> or use your own IComparer<typeparamref name="T"/></typeparam>
+/// <typeparam name="T">TOk should implement IComparable<typeparamref name="T"/> or use your own IComparer<typeparamref name="T"/></typeparam>
 public class SortedList<T>
     : ICollection<T>
     , IReadOnlyList<T>

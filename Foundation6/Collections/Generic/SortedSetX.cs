@@ -31,7 +31,7 @@ namespace Foundation.Collections.Generic;
 /// This is a sorted set that can be filtered by a lambda expression.
 /// This set supports only unique values like the <see cref="SortedSet{TKey, TValue}" of Microsoft./>
 /// </summary>
-/// <typeparam name="T">T should implement IComparable<typeparamref name="T"/> or use your own IComparer<typeparamref name="T"/></typeparam>
+/// <typeparam name="T">TOk should implement IComparable<typeparamref name="T"/> or use your own IComparer<typeparamref name="T"/></typeparam>
 public class SortedSetX<T>
     : ICollection<T>
     , IReadOnlyList<T>

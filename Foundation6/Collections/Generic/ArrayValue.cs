@@ -128,13 +128,13 @@ public readonly struct ArrayValue<T>
     /// Searches for an element that matches the conditions defined by the specified predicate, and returns the first occurrence within the entire array.
     /// </summary>
     /// <param name="predicate">The predicate that defines the conditions of the element to search for.</param>
-    /// <returns>The first element that matches the conditions defined by the specified predicate, if found; otherwise, the default value for type T.</returns>
+    /// <returns>The first element that matches the conditions defined by the specified predicate, if found; otherwise, the default value for type TOk.</returns>
     public T? Find(Predicate<T> predicate) => Array.Find(_values, predicate);
 
     /// <summary>
     /// Searches for an element that matches the conditions defined by the specified predicate, and returns the zero-based index of the first occurrence within the entire Array.
     /// </summary>
-    /// <param name="predicate">The Predicate<T> that defines the conditions of the element to search for.</param>
+    /// <param name="predicate">The Predicate<TOk> that defines the conditions of the element to search for.</param>
     /// <returns></returns>
     public int FindIndex(Predicate<T> predicate) => Array.FindIndex(_values, predicate);
 

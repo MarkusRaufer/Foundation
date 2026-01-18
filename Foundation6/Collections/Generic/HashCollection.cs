@@ -147,7 +147,7 @@ public class HashCollection<T>
     /// <summary>
     /// Searches for a specific value and returns all found values.
     /// </summary>
-    /// <param name="value">Value to search.</param>
+    /// <param name="value">Ok to search.</param>
     /// <returns>Returns found values.</returns>
     public IEnumerable<T> GetValues(T value)
     {
@@ -184,7 +184,7 @@ public class HashCollection<T>
     /// <summary>
     /// Searches for a specific value and returns the found value.
     /// </summary>
-    /// <param name="value">Value to be found.</param>
+    /// <param name="value">Ok to be found.</param>
     /// <param name="foundValue">The found value.</param>
     /// <returns></returns>
     public bool TryGetValue(T value, out T? foundValue)
@@ -201,7 +201,7 @@ public class HashCollection<T>
     /// <summary>
     /// Returns all found <paramref name="values"/> like <paramref name="value"/>.
     /// </summary>
-    /// <param name="value">Value to find.</param>
+    /// <param name="value">Ok to find.</param>
     /// <param name="values">Found values.</param>
     /// <returns></returns>
     public bool TryGetValues(T value, out IEnumerable<T> values)

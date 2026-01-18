@@ -50,7 +50,7 @@ public static class NumericHelper
     /// </summary>
     /// <typeparam name="T">Type of the number.</typeparam>
     /// <param name="left">Number to which a value is assigned.</param>
-    /// <param name="right">Value that is assigned.</param>
+    /// <param name="right">Ok that is assigned.</param>
     /// <returns>The assigned value.</returns>
     public static T AddAssign<T>(T left, T right) where T : struct
     {
@@ -66,7 +66,7 @@ public static class NumericHelper
     /// </summary>
     /// <typeparam name="T">Type of the number.</typeparam>
     /// <param name="left">Number to which a value is assigned.</param>
-    /// <param name="right">Value that is assigned.</param>
+    /// <param name="right">Ok that is assigned.</param>
     /// <returns>The assigned value.</returns>
     public static T Assign<T>(T left, T right) where T : struct
     {
@@ -221,11 +221,11 @@ public static class NumericHelper
         return Expression.Lambda<Func<T, T, T>>(body, left, right);
     }
 
-    //public static T Cast<T>(object value)
+    //public static TOk Cast<TOk>(object value)
     //{
-    //    var convert = Expression.Convert(Expression.Constant(value), typeof(T));
+    //    var convert = Expression.Convert(Expression.Constant(value), typeof(TOk));
     //    var str = convert.ToString();
-    //    return Expression.Lambda<Func<T>>(convert).Compile()();
+    //    return Expression.Lambda<Func<TOk>>(convert).Compile()();
     //}
 
     /// <summary>
