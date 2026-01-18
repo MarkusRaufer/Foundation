@@ -54,13 +54,13 @@ public enum EventAction
     /// <summary>
     /// A value or object will be added.
     /// </summary>
-    Add,
+    Add = 1,
     /// <summary>
     /// A value or object will be removed.
     /// </summary>
-    Remove,
+    Remove = 2,
     /// <summary>
     /// A value or object will be updated.
     /// </summary>
-    Update
+    Update = 4
 }
